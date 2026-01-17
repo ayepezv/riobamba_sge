@@ -1,0 +1,37 @@
+version: 1
+
+sources:
+  riobamba_db:
+    kind: postgres
+    host: localhost
+    port: 5432
+    database: riobamba_sge_db
+    user: sge_admin
+    password: "Riobamba2026!"
+
+tools:
+  sge_listar_tablas:
+    kind: postgres-sql
+    source: riobamba_db
+    description: "Lista las tablas del sistema Riobamba SGE."
+    statement: "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND (table_name LIKE 'fi_%' OR table_name LIKE 'core_%') ORDER BY table_name;"
+
+  sge_ver_columnas:
+    kind: postgres-sql
+    source: riobamba_db
+    description: "Muestra las columnas de una tabla especifica."
+    parameters:
+      - name: nombre_tabla
+        type: string
+        description: "Nombre exacto de la tabla (ej: fi_presupuesto)"
+    statement: "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = $1 ORDER BY ordinal_position;"
+
+  sge_consulta_libre:
+    kind: postgres-sql
+    source: riobamba_db
+    description: "Ejecuta una consulta SQL de lectura."
+    parameters:
+      - name: query
+        type: string
+        description: "Consulta SQL completa (sin punto y coma final)"
+    statement: "SELECT 1; -- Esta herramienta es especial, el toolbox a veces requiere un statement base, pero intentaremos pasar la query como parametro."

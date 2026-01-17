@@ -1,0 +1,41 @@
+CODIGO;NOMBRE;INTEST;FUNCION
+010101;Unidad de Gestión Gerencia General;3;000
+0101;GESTION GERENCIA GENERAL;2;000
+01;PROCESOS GOBERNANTE;1;000
+030303;U.G. Seguridad y Salud Ocupacional;50;000
+030302;U.G. Tecnologias de la Informacion;49;000
+02;PROCESOS DE ASESORIA;7;000
+0201;GESTIÓN GERENCIA GENERAL;8;000
+020101;U.G Asesoria Juridica;9;000
+020103;U.G. Planificacion;45;000
+020104;U.G. Auditoria Interna;46;000
+030301;U.G. Secretaria General;48;000
+03;PROCESOS DE SOPORTE O APOYO;16;000
+0301;GESTIÓN ADMINISTRATIVA;17;000
+030101;U.G. Direccion Administrativa;18;000
+030102;U.G de Talento Humano;19;000
+030103;U.G. Contratación Publica;20;000
+030104;U.G Servicios Generales ;21;000
+030105;U.G. Servicio Médico;22;000
+0302;GESTION FINANCIERA;23;000
+030201;U.G. Direccion Financiera;24;000
+030202;U.G. Contabilidad;25;000
+030203;U.G. Tesoreria;26;000
+030204;U.G.  Presupuesto;27;000
+030205;U.G. Administración de Bienes;28;000
+0303;GESTION GERENCIA GENERAL;47;000
+04;PROCESOS AGREGADORES DE VALOR;30;000
+0401;GESTION DE INGENIERIA;31;000
+040101;U.G. Direccion de Ingenieria;32;000
+040102;U.G. Fiscalizacion Estudios y Diseño;33;000
+040103;U.G. Laboratorio;34;000
+0402;GESTION DE OPERACIONES;35;000
+040201;U.G. Direccion de Operaciones;36;000
+040202;U.G. Agua Potable;37;000
+040203;U.G. Alcantarrillado;38;000
+040204;U.G. Control de Perdidas;39;000
+0403;GESTION COMERCIAL;40;000
+040301;U.G. Direccion Comercial;41;000
+040302;U.G. Atencion al Cliente;42;000
+040303;U.G. Catastro y Medicion;43;000
+020102;U.G. Comunicacion;44;000

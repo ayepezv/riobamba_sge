@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <!-- Card 1 -->
+    <div class="flex items-center justify-center h-24 rounded bg-blue-50 dark:bg-gray-800">
+        <div class="text-center">
+            <h5 class="text-xl font-bold text-gray-900 dark:text-white">Usuarios Activos</h5>
+            <p class="text-3xl text-blue-600 dark:text-blue-500">12</p>
+        </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="flex items-center justify-center h-24 rounded bg-green-50 dark:bg-gray-800">
+        <div class="text-center">
+            <h5 class="text-xl font-bold text-gray-900 dark:text-white">Módulos</h5>
+            <p class="text-3xl text-green-600 dark:text-green-500">4</p>
+        </div>
+    </div>
+    <!-- Card 3 -->
+    <div class="flex items-center justify-center h-24 rounded bg-purple-50 dark:bg-gray-800">
+        <div class="text-center">
+            <h5 class="text-xl font-bold text-gray-900 dark:text-white">Reportes</h5>
+            <p class="text-3xl text-purple-600 dark:text-purple-500">8</p>
+        </div>
+    </div>
+    <!-- Card 4 -->
+    <div class="flex items-center justify-center h-24 rounded bg-orange-50 dark:bg-gray-800">
+        <div class="text-center">
+            <h5 class="text-xl font-bold text-gray-900 dark:text-white">Alertas</h5>
+            <p class="text-3xl text-orange-600 dark:text-orange-500">0</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 gap-4 mb-4">
+    <div class="flex items-center justify-center h-48 mb-4 rounded bg-gray-50 dark:bg-gray-800">
+        <p class="text-2xl text-gray-400 dark:text-gray-500">Bienvenido al Sistema de Gestión - Riobamba SGE</p>
+    </div>
+</div>
+{% endblock %}
