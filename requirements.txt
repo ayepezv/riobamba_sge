@@ -3,7 +3,7 @@ psycopg2-binary
 django-environ
 django-guardian
 pillow
-django-admin-listfilter-dropdown
+django-admin-list-filter-dropdown
 pdfplumber
 django-jazzmin
 gunicorn
