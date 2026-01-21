@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+   <report auto="False" id="budget_move" model="budget.move"
+            name="budget.move" rml="gt_budget/report/budget_move.mako"
+            usage="default" string="Movimientos Partida" header="False" report_type="webkit"/>  	
+
+   <report auto="False" id="fondo_proyecto" model="fondo.proyecto"
+            name="fondo.proyecto" rml="gt_budget/report/fondo_proyecto.mako"
+            usage="default" string="Fondos Proyecto" header="False" report_type="webkit"/>  	
+
+   <report auto="False" id="resumen_gasto" model="resumen.gasto.wizard"
+            name="resumen_gasto" rml="gt_budget/report/resumen_gasto.mako"
+            usage="default" string="Resumen Gasto Programado" header="True" report_type="webkit"/>  	
+   <report auto="False" id="resumen_gasto_final" model="resumen.gasto.final.wizard"
+            name="resumen_gasto_final" rml="gt_budget/report/resumen_gasto_final.mako"
+            usage="default" string="Resumen Gasto Programado Final" header="True" report_type="webkit"/>  	
+   <report auto="False" id="resumen_gasto_comprometido" model="resumen.gasto.comprometido.wizard"
+            name="resumen_gasto_comprometido" rml="gt_budget/report/resumen_gasto_comprometido.mako"
+            usage="default" string="Resumen Gasto Programado Comprometido" header="True" report_type="webkit"/>  	
+   <report auto="False" id="resumen_gasto_pagado" model="resumen.gasto.pagado.wizard"
+            name="resumen_gasto_pagado" rml="gt_budget/report/resumen_gasto_pagado.mako"
+            usage="default" string="Resumen Gasto Programado Pagado" header="True" report_type="webkit"/>  	
+
+    <report auto="False"
+	    id="report_sobregiro"
+	    model="budget.item"
+	    name="Listado Partidas"
+	    file="gt_budget/report/item.mako"
+	    string="Listado Partidas"
+	    report_type="webkit"
+	    webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+
+    <report auto="False"
+	    id="report_compromisos"
+	    model="budget.certificate"
+	    name="Reporte Documentos presupuestarios"
+	    file="gt_budget/report/report_certificados.mako"
+	    string="Documentos Presupuestarios"
+	    report_type="webkit"
+	    header="True"
+	    webkit_header="base_headers_webkit.financial_landscape_header"/>
+
+    <report auto="False"
+	    id="report_reform"
+	    model="budget.reform"
+	    name="Reporte Reforma Programa"
+	    file="gt_budget/report/report_reform.mako"
+	    string="Reforma Programa"
+	    report_type="webkit"
+	    header="True"
+	    webkit_header="base_headers_webkit.financial_landscape_header"/>
+    
+  </data>     
+     
+</openerp>

@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+{
+    'name' : 'Spi Extendido',
+    'version' : '3',
+    "category": 'Generic Modules/Accounting',    
+    'depends' : ['gt_spi'],
+    'author' : 'Mario Chogllo',
+    'description': '''
+    Formulario para realizar pagos multiples tanto de cliente
+    como de proveedor extendido con catalogo de tipos de pago
+    ''',
+    'website': 'mariofchogllo@gmail.com',
+    'update_xml': [
+        'spi_view.xml',
+        ],
+    'installable': True,
+    'active': False,
+}

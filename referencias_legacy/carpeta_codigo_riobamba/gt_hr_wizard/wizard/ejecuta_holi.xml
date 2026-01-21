@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      
+      <record id="view_ejecuta_holi" model="ir.ui.view">
+        <field name="name">Crear Detalle Vacaciones</field>
+        <field name="model">ejecuta.holi</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Crear detalle vacaciones">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="name" colspan="4" required="1"/>
+		<field name="date_start" colspan="2" required="1"/>
+		<field name="date_stop" colspan="2" required="1"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="ejecuta_holi" type="object" icon="gtk-execute"  string="Crear" 
+			confirm="Confirmar que desea crear el detalle de vacaciones?? esto se realizara solo en personal con contrato activo"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_ejecuta_holi" model="ir.actions.act_window">
+        <field name="name">Crear Detalle Vacaciones</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ejecuta.holi</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_ejecuta_holi"
+		icon="STOCK_EXECUTE"
+		action="action_ejecuta_holi"
+		parent="menu_hr_wizard"
+		name="Crear Detalle Vacaciones"
+		sequence='101'
+		/>
+
+
+</data>
+</openerp>

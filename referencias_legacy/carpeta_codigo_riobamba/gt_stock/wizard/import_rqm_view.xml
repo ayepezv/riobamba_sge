@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!--  Make Pay -->
+
+        <record id="view_import_rqm_wizard" model="ir.ui.view">
+            <field name="name">Importar Requerimiento</field>
+            <field name="model">import.rqm</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Importar Requerimiento">
+                <label string="Este asistente realiza el pago automatico del comprobante." colspan="4"/>
+                <field name="rqm_id" colspan="4"/>
+                <newline/>
+                <separator colspan="4"/>
+                <group col="2" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" />
+                  <button name="import_rqm" string="Importar"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Importar Requerimiento"
+            res_model="import.rqm"
+            src_model="stock.picking"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_import_rqm"/>
+
+    </data>
+</openerp>

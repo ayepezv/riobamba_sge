@@ -1,0 +1,132 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import netsvc
+
+from osv import fields, osv
+
+class makePayLine(osv.TransientModel):
+    _name = 'make.pay.line'
+    _columns = dict(
+        pay_id = fields.many2one('make.pay','Pago'),
+        account_id = fields.many2one('account.account','Cuenta por pagar'),
+        account_id2 = fields.many2one('account.account','Cuenta por pagar tercero'),
+        monto = fields.float('Monto'),
+        to_pay = fields.boolean('Pagar'),
+        cert_id = fields.many2one('budget.certificate.line','Linea certificado'),
+    )
+
+    _defaults = dict(
+        to_pay = True,
+    )
+makePayLine()
+
+class make_pay(osv.TransientModel):
+    _name = 'make.pay'
+    
+    _columns = {
+        'bank_id': fields.many2one('account.journal', 'Banco', required=True),
+        'other':fields.boolean('Comprobante Separado',help="Marque el campo para generar el pago en un comprobante separado"),
+        'line_ids':fields.one2many('make.pay.line','pay_id','Cuentas por pagar'),
+    }
+
+    def make_pay(self, cr, uid, ids, context=None):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        for this in self.browse(cr, uid, ids):
+            move_id = context and context.get('active_id', False) or False
+            move = move_obj.browse(cr, uid, move_id)
+            if move.state=='posted' and not this.other:
+                raise osv.except_osv(('Error de usuario!'), ('El asiento esta contabilizado y solo se puede hacer pago si usted marca que se genere otro comprobante'))
+            aux_narration = ""
+            if this.other:
+                aux_narration = "PAGO - " + move.narration
+                move_id = move_obj.create(cr, uid,{
+                    'journal_id':move.journal_id.id,
+                    'period_id':move.period_id.id,
+                    'date':move.date,
+                    'partner_id':move.partner_id.id,
+                    'certificate_id':move.certificate_id.id,
+                    'afectacion':True,
+                    'narration':aux_narration,
+                    'ref':aux_narration,
+                })
+            monto_banco = 0
+            for line in this.line_ids:
+                if line.to_pay:
+                    if line.monto>0:
+                        monto_banco += line.monto
+                        move_line_obj.create(cr, uid, {
+                            'account_id':line.account_id.id,
+                            'debit':line.monto,
+                            'budget_id_cert':line.cert_id.id,
+                            'budget_paid':True,
+                            'move_id':move_id,
+                           })
+                if line.account_id2:
+                    move_line_obj.create(cr, uid, {
+                        'account_id':line.account_id.id,
+                        'debit':line.monto,
+                        'move_id':move_id,
+                    })
+                    move_line_obj.create(cr, uid, {
+                        'account_id':line.account_id2.id,
+                        'credit':line.monto,
+                        'move_id':move_id,
+                    })  
+            #banco
+            move_line_obj.create(cr, uid, {
+                'account_id':this.bank_id.default_debit_account_id.id,
+                'credit':monto_banco,
+                'move_id':move_id,
+            })
+        return {'type':'ir.actions.act_window_close' }
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        pay_line_obj = self.pool.get('make.pay.line')
+        sri_obj = self.pool.get('pay.fondo.sri')
+        account_obj = self.pool.get('account.account')
+        line_ids = []
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        move = self.pool.get('account.move').browse(cr, uid, record_id, context=context)
+        for line in move.line_id:
+            if line.account_id.type=='payable':
+                if line.credit>0 and line.budget_paid==False:
+                    account_sri = ''
+                    if not line.budget_id_cert:
+                        raise osv.except_osv(('Error de usuario!'), ('Las cuentas por pagar deben tener la partida'))
+                    acc_aux = ''
+                    sri_ids = sri_obj.search(cr, uid,[('account_id','=',line.account_id.code)])
+                    if sri_ids:
+                        sri = sri_obj.browse(cr, uid, sri_ids[0])
+                        account_ids = account_obj.search(cr, uid, [('code','=',sri.account_id2)],limit=1)
+                        if account_ids:
+                            account_sri = account_ids[0]
+                    if account_sri:
+                        pay_line_id = pay_line_obj.create(cr, uid, {
+                            'cert_id':line.budget_id_cert.id,
+                            'account_id':line.account_id.id,
+                            'account_id2':account_sri,
+                            'monto':line.credit,
+                        })
+                    else:
+                        pay_line_id = pay_line_obj.create(cr, uid, {
+                            'cert_id':line.budget_id_cert.id,
+                            'account_id':line.account_id.id,
+                            'monto':line.credit,
+                        })
+                    line_ids.append(pay_line_id)
+        res.update({'line_ids':line_ids})
+        return res
+
+make_pay()
+
+

@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <record id="base.view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Partners" col='1'>
+            <group col="6" colspan="4">
+              <group colspan="5" col="6">
+                <field name="name" select="1" attrs="{'readonly': [('supplier','!=',True)]}"/>
+				<field name="direccion" colspan="4" required="1" attrs="{'readonly': [('supplier','!=',True)]}"/>
+				<field name="telefono" colspan="2" attrs="{'readonly': [('supplier','!=',True)]}"/>
+                <field name="lang" invisible="1"/>
+              </group>
+              <group colspan="1" col="2">
+				<field name="supplier" invisible="1"/>
+                <field name="customer" invisible="1"/>
+              </group>
+            </group>
+            <notebook colspan="4">
+              <page string="Sales &amp; Purchases" invisible="True">
+                <!--separator string="General Information" colspan="4"/>
+                <field name="user_id"/-->
+                <field name="active" groups="base.group_extended"/>
+                <!--field name="website" widget="url"/>
+                <field name="date"/>
+                <field name="parent_id" groups="base.group_extended"/>
+                <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                <newline/-->
+              </page>
+              <page string="History" invisible="True">
+				<field colspan="4" name="comment" nolabel="1"/>
+              </page>
+              <page string="Notes" invisible="True">
+                <field colspan="4" name="comment" nolabel="1"/>
+              </page>
+            </notebook>
+          </form>
+        </field>
+      </record>
+	  
+      <record id="account.view_partner_property_form" model="ir.ui.view">
+        <field name="name">res.partner.property.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="type">form</field>
+        <field name="priority">2</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+          <page string="History" position="before">
+            <page string="Accounting">
+              <group col="2" colspan="2">
+                <separator string="Customer Accounting Properties" colspan="2"/>
+                <field name="property_account_receivable" groups="account.group_account_invoice" />
+                <field name="property_account_position" widget="selection"/>
+				<field name="address" invisible="1"/>
+                <!--field name="property_payment_term" widget="selection"/-->
+              </group>
+              <group col="2" colspan="2">
+                <separator string="Supplier Accounting Properties" colspan="2"/>
+                <field name="property_account_payable" groups="account.group_account_invoice"/>
+              </group>
+              <group col="2" colspan="2">
+                <separator string="Customer Credit" colspan="2"/>
+                <field name="credit"/>
+                <field name="credit_limit" groups="base.group_extended"/>
+              </group>
+              <group col="2" colspan="2">
+                <separator string="Supplier Debit" colspan="2"/>
+                <field name="debit"/>
+              </group>
+              <field colspan="4" context="{'address': address}" name="bank_ids" nolabel="1" 
+					 attrs="{'invisible': [('supplier','!=',True)]}">
+                <form string="Bank account">
+                  <field name="state"/>
+                  <newline/>
+				  <field name="bank" on_change="onchange_bank_id(bank)" groups="base.group_extended"/>
+                  <field name="bank_name"/>
+                  <field name="bank_bic"/>
+				  <field name="type_cta"/>
+                  <field name="acc_number"/>
+                  <newline/>
+                </form>
+              </field>
+            </page>
+          </page>
+        </field>
+      </record>
+      
+        <record id="account.view_res_partner_reconcile" model="ir.ui.view">
+            <field name="name">res.partner.form.reconcile</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="credit_limit" position="after">
+                    <!--field name="last_reconciliation_date" groups="base.group_extended"/-->
+                </field>
+            </field>
+        </record>
+	  
+
+    <record id="retention.view_partner_cedruc_form" model="ir.ui.view">
+      <field name="name">account.partner.cedruc.form</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+	    <xpath expr="//field[@name='name']" position="before">
+	      <field name="ced_ruc" attrs="{'readonly': [('supplier','!=',True)]}"/>
+	      <field name="type_ced_ruc" attrs="{'readonly': [('supplier','!=',True)]}"/>
+		  <field name="tipo_persona" attrs="{'readonly': [('supplier','!=',True)]}"/>
+	      <newline/>
+	    </xpath>
+        <xpath expr="//field[@name='name']" position="replace">
+          <field name="name" colspan="4" string="RAZON SOCIAL" attrs="{'readonly': [('supplier','!=',True)]}"/>
+          <newline/>
+        </xpath>
+	    <xpath expr="//field[@name='property_account_position']" position="replace">
+	      <field name="property_account_position" attrs="{'readonly': [('supplier','!=',True)],
+														 'required': [('supplier','=',True)]}"/>
+	    </xpath>
+		<xpath expr="//field[@name='property_account_receivable']" position="replace">
+	      <field name="property_account_receivable" attrs="{'readonly': [('supplier','!=',True)],
+														 'required': [('supplier','=',True)]}"/>
+	    </xpath>
+		<xpath expr="//field[@name='property_account_payable']" position="replace">
+	      <field name="property_account_payable" attrs="{'readonly': [('supplier','!=',True)],
+														 'required': [('supplier','=',True)]}"/>
+	    </xpath>
+        <xpath expr="//field[@name='lang']" position="replace">
+        </xpath>
+      </field>
+    </record>
+	<!-- MENU CUENTAS DE BANCO DE PROVEEDORES
+	  -->
+	<record model="ir.actions.act_window" id="action_ctas_banco_proveedor">
+		  <field name="name">Cuentas Bancarias Proveedor</field>
+		  <field name="res_model">res.partner.bank</field>
+		  <field name="view_mode">tree,form</field>
+		</record> 
+
+	<menuitem id="menu_account_bank_supplier_siim" name="Cuentas Bancarias Proveedor"
+          parent="account.menu_finance_payables"
+          action="action_ctas_banco_proveedor" sequence="208"
+		  groups="account.group_account_user,account.group_account_manager"/>
+
+    </data>
+</openerp>

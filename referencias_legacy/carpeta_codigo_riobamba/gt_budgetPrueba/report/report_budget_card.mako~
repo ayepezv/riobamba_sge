@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+%for o in objects:
+<% 
+     vars = _months(o)
+%> 
+<table cellspacing="0" cellpadding="1" WIDTH="100%"> 
+  <tr>
+    <th style="font-size:16px" WIDTH="100%">EJECUCIÓN PRESUPUESTARIA</th>
+  </tr>  
+</table>
+<p style="font-size:11px"> ACUMULADO HASTA: ${vars['end']}</p>
+%if data['project']:
+<p style="font-weight: bold;">PROYECTO: ${ data['project_name']}</p>
+%endif
+<p></p>			
+<table width="100%" border="1" cellpadding="3" cellspacing="0" style="border-collapse:collapse;font-size:10px">
+  <thead>   
+    <tr>
+      <th align="center" style="font-size:9px" WIDTH="7%">CÓDIGO</th>
+      <th align="center" style="font-size:9px" WIDTH="35%">PARTIDA</th>
+      <th align="center" style="font-size:9px" WIDTH="8%">ASIGNACIÓN INICIAL</th>
+	  <th align="center" style="font-size:9px" WIDTH="8%">REFORMA</th>
+      <th align="center" style="font-size:9px" WIDTH="8%">CODIFICADO</th>
+      <th align="center" style="font-size:9px" WIDTH="8%">COMPROMETIDO</th>
+      <th align="center" style="font-size:9px" WIDTH="8%">DEVENGADO</th>
+      <th align="center" style="font-size:9px" WIDTH="8%">PAGADO/RECAUDADO</th>
+      <th align="center" style="font-size:8px" WIDTH="8%">SALDO POR COMPROMETER</th>
+      <th align="center" style="font-size:8px" WIDTH="8%">SALDO POR DEVENGAR</th>
+      <th align="center" style="font-size:8px" WIDTH="8%">DISPONIBLE</th>
+    </tr>
+  </thead>
+  <%
+     project_id = data.get('project_id', False)
+     res = _get_totales(data['budget_id'], data['type_report'], project_id)
+   %> 
+  <%import operator %>
+  <%lines = sorted(res['lines'], key=operator.itemgetter('code'))%>
+  %for values in lines:
+	  <tr>
+	    <td WIDTH="7%" align="center">${values['code']}</td>
+	    <td WIDTH="35%" align="left">${values['general_budget_name']}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['planned_amount']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['reform_amount']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['codif_amount']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['commited_amount']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['devengado_amount']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['paid_amount']), digits=2)}</td>	  
+  	    <td WIDTH="8%" align="right">${formatLang(float(values['devengado_balance']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['commited_balance']), digits=2)}</td>
+	    <td WIDTH="8%" align="right">${formatLang(float(values['avai_amount']), digits=2)}</td>	      
+	  </tr>
+  %endfor  
+  <tfoot>
+    <tr>   
+    <td WIDTH="7%" style="font-weight: bold;font-size:11px" align="right"></td>
+    <td WIDTH="35%" style="font-weight: bold;font-size:11px" align="right">TOTALES</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['planned_amount']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['reform_amount']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['codif_amount']), digits=2)}</td>    
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['commited_amount']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['devengado_amount']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['paid_amount']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['devengado_balance']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['commited_balance']), digits=2)}</td>
+    <td WIDTH="8%" style="font-weight: bold;font-size:11px" align="right">${formatLang(float(res['totales']['avai_amount']), digits=2)}</td>
+
+    <tfoot>
+    <tr>   
+
+</table>
+%endfor
+</body>
+</html>

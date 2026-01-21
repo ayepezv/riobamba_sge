@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data >
+<!-- Date End
+ noupdate="1"-->
+	<record id="ir_cron_activate_history" model="ir.cron">
+		<field name="name">Activar Historial</field>
+		<field name="user_id">1</field>
+		<field name="active">True</field> 
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="doall">True</field>
+		<field name="model">gt.wizard.history</field>
+		<field name="function">action_activate_history</field>
+		<field name="args">[]</field>
+		<field name="priority">0</field>
+	</record>      
+	<record id="ir_cron_create_event" model="ir.cron">
+                <field name="name">Crear eventos</field>
+                <field name="user_id">1</field>
+                <field name="active">True</field>
+                <field name="interval_number">1</field>
+                <field name="interval_type">days</field>
+                <field name="numbercall">-1</field>
+                <field name="doall">True</field>
+                <field name="model">gt.field.workable</field>
+                <field name="function">create_event</field>
+                <field name="args">[]</field>
+                <field name="priority">0</field>
+	</record>
+	<record id="ir_cron_employee_out_half" model="ir.cron">
+		<field name="name">Sacar empleados del sistema-media jornada</field>
+		<field name="user_id">1</field>
+		<field name="active">True</field> 
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="doall">True</field>
+		<field name="model">hr.attendance</field>
+		<field name="function">verify_out_half_day</field>
+		<field name="args">[]</field>
+		<field name="priority">0</field>
+	</record>
+	<record id="ir_cron_employee_out" model="ir.cron">
+		<field name="name">Sacar empleados del sistema</field>
+		<field name="user_id">1</field>
+		<field name="active">True</field> 
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="doall">True</field>
+		<field name="model">hr.attendance</field>
+		<field name="function">verify_out_employee</field>
+		<field name="args">[]</field>
+		<field name="priority">0</field>
+	</record>          
+    <record id="ir_cron_marc_day" model="ir.cron">
+		<field name="name">Marcacion diaria</field>
+		<field name="user_id">1</field>
+		<field name="active">True</field> 
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="doall">True</field>
+		<field name="model">hr.attendance</field>
+		<field name="function">verify_marc_day</field>
+		<field name="args">[]</field>
+		<field name="priority">0</field>
+	</record>
+	
+	
+	<record id="ir_cron_night" model="ir.cron">
+		<field name="name">Sacar empleados del sistema-noche</field>
+		<field name="user_id">1</field>
+		<field name="active">True</field> 
+		<field name="interval_number">1</field>
+		<field name="interval_type">days</field>
+		<field name="numbercall">-1</field>
+		<field name="doall">True</field>
+		<field name="model">hr.attendance</field>
+		<field name="function">verify_out_day</field>
+		<field name="args">[]</field>
+		<field name="priority">0</field>
+	</record>
+    </data>
+</openerp>
+
+

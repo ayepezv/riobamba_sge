@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+
+<!-- ORDENES DE PAGO-->
+      <menuitem id="menu_auditoria_root" 
+		name="Auditoria Interna" sequence="20"
+		groups="gt_financial_management.group_auditor_user"
+		web_icon="images/auditoria.png"
+		web_icon_hover="images/auditoria.png"
+		/>
+
+      <record id="action_payment_request_audi" model="ir.actions.act_window">
+	<field name="name">Ordenes de Pago Auditoria</field>
+	<field name="res_model">payment.request</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_payment_request_auditoria" parent="menu_auditoria_root" 
+		name="Ordenes de Pago" sequence="1"
+		action="action_payment_request_audi"
+		groups="gt_financial_management.group_auditor_user"/>
+
+
+<!-- ROLES DE PAGO-->
+
+      <record id="action_rol_audi" model="ir.actions.act_window">
+	<field name="name">Roles de pago</field>
+	<field name="res_model">hr.payslip.run</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_roles_auditoria" parent="menu_auditoria_root" 
+		name="Roles de pago" sequence="1"
+		action="action_rol_audi"
+		groups="gt_financial_management.group_auditor_user"/>
+
+
+<!-- ASIENTOS CONTABLES-->
+
+
+      <record id="action_account_move_audi" model="ir.actions.act_window">
+	<field name="name">Asientos Contables</field>
+	<field name="res_model">account.move</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_account_move_auditoria" parent="menu_auditoria_root" 
+		name="Asientos Contables" sequence="1"
+		action="action_account_move_audi"
+		groups="gt_financial_management.group_auditor_user"/>
+
+<!-- FACTURAS DE PROVEEDOR -->
+
+<!-- CERTIFICADOS PRESUPUESTARIOS  -->
+
+    <menuitem id="menu_budget_certificate_auditor" action="gt_budget.action_budget_certificate" parent="menu_auditoria_root"/>
+<!-- REPORTES FINANCIEROS  -->
+    <menuitem
+	name="Estados Financieros"
+	icon="STOCK_INDENT"
+	id="menu_gob_report_auditor"
+	parent="menu_auditoria_root"
+	groups="account.group_account_user,account.group_account_manager,gt_financial_management.group_auditor_user"
+	sequence="13"/>
+    <menuitem
+        icon="STOCK_INDENT"
+        action="gt_gob_report.action_gob_report_comprobacion"
+        id="menu_gob_report_comprobacion_audit"
+        parent="menu_gob_report_auditor"
+        groups="account.group_account_user,account.group_account_manager,gt_financial_management.group_auditor_user"
+        sequence="1"/>
+    <menuitem
+	icon="STOCK_INDENT"
+	action="gt_gob_report.action_gob_report_estadoresultados"
+	id="menu_gob_report_estadoresultados_auditor"
+	parent="menu_gob_report_auditor"
+	groups="account.group_account_user,account.group_account_manager,gt_financial_management.group_auditor_user"
+	sequence="2"/>
+    <menuitem
+	icon="STOCK_INDENT"
+	action="gt_gob_report.action_gob_report_estadosituacion"
+	id="menu_gob_report_estadosituacion_auditor"
+	parent="menu_gob_report_auditor"
+       groups="account.group_account_user,account.group_account_manager,gt_financial_management.group_auditor_user"
+       sequence="3"/>
+    <menuitem
+        icon="STOCK_INDENT"
+        action="gt_gob_report.action_gob_report_flow"
+        id="menu_gob_report_flow_auditor"
+        parent="menu_gob_report_auditor"
+        groups="account.group_account_user,account.group_account_manager,gt_financial_management.group_auditor_user"
+        sequence="4"/>
+    </data>
+</openerp>

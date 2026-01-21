@@ -1,0 +1,821 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 		
+		<!--Agregar siniestros a activos-->
+	<record id="view_account_asset_asset_sinister_form_4" model="ir.ui.view">
+      <field name="name">Siniestros</field>
+      <field name="model">account.asset.asset</field>
+      <field name="inherit_id" ref="gt_insurance_policy.view_account_asset_asset_sinister_form_3"/>
+      <field name="arch" type="xml">
+      	<xpath expr="/form/notebook/page[@string='Pólizas']" position="after">
+		      <page string="Siniestros" attrs="{'invisible':[('code','=','')]}">
+					<field name="sinister_ids" colspan="2" nolabel="1"  widget="many2many" readonly='1'>
+						<tree  string= 'Siniestros'>
+							<field name="name" />																			
+							<field name="date_sinister" />
+							<field name="code" />
+							<field name="account_asset_id" />
+							<field name="policy_id" />
+							<field name="state" />														
+						</tree>
+						<form>
+							<group colspan="4" col="6" >
+								<field name="name" colspan="2" widget="selection"/>				
+								<field name="description" colspan="2"/>
+								<field name="code" colspan="2"/>
+								<field name="date_sinister" colspan="2" readonly="1"/>																		
+								<field name="account_asset_id" colspan="2" widget="selection"/>				
+								<field name="policy_id" colspan="2" widget="selection"/>
+								<field name="directory_id" invisible="1"/>
+							</group>
+							<field name="inform_ids" colspan="4" nolabel="1" />													
+						</form>  					
+					</field>              	       
+		      	</page>	    		       
+	    	</xpath>
+      	</field>
+    </record>
+    <!--record id="view_account_asset_asset_sinister_form" model="ir.ui.view">
+      <field name="name">Siniestros</field>
+      <field name="model">account.asset.asset</field>
+      <field name="inherit_id" ref="gt_account_asset.view_account_asset_asset_form_read"/>
+      <field name="arch" type="xml">
+      	<xpath expr="/form/notebook/page[@string='Justificación']" position="after">
+		      <page string="Siniestros">
+					<field name="sinister_ids" colspan="2" nolabel="1"   widget="many2many" readonly='1'>
+						<tree >
+							<field name="name" />																			
+							<field name="date_sinister" />
+							<field name="code" />
+							<field name="account_asset_id" />
+							<field name="policy_id" />
+							<field name="state" />														
+						</tree>
+						<form>
+							<group colspan="4" col="6" >
+								<field name="name" colspan="2" widget="selection" readonly="1"/>				
+								<field name="description" colspan="2"/>
+								<field name="code" colspan="2"/>
+								<field name="date_sinister" colspan="2" readonly="1"/>																		
+								<field name="account_asset_id" colspan="2" widget="selection"/>				
+								<field name="policy_id" colspan="2" widget="selection"/>
+								<field name="directory_id" invisible="1"/>
+							</group>
+							<field name="inform_ids" colspan="4" nolabel="1" readonly="1"/>													
+						</form>  					
+					</field>              	       
+		      	</page>	    		       
+	    	</xpath>
+      	</field>
+    </record-->
+       <!--Wizard cambiar estado activo cuando se cierra el siniestro-->
+	<record id="view_change_asset_status_form" model="ir.ui.view">
+		<field name="name">gt.insurance.change.asset.state</field>
+	  	<field name="model">gt.insurance.change.asset.state</field>
+	  	<field name="type">form</field>
+	  	<field name="arch" type="xml">
+	  		<form string="Estado de Activo">
+	  			<group colspan='4' col='4'>
+	  				<group colspan='2' string="Opciones">											
+						<field name="low" colspan="1" attrs="{'invisible': [('operative', '=',True)]}" readonly="1"/>				
+						<field name="operative" colspan="1" attrs="{'invisible': [('low', '=',True)]}" readonly="1"/>
+						<field name="employee_id" colspan="1" readonly="1"/>						
+					</group>
+					<newline/>								
+					<group colspan='2' string="Datos de Activo">						
+						<field name="account_asset_id" colspan="1" readonly="1"/>
+						<field name="account_asset_id_" colspan="1" readonly="1" attrs="{'invisible': [('operative', '=',True)],'required': [('low', '=',True)]}"/>	
+					</group>
+					<newline/>					
+					<newline/>
+					<!--group colspan='2' col='4' string="Detalles en Póliza" >
+						<field name="policy_id" colspan="2" readonly="1"/>
+						<field name="previous_value" colspan="2" readonly="1"/>
+						<field name="insured_amount" colspan="2"  readonly="1" attrs="{'invisible': [('operative', '=',True)]}"/>
+					</group-->
+					<newline/>
+					<group colspan='2' string="Justificación" >	
+						<field name="reason" colspan="2" nolabel="1" readonly="1"/>
+						<field name="add_reason" colspan="2" nolabel="1"/> 								
+					</group>
+				</group>
+				<group colspan='2' col='4'>
+					<button name="change_state" string="Confirmar" colspan="1"  type="object"
+						confirm="Esta acción coloca al activo como operativo; no se podrá revertir. Desea confirmar la acción"/>			
+				</group>
+	    	</form>
+		</field>
+	</record>
+	<record id="action_change_asset_status_form" model="ir.actions.act_window">
+            <field name="name">Estado de activo</field>
+            <field name="res_model">gt.insurance.change.asset.state</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name='view_id' ref='view_change_asset_status_form'/>
+            <field name="target">new</field>            
+        </record> 	
+       <!--Wizard cambiar estado activo cuando se cancela el siniestro-->
+	<record id="view_change_asset_cancel_form" model="ir.ui.view">
+		<field name="name">gt.insurance.change.asset.state</field>
+	  	<field name="model">gt.insurance.change.asset.state</field>
+	  	<field name="type">form</field>
+	  	<field name="arch" type="xml">
+	  		<form string="Estado de Activo">
+	  			<group colspan='4' col='4'>						
+	  				<separator string="Este ayudante modificará el estado del activo"/>
+	  					  
+	  				<newline/>					 
+					<group colspan='2' string="Datos de Activo">						
+						<field name="account_asset_id" colspan="1" readonly="1"/>							
+					</group>
+					<newline/>
+					<group colspan='2' string="Justificación" >	
+						<field name="reason" colspan="2" nolabel="1" readonly="1"/>
+						<field name="add_reason" colspan="2" nolabel="1" required="1"/>	
+					</group>
+					<newline/>
+					<group colspan='2' col='4'>
+					<button name="change_state_cancel" string="Confirmar Cancelación" colspan="1"  type="object"
+						confirm='Esta acción no se podrá revertir. El estado del activo se cambiará a "Operativo"'/>			
+					</group>
+				</group>
+	    	</form>
+		</field>
+	</record>
+	<record id="action_change_asset_cancel_form" model="ir.actions.act_window">
+        <field name="name">Estado de activo</field>
+        <field name="res_model">gt.insurance.change.asset.state</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name='view_id' ref='view_change_asset_cancel_form'/>
+        <field name="target">new</field>            
+	</record>        	
+	<!--TIPO DE INFORME-->	
+	<record  id="view_form_gt_inform_type" model="ir.ui.view">
+		<field name="name">Informe</field>
+		<field name="model">gt.insurance.inform.type</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Tipo de Informe">
+			<group colspan="4" col="4" >
+				<field name="name" colspan="4" string='Descripción'/>
+				<group colspan="4" col="2" string="Restricciones">
+					<field name="is_close" colspan="2"/>
+					<field name="from_attached" colspan="2"/>
+					<field name="from_prev" colspan="1"/>				
+					<field name="prev_inform_id" colspan="1" attrs="{'invisible': [('from_prev', '=',False)],
+					'required': [('from_prev', '=',True)]}"/>					
+				</group>				
+				<group colspan="4" col="2" string="A quien será dirigido el informe">
+					<field name="from_employee" colspan="2" attrs="{'invisible': ['|',('from_partner', '=',True),('from_other', '=',True)],'required': [('from_reenter', '=',True)]}"/>				
+					<field name="from_partner" colspan="2" attrs="{'invisible': ['|',('from_employee', '=',True),('from_other', '=',True)]}"/>														
+					<field name="from_other" colspan="2" attrs="{'invisible': ['|',('from_employee', '=',True),('from_partner', '=',True)]}"/>
+					<!--field name="name_other" colspan="2" attrs="{'invisible': ['|',('from_employee', '=',True),('from_partner', '=',True)],
+					'required': [('from_other', '=',True)]}"/-->
+				</group>				
+				<!--group colspan="4" col="4" >										
+					<field name="from_output" colspan="2" attrs="{'invisible': ['|',('from_partner', '=',True),('from_other', '=',True)]}"/>													
+				</group-->				
+				<group colspan="4" col="2" string="Accion a realizar en Activos fijos">
+					<field name="from_reenter" colspan="2" attrs="{'invisible': ['|',('from_partner', '=',True),('from_other', '=',True)]}"/>
+					<field name="from_activate" colspan="2" attrs="{'invisible': ['|',('from_partner', '=',True),('from_other', '=',True)]}"/>
+				</group>																																
+			</group>											
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_inform_type" model="ir.ui.view" >
+		<field name="name">Tipo de Informe</field>
+		<field name="model">gt.insurance.inform.type</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Tipo de Informe">
+				<field name="name" colspan="2" string='Descripción'/>											
+				<field name="from_employee" colspan="2"/>
+				<field name="from_partner" colspan="2"/>										
+				<field name="from_other" colspan="2"/>													
+				<field name="from_attached" colspan="2"/>
+				<field name="from_prev" colspan="2"/>
+				<field name="is_close" select ="1" string="Solicitud de cierre"/>
+				<!--field name="from_output" colspan="2"/-->
+				<field name="from_reenter" select ="1"/>
+				<field name="from_activate" select ="1"/>
+				<field name="prev_inform_id" colspan="2"/>			
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_inform_type" model="ir.ui.view">
+        <field name="name">Tipo de Informe</field>
+        <field name="model">gt.insurance.inform.type</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Busqueda Informe">
+					<group>												
+						<field name="name" select="1" string='Descripción'/>	
+						<field name="from_employee" select ="1"/>
+						<field name="from_partner" select ="1"/>
+						<field name="from_other" select ="1"/>
+						<field name="from_attached" colspan="2"/>													
+						<field name="from_prev" select ="1"/>	
+						<field name="is_close" select ="1" string="Solicitud de cierre"/>
+						<field name="from_reenter" select ="1"/>						
+						<field name="from_activate" select ="1"/>
+                    </group>
+                    <newline/>
+                    <group expand="1"  string="Agrupar por...">	                       
+                        <filter string="Dirigido a empleado" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_employee'}" />
+                        <separator orientation="vertical"/>	                                              
+                        <filter string="Dirigido a Proveedor" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_partner'}" />
+                        <separator orientation="vertical"/>	 
+                        <filter string="Dirigido a Otro" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_other'}" />
+                        <separator orientation="vertical"/>	 
+                        <filter string="Requiere Adjunto" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_attached'}" />
+                        <separator orientation="vertical"/>	
+                        <filter string="Informe Previo" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_prev'}" />
+                        <separator orientation="vertical"/>	 
+                        <filter string="Solicitud de cierre" icon="terp-go-home" domain="[]" context="{'group_by' : 'is_close'}" />
+                        <separator orientation="vertical"/>	
+                        <filter string="Solicitud de reingreso" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_reenter'}" />	                        
+                        <separator orientation="vertical"/>	
+                        <filter string="Solicitud de activación" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_activate'}" />
+					</group>               			
+          </search>
+        </field>
+    </record>
+	<!--INFORME-->	
+	<record  id="view_form_gt_inform" model="ir.ui.view">
+		<field name="name">Informe</field>	
+		<field name="model">gt.insurance.inform</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Informe">
+			<separator colspan="4"/>
+			<newline/>
+			<field name="state"  widget="statusbar"
+					statusbar_visible="draft,open,response,close,done"
+					statusbar_colors='{"pending":"blue"}'/>
+			<newline/>
+			<separator colspan="4"/>
+			<newline/>
+			<group colspan="4" col="8" >
+				<field name="created_id" colspan="2" readonly="1" widget="selection"/>	
+				<field name="code" colspan="2" readonly="1" string="Código"/>
+				<field name="name" colspan="2" widget="selection" readonly="1" 
+					on_change="required_fields(name)"/>	
+				<field name="date" colspan="2" readonly="1"/>				
+				<field name="sinister_id" colspan="2" readonly='1'
+					on_change="get_directory(sinister_id)"/>
+				<field name="sinister_description" colspan="6" readonly="1"/>
+				<field name="account_asset_id" 
+					readonly="1"
+					colspan="4" 
+					string="Código/Activo"					 
+					context="{'form_view_ref': 'gt_account_asset.view_account_asset_asset_form_read'}"/>
+				<field name="employee_id" colspan="2" on_change="onchange_job(employee_id)" readonly="1"/>
+				<field name="directory_id" colspan="2" invisible="1" readonly="1"/>
+				
+				<field name="department_id" colspan="2" on_change="onchange_job_id()" readonly="1"/>
+				<field name="description" colspan="8" required='1' attrs="{'readonly':[('state','!=',['draft'])]}" readonly="1"/>
+				<!--field name="job_id" colspan="2" attrs="{'readonly':[('state','!=',['draft'])]}"   domain="[('department_id','=',department_id)]" 
+					on_change="load_job_id()" /-->	
+				
+				
+				<field name="partner_id" colspan="2" attrs="{'invisible': [('from_partner', '=',False)],'readonly':[('state','!=',['draft'])],
+					'required': [('from_partner', '=',True)]}" widget="selection"/>									
+				<field name="applicant_name" colspan="2" attrs="{'invisible': [('from_other', '=',False)],'readonly':[('state','!=',['draft'])],
+					'required': [('from_other', '=',True)]}" />			
+			</group>
+			<group colspan="4">			
+			
+			
+			</group>
+			<newline/>
+			<group colspan="1" col="2" string= "Requisitos de Creación">																																														
+				<field name="from_employee" colspan="1" string ="Dirigido a empleado" 
+					attrs="{'invisible': ['|',('from_partner', '=',True),
+					('from_other', '=',True),('from_employee', '=',False)]}" />
+				<field name="from_partner" colspan="1" string ="Dirigido a proveedor" 
+					attrs="{'invisible': [('from_partner', '=',False)]}"/>														
+				<field name="from_other" colspan="1" string ="Dirigido a otro" 
+					attrs="{'invisible': [('from_other', '=',False)]}"/>
+				<field name="from_prev" colspan="1" attrs="{'invisible': [('from_prev', '=',False)]}" 
+					string ="Requiere informe previo"/>
+					<field name="prev_inform_id" colspan="2" attrs="{'invisible': [('from_prev', '=',False)],}"/>
+			</group>
+			<group colspan="3" col="2" string= "Requisitos de Respuesta">
+				
+				<field name="from_attached" colspan="1" string ="Requiere adjunto" 
+					attrs="{'invisible': [('from_attached', '=',False)],}"/>				
+				<field name="is_close" colspan="1" string ="Autoriza cierre de siniestro" attrs="{'invisible': [('is_close', '=',False)],}"/>								
+				<field name="from_reenter" colspan="1" string ="Solicita reingreso" 
+					attrs="{'invisible': [('from_reenter', '=',False)]}" />		
+				<field name="from_activate" colspan="1" string ="Solicita activación" 
+					attrs="{'invisible': [('from_activate', '=',False)]}" />
+				<field name="new_account_asset_id" colspan="2" domain="[('category_id','=',category_id),('state','=','open')]"
+					attrs="{'invisible': [('from_reenter', '=',False)],
+					'readonly':[('state','in',['close','cancel','response'])]}"/>
+				<field name="category_id" invisible="1"/>
+			</group>
+			
+			<newline/>
+			<notebook colspan="6">
+				<page string="Adjuntos"  > 
+					<field name="attachment_ids" colspan="2" nolabel="1" context="{'default_parent_id': directory_id}" 
+						attrs="{'readonly':[('state','in',['draft','cancel','close'])]}">											
+						<tree string="Documentos">
+				                <field name="name" string="Descripción"  />
+				                <field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+				                <field name="datas_fname" string='Nombre del archivo'/>
+				                <field name="create_uid" string="Subido por"/>
+				                <field name="create_date" string="Fecha adjunto"/>
+			                </tree>
+						<form>
+							<field name="inf_document_id" invisible="1"/>
+			                <field name="name" string="Descripción" on_change="onchange_nameunique(name,inf_document_id)" attrs="{'readonly':[('is_old','=',True)]}"/>
+			                <field name="parent_id" invisible="1"/>
+			                <field name="datas" filename="datas_fname" required='1' attrs="{'readonly':[('is_old','=',True)]}"/>
+            				<field name="datas_fname" select="1" invisible='1'/>		
+							<field name="is_old" invisible="1"/>				
+						</form>
+					</field>																																	
+				</page>
+				<page string="Usuarios relacionados" >
+					
+					<field name="users_ids" widget="many2many" nolabel="1" attrs="{'invisible': [('state', '=','draft')], 'readonly':[('state','in',['cancel','close','response'])]}">
+						<tree>
+							<field name="name"/>
+						</tree>
+					</field>
+				</page>
+				<page string="Observaciones" >
+					<field name="notes" nolabel="1"/>	
+				</page>					
+			</notebook>
+			<group>							
+				<button name="gt_internal_inform_open" string="Solicitar" states ="draft" />												
+				<button name="gt_internal_inform_response" string="Responder"		
+					confirm="Esta acción no se podrá revertir. Confirma que desea continuar"			
+					 attrs="{'invisible': ['|',('state', '!=','open'),'|',('from_reenter', '=',True),('from_activate', '=',True)]	}"/>					 				
+				<button string="Responder" name="%(action_change_asset_status_form)d" type="action" icon="gtk-no"
+					confirm="Esta acción no se podrá revertir. Esta a punto de modificar el estado de los activos"
+					   					 
+					 attrs="{'invisible': ['|',('state', '!=','open'),('from_reenter', '=',False)],						 
+					'readonly':[('state','in',['close','cancel','response'])]}"/>
+				<button string="Responder" name="%(action_change_asset_status_form)d" type="action" icon="gtk-no"
+					confirm="Esta acción no se podrá revertir. Esta a punto de modificar el estado de los activos"
+					  					 
+					 attrs="{'invisible': ['|',('state', '!=','open'),('from_activate', '=',False)],						 
+					'readonly':[('state','in',['close','cancel','response'])]}"/>						
+				<button name="action_inform_close" type="object" string="Finalizar" states="response" 
+					confirm="Esta acción no se podrá revertir. Esta seguro que desea finalizar el Informe"/>			
+				<button name="action_inform_cancel" type="object" icon='gtk_cancel' string="Cancelar" states="draft" 
+					confirm="Esta acción no se podrá revertir. Esta seguro que desea cancelar el Informe"
+					/>
+			</group>				
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_inform" model="ir.ui.view" >
+		<field name="name">Informe</field>		
+		<field name="model">gt.insurance.inform</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Informe" toolbar="1" colors="grey:state == 'done';blue:state == 'response';red:state == 'open'; green:state == 'close'">
+				<field name="sinister_id" colspan="2"/>
+				<field name="code" colspan="2" string="Código"/>
+				<field name="account_asset_id" colspan="2" />				
+				<field name="created_id" colspan="2"/>				
+				<field name="name" colspan="4" widget="selection"/>
+																	
+				<field name="employee_id" colspan="2" />				
+				<!--field name="applicant_name" colspan="2"/!-->
+				<field name="from_attached" colspan="2" string ="Requiere adjunto"/>
+				<field name="date" colspan="2" string='Fecha'/>									
+				<field name="state" colspan="2"/>				
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_inform" model="ir.ui.view">
+        <field name="name">Informe</field>
+        <field name="model">gt.insurance.inform</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Informe">
+				<group>							
+					<field name="sinister_id" colspan="2" />
+					<field name="code" colspan="2" string="Código"/>
+					<field name="account_asset_id" colspan="2" />
+					<field name="created_id" colspan="2"/>
+										
+					<field name="name" colspan="2"/>
+																			
+					<field name="employee_id" colspan="2" />																											
+					<field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+					<field name="date" string="Fecha hasta" filter_domain="[('date','&lt;=',self)]"/>					
+                </group>
+                <newline/>
+                <group expand="1"  string="Agrupar por...">
+                	<filter string="Siniestro" name="sinister_id_" icon="terp-go-home" domain="[]" context="{'group_by' : 'sinister_id'}"  />
+                    <separator orientation="vertical"/>                 	
+                    <filter string="Activo" icon="terp-go-home" domain="[]" context="{'group_by' : 'account_asset_id'}" />
+                    <separator orientation="vertical"/>
+                    <filter string="Solicitado por" icon="terp-go-home" domain="[]" context="{'group_by' : 'created_id'}" />
+                    <separator orientation="vertical"/>
+                	                                         
+                    <filter string="Informe" icon="terp-go-home" domain="[]" context="{'group_by' : 'name'}" />
+                    <separator orientation="vertical"/>		                       
+                    <filter string="Solicitado a" icon="terp-go-home" domain="[]" context="{'group_by' : 'employee_id'}" />
+                    <separator orientation="vertical"/>                                                              	 
+                    <filter string="Requiere Adjunto" icon="terp-go-home" domain="[]" context="{'group_by' : 'from_attached'}" />
+                    <separator orientation="vertical"/>	 
+                    <filter string="Estado" icon="terp-go-home" domain="[]" context="{'group_by' : 'state'}" />
+                </group>               			
+	      </search>
+        </field>
+        </record> 
+	<!--SINIESTRO-->		
+	<record  id="view_form_gt_sinister_memory" model="ir.ui.view">
+		<field name="name">Siniestro</field>
+		<field name="model">gt.insurance.sinister.memory</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Siniestro">
+			<separator colspan="4"/>
+				<field name="state" readonly="1"
+					widget="statusbar" statusbar_visible="draft,open,close,done" 
+					statusbar_colors='{"pending":"blue"}' select="1"/>
+			<newline/>
+			<group colspan="4" col="6" string='Información del Siniestro'>
+				<field name="date_sinister" invisible="1"/>
+				<field name="name" colspan="4" string='Clase de Siniestro' widget="selection" attrs="{'readonly':[('state','in',['open','cancel','close'])]}"/>
+				<field name="date" colspan="2" on_change="compare_date(date,date_sinister)"   attrs="{'readonly':[('state','in',['open','cancel','close'])]}"/>		
+				<!--field name="search_asset" colspan="2" attrs="{'invisible': [('state', '!=','draft')],'readonly':[('state','in',['open','cancel','close'])]}"/-->
+				<field name="account_asset_id" 
+					colspan="4"
+					on_change="onchange_asset_sinister(account_asset_id)"
+					domain="[('income_id','=',1),'|',('state','=','open'),('parent_id','=','')]"
+					attrs="{'readonly':[('state','!=','draft')], 'required': [('state', '=','draft')]}" 
+					context="{'form_view_ref': 'gt_account_asset.view_account_asset_asset_form_read'}"/>
+				<field name="description" colspan="4" required='1' attrs="{'readonly':[('state','in',['open','cancel','close'])]}"/>
+					<newline/>
+
+				<!--field name="account_asset_id"   colspan="4" string="Código/Activo" on_change="get_policy(account_asset_id)"
+					attrs="{'readonly':[('state','in',['open','cancel','close'])], 'required': [('state', '=','draft')],
+					'invisible': [('account_asset_id_', '!=','')]}" domain="[('code','like',search_asset),('state','=','open')]"/-->					
+				<field name="directory_id" invisible="1"/>				
+			</group>
+			<group colspan="4" col="6"  string='Detalles de creación'>
+				<field name="code" colspan="2"/>
+				<field name="date_sinister" colspan="2" readonly="1"/>
+				<field name="created_id" colspan="2" readonly="1" widget="selection"/>
+				<field name="create_expedient" colspan="2" attrs="{'readonly':[('state','in',['open','cancel','close'])]}"/>
+				<field name="expedient_id" colspan="2" domain="[('state','=','created')]"
+						attrs="{'readonly':['|',('create_expedient','=',True),('state','!=','draft')]}" 
+						context="{'form_view_ref': 'gt_doc_expedient.view_doc_expedient_resumed_form', 'tree_view_ref': 'gt_doc_expedient.view_doc_expedient_resumed_tree'}"/>
+						
+				<!--field name="expedient_code" colspan="2" on_change="on_change_get_tramite(expedient_code)" attrs="{'invisible': [('state', '!=','draft')],'required': [('create_expedient', '=',False)],'readonly':['|',('create_expedient','=',True),('state','in',['open','cancel','close'])]}"/>				
+				<field name="expedient_selection" colspan="4" attrs="{'required': [('create_expedient', '=',False)],'readonly':['|',('create_expedient','=',True),('state','in',['open','cancel','close'])]}"/-->
+				<newline/>
+				
+																										
+			</group>			
+
+			<group colspan="4" col="4" string='Información del Activo'>
+				<!--field name="account_asset_id_" colspan="1" string="Codigo/Referencia" widget="selection"
+					attrs="{'required': [('state', '!=','draft')], 'invisible': [('state', '=','draft')]}" /-->
+				<field name="code_asset" colspan="1" readonly='1'/>
+				<field name="employee_id" colspan="1" readonly='1'/>
+				<field name="policy_id" colspan="2" domain="[('state_policy','=','open'),
+					('asset_id','=',account_asset_id)]" attrs="{'readonly':[('state','in',['open','cancel','close'])]}"/>				
+			</group>						
+				<field name="inform_rel_ids" invisible="1" context="{'default_auxi':inform_rel_ids}"/>	
+			<notebook colspan="6">
+				<page string=" Solicitudes de Informes"  >			
+					<field name="inform_ids" colspan="4" 
+						attrs="{'readonly':[('state','!=',['open'])]}" 
+						context="{'default_parent_id': directory_id}"
+						 nolabel="1" >				
+						<tree colors="grey:state == 'done';blue:state == 'response';red:state == 'open'; green:state == 'close'" string='Solicitud de Informes'>
+							<field name="created_id" widget="selection" colspan="2" attrs="{'readonly':[('state','in',['draft','open','cancel','close'])]}"/>
+							<field name="date" colspan="2" string='Fecha'/>
+							<field name="name" colspan="2"  />
+							<field name="from_attached" colspan="2" string ="Requiere adjunto"/>								
+							<field name="employee_id" colspan="2" widget="selection"/>
+							<!--field name="partner_id" colspan="2" />
+							<field name="applicant_name" colspan="2"/>	
+							<field name="notes" colspan="2"/-->
+							<field name="state" colspan="2"/>	
+							<button name="gt_internal_inform_open" string="Solicitar" states ="draft" colspan="2" type="workflow" icon="gtk-yes"/>							
+							<button name="action_inform_close" type="object" string="Finalizar" states="response" colspan="2"
+								confirm="Esta acción no se podrá revertir. Esta seguro que desea finalizar el Informe" icon="gtk-no"/>								
+						</tree>						
+						<form string="Solicitudes de Informes">
+							<separator colspan="4"/>
+								<field name="state"  widget="statusbar"
+									statusbar_visible="draft,open,response,cancel,close,done"
+									statusbar_colors='{"pending":"blue"}'/>							
+							<group colspan="4" col="6" >
+								<field name="name" colspan="2"  
+									widget="selection" attrs="{'readonly':[('state','!=',['draft'])]}" 
+									on_change="required_fields(name)"/>															
+								<field name="account_asset_id" colspan="2" widget="selection" attrs="{'invisible': [('state', '=','draft')]}" readonly='1'/>						
+								<field name="date" colspan="2" readonly="1"/>
+								<field name="department_id" colspan="2" on_change="onchange_job_id()" attrs="{'readonly':[('state','!=',['draft'])]}"/>
+								<field name="employee_id" colspan="2" on_change="onchange_job(employee_id)" attrs="{'readonly':[('state','!=',['draft'])],}"  
+									domain="[('department_id','=',department_id),('user_id','!=',False)]"/>
+								<field name="job_id" colspan="2" domain="[('department_id','=',department_id)]" 
+									on_change="onchange_employee_id(job_id,employee_id,department_id)" attrs="{'readonly':[('state','!=',['draft'])],}"/>
+								<field name="partner_id" colspan="2" attrs="{'invisible': [('from_partner', '=',False)],'readonly':[('state','!=',['draft'])],
+									'required': [('from_partner', '=',True)]}" widget="selection"/>									
+								<field name="applicant_name" colspan="2" attrs="{'invisible': [('from_other', '=',False)],'readonly':[('state','!=',['draft'])],
+									'required': [('from_other', '=',True)]}" />								
+							</group>
+							<group colspan="4">			
+							<field name="description" colspan="4" required='1' attrs="{'readonly':[('state','!=',['draft'])]}"/>
+							<field name="sinister_description" colspan="4" readonly='1' attrs="{'invisible': [('state', '=','draft')]}"/>
+							</group>
+
+							<group colspan="1" col="2" string= "Requisitos de Creación">																																														
+								<field name="from_employee" colspan="1" string ="Dirigido a empleado" 
+									attrs="{'invisible': ['|',('from_partner', '=',True),
+									('from_other', '=',True),('from_employee', '=',False)]}" />
+								<field name="from_partner" colspan="1" string ="Dirigido a proveedor" 
+									attrs="{'invisible': [('from_partner', '=',False)]}"/>														
+								<field name="from_other" colspan="1" string ="Dirigido a otro" 
+									attrs="{'invisible': [('from_other', '=',False)]}"/>
+								<field name="from_prev" colspan="1" attrs="{'invisible': [('from_prev', '=',False)]}" 
+									string ="Requiere informe previo"/>
+								<field name="prev_inform_id" colspan="2" attrs="{'invisible': [('from_prev', '=',False)],}"/>																																																
+							</group>
+							<group colspan="3" col="2" string= "Requisitos de Respuesta">								
+								<field name="from_attached" colspan="1" string ="Requiere adjunto" 
+									attrs="{'invisible': [('from_attached', '=',False)],}"/>
+								<field name="is_close" colspan="1" string ="Autoriza cierre de siniestro" 
+									attrs="{'invisible': [('is_close', '=',False)],}"/>															
+								<field name="from_reenter" colspan="1" string ="Solicita reingreso" 
+									attrs="{'invisible': [('from_reenter', '=',False)]}" />		
+								<field name="from_activate" colspan="1" string ="Solicita activación" 
+									attrs="{'invisible': [('from_activate', '=',False)]}" />									
+								<field name="new_account_asset_id" colspan="2" widget="selection"
+									readonly="1"
+									attrs="{'invisible': [('from_reenter', '=',False)],}"/>	
+								<field name="category_id" invisible="1"/>
+							</group>
+							<newline/>
+							<notebook colspan="6">
+								<page string="Adjuntos"  > 
+									<field name="attachment_ids" colspan="2" nolabel="1" context="{'default_parent_id': parent.directory_id}"   attrs="{'readonly':[('state','in',['draft','cancel','close'])]}" >
+										<tree string="Documentos">
+							                <field name="name" string="Descripción"/>
+							                <field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+							                <field name="datas_fname" string='Nombre del archivo'/>
+							                <field name="create_uid" string="Subido por"/>
+							                <field name="create_date" string="Fecha adjunto"/>
+						                </tree>
+									<form>										
+										<field name="inf_document_id" invisible="1"/>
+										
+										<separator string='Verifique el contenido del archivo antes de guardar la información.'/>
+						                <newline/>
+						                <group>
+							                <field name="name" on_change="onchange_nameunique(name,inf_document_id)" string="Descripción" attrs="{'readonly':[('is_old','=',True)]}"/>
+							                <field name="parent_id" invisible="1"/>
+							                <field name="datas" filename="datas_fname" required='1' attrs="{'readonly':[('is_old','=',True)]}"/>
+	                        				<field name="datas_fname" select="1" invisible='1'/>		
+											<field name="is_old" invisible="1"/>
+										</group>				
+									</form>
+									</field>																																		
+								</page>	
+								<page string="Usuarios relacionados" >
+									<field name="users_ids" widget="many2many"  nolabel="1" attrs="{ 'invisible': [('state', '=','draft')],'readonly':[('state','in',['cancel','close'])]}">
+										<tree string="">
+											<field name="name"/>
+										</tree>
+									</field>
+									
+								</page>		
+													
+								<page string="Notas" >
+									<field name="notes" nolabel="1" attrs="{'readonly':[('state','in',['cancel','close'])]}"/>	
+								</page>					
+							</notebook>
+							<group>															
+								<button name="gt_internal_inform_open" string="Solicitar" states ="draft"  
+									confirm="Esta acción no se podrá revertir. Esta seguro que desea continuar"/>	
+								<button name="action_inform_cancel" type="object" icon='gtk_cancel' string="Cancelar" states="draft"
+									confirm="Esta acción no se podrá revertir. Esta seguro que desea cancelar el Informe"/>											
+								<button name="gt_internal_inform_response" string="Responder"	
+									confirm="Esta acción no se podrá revertir. Confirma que desea continuar"
+									attrs="{'invisible': ['|',('state', '!=','open'),'|',('from_reenter', '=',True),('from_activate', '=',True)]	}"/>					 				
+								<button string="Responder" name="%(action_change_asset_status_form)d" type="action" icon="gtk-no"
+									confirm="Esta acción no se podrá revertir. Esta a punto de modificar el estado de los activos"
+									   					 
+									 attrs="{'invisible': ['|',('state', '!=','open'),('from_reenter', '=',False)],						 
+									'readonly':[('state','in',['close','cancel','response'])]}"/>
+								<button string="Responder" name="%(action_change_asset_status_form)d" type="action" icon="gtk-no"
+									confirm="Esta acción no se podrá revertir. Esta a punto de modificar el estado de los activos"
+									   					 
+									 attrs="{'invisible': ['|',('state', '!=','open'),('from_activate', '=',False)],						 
+									'readonly':[('state','in',['close','cancel','response'])]}"/>										
+								<button name="action_inform_close" type="object" string="Finalizar" states="response"
+									confirm="Esta acción no se podrá revertir. Esta seguro que desea finalizar el Informe"/>			
+																										
+							</group>										
+						</form>
+				</field>	
+				</page>	
+				<page string="Usuarios relacionados" >
+					<field name="users_ids" widget="many2many" nolabel="1" attrs="{'invisible': [('state', '=','draft')], 'readonly':[('state','in',['cancel','close'])]}">
+						<tree string="Usuarios relacionados">
+							<field name="name"/>
+						</tree>						
+					</field>
+				</page>	
+				<page string="Informes requeridos" >
+					<field name="inform_rel_ids" widget="many2many" nolabel="1" readonly="1"/>
+				</page>
+				<!--page string="Trámites">
+					<group>
+					
+					
+					<field name="expedient_id" 
+						colspan="2" 
+						domain="[('state','=','created'),('code','like',expedient_code)]" 
+						attrs="{'required': [('create_expedient', '=',False)],
+						'readonly':['|',('create_expedient','=',True),('state','in',['open','cancel','close'])]}"/>
+					</group>
+					<newline/>
+				</page-->
+				<page string="Observaciones" >					
+					<field name="observation" colspan="4" nolabel="1" attrs="{'readonly':[('state','in',['cancel','close'])]}"/>
+				</page>
+			</notebook>								
+			<newline/>
+			<group colspan="4" col="4" >
+					<button name="action_draft_open_siniestro" states="draft" type="object" string="Abrir" icon="gtk-apply"
+						confirm="Esta acción no se podrá revertir. Desea confirmar la acción"/>
+					<button name="action_open_close_siniestro" type='object' states="open" string="Finalizar" icon="gtk-no"
+						confirm="Esta acción no se podrá revertir. Desea confirmar la acción"/>
+					<button name="action_open_cancel_siniestro" type='object' states="draft" string="Cancelar" icon='gtk_cancel'
+						confirm="Esta acción no se podrá revertir. Desea confirmar la acción"/>
+					<!--button string="Cancelar" name="%(action_change_asset_cancel_form)d" states="open" type="action" icon="gtk-no"/-->								
+			</group>												
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_sinister_memory" model="ir.ui.view" >
+		<field name="name">Siniestro</field>
+		<field name="model">gt.insurance.sinister.memory</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree colors="grey:state in ('cancel','done');blue:state == 'open'; green:state == 'close'" string="Siniestro" toolbar="1">				
+				<field name="name" string="Clase de Siniestro"/>																			
+				<field name="code" />
+				<field name="policy_id" />
+				<field name="account_asset_id" string='Activo'/>
+				<field name="tipo_id"/>
+				<field name="subtipo_id"/>
+				<field name="class_id"/>
+				<field name="state" />
+				<field name="date" />
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_sinister_memory" model="ir.ui.view">
+            <field name="name">Siniestro</field>
+            <field name="model">gt.insurance.sinister.memory</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Siniestro">
+					<group>												
+						<field name="name" select="1" string="Clase de Siniestro"/>							
+						<field name="code" select="1"/>
+						<field name="policy_id" select="1"/>
+						<field name="account_asset_id" string='Activo'/>
+						<field name="tipo_id"/>
+						<field name="subtipo_id"/>
+						<field name="class_id"/>
+						<field name="state" select="1"/>
+						<field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+						<field name="date" string="Fecha hasta" filter_domain="[('date','&lt;=',self)]"/>
+                    </group>
+                    <newline/>
+                    <group expand="1"  string="Agrupar por...">	                       
+                        <filter string="Clase del Siniestro" icon="terp-go-home" domain="[]" context="{'group_by' : 'name'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Póliza" icon="terp-go-home" domain="[]" context="{'group_by' : 'policy_id'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Activo" icon="terp-go-home" domain="[]" context="{'group_by' : 'account_asset_id'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Tipo" icon="terp-go-home" domain="[]" context="{'group_by' : 'tipo_id'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Subtipo" icon="terp-go-home" domain="[]" context="{'group_by' : 'subtipo_id'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Clase" icon="terp-go-home" domain="[]" context="{'group_by' : 'class_id'}" />
+                        <separator orientation="vertical"/>                        
+                        <filter string="Estado" icon="terp-go-home" domain="[]" context="{'group_by' : 'state'}" />
+                        <separator orientation="vertical"/>                                                                      
+					</group>               			
+              </search>
+            </field>
+        </record>
+<!--Clasificador de Siniestros-->	
+	<record  id="view_form_gt_sinister_type" model="ir.ui.view">
+		<field name="name">Siniestro</field>
+		<field name="model">gt.insurance.sinister.type</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Clasificador de Siniestros">
+			<group colspan="4" col="4" >
+				<field name="code" colspan="4" readonly="1"/>
+				<field name="name" colspan="4" string ='Descripción'/>												
+				<field name="days_number" colspan="4"/>
+			</group>	
+			<notebook colspan="6">
+				<page string="Informes"  >
+					<field name="inform_ids" colspan="4" nolabel="1"  widget="many2many" required="1"/>
+				</page>
+			</notebook>												
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_sinister_type" model="ir.ui.view" >
+		<field name="name">Clasificador de Siniestros</field>
+		<field name="model">gt.insurance.sinister.type</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Clasificador de Siniestros" toolbar="1">
+				<field name="code" colspan="2" string= "Código"/>
+				<field name="name" colspan="2" string= "Descripción"/>												
+			</tree>
+		</field>
+	</record>  		
+		<record id="view_search_gt_sinister_type" model="ir.ui.view">
+        <field name="name">Clasificador de Siniestros</field>
+        <field name="model">gt.insurance.sinister.type</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+            <search string="Busqueda Siniestros">
+					<group>												
+						<field name="code" select="1" />	
+						<field name="name" select ="1" string= "Descripción"/>						
+                    </group>               			
+          </search>
+        </field>
+    </record>
+	<record id="action_gt_inform_type" model="ir.actions.act_window">
+    	<field name="name">Tipos de Informe</field>             
+        <field name="res_model">gt.insurance.inform.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<record id="action_gt_inform" model="ir.actions.act_window">
+    	<field name="name">Informe</field>      
+    	<field name="domain">['|',('users_ids','like',uid),('created_id','=',uid)]</field>       
+		<field name="context">{'search_default_sinister_id_':1}</field>
+        <field name="res_model">gt.insurance.inform</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<record id="action_gt_sinister_memory" model="ir.actions.act_window">
+    	<field name="name">Siniestro</field>           
+    	<field name="domain">['|',('users_ids','like',uid),('created_id','=',uid)]</field>  
+        <field name="res_model">gt.insurance.sinister.memory</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<record id="action_gt_sinister_type" model="ir.actions.act_window">
+    	<field name="name">Clasificador de Siniestros</field>             
+        <field name="res_model">gt.insurance.sinister.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<!--Menu-->
+	<menuitem name="Pólizas y Siniestros " id="gt_insurance_policy.menu_polizas_siniestros" sequence="70"
+		parent="gt_document_manager.menu_document_manager"
+		groups="gt_insurance_policy.group_policy_manager,gt_insurance_policy.group_policy_readonly,group_insurance_user,group_insurance_manager,group_insurance_readonly"/>
+	<menuitem name="Siniestros" 
+		id="menu_seguros" sequence="5"
+		parent="gt_insurance_policy.menu_polizas_siniestros"
+		groups="group_insurance_user,group_insurance_manager,group_insurance_readonly"/>
+		
+	<menuitem name="Informes" 
+    	id="menu_informe" action="action_gt_inform" 
+    	parent="menu_seguros" sequence="15" 
+    	groups="group_insurance_user,group_insurance_manager,group_insurance_readonly"/>   	
+    <menuitem name="Siniestros" 
+    	id="menu_siniestros" action="action_gt_sinister_memory" 
+    	parent="menu_seguros" sequence="10" 
+    	groups="group_insurance_user,group_insurance_manager,group_insurance_readonly"/> 	
+    <menuitem name="Clasificador de Siniestros" 
+    	id="menu_tipos_siniestro" action="action_gt_sinister_type"     	
+		parent="gt_insurance_policy.menu_configuracion_polizas" sequence="20"
+		groups="group_insurance_manager"/>		
+    <menuitem name="Tipos de Informe" 
+    	id="menu_tipos_de_informe" action="action_gt_inform_type" 
+    	parent="gt_insurance_policy.menu_configuracion_polizas" sequence="15"
+    	groups="group_insurance_manager"/>       	    	  	
+</data>
+</openerp>
+

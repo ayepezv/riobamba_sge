@@ -1,0 +1,21 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_emp_usert fn,hr.employee,hr.model_hr_employee,group_conta_doc,1,0,0,0
+access_job_usert fn,hr.job,hr.model_hr_job,group_conta_doc,1,0,0,0
+access_part_usert fn,res.partner,base.model_res_partner,group_conta_doc,1,0,0,0
+access_emp_user_audit,hr.employee,hr.model_hr_employee,group_conta_doc,1,0,0,0
+access_job_user_audit,hr.job,hr.model_hr_job,group_conta_doc,1,0,0,0
+access_part_user_audit,res.partner,base.model_res_partner,group_conta_doc,1,0,0,0
+access_acc_move_audit,account.move,account.model_account_move,group_conta_doc,1,0,0,0
+access_acc_move_line_audit,account.move.line,account.model_account_move_line,group_conta_doc,1,0,0,0
+access_budget_cert_audit,budget.certificate,gt_budget.model_budget_certificate,group_conta_doc,1,0,0,0
+access_budget_cert_line_audit,budget.certificate.line,gt_budget.model_budget_certificate_line,group_conta_doc,1,0,0,0
+access_account_fiscalyear_audit,account.fiscalyear,account.model_account_fiscalyear,group_conta_doc,1,0,0,0
+access_exports_usert fn,ir.exports,base.model_ir_exports,group_conta_doc,1,1,1,0
+access_account_account_audit,account.account,account.model_account_account,group_conta_doc,1,0,0,0
+access_payslip_run_audit,hr.payslip.run,hr_payroll.model_hr_payslip_run,group_conta_doc,1,0,0,0
+access_payslip_audit,hr.payslip,hr_payroll.model_hr_payslip,group_conta_doc,1,0,0,0
+access_payslip_line_audit,hr.payslip.line,hr_payroll.model_hr_payslip_line,group_conta_doc,1,0,0,0
+access_run_programa_detalle_audit,run.programa.detalle,gt_hr_payroll_account.model_run_programa_detalle,group_conta_doc,1,0,0,0
+access_payslip_input_audit,hr.payslip.input,hr_payroll.model_hr_payslip_input,group_conta_doc,1,0,0,0
+access_payslip_worked_days_audit,hr.payslip.worker_days,hr_payroll.model_hr_payslip_worked_days,group_conta_doc,1,0,0,0
+access_spi_linec,spi.line,gt_spi.model_spi_line,group_conta_doc,1,0,0,0

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+
+
+<record id="view_picking_objeto_form" model="ir.ui.view">
+  <field name="name">stock.objeto.form</field>
+  <field name="model">stock.objeto</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Objeto Receptor">
+      <field name="name"/>
+    </form>
+  </field>
+</record>
+
+<record id="view_stock_objeto_tree" model="ir.ui.view">
+  <field name="name">stock.objeto.tree</field>
+  <field name="model">stock.objeto</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Objeto Receptor">
+      <field name="name"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_stock_objeto_form" model="ir.actions.act_window">
+  <field name="name">Objeto Receptor</field>
+  <field name="res_model">picking.objeto</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_stock_objeto_form" id="menu_stock_objeto_form" 
+		  parent="stock.menu_warehouse_config"/>
+	
+
+</data>
+</openerp>

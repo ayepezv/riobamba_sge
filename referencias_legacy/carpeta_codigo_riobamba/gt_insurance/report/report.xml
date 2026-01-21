@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+	<report 
+	   auto="True" 
+	   id="report_seguros"
+	   model="gt.insurance.sinister.memory"
+	   name="report_seguros"
+	   rml="gt_insurance/report/report_seguros.rml" 
+	   string="Siniestro" />
+	
+	<report 
+	   auto="True" 
+	   id="report_informes"
+	   model="gt.insurance.inform"
+	   name="report_informes"
+	   rml="gt_insurance/report/report_informes.rml" 
+	   string="Informe" />
+	   	 
+	<report 
+	   auto="True" 
+	   id="report_activos_siniestros"
+	   model="gt.insurance.sinister.memory"
+	   name="report_activos_siniestros"
+	   rml="gt_insurance/report/report_activos_siniestros.rml" 
+	   string="Activos siniestrados" />	 
+	   
+
+  </data>
+</openerp>

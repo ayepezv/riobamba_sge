@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="spi.resumen" model="account.spi.voucher"
+            name="spi_resumen" rml="gt_spi/report/control.mako"
+            usage="default" string="Autorizacion" header="True" report_type="webkit"/>
+    <report auto="False" id="spi.detalle" model="account.spi.voucher"
+            name="spi_detalle" rml="gt_spi/report/control_detalle.mako"
+            usage="default" string="Detalle" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

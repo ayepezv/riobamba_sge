@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <menuitem id="menu_payment_request" parent="gt_document_manager.menu_document_manager" 
+	      name="Solicitud de Pago" sequence="20"
+	      groups="group_payment_user"/>	
+    <!-- MENU DE CREACION DE PROVEEDORES PARA LA PERSONA DE ORDENES DE PAGO -->
+    <!--record id="view_partner_ordenpago_form" model="ir.ui.view">
+      <field name="name">partner.ordenpago.form</field>
+      <field name="model">res.partner</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Proveedor/Beneficiario">
+	  <field name="name"/>
+	</form>
+      </field>
+    </record>
+ 
+    
+    
+    <record id="action_partner_ordenpago_form" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_partner_ordenpago_form"/>
+      <field name="act_window_id" ref="action_partner_ordenpago"/>
+    </record-->
+    <record id="action_partner_ordenpago" model="ir.actions.act_window">
+      <field name="name">Proveedores/Beneficiarios</field>
+      <field name="res_model">res.partner</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        action="action_partner_ordenpago"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Proveedores/Beneficiarios"
+        id="menu_action_partner_op"
+        parent="menu_payment_request"
+        sequence="2"
+        />
+    <record id="action_banco_ordenpago" model="ir.actions.act_window">
+      <field name="name">Cuentas de banco</field>
+      <field name="res_model">res.partner.bank</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        action="action_banco_ordenpago"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Cuentas Banco"
+        id="menu_action_banco_op"
+        parent="menu_payment_request"
+        sequence="3"
+        />
+    <!-- -->
+    <record id="view_payment_request_form" model="ir.ui.view">
+      <field name="name">view.payment.request.form</field>
+      <field name="model">payment.request</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Solicitud de Pago">	 
+	  <group string="Estado" colspan="4" col="6">
+	    <field name="state" widget="statusbar" statusbar_colors='{"creado":"black","emitido":"blue"}'/>
+	  </group>
+	  <group string="Estado" colspan="4">
+	    <field colspan="4" name="user_id" string="Creado por:"/> 
+	  </group>
+	  <group colspan="4" col="8" string="Inf. General">
+	    <field name="name" colspan="2" string="Codigo/Ref"/>
+	    <field colspan="2" name="date_request" string="Fecha" attrs="{'readonly': [('otra_fecha', '=',False)]}"/>
+	    <field colspan="2" name="otra_fecha" attrs="{'readonly': [('state', 'in',('emitido','Recibido Financiero','Contabilizado','Pagado'))]}"/>
+	  </group>
+	  <group colspan="4" col="8" string="Inf. Documento">
+	    <field name="emp_solicitante" colspan="6" required="1" 
+		   attrs="{'readonly': [('state', 'in',('emitido','Recibido Financiero','Contabilizado','Pagado'))]}"/>
+	    <field colspan="6" name="partner_id"
+		   attrs="{'readonly': [('state', 'in',('emitido','Recibido Financiero','Contabilizado','Pagado'))]}"/>
+	    <newline/>
+	    <field colspan="2" name="amount_invoice" attrs="{'readonly': [('state', 'in',('emitido','Recibido Financiero','Contabilizado','Pagado'))]}"/>
+	  </group>
+	  <group colspan="4" col="6" string="Inf. Pago">
+    	    <field name="type_doc" attrs="{'readonly': [('state', 'in',('emitido','Recibido Financiero','Contabilizado','Pagado'))]}"/>
+	  </group>
+	  <newline/>
+	  <notebook colspan="4">
+	    <page string="Concepto">
+	      <field name="concepto" colspan="4" nolabel="1" attrs="{'readonly': [('state', 'in',('emitido','Recibido Financiero','Contabilizado','Pagado'))]}"/>
+	      <separator string="Observaciones" colspan="4"/>
+	      <field name="observaciones" colspan="4" nolabel="1" states="emitido,Recibido Financiero"/>
+	    </page>
+	  </notebook> 
+	  <button name="emitir_payment" type="object" states="draft" string="Emitir" icon="gtk-go-forward" 
+		  confirm="¿Está seguro que desea Emitir la Solicitud de Pago?" groups="gt_payment_request.group_payment_user"/>
+	  <button name="return_payment" type="object" states="emitido" string="Regresar Borrador" icon="gtk-go-back" 
+		  confirm="¿Está seguro que desea regresar la Solicitud de Pago?" groups="gt_payment_request.group_payment_manager"/>
+	  <button name="cancel_payment" type="object" states="emitido" string="Anular" icon="gtk-cancel" 
+		  confirm="¿Está seguro que desea cancelar la Solicitud de Pago?" groups="gt_payment_request.group_payment_manager"/>
+	  <button name="pay_payment" type="object" states="Contabilizado" string="Pagado" icon="gtk-ok" 
+		  confirm="¿Está seguro que desea realizar el Pago?" groups="retention.group_tesorero"/>
+	  <button name="contabilizar_payment" type="object" states="Recibido Financiero" string="Contabilizado" icon="gtk-ok" 
+		  groups="account.group_account_manager"/>
+	  <button name="recibido_payment" type="object" states="emitido" string="Recibido" icon="gtk-ok" 
+		  groups="retention.group_director_financiero"/>
+	  <button name="financiero_draft" type="object" states="Recibido Financiero" string="Regresar Emitido" icon="gtk-ok" 
+		  groups="retention.group_director_financiero"/>
+	  <button name="print_payment" type="object" states="emitido,Contabilizado,Pagado" 
+		  string="Imprimir Solicitud" icon="gtk-print" groups="gt_payment_request.group_payment_manager"/>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_payment_request_tree" model="ir.ui.view">
+      <field name="name">view.payment.request.tree</field>
+      <field name="model">payment.request</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Solicitud de Pago" colors="black:state=='creado';green:state=='emitido'">
+	  <field name="date_request"/>
+	  <field name="name"/>
+	  <field name="partner_id"/>
+	  <field name="concepto"/>
+	  <field name="amount_invoice"/>
+	  <field name="emp_solicitante"/>	  
+	  <field name="type_doc"/>     
+	  <field name="state"/>
+	</tree>
+      </field>
+    </record>
+    
+    <record id="view_payment_request_search" model="ir.ui.view">
+      <field name="name">view.payment.request.search</field>
+      <field name="model">payment.request</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Solicitud de Pago">
+          <group>
+            <separator orientation="vertical"/>
+	    <field name="name"/>
+	    <field name="date_request"/>
+	    <field name="partner_id"/>
+	    <field name="state"/>
+	    <separator orientation="vertical"/>
+	    <newline/>
+	    <field name="date_request" string="Fecha Desde" filter_domain="[('date_request','&gt;=',self)]"/>
+	    <field name="date_request" string="Fecha Hasta" filter_domain="[('date_request','&lt;=',self)]"/>
+	    <field name="emp_solicitante"/>
+	    <field name="concepto"/>
+          </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Estado" icon="terp-partner" context="{'group_by': 'state'}"/>
+            <filter string="Fecha" icon="terp-calendar" context="{'group_by': 'date_request'}"/>
+            <filter string="Proveedor" icon="terp-partner" context="{'group_by': 'partner_id'}"/>
+            <separator orientation="vertical"/>            
+            <filter string="Solicitante" icon="terp-partner" context="{'group_by': 'emp_solicitante'}"/>            
+          </group>
+        </search>
+      </field>
+    </record>
+    
+    <record id="action_payment_request" model="ir.actions.act_window">
+      <field name="name">Solicitud de Pago</field>
+      <field name="res_model">payment.request</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>  
+    </record>
+
+
+	<menuitem id="menu_payment_request_menu" name="Solicitud de Pago" 
+			  groups="group_payment_user"
+			  sequence="60" parent="menu_payment_request" action="action_payment_request"/>
+	
+    </data>
+</openerp>

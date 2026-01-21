@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+
+
+<!-- CONFIGURACION FLUJO EFECTIVO
+-->
+
+<record id="view_flow_config_form" model="ir.ui.view">
+  <field name="name">view.flow.config.form</field>
+  <field name="model">flow.config</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Configuracion Flujo">
+	  <field name="name" required="1"/>
+	  <notebook colspan="4">
+		<page string="CORRIENTE">
+		  <notebook>
+			<page string="Fuentes Corrientes">
+			  <field name="fuentes_corrientes" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+			<page string="Usos Corrientes">
+			  <field name="usos_corrientes" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+		  </notebook>
+		</page>
+		<page string="CAPITAL">
+		  <notebook>
+			<page string="Fuentes Capital">
+			  <field name="fuentes_capital" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+			<page string="Usos de Produccion, inversion y capital">
+			  <field name="usos_produccion" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+		  </notebook>
+		</page>
+		<page string="Financiamiento">
+		  <notebook>
+			<page string="Fuentes Financiamiento">
+			  <field name="fuentes_financiamiento" widget="one2many_list" nolabel="1" 
+					 colspan="4"/>
+			</page>
+			<page string="Usos Financiamiento">
+			  <field name="usos_financiamiento" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+		  </notebook>
+		</page>
+		<page string="Presupuestarios">
+		  <notebook>
+			<page string="Flujos no presupuestarias">
+			  <field name="flujos_no_prep" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+			<page string="Variaciones no presupuestarias">
+			  <field name="variaciones_no_prep" widget="one2many_list" nolabel="1" colspan="4"/>
+			</page>
+		  </notebook>
+		</page>
+	  </notebook>
+    </form>
+  </field>
+</record>
+
+<record id="view_flow_config_tree" model="ir.ui.view">
+  <field name="name">view.flow.config.tree</field>
+  <field name="model">flow.config</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Flujo Efectivo">
+      <field name="name" select="1"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_flow_config" model="ir.actions.act_window">
+  <field name="name">Flujo Efectivo</field>
+  <field name="res_model">flow.config</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>        
+
+<menuitem id="menu_account_config_flow" name="Flujo Efectivo" 
+		  parent="account.menu_account_reports" action="action_flow_config"/>
+
+    </data>
+</openerp>

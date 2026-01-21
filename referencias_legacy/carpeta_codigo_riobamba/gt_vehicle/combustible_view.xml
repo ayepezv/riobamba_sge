@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+   <record id="view_combustible_order_line_tree" model="ir.ui.view">
+      <field name="name">view.combustible.order.line.tree</field>
+      <field name="model">combustible.order.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Lineas">
+		  <field name="name" on_change="onchange_product_id(name)" required="1" />
+		  <field name="product_uom"/>
+		  <field name="qty"/>
+		  <field name="product_uom"/>
+		  <field name="sub_total"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_combustible_order_line_form" model="ir.ui.view">
+      <field name="name">view.combustible.order.line.form</field>
+      <field name="model">combustible.order.line</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Linea">
+		  <field name="name"/>
+		  <field name="qty"/>
+		  <field name="product_uom"/>
+		  <field name="sub_total"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_combustible_order_form" model="ir.ui.view">
+      <field name="name">view.combustible.order.form</field>
+      <field name="model">combustible.order</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Orden de combustible">
+  
+          <group colspan="4" col="4">
+			<group colspan="2" string="Orden">
+			  <field name="ref"/>
+			  <newline/>
+			  <field name="name" on_change="validar_tiempo(name)"/>
+			  <newline/>
+			  <field name="vehiculo_id"/>
+			  <newline/>
+			  <field name="project_id"/>
+			</group>
+			<group colspan="2" string="Observaciones">
+			  <field name="observaciones" nolabel="1"/>
+			</group>
+		  </group>
+		  <notebook colspan="4">
+			<page string="Detalle">
+			  <field name="line_ids" nolabel="1" colspan="4">
+				<tree editable="bottom" string="Detalle">
+				  <field name="name" on_change="onchange_product_id(name)" required="1" />
+				  <field name="product_price" invisible="1"/>
+				  <field name="qty" />
+				  <field name="sub_total" readonly="1" sum="TOTAL"/>
+				</tree>
+			  </field>
+			</page>
+		  </notebook>
+		  <group col="4" colspan="4">
+		    <field name="state" readonly="1" colspan="4" widget="statusbar" 
+				   statusbar_colors='{"aprobado":"blue","draft":"black"}'/>
+   	      	<button name="combustible_aprobar" states="draft" string="Aprobar" icon="gtk-go-forward" type="object"/>
+			<field name="total" invisible="1"/>
+		  </group>		
+        </form>
+      </field>
+    </record>
+
+    <record id="view_combustible_order_tree" model="ir.ui.view">
+      <field name="name">view.combustible.order.tree</field>
+      <field name="model">combustible.order</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Órdenes de combustible" colors="black:state=='draft';blue:state=='aprobado'">
+          <field name="vehiculo_id"/>		  
+		  <field name="ref"/>
+		  <field name="name"/>
+		  <field name="project_id"/>
+		  <field name="state"/>
+        </tree>
+      </field>
+    </record>
+
+   <record id="view_combustible_order_search" model="ir.ui.view">
+      <field name="name">view.combustible.order.search</field>
+      <field name="model">combustible.order</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar órden de combustible">
+          <group>
+            <separator orientation="vertical"/>
+            <field name="vehiculo_id"/>
+            <field name="ref"/>            
+			<field name="name"/>			
+			<field name="project_id"/>
+			<field name="state"/>				
+          </group>
+          <newline/>
+          <group string="Agrupar por..." expand="1">
+          	<filter string="Vehículo" icon="terp-tools" domain="[]" context="{'group_by':'vehiculo_id'}"/>
+			<filter string="Fecha" icon="terp-calendar" domain="[]" context="{'group_by':'name'}"/>
+            <filter string="Proyecto" icon="terp-folder-violet" domain="[]" context="{'group_by':'project_id'}"/>
+            <filter string="Estado" icon="gtk-edit" domain="[]" context="{'group_by':'state'}"/>            
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_combustible_order" model="ir.actions.act_window">
+      <field name="name">Órdenes de combustible</field>
+      <field name="res_model">combustible.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_combustible_order_search"/>
+    </record>
+
+    <menuitem id="menu_combustible_order" parent="menu_vehicle_root" name="Ordenes Combustible" sequence="5"/>
+
+    <menuitem id="menu_combustible_order_action" parent="menu_combustible_order"
+              action="action_combustible_order" sequence="1"/>
+
+    </data>
+</openerp>

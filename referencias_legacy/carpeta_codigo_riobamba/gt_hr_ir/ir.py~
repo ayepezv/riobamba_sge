@@ -1,0 +1,122 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+from time import strftime, strptime
+
+from osv import osv, fields
+
+_STATE = [('draft','Borrador')]
+
+class hrIRLine(osv.Model):
+    _name = 'hr.ir.line'
+    _columns = dict(
+        ir_id = fields.many2one('hr.ir.head','Renta'),
+        contract_id = fields.many2one('hr.contract','Funcionario'),
+        date = fields.date('Fecha Contrato'),
+        sueldo = fields.float('Sueldo'),
+        ingresos = fields.float('Ingresos'),
+        gastos = fields.float('Gastos'),
+        deducibles = fields.float('Deducibles'),
+        base_imponible = fields.float('Base Imponible'),
+        renta_anual = fields.float('Renta Anual'),
+        renta_mensual = fields.float('Renta Mensual'),
+    )
+hrIRLine()    
+
+class hrIRHead(osv.Model):
+    _name = 'hr.ir.head'
+    _description = 'Renta GAD'
+    _order = 'name'
+
+    _columns = dict(
+        name = fields.many2one('hr.salary.rule','Regla Salarial',readonly=True,required=True,
+                               states={'draft': [('readonly', False)]}),
+        period_id = fields.many2one('hr.work.period','Anio',required=True,readonly=True,
+                                    states={'draft': [('readonly', False)]}),
+        line_ids = fields.one2many('hr.ir.line','ir_id','Renta'),
+        )
+
+    def compute_renta(self, cr, uid, ids, context=None):
+        contract_obj = self.pool.get('hr.contract')
+        obj_rent_tax = self.pool.get('hr.rent.tax')
+        obj_anual_tax = self.pool.get('hr.anual.rent.tax')
+        contract_ids = contract_obj.search(cr, uid, [('activo','=',True)],order='wage')
+        if contract_ids:
+            for contract_id in contract_ids:
+                valor = valor_anual = 0.0
+                mes = int(periodo.month2)
+                #proceso para obtener los valores anteriores
+                anterior = 0
+                anterior_np = 0
+                aportado = 0
+                id_renta_anual = 0
+                contrato = contract_obj.browse(cr, uid, contract_id)
+                actual = contrato.wage
+                print "SUELDO", actual
+                if contrato.employee_id.rent_tax_ids:
+                    for retenido_anual in contrato.employee_id.rent_tax_ids:
+                        if retenido_anual.fy_id.id == periodo.period_id.id:
+                            id_renta_anual = retenido_anual.id
+                            if retenido_anual.line_ids:
+                                for retenido in retenido_anual.line_ids:
+                                    if retenido.period_id.id == periodo.id:
+                                        obj_rent_tax.unlink(self.cr, self.uid, retenido.id)
+                    for retenido_anual in contrato.employee_id.rent_tax_ids:
+                        if retenido_anual.fy_id.id == periodo.period_id.id:
+                            for retenido in retenido_anual.line_ids:
+                                if retenido.period_id.id != periodo.id:
+                                    anterior = anterior + retenido.apt_proy
+                                    anterior_np = anterior_np + retenido.apt_noproy
+                                    aportado = aportado + retenido.valor
+                else:
+                    id_renta_anual = obj_anual_tax.create(self.cr, self.uid, {'name': periodo.period_id.name,
+                                                                              'fy_id': periodo.period_id.id,
+                                                                              'employee_id': contrato.employee_id.id})
+                anterior_iess = anterior*porcentaje_iess
+                anterior_iess_np = anterior_np*porcentaje_iess
+                base_imponible = (actual*(12))# + actual_np + anterior + anterior_np#(actual*(13.0-mes)) + actual_np + anterior + anterior_np
+                #actual_iess = ((actual*(13.0-mes))*porcentaje_iess) + (actual_np*porcentaje_iess)
+                actual_iess = ((actual*(12))*porcentaje_iess)
+                base_imponible = base_imponible - actual_iess#(actual_iess + anterior_iess + anterior_iess_np)
+                #base_imponible = (base_imponible*12.0)/mes
+                
+                deducible = 0
+                if contrato.employee_id.projection_ids:
+                    for deducible_anual in contrato.employee_id.projection_ids:
+                        if deducible_anual.fy_id == periodo.period_id:
+                            for deducible_line in deducible_anual.line_ids:
+                                deducible = deducible + deducible_line.value 
+                #print base_imponible
+                tabla_obj = self.pool.get("hr.base.retention")
+                linea_obj = self.pool.get("hr.base.retention.line")
+                
+                tabla_ids = tabla_obj.search(self.cr, self.uid, [('active','=',True)])
+                if tabla_ids:
+                    for tabla in tabla_obj.browse(self.cr, self.uid, tabla_ids):
+                        if tabla.max_deduction < deducible and tabla.max_deduction > 0:
+                            deducible = tabla.max_deduction
+                        base_imponible = base_imponible - deducible
+                        linea_id = linea_obj.search(self.cr, self.uid, [('retention_id','=', tabla.id),
+                                                                        ('basic_fraction','<=', base_imponible),
+                                                                        ('excess_to','>=', base_imponible)])
+                        #print linea_id
+                        for linea in linea_obj.browse(self.cr, self.uid, linea_id):
+                            #print linea.basic_fraction
+                            valor_anual = linea.basic_fraction_tax
+                            valor_anual = valor_anual + (((base_imponible - linea.basic_fraction)/100)*linea.percent)
+                            #print valor_anual
+                            valor = (valor_anual)/(12)#(valor_anual - aportado)/(13.0-mes)
+                            obj_rent_tax.create(self.cr, self.uid, {'period_id': periodo.id,
+                                                                    'apt_proy': actual,
+                                                                    'apt_noproy': actual_np,
+                                                                    'valor': valor,
+                                                                    'tl_id': id_renta_anual})
+                import pdb
+                pdb.set_trace()
+                print "VALRRRRR", valor
+
+hrIRHead()

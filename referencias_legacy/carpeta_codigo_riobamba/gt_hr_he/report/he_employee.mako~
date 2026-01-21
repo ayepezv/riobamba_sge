@@ -1,0 +1,102 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+	<tr>
+	  <td width="100%" style="font-size:14;text-align:center;">REQUERIMIENTO A BODEGA Nro. ${o.name or  ''}</td>	  	  
+    </tr>	
+  </table>
+  <table WIDTH="100%" border='1' rules="cols" cellpadding="2" cellspacing="2"  bordercolor="#000000" >  
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Fecha Elaboracion:</td>
+      <td style="font-size:11px" width="42%">${o.date or  ''}</td>
+    </tr>	
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Solicitado por:</td>
+      <td style="font-size:11px" width="42%">${o.solicitant_id.complete_name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Unidad Req.:</td>
+      <td style="font-size:11px" width="42%">${o.unidad_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Bodega:</td>
+      <td style="font-size:11px" width="42%">${o.bodega_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Vehiculo/Maquinaria:</td>
+      <td style="font-size:11px" width="42%">${o.objeto_id_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Proyecto/Programa:</td>
+      <td style="font-size:11px" width="42%">${o.project_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Observaciones:</td>
+      <td style="font-size:11px" width="42%">${o.note or ''}</td>
+    </tr> 
+  </table>
+  <p></p>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr>
+        <th style="font-size:11px" width="17%">Nro.</th>
+        <th style="font-size:11px" width="47%">DETALLE</th>
+        <th style="font-size:11px" width="18%">CANTIDAD</th>
+        <th style="font-size:11px" width="18%">UNIDAD</th>
+      </tr>
+    </thead>
+	<%
+	   a=0
+	   %>
+    %for line in o.move_lines:
+	<%
+	   a+=1
+	   %>
+    <tr>
+      <td width="17%" style="font-size:11px;text-align:center">${a}</td>
+      <td width="47%" style="font-size:11px;text-align:left">${line.product_id.default_code} ${line.product_id.name}</td>
+      <td width="18%" style="font-size:11px;text-align:right">${line.qty}</td>
+      <td width="18%" style="font-size:11px;text-align:right">${line.product_id.uom_id.name}</td>
+    </tr>
+    %endfor      
+  </table>
+  <table width="100%">
+	<tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+	</tr>
+	<tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+	</tr>
+	<tr style="font-size:11px">
+      <th width="33%">Solicitado</th>
+      <th width="33%">Visto Bueno</th>
+      <th width="33%">Recibido</th>
+	</tr>  
+	<tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+	</tr>
+	<tr style="height:35px">
+      <th>__________________</th>
+      <th>__________________</th>
+      <th>__________________</th>
+	</tr>
+	<tr style="font-size:11px">
+      <th width="33%">${o.solicitant_id.complete_name or ''}</th>
+      <th width="33%">${o.solicitant_id.department_id.manager_id.complete_name or ''}</th>
+      <th width="33%"></th>
+	</tr>  
+  </table>
+  %endfor
+</html>

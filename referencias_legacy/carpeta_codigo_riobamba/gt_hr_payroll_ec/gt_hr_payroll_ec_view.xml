@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    
+    <menuitem id="menu_gt_hr_reports" parent="hr_payroll.menu_hr_root_payroll" name="Reportes" sequence="900"/>
+
+    <!-- LOTAIP REMUNERACIONES -->
+    <record id="view_remuneracion_lotaip" model="ir.ui.view">
+      <field name="name">LOTAIP Remuneracion</field>
+      <field name="model">remuneracion.lotaip</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Formulario LOTAIP">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="period_id" colspan="2" required="1"/>
+	      <field name="datas_fname" colspan="2" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="remuneracionLotaip" type="object" icon="gtk-execute"  string="Generar Formulario"/>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+    
+    
+    <record id="action_rmu_lotaip" model="ir.actions.act_window">
+      <field name="name">LOTAIP Remuneraciones</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">remuneracion.lotaip</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_rmu_lotaip"
+	      icon="STOCK_EXECUTE"
+	      action="action_rmu_lotaip"
+	      parent="menu_gt_hr_reports"
+	      name="LOTAIP Remuneraciones"/>
+
+    <!-- replanifica descuentos -->
+    <record id="wizard_replanificar_descuentos_form" model="ir.ui.view">
+      <field name="name">Replanificar Descuentos</field>
+      <field name="model">replanificar.descuentos</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Replanificar">
+	  <group string="Detalle">
+	    <field name="contract_id" readonly="1"/>
+	  </group>
+	  <newline/>
+	  <group>
+	    <field name="detalle_ids" colspan="4">
+	      <tree>
+		<field name="rubro"/>
+		<field name="valor"/>
+	      </tree>
+	    </field>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_replanificar_descuentos" string="Replanificar Descuentos" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_replanificar_descuentos" model="ir.actions.act_window">
+      <field name="name">Replanificar Descuentos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">replanificar.descuentos</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+<!-- -->
+	  
+	  
+	  <record model="ir.ui.view" id="view_no_cobro_form">
+	    <field name="name">hr.no.cobro.form</field>
+	    <field name="model">hr.no.cobro</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+	      <form string="Personal no cobro">
+		<group col="4" colspan="4">
+		  <field name="contract_id" colspan="2" required="1" domain="[('activo','=',True)]"/>
+		  <field name="tipo" colspan="2" required="1"/>
+		  <field name="period_id" colspan="2"  required="1" widget='selection'/>
+		</group>
+	      </form>
+	    </field>
+	  </record>
+	  
+	  <record id="view_no_cobro_tree" model="ir.ui.view">
+	    <field name="name">No cobra tree</field>
+	    <field name="model">hr.no.cobro</field>
+	    <field name="type">tree</field>
+	    <field name="arch" type="xml">
+	      <tree string="No cobran">
+		<field name="contract_id"/>
+		<field name="period_id"/>
+	      </tree>
+	    </field>
+	  </record>
+	  
+	  <record id="view_no_cobro_filter" model="ir.ui.view">
+	    <field name="name">No cobrar</field>
+	    <field name="model">hr.no.cobro</field>
+	    <field name="type">search</field>
+	    <field name="arch" type="xml">
+	      <search string="Personal no cobra">
+		<field name="contract_id"/>
+		<field name="period_id"/>
+	      </search>
+	    </field>
+	  </record>
+	  
+	  <record id="action_hr_no_cobro" model="ir.actions.act_window">
+	    <field name="name">Personal no cobra rol</field>
+	    <field name="res_model">hr.no.cobro</field>
+	    <field name="view_type">form</field>
+	    <field name="view_mode">tree,form</field>
+	  </record>
+	  
+	  
+	  <menuitem id="menu_hr_no_cobro"
+		    action="action_hr_no_cobro"
+		    parent="hr_payroll.menu_hr_root_payroll"
+		    name="Personal No cobra rol"
+		    groups="base.group_hr_manager"/>	  
+	  
+	  <!--
+              =======================
+              HR PAYSLIP LINE
+              =======================
+          -->
+        
+          <record id="view_payslip_line_provision_tree" model="ir.ui.view">
+            <field name="name">Detalle de Rubros</field>
+            <field name="model">hr.payslip.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+              <tree string="Ausencias de Empleado">
+                <field name="employee_id"/>
+                <field name="category_id" invisible="1"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="slip_id"/>
+                <field name="total"/>
+                <field name="amount_select" invisible="1"/>
+                <field name="register_id" invisible="1"/>
+              </tree>
+            </field>
+          </record>
+          
+          <record id="view_payslip_line_search" model="ir.ui.view">
+            <field name="name">Payslip.search</field>
+            <field name="model">hr.payslip.line</field>
+            <field name="type">search</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_line_filter"/>
+            <field name="arch" type="xml">
+              <xpath expr="/search/group/filter[@name='category_id']" position="before">
+                <filter string="Nombre" icon="terp-camera_test" name="name" context="{'group_by':'name'}"/>
+              </xpath>
+            </field>
+          </record>
+        
+        <record id="action_payslip_line_provision" model="ir.actions.act_window">
+	  <field name="name">Extra rol de Empleado</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">hr.payslip.line</field>
+	  <field name="domain">[('code','ilike','PROV')]</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="view_id" ref="view_payslip_line_provision_tree"/>
+	</record>
+	
+	<!--menuitem id="menu_gt_hr_provision" parent="menu_gt_hr_reports" name="Extra rol de Empleado" action="action_payslip_line_provision"/-->
+	<!-- resumen rol -->
+    <record model="ir.ui.view" id="view_resumen_rol_form">
+      <field name="name">Resumen Rol</field>    
+      <field name="model">resumen.rol</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Resumen">
+          <group  colspan="4">
+	    <field name="period_id" colspan="2" required="1"/>
+	  </group> 
+          <group  colspan="4" col="10">
+	    <field name="total_funcionarios" colspan="2" readonly="1"/>
+	    <field name="total_rmu" colspan="2" readonly="1"/>
+	    <field name="total_ingresos" colspan="2" readonly="1"/>
+	    <field name="total_egresos" colspan="2" readonly="1"/>
+	    <field name="total" colspan="2" readonly="1"/>
+	  </group> 
+	  <group  colspan="4">
+	    <button name="generarResumenRol" string="Generar" icon="gtk-execute" type="object"/>
+	    <button name="printResumenRol" string="Imprimir" icon="gtk-print" type="object"/>
+	    <button name="printResumenRolDetalle" string="Imprimir Detalle" icon="gtk-print" type="object"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle Tipo Rol">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="tipo_id"/>
+		  <field name="total_funcionarios" sum="total"/>
+		  <field name="total_rmu" sum="total"/>
+		  <field name="total_ingresos" sum="total"/>
+		  <field name="total_egresos" sum="total"/>
+		  <field name="total" sum="total"/>
+		</tree>
+		<form>
+		  <field name="tipo_id"/>
+		  <field name="total"/>
+		</form>
+	      </field>
+	    </page>
+	    <page string="Detalle Rol">
+	      <field name="line2_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="contract_id"/>
+		  <field name="rmu" sum="total"/>
+		  <field name="ingresos" sum="total"/>
+		  <field name="egresos" sum="total"/>
+		  <field name="total" sum="total"/>
+		</tree>
+		<form>
+		  <field name="contract_id"/>
+		  <field name="total"/>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_resumen_rol">
+	  <field name="name">Resumen Rol</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">resumen.rol</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	<menuitem id="menu_resumen_rol" parent="menu_gt_hr_reports" name="Resumen Rol" action="action_resumen_rol" sequence='0'/>
+	<!-- -->
+	<record id="action_payslip_line_rubros" model="ir.actions.act_window">
+	  <field name="name">Rubros de Empleado</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">hr.payslip.line</field>
+	  <field name="domain">[('code','not ilike','PROV')]</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="view_id" ref="view_payslip_line_provision_tree"/>
+	</record>
+	
+	<menuitem id="menu_gt_hr_rubros" parent="menu_gt_hr_reports" name="Rubros de Empleado" action="action_payslip_line_rubros"/>
+		
+        
+        <!--
+        =======================
+        HR PAYSLIP 
+        =======================
+        -->
+        
+        <record id="view_payslip_form_ec" model="ir.ui.view">
+            <field name="name">Payslip.Form</field>
+            <field name="model">hr.payslip</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+            <field name="arch" type="xml">
+              <xpath expr="/form/group/field[@name='credit_note']" position="replace">
+                <field name="period_id" widget="selection"/>
+              </xpath>
+              <!--xpath expr="/field[@name='input_line_ids']" position="replace"/-->
+              <xpath expr="//field[@name='input_line_ids']" position="attributes">
+		<attribute name="readonly">1</attribute>
+              </xpath>
+	      <xpath expr="//field[@name='worked_days_line_ids']" position="attributes">
+		<attribute name="readonly">1</attribute>
+              </xpath>
+              <xpath expr="/form/notebook/page[@string='Details By Salary Rule Category']" position="replace"/>
+              <xpath expr="/form/notebook/page[@string='Other Information']" position="replace"/>
+              <xpath expr="/form/group/button[@name='refund_sheet']" position="replace"/>
+              <!--xpath expr="/form/group/button[@name='compute_sheet']" position="replace">
+	      </xpath-->
+	      <field name='state' position='before'>
+		<field name="basic" readonly="1"/>
+                <field name="aportable" readonly="1"/>
+                <field name="allowance" readonly="1"/>
+                <field name="deduction" readonly="1"/>
+                <field name="net" readonly="1"/>
+	      </field>
+	      <xpath expr="/form/notebook/page[@string='Salary Computation']" position="after">
+                <page string="Detalle de Rol">
+		  <button name="send_rol_by_email" type="object" icon="terp-mail-message-new" string="Enviar por E-Mail" 
+			  groups="account.group_account_user,account.group_account_manager" states="Autorizado,Pagado"/>
+		  <button name="print_rol_ind" type="object" icon="gtk-print" string="Imprimir" 
+			  groups="account.group_account_user,account.group_account_manager"/>
+		  <newline/>
+                  <group colspan="2" col="2">
+                    <separator string="Rol" colspan="2"/>
+                    <field name="basic" readonly="1"/>
+                    <field name="aportable" readonly="1"/>
+                    <field name="allowance" readonly="1"/>
+                    <field name="deduction" readonly="1"/>
+                    <field name="net" readonly="1"/>
+                    <separator string="Extra Rol" colspan="2"/>
+                    <field name="provision" readonly="1"/>
+                  </group>
+                  <group colspan="2">
+                  </group>
+                </page>
+              </xpath>
+            </field>
+        </record>
+        
+
+        <record id="hr_payroll.view_hr_payslip_tree" model="ir.ui.view">
+          <field name="name">hr.payslip.Tree</field>
+          <field name="model">hr.payslip</field>
+          <field name="type">tree</field>
+          <!--field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree"/-->
+          <field name="arch" type="xml">
+	    <tree colors="red:net &lt;= 0" string="Payslips">
+	      <!--tree colors="red:net &gt;= 1000" string="Payslips"-->
+              <field name="number"/>
+              <field name="employee_id"/>
+              <field name="program_id"/>
+              <field name="budget_id"/>
+	      <field name="struct_id"/>
+	      <field name="period_id"/>
+              
+	      <field name="basic" sum="RMU"/>
+	      <field name="aportable" sum="Aportables"/>
+	      <field name="allowance" sum="Ingresos"/>
+	      <field name="deduction" sum="Egresos"/>
+	      <field name="net" sum="Recibir"/>
+	      <field name="date_to" invisible="1"/>
+	      <field name="date_from" invisible="1"/>
+              <field name="state"/>
+	      <!--button name="%(action_replanificar_descuentos)d" string="Replanificar Descuentos" icon="gtk-execute" type="action" colspan="2"/-->
+              <field name="company_id" groups="base.group_multi_company" widget="selection" invisible="1"/>
+              <field name="payslip_run_id" invisible="1"/>
+            </tree>
+          </field>
+        </record>
+        <!--record id="view_payslip_tree_ec" model="ir.ui.view">
+          <field name="name">Payslip.Tree</field>
+          <field name="model">hr.payslip</field>
+          <field name="type">tree</field>
+          <field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree"/>
+          <field name="arch" type="xml">
+            <xpath expr="/tree/field[@name='date_from']" position="replace">
+              <field name="date_from" invisible="1"/>
+	      <field name="basic"/>
+	      <field name="aportable"/>
+	      <field name="allowance"/>
+	      <field name="deduction"/>
+	      <field name="net"/>
+              <field name="period_id"/>
+            </xpath>
+            <xpath expr="/tree/field[@name='date_to']" position="replace">
+              <field name="date_to" invisible="1"/>
+            </xpath>
+            <xpath expr="/tree/field[@name='name']" position="replace">
+              <field name="struct_id"/>
+            </xpath>
+          </field>
+        </record-->
+        
+        <record id="view_payslip_search_ec" model="ir.ui.view">
+            <field name="name">Payslip.search</field>
+            <field name="model">hr.payslip</field>
+            <field name="type">search</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="/search/group/field[@name='date_from']" position="replace">
+                </xpath>
+		<xpath expr="/search/group/field[@name='payslip_run_id']" position="replace">
+		  <field name="payslip_run_id" string="Rol General"/>
+                </xpath>
+                <xpath expr="/search/group/field[@name='name']" position="replace">
+                	<field name="department_id"/>
+                	<field name="program_id"/>
+                	<field name="struct_id"/>
+			<newline/>
+                	<field name="period_id"/>
+                	<field name="date_from"/>
+                	<field name="date_to"/>
+                </xpath>
+                <xpath expr="/search/group/filter[@name='employee_id']" position="after">
+                	<filter string="Departamento" icon="terp-partner" name="department_id" context="{'group_by':'department_id'}"/>
+                	<filter string="Programa" icon="terp-partner" name="program_id" context="{'group_by':'program_id'}"/>
+                	<filter string="Estructura" icon="terp-folder-orange" name="struct_id" context="{'group_by':'struct_id'}"/>
+                	<separator orientation="vertical"/>
+                	<filter string="Periodo" icon="stock_calendar" name="period_id" context="{'group_by':'period_id'}"/>
+		</xpath>
+		<xpath expr="/search/group/filter[@name='payslip_run_id']" position="replace">
+                  <filter string="Rol General" name="payslip_run_id" icon="terp-folder-orange" context="{'group_by':'payslip_run_id'}"/>
+			
+ 		</xpath>
+		<xpath expr="/search/group/filter[@name='state']" position="replace">
+ 		</xpath>
+            </field>
+        </record>
+        
+        <!--
+        =======================
+        HR PAYSLIP RUN
+        =======================
+        -->
+        
+        <record id="view_payslip_run_form_ec" model="ir.ui.view">
+          <field name="name">Payslip.Run.Form</field>
+          <field name="model">hr.payslip.run</field>
+          <field name="type">form</field>
+          <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="/form/group/field[@name='name']" position="after">
+              <field name="period_id" required="1" on_change="cambiar_fechas(period_id)" widget="selection"/>
+            </xpath>
+            <xpath expr="/form/group/field[@name='date_end']" position="after">
+              <field name="contract_type_id" required="1" widget="selection"/>
+	      <!--field name="paga_fr"/-->
+            </xpath>
+            <xpath expr="/form/group/field[@name='credit_note']" position="replace"/>
+            <xpath expr="/form/group/button[@name='close_payslip_run']" position="replace">
+	      <button name="draft_payslip_run" type="object" icon="terp-camera_test" string="Regresar Borrador" 
+		      confirm="Seguro que desea regresar a borrador" states="Aprobado,Autorizado"/>
+              <button name="aprobar_payslip_run" type="object" icon="terp-camera_test" string="Aprobar" states="draft"/>
+	      <!--button name="ajustar_payslip_run" type="object" icon="terp-camera_test" string="Ajustar Descuentos" states="draft"/-->
+              <button name="autorizar_payslip_run" type="object" icon="terp-camera_test" string="Autorizar" 
+		      groups="account.group_account_user,account.group_account_manager" states="Aprobado"/>
+              <button name="contabilizar_payslip_run" type="object" icon="terp-camera_test" string="Contabilizar Resumen" 
+		      groups="account.group_account_user,account.group_account_manager" states="Autorizado" 
+		      confirm="Esta seguro que desea contabilizar, tenga en cuenta que este proceso genera el compromiso presupuestario y el registro contable?"/>
+              <button name="reversaconta_payslip_run" type="object" icon="terp-camera_test" string="Reversa Contabilizacion" 
+		      groups="account.group_account_user,account.group_account_manager" states="Autorizado" 
+		      confirm="Esta seguro que desea reversar el registro contable y el compromiso, tenga en cuenta que este proceso borra las lineas de ambos documentos?"/>
+              <!--button name="presupuesto_payslip_run" type="object" icon="terp-camera_test" string="Genera Presupuesto" 
+		      groups="account.group_account_user,account.group_account_manager" states="Autorizado"/-->
+	      <button name="pagado_payslip_run" type="object" icon="terp-camera_test" string="Pagado/Cerrar" 
+		      groups="account.group_account_user,account.group_account_manager" states="Autorizado"/>
+	      <button name="send_payslip_run" type="object" icon="terp-mail-message-new" string="Enviar por E-Mail" 
+		      groups="account.group_account_user,account.group_account_manager" states="Autorizado,Pagado"/>
+	      <!--button name="action_print_move_rol" string="Imprimir Asiento" states="Autorizado" 
+		      type="object" icon="gtk-print"/>
+	      <button name="asiento_payslip_run" type="object" icon="terp-camera_test" string="Contabilizar Rol" 
+		      groups="account.group_account_user,account.group_account_manager" states="Autorizado"/-->
+	    </xpath>
+            <xpath expr="/form/notebook/page[@string='Payslips']" position="after">
+	    </xpath>
+            <xpath expr="/form/notebook/page[@string='Payslips']" position="after">
+              <page string="Detalle de Roles">
+                <group colspan="2" col="2">
+                  <separator string="Rol" colspan="2"/>
+                  <!--field name="budget_id" readonly="1"/-->
+                  <field name="basic" readonly="1"/>
+                  <field name="aportable" readonly="1"/>
+                  <field name="allowance" readonly="1"/>
+                  <field name="deduction" readonly="1"/>
+                  <field name="net2" readonly="1"/>
+                  <separator string="Extra Rol" colspan="2"/>
+                  <field name="provision" readonly="1"/>
+                </group>
+                <group colspan="2">
+                  <button name="recalcular_roles" type="object" string="Recalcular" icon="gtk-execute"/>
+                </group>
+              </page>
+            </xpath>
+          </field>
+        </record>
+        
+	<record id="view_payslip_run_tree_inherit" model="ir.ui.view">
+          <field name="name">run.modif.Tree</field>
+          <field name="model">hr.payslip.run</field>
+          <field name="type">tree</field>
+          <field name="inherit_id" ref="hr_payroll.hr_payslip_run_tree"/>
+          <field name="arch" type="xml">
+            <xpath expr="/tree/field[@name='date_start']" position="replace">
+            </xpath>
+	    <xpath expr="/tree/field[@name='date_end']" position="replace">
+	      <field name="period_id"/>
+	      <field name="date_start"/>
+	      <field name="date_end"/>
+            </xpath>
+            <!--xpath expr="/tree/field[@name='date_end]" position="replace">
+	      <field name="period_id"/>
+            </xpath-->
+            <xpath expr="/tree/field[@name='credit_note']" position="replace">
+              <field name="contract_type_id"/>
+            </xpath>
+          </field>
+        </record>
+	
+	<record model="ir.ui.view" id="view_payrun_modified_filter">
+	  <field name="name">hr.payslip.run.modified.filter</field>
+	  <field name="model">hr.payslip.run</field>
+	  <field name="type">search</field>
+	  <field name="inherit_id" ref="hr_payroll.hr_payslip_run_filter"/>
+	  <field name="arch" type="xml">
+	    <xpath expr="/search/field[@name='date_start']" position="replace">
+	      <field name="period_id"/>
+	      <field name="contract_type_id"/>
+	      <newline/>
+	      <group expand="1" string="Agrupar por...">
+                <filter string="Periodo" icon="terp-personal+" domain="[]" context="{'group_by':'period_id'}"/>
+                <filter string="Tipo Rol" icon="terp-gtk-select-all" domain="[]" context="{'group_by':'contract_type_id'}"/>
+              </group>
+	    </xpath>
+	    <xpath expr="/search/field[@name='date_end']" position="replace"/>
+	  </field>
+	</record>
+	
+        <!--
+        =======================
+        HR SALARY RULE
+        =======================
+        -->
+        
+        <record id="view_salary_rule_inherit" model="ir.ui.view">
+            <field name="name">Salary.Rule.Tree</field>
+            <field name="model">hr.salary.rule</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="hr_payroll.hr_salary_rule_list"/>
+            <field name="arch" type="xml">
+            	<xpath expr="/tree/field[@name='register_id']" position="replace">
+            		<field name="sequence"/>
+            	</xpath>
+            </field>
+        </record>
+
+      <record id="view_salary_rule_form_inherit" model="ir.ui.view">
+            <field name="name">Salary.Rule.Form</field>
+            <field name="model">hr.salary.rule</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='appears_on_payslip']" position="after">
+            	  <field name="is_replanifica"/>
+            	  <field name="agrupar"/>
+            	  <field name="is_tercero"/>
+            	  <field name="partner_id" attrs="{'required': [('is_tercero', '=',True)]}"/>
+		  <field name="account_id"/>
+		  <field name="tercero_id"/>
+		  <field name="is_ingreso_anticipo"/>
+		  <field name="is_rendicion"/>
+		  <field name="is_ingreso_gad"/>
+            	</xpath>
+		<xpath expr="/form/notebook/page[@string='Description']" position="replace">
+		  <page string="Fondo Terceros Tipo Rol">
+		    <field name="account_ids">
+		      <tree editable='bottom'>
+			<field name="tipo_id"/>
+			<field name="account_id"/>
+		      </tree>
+		    </field>
+		  </page>
+		  <page string="CxC">
+		    <field name="cxp_ids">
+		      <tree editable='bottom'>
+			<field name="name"/>
+			<field name="account_id"/>
+		      </tree>
+		    </field>
+		  </page>
+		</xpath>
+            </field>
+        </record>
+        
+        <!--
+        =======================
+        HR PAYROLL STRUCTURE
+        =======================
+        -->
+        
+        <record id="view_payroll_structure_inherit" model="ir.ui.view">
+            <field name="name">Payroll.Structure.Form</field>
+            <field name="model">hr.payroll.structure</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="/form/notebook/page/field[@name='rule_ids']/tree/field[@name='register_id']" position="replace">
+            		<field name="sequence"/>
+            	</xpath>
+            </field>
+        </record>
+        
+        
+    </data>
+</openerp>

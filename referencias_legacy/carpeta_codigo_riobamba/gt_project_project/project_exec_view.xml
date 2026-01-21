@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <record id="view_project_kpi_detail_tree" model="ir.ui.view">
+      <field name="name">view.project.kpi.detail.tree</field>
+      <field name="model">project.kpi.detail</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Ejecución de Indicadores">
+          <field name="kpi_id"/>
+          <field name="project_id"/>
+          <field name="planned"/>
+          <field name="progress" widget="progressbar"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_project_kpi_detail_form" model="ir.ui.view">
+      <field name="name">view.project.kpi.detail.form</field>
+      <field name="model">project.kpi.detail</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Registro de Avance de Indicador">
+          <field name="kpi_id" readonly="1"/>
+          <field name="uom_id" readonly="1"/>
+          <field name="project_id" readonly="1"/>
+          <field name="planned" readonly="1"/>
+          <field name="weight" readonly="1"/>
+          <field name="fy_id" readonly="1"/>
+          <field name="progress" readonly="1" widget="progressbar"/>
+          <button name="%(action_add_exec_kpi)d" string="Registrar Avance" icon="gtk-execute" type="action" colspan="2"/>
+          <field name="work_ids" widget="one2many_list" readonly="1" mode="tree" colspan="4" nolabel="1">
+            <tree string="Avance de Indicador">
+              <field name="name"/>
+              <field name="exec_done"/>
+              <field name="user_id"/>
+              <field name="date"/>
+            </tree>
+          </field>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_view_kpi" model="ir.actions.act_window">
+      <field name="name">Registro de Avance de Indicadores</field>
+      <field name="res_model">project.kpi.detail</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_wizard_project_activity" model="ir.ui.view">
+      <field name="name">view.wizard.project.kpi</field>
+      <field name="model">project.wizard.kpi</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Indicadores de Proyecto">
+          <field name="project_id" domain="[('state','=','exec')]"/>
+          <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+          <button string="Indicadores" name="action_open_kpi" icon="gtk-execute" type="object"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="project_action_view_kpi_wizard" model="ir.actions.act_window">
+      <field name="name">Indicadores</field>
+      <field name="res_model">project.wizard.kpi</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem action="project_action_view_kpi_wizard" id="menu_action_view_kpi" parent="menu_project_exec_register" sequence="4"/>
+
+
+    <record id="view_wizard_project_tasks" model="ir.ui.view">
+      <field name="name">view.wizard.project.activity</field>
+      <field name="model">project.wizard.activity</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Actividades por Proyecto">
+          <field name="project_id" domain="[('state','=','exec')]"/>
+          <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+          <button string="Actividades" name="action_open_activities" icon="gtk-execute" type="object"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="project_action_view_task_wizard" model="ir.actions.act_window">
+      <field name="name">Registro de Avance de Actividades</field>
+      <field name="res_model">project.wizard.activity</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem action="project_action_view_task_wizard" id="project.menu_action_view_task" parent="menu_project_exec_register" sequence="3"/>
+
+  </data>
+</openerp>

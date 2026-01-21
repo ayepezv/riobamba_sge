@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data noupdate="1">
+        <!-- Sequences for account.cashfund -->
+        <record id="seq_type_account_cashfund" model="ir.sequence.type">
+            <field name="name">Fondo Rotativo</field>
+            <field name="code">account.cashfund</field>
+        </record>
+
+        <record id="seq_account_cashfund" model="ir.sequence">
+            <field name="name">Fondo Rotativo</field>
+            <field name="code">account.cashfund</field>
+            <field name="prefix">FR/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+  </data>
+</openerp>

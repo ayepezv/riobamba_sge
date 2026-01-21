@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<openerp>
+<data noupdate="1">
+
+    <record model="doc_covenant.stage" id="doc_covenant_stage_planning">
+        <field name="name">INFORMACIÓN GENERAL</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_stage">1</field>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state1">
+        <field name="name">INGRESADO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">1</field>
+	<field name="stage_id" ref="doc_covenant_stage_planning"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state2">
+        <field name="name">DESPACHADO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">2</field>
+	<field name="stage_id" ref="doc_covenant_stage_planning"/>
+    </record>
+
+    <record model="doc_covenant.stage" id="doc_covenant_stage_syndicate">
+        <field name="name">DEPARTAMENTO LEGAL</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_stage">2</field>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state3">
+        <field name="name">ENVIADO A BENEFICIARIO PARA FIRMA</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">1</field>
+	<field name="stage_id" ref="doc_covenant_stage_syndicate"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state4">
+        <field name="name">EN ESPERA DE FIRMA DE BENEFICIARIO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">2</field>
+	<field name="stage_id" ref="doc_covenant_stage_syndicate"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state5">
+        <field name="name">ENVIADO PARA FIRMA DE PREFECTO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">3</field>
+	<field name="stage_id" ref="doc_covenant_stage_syndicate"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state6">
+        <field name="name">COMPLEMENTANDO DOCUMENTACION</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">4</field>
+	<field name="stage_id" ref="doc_covenant_stage_syndicate"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state7">
+        <field name="name">SUSPENDIDO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">5</field>
+	<field name="stage_id" ref="doc_covenant_stage_syndicate"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state8">
+        <field name="name">LEGALIZADO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">6</field>
+	<field name="stage_id" ref="doc_covenant_stage_syndicate"/>
+    </record>
+
+    <record model="doc_covenant.stage" id="doc_covenant_stage_secretary">
+        <field name="name">DISTRIBUCIÓN</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_stage">3</field>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state9">
+        <field name="name">EN ESPERA - FIRMA DE SECRETARIO GENERAL</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">1</field>
+	<field name="stage_id" ref="doc_covenant_stage_secretary"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state10">
+        <field name="name">POR DISTRIBUIR</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">2</field>
+	<field name="stage_id" ref="doc_covenant_stage_secretary"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state11">
+        <field name="name">CONVENIOS DISTRIBUIDOS</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">3</field>
+	<field name="stage_id" ref="doc_covenant_stage_secretary"/>
+    </record>
+
+    <record model="doc_covenant.stage" id="doc_covenant_stage_fiscalizacion">
+        <field name="name">FISCALIZACIÓN</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_stage">4</field>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state12">
+        <field name="name">EN EJECUCIÓN</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">1</field>
+	<field name="stage_id" ref="doc_covenant_stage_fiscalizacion"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state13">
+        <field name="name">SUSPENDIDO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">2</field>
+	<field name="stage_id" ref="doc_covenant_stage_fiscalizacion"/>
+    </record>
+
+    <record model="doc_covenant.state" id="doc_covenant_state14">
+        <field name="name">CONCLUIDO</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">3</field>
+	<field name="stage_id" ref="doc_covenant_stage_fiscalizacion"/>
+    </record>
+
+     <record model="doc_covenant.state" id="doc_covenant_state15">
+        <field name="name">ACTA DE TERMINACIÓN</field>
+	<field name="user_id" eval="False"/>
+        <field name="seq_state">4</field>
+	<field name="stage_id" ref="doc_covenant_stage_fiscalizacion"/>
+    </record>
+	
+	<!--Tipos de Convenios-->
+    <record model="doc_covenant.type" id="doc_covenant_type1">
+	<field name="name">Convenio de Cooperación Interinstitucional</field>   
+    </record>
+
+    <record model="doc_covenant.type" id="doc_covenant_type2">
+	<field name="name">Convenio de Aportación</field>   
+    </record>
+
+    <record model="doc_covenant.type" id="doc_covenant_type3">
+	<field name="name">Convenio Concurrente</field>   
+    </record> 
+
+    <record model="doc_covenant.type" id="doc_covenant_type4">
+	<field name="name">Cogestión</field>   
+    </record> 
+
+    <record model="doc_covenant.type" id="doc_covenant_type5">
+	<field name="name">Convenio Marco</field>   
+    </record>
+
+    <record model="doc_covenant.type" id="doc_covenant_type6">
+	<field name="name">Adéndum</field>   
+    </record> 
+
+    <record model="doc_covenant.type" id="doc_covenant_type7">
+	<field name="name">Otro</field>   
+    </record>
+</data>
+</openerp>

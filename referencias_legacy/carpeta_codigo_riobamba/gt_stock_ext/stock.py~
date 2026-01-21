@@ -1,0 +1,76 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2012-now Gnuthink Software Labs Co. Ltd. (<http://www.gnuthink.com>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+from datetime import date, datetime, timedelta
+from time import strftime
+
+class hr_contract_encargo(osv.osv):
+	_name = 'hr.contract.encargo'
+	_description = "Registros de Encargo y Subrogaciones a un empleado"
+	_columns = {
+		'contract_id': fields.many2one('hr.contract','Contrato del Empleado'),
+		'date_start': fields.date('Fecha de inicio'),
+		'date_stop': fields.date('Fecha de fin'),
+		'job_id': fields.many2one('hr.job','Puesto Encargado', required=True),
+		'wage':fields.float('Salario del puesto'),
+		'type':fields.selection([('funciones','Funciones'),('encargo','Encargo'),('subrogacion','Subrogación')],'Tipo de encargo',required=True),
+		#'encargo_id': fields.many2one('hr.contract','Contrato encargado'),
+		#'job_id': fields.related('encargo_id','job_id', type='many2one', relation='hr.job', string='Puesto Encargado'),
+		#'department_id': fields.related('encargo_id','department_id', type='many2one', relation='hr.department', string='Departamento del puesto encargado'),
+		#'wage': fields.related('encargo_id','wage', type='float', string='Salario del puesto encargado'),
+		#'to_payroll': fields.boolean('Subroga?',help='Activar esta casilla en caso que este empleado obtenga un beneficio economico en rol de pagos por el encargo'),
+		'state': fields.selection([('draft','Borrador'),('aprobado','Aprobado'),('rechazado','Rechazado')],'Estado'),
+	}
+	
+	_defaults = {
+				'type':'funciones',
+				'state':'draft',
+				}
+	
+	def draft_enviado(self, cr, uid, ids, context=None):
+		for registro in self.browse(cr, uid, ids, context):
+			return self.write(cr, uid, ids, {'state':'solicitado'})
+		
+	def rechazar(self, cr, uid, ids, context=None):
+		for registro in self.browse(cr, uid, ids, context):
+			return self.write(cr, uid, ids, {'state':'rechazado'})
+		
+	def enviado_aprobado(self, cr, uid, ids, context=None):
+		for registro in self.browse(cr, uid, ids, context):
+			return self.write(cr, uid, ids, {'state':'aprobado'})
+		
+	def onchange_trabajo(self, cr, uid, ids, job_id, context=None):
+		obj_job = self.pool.get('hr.job')
+		job = obj_job.browse(cr, uid, job_id, context)
+		if job.grupo_id:
+			return {'value': {'wage': job.grupo_id.rmu}}
+		return False
+	
+hr_contract_encargo()
+
+class inherit_hr_contract_encargo(osv.osv):
+    _inherit = 'hr.contract'
+    _columns={
+        'encargos_ids' : fields.one2many('hr.contract.encargo', 'contract_id','Encargo y Subrogacion'),
+	}
+inherit_hr_contract_encargo()
+

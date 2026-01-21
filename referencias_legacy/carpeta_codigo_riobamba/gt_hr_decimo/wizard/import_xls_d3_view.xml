@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- WIZARD FROM OBJ
+-->
+<record id="view_import_sheet_wizard_d3" model="ir.ui.view">
+  <field name="name">Importar Hoja</field>
+  <field name="model">import.sheet.d3</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Importar Hoja" version='7.0'>	 
+      <group col="4" colspan="4">
+	<label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls). El formato debe ser: Nombre - cedula - dic - ene - feb - mar - abr - may - jun - jul - ago - sep - oct - nov - total - valor"/>
+	<group colspan="4">
+	  <field name="archivo"/>
+	</group>
+	<newline/>	   
+	<group col="3" colspan="4">
+	  <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+	  <button name="import_sheet_d3" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	</group>
+      </group>
+    </form>
+  </field>
+</record>
+
+    </data>
+</openerp>

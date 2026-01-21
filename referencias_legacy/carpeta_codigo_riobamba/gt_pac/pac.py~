@@ -1,0 +1,44 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import osv, fields
+
+class productPac(osv.Model):
+    _description = 'Catalogo PAC'
+    _name = 'product.pac'
+    _columns = dict(
+        code = fields.char('Codigo',size=16,required=True),
+        name = fields.char('Descripcion',size=64,required=True),
+        pu = fields.float('Precio Unitario'),
+    )
+productPac()
+
+class purchasePacLine(osv.Model):
+    _description = 'Detalle PAC'
+    _name = 'purchase.pac.line'
+    _columns = dict(
+        pac_id = fields.many2one('purchase.pac','PAC'),
+        name = fields.many2one('product.pac','Bien/Servicio'),
+        qty = fields.float('Cantidad'),
+        pu = fields.float('Precio Unitario'),
+        total = fields.float('Total'),
+    )
+purchasePacLine()
+
+class purchasePac(osv.Model):
+    _description = 'Plan Anual de Compras'
+    _name = 'purchase.pac'
+    _columns = dict(
+        name = fields.char('Descripcion',size=128),
+        department_id = fields.many2one('hr.department','Direccion/Departamento',required=True),
+        year_id = fields.many2one('account.fiscalyear','Anio Fiscal'),
+        line_ids = fields.one2many('purchase.pac.line','pac_id','Detalle'),
+    )
+
+purchasePac()
+

@@ -1,0 +1,182 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+
+from report import report_sxw
+from osv import osv
+import operator
+import time
+import datetime
+from datetime import date, timedelta
+from tools import ustr
+import operator
+
+class evaluacion_proyecto(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context=None):
+        super(evaluacion_proyecto, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            '_vars': self._vars,
+            '_get_totales':self._get_totales,
+           
+        })
+        
+    def set_context(self, objects, data, ids, report_type=None):
+        c_b_lines_obj = self.pool.get('budget.item')
+        ids_lines=c_b_lines_obj.search(self.cr,self.uid,[('poa_id','=',data['form']['poa_id'][0]),
+                                                         ('type_budget','=','gasto')])
+        if ids_lines:
+            objects=self.pool.get('budget.poa').browse(self.cr,self.uid,data['form']['poa_id'][0])         
+            return super(evaluacion_proyecto, self).set_context([objects], data, ids, report_type=report_type)
+        else:
+            raise osv.except_osv('Error!!', 'No existen partidas tipo gasto del presupuesto')
+
+    def _vars(self,resumen):  
+        res = { }          
+        begin = self.datas['form']['date_from']
+        user=ustr(self.pool.get('res.users').browse(self.cr,self.uid,self.uid).name.upper())
+        res['user']=user
+        today=time.strftime('%Y-%m-%d %H:%M:%S')        
+        res['date']=today
+        res['date_from'] = self.datas['form']['date_from']
+        res['date_to'] = self.datas['form']['date_to']
+        res['nivel'] = self.datas['form']['nivel']
+        today=time.strftime('%Y-%m-%d %H:%M:%S')        
+        res['date']=today                                            
+        res['begin']=begin.upper()
+        end = self.datas['form']['date_to']
+        res['end']=end.upper()
+        import pdb
+        pdb.set_trace()
+        res['project_name']=resumen.project_id.code
+        return res 
+        
+    def crear_padre(self, data, data_suma, res):
+        if data['post'].parent_id:
+            data['padre'] = data['post'].parent_id
+            if res.get(data['post'].parent_id.code,False):
+                res[data['post'].parent_id.code]['planned_amount'] += data_suma['planned_amount']
+                res[data['post'].parent_id.code]['paid_amount'] += data_suma['paid_amount']
+                res[data['post'].parent_id.code]['codif_amount'] += data_suma['codif_amount']
+                res[data['post'].parent_id.code]['reform_amount'] += data_suma['reform_amount']
+                res[data['post'].parent_id.code]['to_rec'] += data_suma['to_rec']
+                res[data['post'].parent_id.code]['percent_rec'] += data_suma['percent_rec']
+                res[data['post'].parent_id.code]['percent_sal'] += data_suma['percent_sal']
+                res[data['post'].parent_id.code]['superavit'] += data_suma['superavit']
+                res[data['post'].parent_id.code]['percent_super'] += data_suma['percent_super']
+            else:
+                res[data['post'].parent_id.code] = {
+                    'post': data['post'].parent_id,
+                    'padre': False, 
+                    'code':data['post'].parent_id.code,
+                    'code_aux':data['post'].parent_id.code,
+                    'general_budget_name':data['post'].parent_id.name,
+                    'planned_amount':data['planned_amount'],
+                    'paid_amount':data['paid_amount'], #pagado - recaudado
+                    'codif_amount':data['codif_amount'],
+                    'reform_amount':data['reform_amount'],
+                    'to_rec':data['to_rec'],
+                    'percent_rec':data['percent_rec'],
+                    'percent_sal':data['percent_sal'],
+                    'superavit':data['superavit'],
+                    'percent_super':data['percent_super'],
+                    'final': False,
+                    'nivel': data['post'].parent_id.nivel-1,
+                }
+            self.crear_padre(res[data['post'].parent_id.code], data_suma,res)
+            
+    def _get_totales(self,resumen):
+        res = { }
+        res_line = { }
+        context = { }
+        result = []
+        date_from = self.datas['form']['date_from']
+        date_to = self.datas['form']['date_to']
+        c_b_lines_obj = self.pool.get('budget.item')
+        ids_lines=c_b_lines_obj.search(self.cr,self.uid,[('poa_id','=',resumen.id),('type_budget','=','gasto')])
+        context = {'by_date':True,'date_start': date_from, 'date_end': date_to,'poa_id':resumen.id}            
+        planned_total=coded_total=reforma_total=balance_accured_total=practical_total=recaudado_total=0
+        #        totales = c_b_lines_obj._compute_budget_all(self.cr, self.uid, ids_lines,[],[], context)
+        for line in c_b_lines_obj.browse(self.cr,self.uid,ids_lines, context=context):
+            if res_line.has_key(line.code)==False:
+                code_aux = line.budget_post_id.code + line.program_id.sequence
+                aux_to_pay = line.codif_amount - line.paid_amount
+                aux_percent_rec = aux_percent_super = 0
+                aux_superavit = line.codif_amount - line.paid_amount #en gasto
+                if line.codif_amount>0:
+                    aux_percent_rec = ((line.paid_amount)*(100))/line.codif_amount
+                    aux_percent_super = ((aux_superavit)*(100))/line.codif_amount
+                aux_percent_sal = 100 - aux_percent_rec
+                res_line[line.code]={
+                    'post': line.budget_post_id,
+                    'padre': False, 
+                    'code':code_aux,#line.code
+                    'code_aux':code_aux,
+                    'general_budget_name':line.budget_post_id.name,
+                    'planned_amount':line.planned_amount,
+                    'reform_amount':line.reform_amount,
+                    'codif_amount':line.codif_amount,
+                    'paid_amount':line.paid_amount,     
+                    'to_rec':aux_to_pay,
+                    'percent_rec':aux_percent_rec,
+                    'percent_sal':aux_percent_sal,
+                    'superavit':aux_superavit,
+                    'percent_super':aux_percent_super,
+                    'nivel': line.budget_post_id.nivel-1,
+                    'final': True,
+                }
+                self.crear_padre(res_line[line.code], res_line[line.code],res_line)
+            else:                                
+                aux_to_pay = line.codif_amount - line.paid_amount
+                aux_percent_sal = 100 - aux_percent_rec
+                aux_superavit = line.paid_amount - line.codif_amount
+                aux_percent_rec = aux_percent_super = 0
+                if line.codif_amount>0:
+                    aux_percent_rec = ((line.paid_amount)*(100))/line.codif_amount
+                    aux_percent_super = ((aux_superavit)*(100))/line.codif_amount
+                res_line[line.budget_post_id.id]['planned_amount']+=line.planned_amount
+                res_line[line.budget_post_id.id]['reform_amount']+=line.reform_amount#totales[line.id]['reforma_amount']
+                res_line[line.budget_post_id.id]['codif_amount']+=line.codif_amount#totales[line.id]['coded_amount']
+                res_line[line.budget_post_id.id]['paid_amount']+=line.paid_amount
+                res_line[line.budget_post_id.id]['to_rec']+=aux_to_pay
+                res_line[line.budget_post_id.id]['percent_rec']+=aux_percent_rec
+                res_line[line.budget_post_id.id]['percent_sal']+=aux_percent_sal
+                res_line[line.budget_post_id.id]['superavit']+=aux_superavit
+                res_line[line.budget_post_id.id]['percent_super']+=aux_percent_super
+        res_line['total']={
+            'planned_amount': 0.00,
+            'reform_amount': 0.00,
+            'codif_amount': 0.00,
+            'paid_amount': 0.00,
+            'to_rec': 0.00,
+            'percent_rec': 0.00,
+            'percent_sal': 0.00,
+            'percent_super': 0.00,
+            'superavit': 0.00,
+            'level':0,
+            'code':0,
+            'code_aux':0,
+        }
+        values=res_line.itervalues()
+        for line_totales in values:
+            if not 'level' in line_totales and line_totales['final']==True:
+                res_line['total']['planned_amount']+=line_totales['planned_amount']            
+                res_line['total']['reform_amount']+=line_totales['reform_amount']
+                res_line['total']['codif_amount']+=line_totales['codif_amount']
+                res_line['total']['paid_amount']+=line_totales['paid_amount']
+                res_line['total']['to_rec']+=line_totales['to_rec']
+                res_line['total']['percent_rec']+=line_totales['percent_rec']
+                res_line['total']['percent_sal']+=line_totales['percent_sal']
+                res_line['total']['percent_super']+=line_totales['percent_super']
+                res_line['total']['superavit']+=line_totales['superavit']
+        return res_line
+
+report_sxw.report_sxw('report.evaluacion_proyecto','evaluacion.proyecto',
+                      'gt_project_project/report/evaluacion_proyecto.mako',
+                      parser=evaluacion_proyecto)
+

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="activos_empleado" model="activos.empleado"
+            name="activos_empleado" rml="gt_doc_funcionarios/report/activos_funcionario.mako"
+            usage="default" string="Reporte de los Activos del Funcionario" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

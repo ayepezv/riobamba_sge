@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+        <record id="view_viaticos_calculadora_form" model="ir.ui.view">
+            <field name="name">calculadora.form</field>
+            <field name="model">calculadora</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Calculador de viáticos">
+                	<field name="employee_id" colspan="2" required="1" on_change="devolver_datos_empleado(employee_id)"/>
+                	<field name="department_id" colspan="2"/>
+                	<field name="job_id" colspan="2"/>
+		           	<group colspan="4" string="Detalle de localidades (calculo de viático)">
+		            	<field name="destinos_solicitud" colspan="4" nolabel="1">
+		            		<tree string="" editable="bottom">
+		            			<field name="name" on_change="resetear_destinos()" required="1"/>
+		            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+		            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+		            			<field name="ciudad_internacional" domain="[('country_id','=',pais_id.name.id)]" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+		            			<field name="fecha_salida" required="1" on_change="segundos_a_cero(fecha_salida,'fecha_salida')"/>
+		            			<field name="fecha_llegada" required="1" on_change="segundos_a_cero(fecha_llegada,'fecha_llegada')"/>
+		            		</tree>
+		            	</field>
+		           	</group>
+            		<group string="Detalle de Gastos" colspan="4">
+                    	<field name="detalle_solicitud" colspan="4" nolabel="1" readonly="1"/>
+                    	<newline/>
+                    	<group colspan="4" col="6">
+	                    	<group colspan="2"/>
+	                    	<button name="calcular" type="object" string="Calcular" colspan="2" icon="terp-hr"/>
+	                    	<field name="total_solicitud" colspan="2" readonly="1"/>
+	                    	<group colspan="2"/>
+	                    	<field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+	                    	<field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+                    	</group>
+        			</group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="action_calculadora" model="ir.actions.act_window">
+			<field name="name">Calculador de Viático</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">calculadora</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+		</record>
+		
+		<record id="view_viaticos_calculadora_line_form" model="ir.ui.view">
+            <field name="name">calculadora.line.form</field>
+            <field name="model">calculadora.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Detalle">
+                	<group colspan="4">
+                    	<field name="detalle" colspan="4" required="1"/>
+                    	<field name="cantidad" colspan="2" required="1"/>
+                    	<field name="valor" colspan="2" required="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_calculadora_line_tree" model="ir.ui.view">
+            <field name="name">calculadora.line.tree</field>
+            <field name="model">calculadora.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Detalle" editable="bottom">
+                	<field name="detalle"/>
+                	<field name="cantidad"/>
+                	<field name="valor"/>
+                </tree>
+            </field>
+        </record>
+        
+        <menuitem id="menu_viaticos_calculadora" parent="menu_viaticos" name="Calculador de viáticos" action="action_calculadora" groups="base.group_hr_manager,gt_doc_viaticos.group_via_calculadora" sequence="10"/>
+        
+	</data>
+</openerp>

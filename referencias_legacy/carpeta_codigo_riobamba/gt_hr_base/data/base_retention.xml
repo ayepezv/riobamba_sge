@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+      <!-- TABLA RETENCION 2014
+		-->
+      
+	  <record id="hr2014" model="hr.work.period">
+        <field name="name">Periodo Salarial - 2014</field>
+		<field name="date_start">2014-01-01</field>
+		<field name="date_stop">2014-12-31</field>
+		<field name="intervalo">1</field>
+		<field name="basic_wage">340</field>
+		<field name="state">draft</field>
+	  </record>
+
+      <record id="retentiont_2014" model="hr.base.retention">
+        <field name="period_id" ref="gt_hr_base.hr2014"/>
+        <field name="name">Tabla Base Retencion Impuesto Renta 2014</field>
+        <field name="active">True</field>
+      </record>
+      
+      <record id="hr_base_retention_line1" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">0</field>
+		<field name="excess_to">10410</field>
+		<field name="basic_fraction_tax">0</field>
+		<field name="percent">0</field>
+      </record>
+      
+      <record id="hr_base_retention_line2" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">10410</field>
+		<field name="excess_to">13270</field>
+		<field name="basic_fraction_tax">0</field>
+		<field name="percent">5</field>
+      </record>
+      
+      <record id="hr_base_retention_line3" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">13270</field>
+		<field name="excess_to">16590</field>
+		<field name="basic_fraction_tax">143</field>
+		<field name="percent">10</field>
+      </record>
+      
+      <record id="hr_base_retention_line4" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">16590</field>
+		<field name="excess_to">19920</field>
+		<field name="basic_fraction_tax">475</field>
+		<field name="percent">12</field>
+      </record>
+	  
+      <record id="hr_base_retention_line5" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">19920</field>
+		<field name="excess_to">39830</field>
+		<field name="basic_fraction_tax">875</field>
+		<field name="percent">15</field>
+      </record>
+      
+      <record id="hr_base_retention_line6" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">39830</field>
+		<field name="excess_to">59730</field>
+		<field name="basic_fraction_tax">3861</field>
+		<field name="percent">20</field>
+      </record>
+      
+      <record id="hr_base_retention_line7" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">59730</field>
+		<field name="excess_to">79660</field>
+		<field name="basic_fraction_tax">7841</field>
+		<field name="percent">25</field>
+      </record>
+      
+      <record id="hr_base_retention_line8" model="hr.base.retention.line">
+		<field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">79660</field>
+		<field name="excess_to">106200</field>
+		<field name="basic_fraction_tax">12824</field>
+		<field name="percent">30</field>
+      </record>
+	  
+      <record id="hr_base_retention_line9" model="hr.base.retention.line">
+        <field name="retention_id" ref="gt_hr_base.retentiont_2014"/>
+		<field name="basic_fraction">106200</field>
+		<field name="excess_to">1000000</field>
+		<field name="basic_fraction_tax">20786</field>
+		<field name="percent">35</field>
+      </record>
+      
+      
+    </data>
+</openerp>

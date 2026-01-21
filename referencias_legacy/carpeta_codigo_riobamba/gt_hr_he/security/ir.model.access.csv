@@ -1,0 +1,21 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_he_register","hr.he.register","model_hr_he_register","base.group_hr_manager",1,1,1,1
+"access_hr_he_register_line","hr.he.register.line","model_hr_he_register_line","base.group_hr_manager",1,1,1,1
+"access_hr_he_register_alone","hr.he.register.alone","model_hr_he_register_alone","group_he_alone",1,1,1,0
+"access_hr_he_register_alone","hr.he.register.alone","model_hr_he_register_alone","group_he_alone",1,1,1,0
+"access_hr_he_register_alone_line","hr.he.register.alone.line","model_hr_he_register_alone_line","group_he_alone",1,1,1,0
+"access_hr_contract_doc","hr.contract","hr_contract.model_hr_contract","group_he_alone",1,0,0,0
+"access_hr_department_doc","hr.department","hr.model_hr_department","group_he_alone",1,0,0,0
+"access_hr_work_period_line","hr.work.period.line","gt_hr_base.model_hr_work_period_line","group_he_alone",1,0,0,0
+"access_hr_ie_line","hr.ie.line","gt_hr_ie.model_hr_ie_line","group_he_alone",1,0,0,0
+"access_hr_he_config","he.config","model_he_config","group_he_alone",1,0,0,0
+"access_hr_contract_type","hr.contract.type","gt_hr_base.model_hr_contract_type","group_he_alone",1,0,0,0
+"access_hr_alone_log","alone.log","model_alone_log","group_he_alone",1,1,1,0
+"access_hr_calendar_line","hr.calendar.line","gt_hr_base.model_hr_calendar_line","group_he_alone",1,1,1,0
+"access_hr_ir_sequence","ir.sequence","base.model_ir_sequence","group_he_alone",1,1,0,0
+"access_hr_he_register_alone hr","hr.he.register.alone","model_hr_he_register_alone","base.group_hr_user",1,1,1,0
+"access_hr_he_register_alone_line hr usr","hr.he.register.alone.line","model_hr_he_register_alone_line","base.group_hr_user",1,1,1,1
+"access_hr_he_register_alone_line hr mn","hr.he.register.alone.line","model_hr_he_register_alone_line","base.group_hr_manager",1,1,1,1
+"access_hr_alone_log","alone.log","model_alone_log","base.group_hr_manager",1,1,1,1
+"access_hr_alone_log usr","alone.log","model_alone_log","base.group_hr_user",1,1,1,1
+

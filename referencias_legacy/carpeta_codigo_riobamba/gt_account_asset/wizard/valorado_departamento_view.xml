@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <!-- ACTIVO TOTAL DEPRECIACION-->
+
+       <record id="view_activo_total_dep" model="ir.ui.view">
+	 <field name="name">Activos Total Depreciacion</field>
+	 <field name="model">activo.total.dep</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Activos Total">
+	     <field name="date_start" required="1"/>
+	     <field name="date_stop" required="1"/>
+	     <newline/>
+	     <group col="2" colspan="4">
+	       <button icon="gtk-cancel" special="cancel"
+		       string="Salir" />
+	       <button name="printActivoTotalDep" type="object" icon="gtk-execute"  string="Imprimir"/>
+	     </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_activo_total_dep" model="ir.actions.act_window">
+        <field name="name">Activos Total Depreciacion</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">activo.total.dep</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_activo_total_dep"
+		icon="STOCK_EXECUTE"
+		action="action_activo_total_dep"
+		parent="account_asset.menu_finance_assets"
+		name="Activos Total Depreciacion"
+		groups="account.group_account_user,gt_account_asset.group_gt_account_asset_manager,gt_account_asset.group_gt_account_asset_user"
+		sequence="13"/>
+      <!-- ACTIVO TOTAL -->
+
+       <record id="view_activo_total" model="ir.ui.view">
+	 <field name="name">Activos Total</field>
+	 <field name="model">activo.total</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Activos Total">
+	     <field name="opcion" required="1"/>
+	     <field name="opc" required="1"/>
+	     <newline/>
+	     <field name="date_start" attrs="{'invisible':[('opc', '!=',True)]}"/>
+	     <field name="date_stop" attrs="{'required': [('opc', '=',True)],'invisible':[('opc', '!=',True)]}"/>
+	     <newline/>
+	     <group col="2" colspan="4">
+	       <button icon="gtk-cancel" special="cancel"
+		       string="Salir" />
+	       <button name="printActivoTotal" type="object" icon="gtk-execute"  string="Imprimir"/>
+	     </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_activo_total" model="ir.actions.act_window">
+        <field name="name">Activos Total</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">activo.total</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_activo_total"
+		icon="STOCK_EXECUTE"
+		action="action_activo_total"
+		parent="account_asset.menu_finance_assets"
+		name="Activos Total"
+		groups="account.group_account_user,gt_account_asset.group_gt_account_asset_manager,gt_account_asset.group_gt_account_asset_user"
+		sequence="12"/>
+
+      <!-- ACTIVOS CUSTODIO VALORADO -->
+
+       <record id="view_custodio_valor" model="ir.ui.view">
+	 <field name="name">Activos Custodio</field>
+	 <field name="model">custodio.valorado</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Activos Custodio">
+	     <group col="4" colspan="4">
+	       <field name="tipo" colspan="4" required="1"/>
+	       <field name="employee_id" colspan="2" required="1"/>
+	       <field name="estado" colspan="2" required="1"/>
+	       <field name="opc" required="1"/>
+	       <field name="categ_id" colspan="2"/>
+	       <field name="date_start" colspan="2" attrs="{'invisible':[('opc', '!=',True)]}"/>
+	       <field name="date_stop" colspan="2" attrs="{'required': [('opc', '=',True)],'invisible':[('opc', '!=',True)]}"/>
+	     </group>
+	     <newline/>
+	       <group col="3" colspan="1">
+		 <button icon="gtk-cancel" special="cancel"
+			 string="Salir" />
+		 <button name="printCustodioValorado" type="object" icon="gtk-execute"  string="Imprimir"/>
+	       </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_custodio_valorado" model="ir.actions.act_window">
+        <field name="name">Activos Custodio</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">custodio.valorado</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_custodio_valorado"
+		icon="STOCK_EXECUTE"
+		action="action_custodio_valorado"
+		parent="account_asset.menu_finance_assets"
+		name="Activos Custodio"
+		groups="account.group_account_user,gt_account_asset.group_gt_account_asset_manager,gt_account_asset.group_gt_account_asset_user"
+		sequence="11"/>
+
+      <!-- ACTIVOS DEPARTAMENTO VALORADO -->
+      <record id="view_departamento_valor" model="ir.ui.view">
+        <field name="name">Valor Activos Departamento</field>
+        <field name="model">departamento.valor</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Valor Activos Departamento">
+	    <group col="4" colspan="4">
+	      <field name="tipo" colspan="2" required="1"/>
+	      <field name="valor" colspan="2" required="1"/>
+	      <newline/>
+	      <field name="opc" required="1"/>
+	      <field name="opc2" required="1"/>
+	      <newline/>
+	      <field name="date_start" attrs="{'invisible':[('opc', '!=',True)]}"/>
+	      <field name="date_stop" attrs="{'required': [('opc', '=',True)],'invisible':[('opc', '!=',True)]}"/>
+	    </group>
+	    <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="printActivoValorado" type="object" icon="gtk-execute"  string="Imprimir"/>
+	      </group>
+	    <newline/>
+	    <group col="4" colspan="4">
+	      <separator string="Departamentos" colspan="2" />
+	      <separator string="Categorias" colspan="2"/>
+	      <newline/>
+	      <field name="dept_ids" colspan="2" nolabel="1"
+		     attrs="{'invisible': [('tipo', '!=','Seleccionar')],'required': [('tipo', '=','Seleccionar')]}">
+		<tree>
+		  <field name="name"/>
+		</tree>
+	      </field>
+	      <field name="categ_ids" colspan="2" nolabel="1"
+		     attrs="{'invisible': [('tipo', '!=','Seleccionar')],'required': [('tipo', '=','Seleccionar')]}">
+		<tree>
+		  <field name="name"/>
+		</tree>
+	      </field>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_activo_valorado" model="ir.actions.act_window">
+        <field name="name">Valor Activos Departamento</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">departamento.valor</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_activo_valorado"
+		icon="STOCK_EXECUTE"
+		action="action_activo_valorado"
+		parent="account_asset.menu_finance_assets"
+		name="Valor Activos Departamento"
+		groups="account.group_account_user,gt_account_asset.group_gt_account_asset_manager,gt_account_asset.group_gt_account_asset_user"
+		sequence="10"/>
+
+</data>
+</openerp>

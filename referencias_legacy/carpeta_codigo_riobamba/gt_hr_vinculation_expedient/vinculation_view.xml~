@@ -1,0 +1,31 @@
+<openerp>
+<data>
+	
+    <record model="ir.ui.view" id="contract_expedient_form">
+        <field name="name">contract.expedient.form</field>
+        <field name="type">form</field>
+        <field name="model">doc_contract.contract</field>
+        <field name="inherit_id" ref="gt_doc_contract.view_doc_contract_form"/>
+        <field name="arch" type="xml">
+          <field name="creation_date" position="after">
+			<field name="expedient_id" string="Trámite" colspan="2" 
+				   attrs="{'readonly':['|',('state','!=','draft'),'|',
+						  ('info_general','=',False),('is_cp','=',True)]}"/>
+			<xpath expr="/form/notebook/notebook/page[@string='Localidades']" position="after">
+			  <page string="Referencia de Trámites">
+	            <field name="expedient_ids" nolabel="1" widget="many2many" colspan="6"
+	                   attrs="{'readonly':['|',('not_perfil','=',True),('distribucion','=',True)]}">
+	              <tree editable="bottom">
+	                <field name="code" readonly="True"/>
+	                <field name="name" readonly="True"/>
+	                <field name="resumen" readonly="True"/>
+	              </tree>	
+	            </field>
+		      </page>
+			</xpath>
+		  </field>
+        </field>
+    </record>
+                       
+</data>
+</openerp>

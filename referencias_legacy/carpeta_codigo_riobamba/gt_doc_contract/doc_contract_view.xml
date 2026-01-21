@@ -1,0 +1,731 @@
+<openerp>
+<data>
+	
+	
+	<!--menuitem name="Configuración" id="menu_document_manager_configuration" parent="gt_document_manager.menu_document_manager" sequence="50"/-->
+	<menuitem name="Contratos" id="menu_doc_contract" parent="gt_document_manager.menu_document_manager" sequence="30"/>	
+	<menuitem name="Gestión de Contratos" id="menu_doc_contract_configuration" 
+			  parent="gt_document_manager.menu_document_manager_configuration" sequence="30"/>
+
+<!--DOC_CONTRACT_CONTRACT FORM TREE ACTION--> 
+	<record model="ir.ui.view" id="view_doc_contract_form">
+        <field name="name">DOC_CONTRACT</field>
+        <field name="model">doc_contract.contract</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Contratos">
+            <group colspan="4" col="6">
+              <group colspan="6" string="Estado" col="2">
+                <field name="state" widget="statusbar" statusbar_visible="draft,legalizing,open,execution,done" statusbar_colors='{"draft":"black","legalizing":"blue","open":"blue","execution":"blue","cancelled":"grey","done":"green"}' select="1"/>
+				<!--field name="state_covenant"/-->
+              </group>
+              <group colspan="6" string="Información General" col="8">
+	            <field name="user_id" colspan="4" widget="selection"/>
+				<field name="creation_date" colspan="2"/>
+				<field name="is_cp" invisible="1"/>
+                <field name="code" colspan="2" readonly="True" invisible="1" string="Código"/>
+                <field name="codigo_contrato" colspan="4" required="True" 
+					   attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}"/>
+                <!--field name="year" colspan="2" required="True" readonly="True"/-->
+	            <field name="subscription_date" colspan="2" required="True" 
+					   attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}"/>
+	            <field name="name" 
+					   attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}" 
+					   colspan="8"/>
+				<field name="partner_id" colspan="4" required="True" 
+					   attrs="{'readonly':['|',('state','!=','draft'),'|',
+							  ('info_general','=',False),('is_cp','=',True)]}"/>
+				<field name="department_id" required="True" colspan="4" 
+					   attrs="{'readonly':['|',('state','!=','draft'),'|',
+							  ('info_general','=',False),('is_cp','=',True)]}"/>
+				<field name="crossovered_budget_certificate_id" colspan="4" 
+					   attrs="{'readonly':['|',('state','!=','draft'),'|',
+							  ('owner','=',False),('is_cp','=',True)]}" invisible="1"/>
+				<newline/>
+	            <field name="amount" required="True" colspan="2" 
+					   attrs="{'readonly':['|',('state','!=','draft'),'|',
+							  ('info_general','=',False),('is_cp','=',True)]}"/>
+	            <field name="percentage_advance" required="True" colspan="2" 
+					   attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}"/>
+				<field name="term" required="True" colspan="1" 
+					   attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}"/>
+                <field name="fecha_cumplimiento" colspan="1" string="Fecha Cumplimiento"
+ 					   attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}"/>
+		        <field name="owner" invisible="1"/>
+	            <field name="admin_contract" invisible="1"/>
+	            <field name="perfil_usuario" invisible="1"/>
+	            <field name="info_general" invisible="1"/>
+	            <field name="distribucion" invisible="1"/>
+	            <field name="ejecucion" invisible="1"/>
+	            <field name="not_perfil" invisible="1"/>
+	            <field name="chk_zip" invisible="1"/>
+				<field name="chk_notify_admin" invisible="1"/>
+			  </group>
+			  <group colspan="6" col="8" string="Firmas" attrs="{'invisible':[('state','=','draft')]}">
+				<!--field name="firmas" widget="statusbar"/-->
+				<field name="firma_contratista" colspan="1" attrs="{'readonly':['|',('state','!=','legalizing'),
+																   ('info_general','=',False)]}"/>
+				<field name="firma_max" colspan="1" attrs="{'readonly':['|',('state','!=','legalizing'),
+														   ('info_general','=',False)]}"/>
+				<field name="delegado" attrs="{'readonly':['|',('firma_max','=',False),'|',('state','!=','legalizing'),
+											  ('info_general','=',False)]}" colspan="4"/>	
+			  </group>
+            </group>
+            <notebook colspan="4">
+	          <page string="Datos Relacionados">
+	            <notebook colspan="4">       
+				  <page string="Proyección Pagos">
+					<!--field name="payment_term_id" required="True" colspan="2" 
+							  attrs="{'readonly':['|',('state','!=','draft'),
+									 ('owner','=',False)]}"/>
+					<newline/-->
+					<field name="payment_lines" nolabel="1" colspan="4" 
+						   attrs="{'readonly':[('state','!=','draft')]}" >
+					  <tree editable="bottom">
+						<field name="desc" required="1"/>
+						<field name="date" required="1"/>
+						<field name="amount" required="1" sum="TOTAL PAGOS"/>
+					  </tree>
+					</field>
+				  </page>   	
+		          <page string="Localidades">
+		            <field name="ubication_ids" nolabel="1" colspan="6" attrs="{'readonly':[('state','!=','draft')]}">
+		              <tree editable="top">
+		                <!--field name="contract_state" invisible="1"/-->
+		                <field name="canton" required="True" on_change="onchange_parish()"/>
+			            <field name="parroquia" required="True" domain="[('canton_id','=',canton)]"/>
+			            <field name="comunidad"/>   
+		              </tree>
+		            </field>
+		          </page>
+		 		  <page string="Garantias">
+			        <group col="3" colspan="2">
+			          <field name="warranty_ids" readonly="True" nolabel="1">
+			            <tree editable="top">
+			              <field name="type_warranty_id"/>
+			              <field name="amount"/>
+			            </tree>
+			          </field>
+			        </group>    
+			      </page>
+				  <page string="Docs. Presupuestarios">
+					<field name="prf_ids" readonly="1" nolabel="1"/>
+				  </page>
+				  <page string="Facturas Relacionadas">
+			<field name="invoice_ids" nolabel="1" domain="[('partner_id','=',partner_id),('type','=','in_invoice')]">
+			  <tree>
+				<field name="date_invoice"/>
+				<field name="number"/>
+				<field name="amount_vat" sum="Base Imponible"/>
+				<field name="amount_tax" sum="Impuestos"/>
+				<field name="amount_total" sum="Total"/>
+				<field name="residual" sum="Saldo pendiente"/>
+			  </tree>
+			</field>
+		  </page>
+	            </notebook>
+	            <button name="finalizar_etapa_legalizacion" icon="gtk-execute" 
+							confirm="Esta seguro que desea finalizar esta etapa?" type="object" 
+							string="Pasar a distribución" groups="gt_document_manager.group_ct_info_general"
+	                    	attrs="{'readonly':[('state','!=','legalizing')]}"/>  
+	              </page>
+	              <page string="Distribución" attrs="{'readonly':[('state','!=','open')]}">
+	               	<group col="8" colspan="8">
+	               	  <field name="admin_uid" colspan="4" 
+							 on_change="onchange_admin_uid(admin_uid)" 
+							 attrs="{'readonly':['|',('state','!=','open'),
+									('distribucion','=',False),
+									('cambiar_administrador','=',False)],
+	               					'required':[('owner','=',False),('distribucion','=',True),
+									('info_general','=',False)]}"/>
+	               	  <field name="cambiar_administrador" 
+							 attrs="{'readonly':['|',('state','!=','execution'),
+									('distribucion','=',False)]}"/>	 
+					  <newline/>
+	               	  <field name="date_received" colspan="2" 
+							 attrs="{'readonly':['|',('state','!=','open'),
+									('distribucion','=',False)],
+	                    		    'required':[('owner','=',False),('distribucion','=',True),
+									('info_general','=',False)]}"/>
+	                  <field name="dispatch_office_number" colspan="2" 
+							 attrs="{'readonly':['|',('state','!=','open'),
+									('distribucion','=',False)],
+	               					'required':[('owner','=',False),('distribucion','=',True),
+									('info_general','=',False)]}"/>
+	               	  <field name="data_contract" widget="" 
+							 filename="data_contract_fname"
+							 attrs="{'readonly':['|',('state','!=','open'),'|',('chk_contrato','=',True),
+									('distribucion','=',False)]}"/>
+									<!--'required':[('distribucion','=',True)]}"/-->
+                      <field name="data_contract_fname" select="1" invisible="1"
+                             attrs="{'required':[('owner','=',False),
+				    ('distribucion','=',True),('info_general','=',False)]}"/>
+		      <!--button name="subir_contrato" 
+							  confirm="Esta seguro que desea adjuntar el documento como copia del contrato?" 
+	               			  icon="gtk-save-as" 
+							  attrs="{'readonly':[('state','!=','legalizing')]}" 
+							  groups="gt_document_manager.group_ct_distribucion" 
+							  type="object" string="Adjuntar Contrato"/-->
+	               	  <button name="subir_contrato" 
+							  confirm="Esta seguro que desea adjuntar el documento como copia del contrato?" 
+	               			  icon="gtk-save-as" 
+							  attrs="{'readonly':['|',('state','!=','open'),
+									 ('chk_contrato','=',True)]}" 
+							  groups="gt_document_manager.group_ct_distribucion" 
+							  type="object" string="Adjuntar Contrato"/>
+	               	  <field name="chk_contrato" readonly="True" invisible="1"/>
+	                </group>
+	                <!--separator colspan="4" string="Distribución de Documentos"/-->
+					<notebook colspan="4">
+					  <page string="Distribucion de documentos">
+						<field name="distribucion_users" colspan="4" widget="many2many"
+							   nolabel="1" attrs="{'readonly':['|',('state','!=','open'),
+												  ('distribucion','=',False)]}">
+						  <tree>
+							<field name="name" string="Nombre Usuario"/>
+							<field name="context_department_id" string="Departamento"/>
+						  </tree>
+						</field>
+					  </page>
+					  <page string="Observaciones">
+						<field colspan="4" name="stage_secretary_notes" 
+							   nolabel="1" attrs="{'readonly':['|',('state','!=','open'),
+												  ('distribucion','=',False)]}"/>
+					  </page>
+					</notebook>
+                    <button name="finalizar_etapa_distribucion" 
+							confirm="Esta seguro que desea finalizar esta etapa?" 
+							string="Pasar a ejecución" type="object" icon="gtk-execute"
+                   	    	attrs="{'readonly':['|',('state','!=','open')]}" 
+							groups="gt_document_manager.group_ct_distribucion"/>
+	              </page>
+	              <page string="Ejecución">
+					<group colspan="8" col="8">
+                      <field name="supervisory" colspan="4" 
+							 attrs="{'readonly':['|',('state','!=','execution'),'|',
+								('ejecucion','=',False),'|',('cambiar_fiscalizador','=',False),
+								('admin_contract','=',False)]}"/>
+		      <field name="cambiar_fiscalizador" 
+			     attrs="{'readonly':['|',('state','!=','execution'),
+				    ('ejecucion','=',False)]}"/>
+					  <newline/>	 
+                      <field name="fecha_inicio" colspan="2"
+							 attrs="{'readonly':['|',('state','!=','execution'),
+									('ejecucion','=',False)]}"/>
+					  <!--attrs="{'readonly':['|',('state','!=','execution'),
+								 ('ejecucion','=',False)],
+								 'required':[('ejecucion','=',True)]}"/-->
+					  <field name="fecha_terminacion" colspan="2" 
+							 attrs="{'readonly':['|',('state','!=','execution'),
+									('ejecucion','=',False)]}"/>
+					  <field name="data_acta_cierre" colspan="3" widget="" 
+							 filename="data_acta_cierre_fname"
+							 attrs="{'readonly':['|',('state','!=','execution'),'|',
+								('ejecucion','=',False),'|',('chk_acta_cierre','=',True),
+								('admin_contract','=',False)]}"/>
+					  <field name="data_acta_cierre_fname" select="1" invisible="1"/> 
+					  <!--attrs="{'readonly':['|',('state','!=','execution'),'|',('ejecucion','=',False),'|',('chk_acta_cierre','=',True)],
+								 'required':[('ejecucion','=',True)]}"/-->
+					  
+					  <button name="subir_doc_acta_cierre" colspan="1" 
+							  confirm="Esta seguro que desea adjuntar el documento como Acta de Cierre?" 
+							  groups="gt_document_manager.group_ct_ejecucion"
+							  icon="gtk-save-as" 
+							  attrs="{'readonly':['|',('state','!=','execution'),'|',('chk_acta_cierre','=',True)]}"  
+							  type="object" string="Subir Doc.Acta Cierre"/>
+					  <field name="chk_acta_cierre" readonly="True" invisible="1"/>
+					  <!--field name="fecha_notif_anticipo" colspan="4" 
+								attrs="{'readonly':['|',('state','!=','execution'),
+									   ('ejecucion','=',False)]}"/>
+                      <field name="crossovered_budget_certificate_id" 
+							 attrs="{'readonly':[('stage_contract','!=','fiscalizacion')]}"/-->  
+                    </group>
+                    <notebook colspan="4">
+                      <page string="Miembros de la Comisión">
+	                    <group colspan="2" col="1">	
+	                      <field name="commission" widget="many2many" nolabel="1"
+	                        	 attrs="{'readonly':['|',('state','!=','execution'),('ejecucion','=',False)]}">
+		                    <tree string="Comisión">
+		                      <field name="name" string="Empleado"/>
+		                      <field name="context_department_id" string="Departamento"/>
+		                    </tree>	
+	                      </field>
+	                    </group>
+	                  </page>
+	                  <page string="Otros Miembros">
+	                    <field name="other_commission" nolabel="1" attrs="{'readonly':['|',('state','!=','execution'),('ejecucion','=',False)]}"/>
+	                  </page>
+					  <page string="Observaciones">
+						<field colspan="4" name="observaciones_ejecucion" nolabel="1" 
+							   attrs="{'readonly':['|',('state','!=','execution'),
+									  ('ejecucion','=',False)]}"/>
+					  </page>
+	                </notebook>
+	                <!--button name="finalizar_etapa_ejecucion" string="Finalizar Etapa Ejecución" type="object" icon="gtk-execute" 
+	       	    	 		   attrs="{'readonly':['|',('state','!=','execution')]}" confirm="Esta seguro que desea finalizar esta etapa?" groups="gt_document_manager.group_ct_ejecucion"/-->         	    
+	                </page>	 
+	                <page string="Documentos de Contrato">
+                	    <button name="zip_doc_contract" type="object" icon="terp-folder-yellow" string="Comprimir Documentación"
+                			attrs="{'invisible':[('state','=','draft')]}"/>
+                		<field name="datas" readonly="True" colspan="2"
+                			attrs="{'invisible':[('chk_zip','=',False)]}"/>
+	                	<field name="directory_id" invisible="1"/>
+	                	<field name="document_ids" colspan="6" nolabel="1" widget="one2many_list"
+	                		attrs="{'readonly':[('state','in',['draft','cancelled','done'])]}" 
+							   context="{'default_parent_id': directory_id,'default_perfil_usuario': perfil_usuario,'default_objeto': objeto}">
+	                		<tree string="Documentos">
+							  <field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+	                		  <field name="name" string="Descripción"/>
+	                			<field name="datas_fname"/>
+	                			<field name="create_uid" string="Subido por"/>
+				                <field name="create_date" string="Fecha adjunto"/>
+	                		</tree>
+	                	    <form string="Documentos">
+	                	    	<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+	                			<field name="parent_id" readonly="True" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+	       	                	<field name="name" string="Descripción"/>
+	                			<field name="datas" widget="" filename="datas_fname"/>
+                                <field name="datas_fname" select="1" invisible="1"/>
+	                		</form>
+                		</field>
+	                </page>
+			        <page string="Observaciones">
+	                  <field name="notes" colspan="6" nolabel="1" attrs="{'readonly':['|',('state','!=','draft'),('owner','=',False)]}"/>
+	                </page>
+	                <page string="Historial">
+	                	<field name="historial_lines" nolabel="1" readonly="True"/>    
+	                </page>
+                </notebook>
+        	    <group colspan="6" col="6">
+		  	    	<button name="%(action_doc_contract_cancel)d" type="action" string="ANULAR CONTRATO" icon="gtk-cancel"
+		  	    			attrs="{'readonly':[('state','in',('open','execution','done','cancelled'))]}" 
+							groups="gt_document_manager.group_ct_info_general"/>
+		  	    	<button name="abrir_contrato" type="object" states="draft" 
+							confirm="Esta seguro que desea iniciar el Contrato?" string="ABRIR CONTRATO" 
+							groups="gt_document_manager.group_ct_info_general" icon="gtk-media-play"
+		  	    			attrs="{'readonly':[('state','!=','draft')]}"/>
+		  	    	<button name="finalizar_contrato" string="FINALIZAR CONTRATO" type="object" icon="terp-camera_test" 
+	       	    	 	 attrs="{'readonly':['|',('state','!=','execution')]}" 
+							confirm="Esta seguro que desea finalizar el contrato?" 
+							groups="gt_document_manager.group_ct_ejecucion"/>
+		  	    	<!--button name="wkf_open_draft" states="open" string="Borrador" icon="gtk-indent"
+		  	    		attrs="{'readonly':[('stage_contract','!=','syndicate')]}"/-->
+		  	    	<!--field name="stage_contract" widget="statusbar" invisible="0"/-->
+		        </group>
+
+           </form>
+        </field>
+    </record>		
+  
+    <record model="ir.ui.view" id="view_doc_contract_tree">
+        <field name="name">VIEW DOC_CONTRACT TREE</field>
+        <field name="model">doc_contract.contract</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree colors="grey:state in ('cancelled');blue:state in ('legalizing');blue:state in ('open');blue:state in ('execution');green:state in ('done')">
+                <field name="codigo_contrato"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="subscription_date"/>
+                <field name="fecha_cumplimiento" string="Fecha Cumplimiento"/>
+                <field name="amount" string="Monto(Sin IVA)"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_doc_contract_search" model="ir.ui.view">
+    <field name="name">doc.contract.search.form</field>
+    <field name="model">doc_contract.contract</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+       <search string="Contratos">
+            <group>
+                <filter name="draft" string="Borrador" domain="[('state','=','draft')]" help="Contratos en Borrador" icon="gtk-indent"/>
+                <filter name="open" string="En Progreso" domain="[('state','=','open')]" help="Contratos en Progreso" icon="terp-camera_test"/>
+                <filter name="cancelled" string="Anulados" domain="[('state','=','cancelled')]" help="Contratos Anulados" icon="terp-dialog-close"/>
+                <filter name="done" string="Finalizados" domain="[('state','=','done')]" help="Contratos Finalizados" icon="terp-check"/>
+                <separator orientation="vertical"/>
+                <filter string="Fecha Suscripción" context="{'subscription_date_visible': False}" domain="[('subscription_date','&lt;&gt;',False)]" help="" icon="stock_calendar"/>
+                <filter string="Fecha Cump.Contractual" context="{'fecha_cumplimiento': False}" domain="[('fecha_cumplimiento','&lt;&gt;',False)]" help="" icon="stock_calendar"/>
+		        <separator orientation="vertical"/>
+                <field name="codigo_contrato"/>
+                <field name="name"/>
+                <field name="user_id">
+                    <filter domain="[('user_id','=',uid)]"  help="Contratos Asignados" icon="terp-personal" />
+                    <filter domain="[('user_id','=',False)]"  help="Contratos No Asignados" icon="terp-personal-" />
+                </field>
+                <!--field name="objeto"/-->
+                <field name="partner_id"/>
+            </group>
+            <newline/>
+            <group expand="0" string="Agrupar por...">
+                <filter string="Creador" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'user_id'}"/>
+                <filter string="Contratista" name="group_partner_id" icon="terp-personal" domain="[]" context="{'group_by':'partner_id'}"/>
+                <separator orientation="vertical"/>
+                <!--filter string="Objeto Contratación" name="group_objeto" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'objeto'}"/-->
+                <filter string="Estado" name="group_state" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                <separator orientation="vertical"/>
+                <separator orientation="vertical"/>
+                <filter string="Fecha Subscripción" icon="stock_calendar" domain="[]" context="{'group_by':'subscription_date'}"/>
+                <filter string="Fecha Cump.Contractual" icon="stock_calendar" domain="[]" context="{'group_by':'fecha_cumplimiento'}"/>
+            </group>
+        </search>
+    </field>
+	</record>
+	
+	
+    <record model="ir.actions.act_window" id="action_doc_contract_form">
+      <field name="name">Contratos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">doc_contract.contract</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help">Contratos</field>
+    </record>
+    
+    
+    <!--ACTION PARA CONSULTA DE ADMINISTRADOR DE CONTRATOS-->
+    <record model="ir.actions.act_window" id="action_doc_contract_form_admin">
+        <field name="name">Administración de Contratos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_contract.contract</field>
+        <field name="view_type">form</field>
+        <field name="help">Administración Contratos</field>
+        <field name="domain">[('admin_uid','=',uid)]</field>
+    </record>
+    
+    
+    <!--ACTION PARA CONSULTA DE ADMINISTRADOR DE CONTRATOS-->
+    <record model="ir.actions.act_window" id="action_doc_contract_form_user">
+        <field name="name">Consulta Contratos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_contract.contract</field>
+        <field name="view_type">form</field>
+        <field name="help">Consulta de contratos</field>
+    </record>
+  
+	<menuitem
+        name="Contratos"
+        action="action_doc_contract_form"
+        id="menu_doc_contract2"
+        parent="menu_doc_contract"
+        groups="gt_document_manager.group_ct_info_general,gt_document_manager.group_ct_distribucion"
+        sequence="5"/>
+        
+    <menuitem
+        name="Consulta Contratos"
+        action="action_doc_contract_form_user"
+        id="menu_doc_contract_form_user"
+        parent="menu_doc_contract"
+        groups="gt_document_manager.group_doc_contract"
+        sequence="5"/>
+        
+    <menuitem
+        name="Administración Contratos"
+        action="action_doc_contract_form_admin"
+        id="menu_doc_contract_form_admin"
+        parent="menu_doc_contract"
+        groups="gt_document_manager.group_ct_ejecucion"
+        sequence="5"/>
+
+	<menuitem
+        name="Tipos de Garantías"
+        action="gt_warranty_base.action_warranty_type_form"
+        id="menu_warranty_type"
+        parent="menu_doc_contract_configuration"/>
+	
+    <record id="doc_account_voucher_form_modified" model="ir.ui.view">
+      <field name="name">doc.account.voucher.form.modified</field>
+      <field name="model">account.voucher</field>
+      <field name="inherit_id" ref="account_voucher.view_vendor_payment_form"/>
+      <field name="arch" type="xml">
+	<field name="account_id" position="after">
+	  <field name="contract_type"/>
+	  <field name="contract_id" attrs="{'required':[('contract_type','=',True)],
+	    	                           'invisible':[('contract_type','=',False)]}"/>
+	</field>
+      </field>
+    </record>
+	   
+         
+    <!--DOC_CONTRACT_WARRANTY FORM TREE ACTION--> 
+    <record model="ir.ui.view" id="view_doc_contract_warranty_form">
+        <field name="name">doc_contract_warranty_form</field>
+        <field name="model">doc_contract.warranty</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Registro de Garantía">
+            <group string="Información de Garantía" colspan="4" col="4">
+	      <field name="name"/>
+	      <field name="aseguradora_id"/>
+              <field name="type_warranty_id" widget="selection"/>
+	      <field name="fecha_emision"/>
+	      <field name="fecha_fin"/>
+	      <field name="date_due"/>
+              <field name="amount"/>
+            </group>
+	    <group string="Información de Contrato" colspan="4" col="4">
+	      <field name="contract_id" on_change="onchange_contract(contract_id)" domain="[('state','=','execution')]"/>
+	      <field name="num_contract"/>
+	      <field name="contratista_id"/>
+	      <field name="description"/>
+	      <field name="administrador_id"/>
+	      <field name="fiscal_id"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Renovaciones">
+		<field name="date_ids" widget="one2many_list" colspan="4" nolabel="1" attrs="{'readonly': [('state','in',['draft','gone'])]}">
+		  <tree string="Renovaciones de Garantía" editable="top">
+		    <field name="date"/>
+		    <field name="date_due"/>
+		    <field name="monto"/>
+		  </tree>
+		</field>
+	      </page>
+	      <page string="Información Financiera">
+		<field name="move_id"/>
+		<field name="line_ids" widget="one2many_list" colspan="4" nolabel="1" string='Detalle Financiero'/>
+	      </page>
+	    </notebook>
+	    <group>
+	      <field name="state" widget="statusbar"/>
+	      <button name="action_register" string="Registrar" icon="gtk-execute" type="object" confirm="Seguro de Registrar ?" states="draft"/>
+	    </group>
+          </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_contract_warranty_tree">
+        <field name="name">view_doc_contract_warranty_tree</field>
+        <field name="model">doc_contract.warranty</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+          <tree string="Control de Garantías">
+	    <field name="name" select="1"/>
+	    <field name="contract_id" select="1"/>
+	    <field name="contratista_id" select="1"/>
+	    <field name="aseguradora_id" select="1"/>
+            <field name="type_warranty_id" select="1"/>
+            <field name="amount"/>
+	    <field name="state" select="1"/>
+          </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_contract_warranty">
+        <field name="name">Control de Garantías</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_contract.warranty</field>
+        <field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_doc_contract_warranty" id="menu_garantias_contratos" parent="menu_doc_contract"/>
+    
+    <!--DOC_CONTRACT_HISTORIAL FORM TREE ACTION--> 
+    <record model="ir.ui.view" id="view_doc_contract_historial_form">
+        <field name="name">doc_contract_historial_form</field>
+        <field name="model">doc.contract.historial</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Historial">
+                <group colspan="4" col="6">
+                    <field name="fecha_hora"/>
+                    <field name="usuario"/>
+                    <field name="name"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_contract_historial_tree">
+        <field name="name">view_doc_contract_historial_tree</field>
+        <field name="model">doc.contract.historial</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="fecha_hora"/>
+                <field name="usuario"/>
+                <field name="name"/>
+           </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_contract_historial_form">
+        <field name="name">Historial del Contrato</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc.contract.historial</field>
+        <field name="view_type">form</field>
+    </record>	    
+	    
+        
+
+      
+    <!--DOC_CONTRACT_STAGE FORM TREE ACTION-->        
+    <!--record model="ir.ui.view" id="view_doc_contract_stage_form">
+        <field name="name">VISTA FORM DOC_CONTRACT_STAGE</field>
+        <field name="model">doc_contract.stage</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Etapas">
+                <group colspan="4" col="6">
+                    <field name="seq_stage" invisible="1"/>
+                    <field name="name" readonly="True"/>
+                    <field name="user_id" required="True"/>
+                </group>
+                <notebook colspan="4">
+                <page string="Estados">
+                	<field name="state_ids" nolabel="1">
+                		<tree editable="bottom">
+                			<field name="seq_state" readonly="1"/>
+                    		<field name="name"/>
+                		</tree>
+                	</field>
+                </page>	
+                <page string="Descripción">
+                	<field name="desc" nolabel="1"/>
+                </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_contract_stage_tree">
+        <field name="name">VIEW DOC_CONTRACT_STAGE TREE</field>
+        <field name="model">doc_contract.stage</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="seq_stage" invisible="1"/>
+                <field name="name"/>
+                <field name="user_id"/>
+           </tree>
+        </field>
+    </record>
+    	
+    <record model="ir.actions.act_window" id="action_doc_contract_stage_form">
+        <field name="name">Etapas de contratos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_contract.stage</field>
+        <field name="view_type">form</field>
+        <field name="help">The Documents repository gives you access to all att.</field>
+    </record>	    
+        
+    <menuitem
+        name="Etapas"
+        action="action_doc_contract_stage_form"
+        id="menu_doc_contract_stage"
+        parent="menu_doc_contract_configuration"
+        groups="gt_document_manager.group_doc_manager"
+        sequence="1"/-->
+        
+        
+    <!--DOC_CONTRACT_STATE FORM TREE ACTION-->        
+    <!--record model="ir.ui.view" id="view_doc_contract_state_form">
+        <field name="name">VISTA FORM DOC_CONTRACT_STATE</field>
+        <field name="model">doc_contract.state</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Estados">
+                <group colspan="4" col="6">
+                    <field name="seq_state"/>
+                    <field name="name"/>
+                </group>	
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_contract_state_tree">
+        <field name="name">VIEW DOC_CONTRACT_STATE TREE</field>
+        <field name="model">doc_contract.state</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="seq_state"/>
+                <field name="name"/>
+           </tree>
+        </field>
+    </record-->
+        
+    
+    <!--DOC_CONTRACT_UBICATION FORM TREE ACTION-->        
+    <record model="ir.ui.view" id="view_doc_contract_ubication_form">
+        <field name="name">VISTA FORM DOC_CONTRACT_UBICATION</field>
+        <field name="model">doc_contract.ubication</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Ubicaciones">
+                <group colspan="4" col="6">
+                    <field name="name"/>
+                    <field name="canton"/>
+                    <field name="parroquia"/>
+                    <!--field name="stage_sequence"/-->
+                </group>	
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_contract_ubication_tree">
+        <field name="name">VIEW DOC_CONTRACT_UBICATION TREE</field>
+        <field name="model">doc_contract.ubication</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="canton"/>
+           </tree>
+        </field>
+    </record>
+
+
+
+    <record id="gt_warranty_base.view_warranty_type_form" model="ir.ui.view">
+      <field name="name">view.warranty.type.form</field>
+      <field name="model">warranty.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tipo de Garantía">
+	  <group colspan="4" col="4">
+            <field name="name"/>
+            <field name="amount"/>
+            <field name="inclusive"/>
+            <field name="advance"/>
+	  </group>
+	  <group string="Configuración Financiera" colspan="4" col="4">
+	    <field name="journal_id"/>
+	    <field name="cta_debit" domain="[('type','!=','view'),('user_type.code','=','orden')]"/>
+	    <field name="cta_credit" domain="[('type','!=', 'view'),('user_type.code','=','orden')]"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+    	
+    <!--record model="ir.actions.act_window" id="action_doc_contract_state_form">
+        <field name="name">Estados de las etapas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_contract.state</field>
+        <field name="view_type">form</field>
+        <field name="help">The Documents repository gives you access to all att.</field>
+    </record-->	    
+        
+    <!--menuitem
+        name="Estados"
+        action="action_doc_contract_state_form"
+        id="menu_doc_contract_state"
+        parent="menu_doc_contract_configuration"/-->
+                       
+</data>
+</openerp>

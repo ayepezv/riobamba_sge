@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+<data noupdate="1">
+
+    <record model="document.directory" id="dir_parent_covenant">
+        <field name="name">Convenios</field>
+        <field name="user_id" eval="False"/>
+        <field name="storage_id" ref="document.storage_default"/>
+        <field name="ressource_id">0</field>
+    </record>
+    
+</data>
+</openerp>
+

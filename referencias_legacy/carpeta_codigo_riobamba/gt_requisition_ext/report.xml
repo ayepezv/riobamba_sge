@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="chica_solicitud" model="caja.chica.solicitud"
+            name="caja.solicitud" rml="gt_requisition_ext/report/caja_chica.mako"
+            usage="default" string="Solicitud" header="True" report_type="webkit"/>
+
+    <report auto="False" id="chica_vale" model="caja.chica.vale"
+            name="caja.vale" rml="gt_requisition_ext/report/vale.mako"
+            usage="default" string="Vale Caja Chica" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

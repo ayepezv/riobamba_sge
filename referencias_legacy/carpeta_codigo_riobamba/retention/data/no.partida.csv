@@ -1,0 +1,243 @@
+id,name,desc
+11101,11101,cajas recaudadoras
+11102,11102,banco central cta cte unica
+11103,11103,banco central moneda recurso lega;
+11104,11104,banco central fondo de prestamos
+11105,11105,banco central moneda extranjera
+11106,11106,banco central empresas publicas
+11107,11107,banco central ctas especiales
+11108,11108,banco central contraloria
+11109,11109,banco de fomento y desarrollo
+11111,11111,banco fomento moenda extramjera
+11113,11113,banco fomento cuentas especiales
+11115,11115,bancos comerciales recaudacion
+11116,11116,banco comeriales
+11117,11117,bancos comerciales moneda extranjera
+11119,11119,bancos comerciales cuentas especiales
+11131,11131,titulos fiscales por entrega
+11133,11133,notas de credito por efectivizar
+11135,11135,otros documentos por efectivizar
+11151,11151,deposito a plazo en moneda de curso legal
+11153,11153,deposito a plazo en moneda extranjera
+11201,11201,anticipos a srv publicos
+11203,11203,anticipos a contratistas de obras de infraestructura
+11205,11205,anticippos a proveedores bienes servicios
+11206,11206,egresos realizados por expropiaciones
+11207,11207,anticipos por obligaciones de otros entes publicos
+11208,11208,anticipos del impuestos a la renta
+11209,11209,apertura de catrtas de credito
+11210,11210,anticipos a fideicomisos
+11211,11211,garantias entregadas
+11212,11212,regulaciones de cuentas de disponibilidades
+11213,11213,fondos de reposicion
+11215,11215,fondos a rendir cuentas
+11216,11216,financiamiento de imprtascion de derivados
+11217,11217,debitos de tesoreria
+11221,11221,egresos realizados por recuperar IESS
+11222,11222,egresos realizados por recuperar pagos efectuados SRIO
+11223,11223,debitos indevidos
+11225,11225,fondo de financiamiento de OP
+11227,11227,fondos para giros postales internaciones urgentes
+11228,11228,fondos por servicios agencias y ventanillas
+11229,11229,gitos postales internacionales urgentes por recuperar
+11230,11230,anticipos a contratos de anios anteriorers por regulaer
+11231,11231,cartas de credito de anios anteriores por regular
+11232,11232,anticipos a proveedores de anios anteriores por regular
+11235,11235,descuentos para compensaciones
+11236,11236,particiipaciones fidusiarias
+11238,11238,bonos entregados en donacion de pago
+11239,11239,recursos por prestamo del exterior
+11240,11240,descuentos y retenciones generados en ingresos
+11242,11242,ingresos recibidos en bancos en el exterior
+11247,11247,certificados de tesoreria
+11248,11248,certifcados de pasivos garantizados
+11250,11250,por recuperacion de fondos
+11251,11251,recauddacion de fondos no rendidos
+11261,11261,deudores por conciliacion bancaria
+11270,11270,anticipos de fondos por recuperar
+11280,11280,anticipos de fondos por recuperar terceros
+11281,11281,anticipos de fondos por pagos al SRI
+11290,11290,anticipos por obligaciones con la seguridad social
+11340,11340,cuentas por cobrar por cuentas anticipadas de petroleo
+11351,11351,
+11377,11377,
+11381,11381,
+11382,11382,
+11383,11383,
+11385,11385,
+11393,11393,
+11395,11395,
+12407,12407,
+12439,12439,
+12445,12445,
+12469,12469,
+12482,12482,
+12483,12483,
+12485,12485,
+12493,12493,
+12494,12494,
+12495,12495,
+12497,12497,
+12601,12601,
+12603,12603,
+12605,12605,
+12607,12607,
+12699,12699,
+12801,12801,
+12893,12893,
+12907,12907,
+13391,13391,
+13392,13392,
+13393,13393,
+13394,13394,
+13591,13591,
+13592,13592,
+13594,13594,
+14199,14199,
+14299,14299,
+14499,14499,
+14599,14599,
+14603,14603,
+14699,14699,
+14701,14701,
+14703,14703,
+14799,14799,
+15191,15191,
+15192,15192,
+15198,15198,
+15199,15199,
+15265,15265,
+15291,15291,
+15292,15292,
+15298,15298,
+21201,21201,
+21203,21203,
+21205,21205,
+21207,21207,
+21209,21209,
+21211,21211,
+21215,21215,
+21216,21216,
+21217,21217,
+21225,21225,
+21238,21238,
+21240,21240,
+21247,21247,
+21250,21250,
+21251,21251,
+21253,21253,
+21255,21255,
+21261,21261,
+21266,21266,
+21281,21281,
+21381,21381,
+21382,21382,
+21383,21383,
+21385,21385,
+21386,21386,
+22140,22140,
+22150,22150,
+22160,22160,
+22170,22170,
+22445,22445,
+22469,22469,
+22482,22482,
+22483,22483,
+22484,22484,
+22485,22485,
+22486,22486,
+22487,22487,
+22493,22493,
+22495,22495,
+2259210,2259210,
+2259213,2259213,
+2259310,2259310,
+61101,61101,
+61103,61103,
+61105,61105,
+61107,61107,
+61109,61109,
+61121,61121,
+61151,61151,
+61187,61187,
+61188,61188,
+61197,61197,
+61199,61199,
+61201,61201,
+61203,61203,
+61299,61299,
+61801,61801,
+61803,61803,
+61804,61804,
+61805,61805,
+61991,61991,
+61992,61992,
+61993,61993,
+61994,61994,
+62431,62431,
+62433,62433,
+62951,62951,
+62952,62952,
+62953,62953,
+62996,62996,
+63151,63151,
+63152,63152,
+63153,63153,
+63154,63154,
+63509,63509,
+63801,63801,
+63802,63802,
+63803,63803,
+63804,63804,
+63807,63807,
+63808,63808,
+63821,63821,
+63822,63822,
+63823,63823,
+63824,63824,
+63825,63825,
+63826,63826,
+63827,63827,
+63835,63835,
+63837,63837,
+63851,63851,
+63852,63852,
+63853,63853,
+63854,63854,
+63891,63891,
+63892,63892,
+63893,63893,
+63951,63951,
+63952,63952,
+63953,63953,
+63996,63996,
+91101,91101,
+91103,91103,
+91105,91105,
+91107,91107,
+91109,91109,
+91111,91111,
+91113,91113,
+91115,91115,
+91117,91117,
+91119,91119,
+91120,91120,
+91121,91121,
+91123,91123,
+91124,91124,
+91138,91138,
+92101,92101,
+92103,92103,
+92105,92105,
+92107,92107,
+92109,92109,
+92111,92111,
+92113,92113,
+92115,92115,
+92117,92117,
+92119,92119,
+92120,92120,
+92121,92121,
+92123,92123,
+92124,92124,
+92138,92138,

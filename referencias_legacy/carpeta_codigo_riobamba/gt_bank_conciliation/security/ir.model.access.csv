@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_bank_conciliation_mark","bank.conciliation.mark","model_bank_conciliation_mark","account.group_account_invoice",1,1,1,0
+"access_tipo_conciliacion","tipo.conciliation","model_tipo_conciliacion","account.group_account_invoice",1,1,1,0
+"access_mark_line","mark.line","model_mark_line","account.group_account_invoice",1,1,1,1
+"access_no_contabilizado","no.contabilizado","model_no_contabilizado","account.group_account_invoice",1,1,1,0

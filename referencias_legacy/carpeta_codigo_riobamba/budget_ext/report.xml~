@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="programa_unidad" model="programa_unidad"
+            name="programa.unidad" rml="budget_ext/report/programa_unidad.mako"
+            usage="default" string="Programa Unidad" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

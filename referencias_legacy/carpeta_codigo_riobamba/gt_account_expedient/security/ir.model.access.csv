@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_doc_expedient_expedient_account,doc_expedient.expedient,gt_doc_expedient.model_doc_expedient_expedient,account.group_account_invoice,1,1,1,0
+access_doc_expedient_task_acc,doc_expedient.task,gt_doc_expedient.model_doc_expedient_task,account.group_account_invoice,1,1,1,0
+

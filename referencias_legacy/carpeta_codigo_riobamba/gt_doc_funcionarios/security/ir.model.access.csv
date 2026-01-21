@@ -1,0 +1,39 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_verificar_funcionario,verificar.funcionario,model_verificar_funcionario,gt_document_manager.group_doc_user,1,0,0,0
+access_roles_empleado,roles.empleado,model_roles_empleado,gt_document_manager.group_doc_user,1,0,0,0
+access_roles_empleado_line,roles.empleado.line,model_roles_empleado_line,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip doc,hr.payslip,hr_payroll.model_hr_payslip,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_work_period_line doc,hr.work.period.line,gt_hr_base.model_hr_work_period_line,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_contract_type_type doc,hr.contract.type.type,gt_hr_base.model_hr_contract_type_type,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_salary_rule_category doc,hr.salary.rule.category,hr_payroll.model_hr_salary_rule_category,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip_run doc,hr.payslip.run,hr_payroll.model_hr_payslip_run,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip docr,hr.payslip,hr_payroll.model_hr_payslip,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_work_period_line docr,hr.work.period.line,gt_hr_base.model_hr_work_period_line,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_contract_type_type docr,hr.contract.type.type,gt_hr_base.model_hr_contract_type_type,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_salary_rule_category docr,hr.salary.rule.category,hr_payroll.model_hr_salary_rule_category,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_payslip_run docr,hr.payslip.run,hr_payroll.model_hr_payslip_run,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_contract docr,hr.contract,hr_contract.model_hr_contract,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_contract doc usr,hr.contract,hr_contract.model_hr_contract,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip_line docr,hr.payslip.line,hr_payroll.model_hr_payslip_line,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_payslip_line doc usr,hr.payslip.line,hr_payroll.model_hr_payslip_line,gt_document_manager.group_doc_user,1,0,0,0
+access_cumpleanios,cumpleanios,model_cumpleanios,gt_document_manager.group_doc_user,1,0,0,0
+access_cumpleanios_line,cumpleanios.line,model_cumpleanios_line,gt_document_manager.group_doc_user,1,0,0,0
+access_activos_empleado,activos.empleado,model_activos_empleado,gt_document_manager.group_doc_user,1,0,0,0
+access_activos_empleado_line,activos.empleado.line,model_activos_empleado_line,gt_document_manager.group_doc_user,1,0,0,0
+access_funcionario_proyeccion,funcionario.proyeccion,model_funcionario_proyeccion,gt_document_manager.group_doc_user,1,1,1,1
+"access_hr_employee_course doc","hr.employee.course","gt_hr_base.model_hr_employee_course",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_hist_wage doc","hr.hist.wage","gt_hr_base.model_hr_hist_wage",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_hist_job doc","hr.hist.job","gt_hr_base.model_hr_hist_job",gt_document_manager.group_doc_user,1,0,0,0
+"access_empoyee_judicial doc","employee.judicial","gt_hr_base.model_employee_judicial",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_aportable_line doc","aportable.line","gt_hr_base.model_aportable_line",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_anual_projection doc","hr.anual.projection","gt_hr_base.model_hr_anual_projection",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_rent_tax doc","hr.rent.tax","gt_hr_base.model_hr_rent_tax",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_account_configuration doc","hr_account_configuration","gt_hr_base.model_hr_account_configuration",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_last_work_usr doc","hr.last.work","gt_hr_base.model_hr_last_work",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_family_item doc","hr.family.item","gt_hr_base.model_hr_family_item",gt_document_manager.group_doc_user,1,0,0,0
+"access_employee_sancion doc","employee.sancion","gt_hr_base.model_employee_sancion",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_anual_rent_tax doc","hr.anual.rent.tax","gt_hr_base.model_hr_anual_rent_tax",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_employee_title doc","hr.employee.title","gt_hr_base.model_hr_employee_title",gt_document_manager.group_doc_user,1,0,0,0
+"access_res_partner_bank_usr doc","res.partner.bank","base.model_res_partner_bank",gt_document_manager.group_doc_user,1,0,0,0
+"access_res_bank doc","res.bank","base.model_res_bank",gt_document_manager.group_doc_user,1,0,0,0
+"access_hr_encargo doc","hr_encargo_hr_manager","gt_hr_encargo.model_hr_contract_encargo",gt_document_manager.group_doc_user,1,0,0,0

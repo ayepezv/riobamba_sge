@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False"
+	    id="report_account_cashfund" 
+	    model="account.cashfund"
+	    name="account.cashfund" 
+	    rml="gt_account_cashfund/report/report_move.rml" string="Comprobante Contable" header="False"/>
+
+  </data>
+</openerp>

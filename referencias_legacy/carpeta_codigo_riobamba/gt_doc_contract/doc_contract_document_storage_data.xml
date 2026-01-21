@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<openerp>
+<data noupdate="1">
+
+    <record model="document.storage" id="dir_doc_database_storage">
+        <field name="name">Realstore</field>
+        <field name="type">realstore</field>
+    </record>
+
+</data>
+</openerp>

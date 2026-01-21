@@ -1,0 +1,885 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import osv, fields
+from tools.translate import _
+import decimal_precision as dp
+import time
+import datetime
+from datetime import date, timedelta
+from tools import ustr
+import operator
+import csv
+import base64
+import StringIO
+from tools import ustr
+from gt_tool import XLSWriter
+
+balance = False
+cedula = False
+
+
+DP = dp.get_precision('Budget')
+
+class ReglaLine(osv.Model):
+    _name = 'regla.line'
+    _order = 'name'
+    
+    _columns = dict(
+        name = fields.integer('Numero', required=True),
+        texto = fields.text('Descripcion', required=True),
+        regla = fields.text('Regla', required=True),
+        agrupa = fields.char('Agrupa', size=128,required=True),
+        )
+ReglaLine()
+
+class BalanceLine(osv.TransientModel):
+    _name = 'balance.line'
+    _order = 'code'
+    
+    _columns = dict(
+        reporte_id = fields.many2one('balance.cedula','reporte'),
+        code = fields.char('Codigo', size=32, readonly=True),
+        desc = fields.char('Nombre', size=128, readonly=True),
+        debe_inicial = fields.float('Debe inicial', digits_compute=DP, readonly=True),
+        haber_inicial = fields.float('Haber inicial', digits_compute=DP, readonly=True),
+        debe_flujo = fields.float('Debe flujo', digits_compute=DP, readonly=True),
+        haber_flujo = fields.float('Haber flujo', digits_compute=DP, readonly=True),
+        debe_suma = fields.float('Debe suma', digits_compute=DP, readonly=True),
+        haber_suma = fields.float('Haber suma', digits_compute=DP, readonly=True),
+        debe_final = fields.float('Debe final', digits_compute=DP, readonly=True),
+        haber_final = fields.float('Haber final', digits_compute=DP, readonly=True),
+        nivel = fields.integer('Nivel', readonly=True)
+    )
+BalanceLine()
+
+class CedulaLine(osv.TransientModel):
+    DP = dp.get_precision('Budget')
+    _name = 'cedula.line'
+    _order = 'code'
+    
+    _columns = dict(
+        reporte_id = fields.many2one('balance.cedula','reporte'),
+        code = fields.char('Codigo', size=32, readonly=True),
+        desc = fields.char('Nombre', size=128, readonly=True),
+        planned_amount = fields.float('Planificado', digits_compute=DP, readonly=True),
+        reform_amount = fields.float('Reformado', digits_compute=DP, readonly=True),
+        codif_amount = fields.float('Codificado', digits_compute=DP, readonly=True),
+        commited_amount = fields.float('Comprometido', digits_compute=DP, readonly=True),
+        devengado_amount = fields.float('Devengado', digits_compute=DP, readonly=True),
+        paid_amount = fields.float('Recaudado/Pagado', digits_compute=DP, readonly=True),
+        commited_balance = fields.float('Por comprometer', digits_compute=DP, readonly=True),
+        devengado_balance = fields.float('Por devengar', digits_compute=DP, readonly=True),
+    )
+CedulaLine()
+    
+
+class BalanceCedula(osv.TransientModel):
+    _name = 'balance.cedula'
+    
+    _columns = dict(
+        fiscalyear_id = fields.many2one('account.fiscalyear', 'Año fiscal', required=True),
+        date_start = fields.date('Fecha desde', required=True),
+        date_end = fields.date('Fecha hasta', required=True),
+        account_txt = fields.char("Cuenta", size=64),
+        account_ids = fields.many2many('account.account', 'account_report_rel', 'account_id', 'report_id', 'Cuentas contables', required=False),
+        budget_txt = fields.char("Partida", size=64),
+        budget_ids = fields.many2many('budget.item', 'budget_report_rel', 'budget_id', 'report_id', 'Partidas', required=False),
+        line_balance_ids = fields.one2many('balance.line', 'reporte_id', 'Datos balance', ondelete='cascade'),
+        line_cedula_ids = fields.one2many('cedula.line', 'reporte_id', 'Datos cedula', ondelete='cascade'),
+        move_ids = fields.many2many('account.move','move_report_rel','move_id','report_id'),
+        account_ids_with_child = fields.many2many('account.account','account_child_report_rel','account_id','report_id'),
+        data_balance = fields.binary('Archivo de Balance', filters="*.txt",readonly=True),
+        filename_balance = fields.char('Archivo balance', size=128),
+        data_cedulas = fields.binary('Archivo de Cedulas', filters="*.txt",readonly=True),
+        filename_cedulas = fields.char('Archivo Cedulas', size=128),
+        filename_transferencias = fields.char('Archivo Transferencias', size=128),
+        data_transferencias = fields.binary('Archivo de Transferencias', filters="*.txt",readonly=True),
+        mensajes = fields.text('Mensajes'),
+        mensajes2 = fields.text('Mensajes asientos'),
+        
+    )
+
+    def imprimir_datos(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.read(cr, uid, ids[0], [] ,context)
+        datas = {
+            'ids': [report['id']],
+            'model': 'balance.cedula',
+            'date_from':report['date_start'],
+            'date_end':report['date_end'],
+            'lineas_cedula':report['line_cedula_ids'],
+            'lineas_balance':report['line_balance_ids'],
+            'account_ids': report['account_ids'],
+            'moves': report['move_ids'],
+            'account_ids_with_child': report['account_ids_with_child'],
+        }
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'BalanceCedula',
+            'model': 'balance.cedula',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    def evalRegla(self,regla):
+        return eval(regla.regla)
+      
+    def gen_esigef_files(self, cr, uid, ids, context):
+      global cedula
+      global balance
+      mensajes = ""
+      regla_line_obj = self.pool.get('regla.line')
+      formulario=self.browse(cr, uid, ids[0],context)
+      result_dic = cedula.values()
+      dic_ord=sorted(result_dic, key=operator.itemgetter('code'))
+      datas_ing = []
+      total_reform_ing = 0
+      total_reform_gas = 0
+      mes = str(datetime.datetime.strptime(formulario.date_end, '%Y-%m-%d').month)
+      for line in dic_ord:
+         if line['code']!= '0' and line['code']!= 'total' and line['final'] and line['tipo']=='ingreso':
+            total_reform_ing += line['reform_amount']
+            if line['planned_amount']!=0 or line['reform_amount'] != 0 or line['codif_amount']!=0 or line['devengado_amount']!=0 or line['paid_amount']!=0 or line['devengado_balance']!=0:
+               if (line['paid_amount'] - line['devengado_amount'])>=0.01:
+                  mensajes+="El valor de recaudado no puede ser mayor al valor de devengado en la partida %s, la diferencia es %s\n"%(line['code'],line['paid_amount']-line['devengado_amount'])
+               datas_ing.append([mes,'I',line['code'][0:2],line['code'][2:4],line['code'][4:6],'%.2f'%line['planned_amount'],'%.2f'%line['reform_amount'],'%.2f'%line['codif_amount'],'%.2f'%line['devengado_amount'],'%.2f'%line['paid_amount'],'%.2f'%line['devengado_balance']])
+      budget_buf = StringIO.StringIO() 
+      writer = csv.writer(budget_buf, delimiter='|')
+      writer.writerows(datas_ing)
+      datas_gas = []
+      mes = str(datetime.datetime.strptime(formulario.date_end, '%Y-%m-%d').month)
+      for line in dic_ord:
+         if line['code']!='0' and line['code']!= 'total' and line['final'] and line['tipo']=='gasto':
+            total_reform_gas += line['reform_amount']
+            if line['planned_amount']!=0 or line['reform_amount'] !=0 or line['codif_amount']!=0 or line['commited_amount']!=0 or line['devengado_amount']!=0 or line['paid_amount']!=0 or line['commited_balance']!=0 or line['devengado_balance']:
+               if (line['paid_amount'] - line['devengado_amount'])>=0.01:
+                  mensajes+="El valor de pagado no puede ser mayor al valor de devengado en la partida %s, la diferencia es %s\n"%(line['code'],line['paid_amount']-line['devengado_amount'])
+               if (line['devengado_amount'] - line['commited_amount'])>=0.01:
+                  mensajes+="El valor de devengado no puede ser mayor al valor de comprometido en la partida %s, la diferencia es %s\n"%(line['code'], line['devengado_amount']-line['commited_amount'])
+               #if line['devengado_balance'] < 0:
+               if round(line['devengado_balance']) < 0:
+                  mensajes+="La partida %s se encuentra sobregirada el total de sobregiro es %s\n"%(line['code'], line['devengado_balance'])
+               datas_gas.append([mes,'G',line['code'][0:2],line['code'][2:4],line['code'][4:6],'000','%.2f'%line['planned_amount'],'%.2f'%line['reform_amount'],'%.2f'%line['codif_amount'],'%.2f'%line['commited_amount'],'%.2f'%line['devengado_amount'],'%.2f'%line['paid_amount'],'%.2f'%line['commited_balance'],'%.2f'%line['devengado_balance']])
+      writer.writerows(datas_gas)
+      out_cedulas = base64.encodestring(budget_buf.getvalue())
+      budget_buf.close()
+      filename_cedulas = "ESIGEF CEDULAS INGRESOS-GASTOS del " + formulario.date_start + ' al ' + formulario.date_end + '.txt' 
+      if total_reform_ing != 0:
+         mensajes += "El total de la columna REFORMAS en ingresos debe ser igual a cero"
+      if total_reform_gas != 0:
+         mensajes += "El total de la columna REFORMAS en gastos debe ser igual a cero"
+      ###############################################################################################
+      result_dic = balance.values()
+      dic_ord=sorted(result_dic, key=operator.itemgetter('code'))
+      datas = []
+      mes = str(datetime.datetime.strptime(formulario.date_end, '%Y-%m-%d').month)
+      for line in dic_ord:
+          if line['code']!=0 and line['esigef']:
+              if len(line['code']) < 7:
+                  code = line['code']+(7-len(line['code']))*"0"
+              else:
+                  code = line['code']
+              if line['debe_inicial'] or line['debe_inicial'] or line['haber_inicial'] or line['debe_flujo'] or line['haber_flujo'] or line['debe_suma'] or line['haber_suma'] or line['debe_final'] or line['haber_final']:
+                  datas.append([mes,code[0:3],code[3:5],code[5:7],'%.2f'%line['debe_inicial'],'%.2f'%line['haber_inicial'],'%.2f'%line['debe_flujo'],'%.2f'%line['haber_flujo'],'%.2f'%line['debe_suma'],'%.2f'%line['haber_suma'],'%.2f'%line['debe_final'],'%.2f'%line['haber_final']])
+      budget_buf = StringIO.StringIO() 
+      writer = csv.writer(budget_buf, delimiter='|')
+      writer.writerows(datas)
+      out_balance = base64.encodestring(budget_buf.getvalue())
+      budget_buf.close()
+      name_balance = 'BALANCE COMPROBACION %s.txt' % (mes)
+      #recorrer las lineas de validacion de esigef
+      regla_ids = regla_line_obj.search(cr, uid, [])
+      for regla in regla_line_obj.browse(cr, uid, regla_ids):
+          resultline = self.evalRegla(regla)
+          if resultline != True:
+              mensajes += "Regla "+ str(regla.name) + ".- " + "Tipo " + ustr(regla.agrupa) + ". Descripcion: "+ ustr(regla.texto)+"\n"
+      #Genero archivo transferencias
+      user = self.pool.get('res.users').browse(cr, uid, uid)
+      ruc_company = user.company_id.ruc_company
+      data_trans = []
+      trans_buf = StringIO.StringIO() 
+      writer_trans = csv.writer(trans_buf, delimiter='|')
+      date_end_aux = formulario.date_end
+      date_from_aux = date_end_aux[:7]+'-01'
+      filename_trans = "ESIGEF TRANSFERENCIAS del " + date_from_aux + ' al ' + formulario.date_end + '.txt' 
+      codes_trans = ['11318','11328','21358']
+      dict_trans = {'11318': '9999999999996','11328': '9999999999996','21358': ruc_company}
+      accounts = self.pool.get('account.account').search(cr, uid, [('code','in',codes_trans)])
+      ctx_trans = context.copy()
+      ctx_trans.update({'fiscalyear_id': [formulario.fiscalyear_id.id], 'date_from': date_from_aux, 'date_end': formulario.date_end, 'account_ids': accounts})
+      balance_trans = self.get_balance_data(cr, uid, ids, ctx_trans)
+      for code in codes_trans:
+          debe_t = 0
+          haber_t = 0    
+          if balance_trans.get(code,False):
+              debe_t = balance_trans[code]['debe_flujo']
+              haber_t = balance_trans[code]['haber_flujo']
+          if debe_t!=0 or haber_t!=0:
+              data_trans.append([mes,code[:3],code[3:5],'00',dict_trans[code],ruc_company,debe_t,haber_t,0])
+      writer_trans.writerows(data_trans)
+      out_trans = base64.encodestring(trans_buf.getvalue())
+      trans_buf.close()
+      self.write(cr, uid, ids, {
+          'data_balance': out_balance,
+          'filename_balance': name_balance,
+          'data_cedulas': out_cedulas,
+          'filename_cedulas': filename_cedulas,
+          'data_transferencias': out_trans,
+          'filename_transferencias': filename_trans,
+          'mensajes': mensajes})              
+      return True
+
+    def validar_asientos(self, cr, uid, ids, context={}):
+        formulario=self.browse(cr, uid, ids[0],context)
+        move_obj = self.pool.get('account.move') 
+        moves = move_obj.search(cr, uid, [('date','>=',formulario.date_start),('date','<=',formulario.date_end),('state','=','posted')])
+        mensajes2 = "" 
+        for move in move_obj.browse(cr, uid, moves):
+            mensaje = move_obj.get_esigef_values(cr, uid, [move.id], context=context)
+            if mensaje != "":
+                mensaje_comp = str(move.id)+" - "+move.name+" - "+mensaje+"\n#####################################"
+                #print mensaje_comp
+                mensajes2+=mensaje_comp
+                
+        if mensajes2 != "":
+            self.write(cr, uid, ids, {
+                'mensajes2': mensajes2})              
+        return True
+        
+    def generar_diccionarios(self, cr, uid, ids, context={}):
+        cedulaline_obj = self.pool.get('cedula.line')
+        balanceline_obj = self.pool.get('balance.line')
+        account_obj = self.pool.get('account.account')
+        budget_post_obj = self.pool.get('budget.post')
+        budget_item_obj = self.pool.get('budget.item')
+        poa_obj = self.pool.get('budget.poa')
+        anio_obj = self.pool.get('account.fiscalyear')
+        #ojo aqui considera item del poa
+        for formulario in self.read(cr, uid, ids, ['id','date_start','date_end','account_txt','budget_txt','fiscalyear_id', 'line_balance_ids' , 'line_cedula_ids']):
+            account_ids = account_obj.search(cr, uid, [])
+            anio = anio_obj.browse(cr, uid, formulario['fiscalyear_id'][0])
+#            poa_ids = poa_obj.search(cr, uid, [('date_start','>=',formulario['date_start']),('date_end','<=',formulario['date_end'])])
+            poa_ids = poa_obj.search(cr, uid, [('date_start','>=',formulario['date_start']),('date_end','<=',anio.date_stop)])
+            if not poa_ids:
+                texto = ustr("No hay presupuesto definido para el periodo fiscal seleccionado")
+                raise osv.except_osv('Error', texto)
+            budget_ids = budget_item_obj.search(cr, uid, [('poa_id','=',poa_ids[0])])
+            context1 = context.copy()
+            context2 = context.copy()
+            context1.update({'fiscalyear_id': formulario['fiscalyear_id'], 'date_from': formulario['date_start'], 'date_end': formulario['date_end'], 'budget_ids': budget_ids, 'account_ids': account_ids})
+            context2.update({'fiscalyear_id': formulario['fiscalyear_id'], 'date_from': formulario['date_start'], 'date_end': formulario['date_end'], 'budget_ids': budget_ids, 'account_ids': account_ids})
+            global balance
+            global cedula
+            balance = self.get_balance_data(cr, uid, ids, context1)
+            cedula = self.get_cedula_data(cr, uid, ids, context2)
+            self.gen_esigef_files(cr, uid, ids, context)
+        return True
+            
+    
+    def generar_datos(self, cr, uid, ids, context):
+        cedulaline_obj = self.pool.get('cedula.line')
+        balanceline_obj = self.pool.get('balance.line')
+        account_obj = self.pool.get('account.account')
+        budget_post_obj = self.pool.get('budget.post')
+        poa_obj = self.pool.get('budget.poa')
+        budget_item_obj = self.pool.get('budget.item')
+        anio_obj = self.pool.get('account.fiscalyear')
+        for formulario in self.read(cr, uid, ids, ['id','date_start','date_end','account_txt','budget_txt','fiscalyear_id', 'line_balance_ids' , 'line_cedula_ids']):
+            cedulaline_obj.unlink(cr, uid, formulario['line_cedula_ids'])
+            balanceline_obj.unlink(cr, uid, formulario['line_balance_ids'])
+            account_txt = formulario['account_txt']
+            if not account_txt:
+                texto = ustr("Debe llenar el campo cuenta")
+                raise osv.except_osv('Error', texto)
+            account_ids_aux = account_obj.search(cr, uid, [('code','=',account_txt)])
+            if not account_ids_aux:
+                texto = ustr("No existe la cuenta %s")%(account_txt)
+                raise osv.except_osv('Error', texto)
+            account_ids  = []
+            for cuenta in account_ids_aux:
+                account_ids.append(cuenta)
+                seguir = True
+                cuenta_aux = cuenta
+                while seguir==True:
+                    parent_data = account_obj.read(cr, uid, cuenta_aux, ['parent_id'])
+                    if parent_data['parent_id']:
+                        account_ids.append(parent_data['parent_id'][0])
+                        cuenta_aux = parent_data['parent_id'][0]
+                    else:
+                        seguir=False
+            budget_txt = formulario['budget_txt']
+            if not budget_txt:
+                texto = ustr("Debe llenar el campo partida")
+                raise osv.except_osv('Error', texto)
+            #considera el budget segun la fecha
+#            budget_ids = budget_item_obj.search(cr, uid, [('code','=like',budget_txt+"%")])
+            anio = anio_obj.browse(cr, uid, formulario['fiscalyear_id'][0])
+            poa_ids = poa_obj.search(cr, uid, [('date_start','>=',formulario['date_start']),('date_end','<=',anio.date_stop)])
+            if not poa_ids:
+                texto = ustr("No hay presupuesto definido para el periodo fiscal seleccionado")
+                raise osv.except_osv('Error', texto)
+            #considerar las diferentes formas de codificar como esta es para NR
+            parameter_obj = self.pool.get('ir.config_parameter')
+            codificacion_ids = parameter_obj.search(cr, uid, [('key','=','codigopartida')],limit=1)
+            if codificacion_ids:
+                code_budget = parameter_obj.browse(cr, uid, codificacion_ids[0]).value
+                if code_budget=='Si':
+                    budget_ids = budget_item_obj.search(cr, uid, [('code_aux','=like',budget_txt+"%"),('poa_id','=',poa_ids[0])])
+                else:
+                    budget_ids = budget_item_obj.search(cr, uid, [('code','=like',budget_txt+"%"),('poa_id','=',poa_ids[0])])
+            else:
+                budget_ids = budget_item_obj.search(cr, uid, [('code','=like',budget_txt+"%"),('poa_id','=',poa_ids[0])])
+            context1 = context.copy()
+            context2 = context.copy()
+            context1.update({'fiscalyear_id': formulario['fiscalyear_id'], 'date_from': formulario['date_start'], 'date_end': formulario['date_end'], 'budget_ids': budget_ids, 'account_ids': account_ids})
+            context2.update({'fiscalyear_id': formulario['fiscalyear_id'], 'date_from': formulario['date_start'], 'date_end': formulario['date_end'], 'budget_ids': budget_ids, 'account_ids': account_ids})
+            datos_lineas_balance = self.get_balance_data(cr, uid, ids, context1)
+            datos_lineas_cedula = self.get_cedula_data(cr, uid, ids, context2)
+            for line_cedula in datos_lineas_cedula:
+                if datos_lineas_cedula[line_cedula]['code'] != '0':
+                    cedulaline_obj.create(cr, uid, {
+                        'code' : datos_lineas_cedula[line_cedula]['code'],
+                        'desc' : datos_lineas_cedula[line_cedula]['general_budget_name'],
+                        #                    'nivel' : datos_lineas_cedula[line_cedula]['nivel'],
+                        'planned_amount' : datos_lineas_cedula[line_cedula]['planned_amount'],
+                        'reform_amount' : datos_lineas_cedula[line_cedula]['reform_amount'],
+                        'codif_amount' : datos_lineas_cedula[line_cedula]['codif_amount'],
+                        'commited_amount' : datos_lineas_cedula[line_cedula]['commited_amount'],
+                        'devengado_amount' : datos_lineas_cedula[line_cedula]['devengado_amount'],
+                        'paid_amount' : datos_lineas_cedula[line_cedula]['paid_amount'],
+                        'commited_balance' : datos_lineas_cedula[line_cedula]['commited_balance'],
+                        'devengado_balance' : datos_lineas_cedula[line_cedula]['devengado_balance'],
+                        'reporte_id': formulario['id'],
+                    })
+            for line_balance in datos_lineas_balance:
+                if datos_lineas_balance[line_balance]['code'] != '0':
+                    balanceline_obj.create(cr, uid, {
+                        'code' : datos_lineas_balance[line_balance]['code'],
+                        'desc' : datos_lineas_balance[line_balance]['desc'],
+                        'nivel' : datos_lineas_balance[line_balance]['nivel'],
+                        'debe_inicial' : datos_lineas_balance[line_balance]['debe_inicial'],
+                        'haber_inicial' : datos_lineas_balance[line_balance]['haber_inicial'],
+                        'debe_flujo' : datos_lineas_balance[line_balance]['debe_flujo'],
+                        'haber_flujo' : datos_lineas_balance[line_balance]['haber_flujo'],
+                        'debe_suma' : datos_lineas_balance[line_balance]['debe_suma'],
+                        'haber_suma' : datos_lineas_balance[line_balance]['haber_suma'],
+                        'debe_final' : datos_lineas_balance[line_balance]['debe_final'],
+                        'haber_final' : datos_lineas_balance[line_balance]['haber_final'],
+                        'reporte_id': formulario['id'],
+                    })
+            #saco sql de los asientos involucrados
+            account_ids2 = account_obj.search(cr, uid, [('id','child_of',account_ids_aux)])
+            if len(account_ids2)>1:
+                sql_asientos = "select distinct(move_id) from account_move_line,account_move where account_move.state='posted' and move_id=account_move.id and account_move.date>='%s' and account_move.date<='%s' and account_move.state='posted' and account_move_line.state='valid' and account_id in %s order by move_id"%(formulario['date_start'],formulario['date_end'],tuple(account_ids2))
+            else:
+                sql_asientos = "select distinct(move_id) from account_move_line,account_move where account_move.state='posted' and move_id=account_move.id and account_move.date>='%s' and account_move.date<='%s' and account_move.state='posted' and account_move_line.state='valid' and account_id=%s order by move_id"%(formulario['date_start'],formulario['date_end'],account_ids2[0])
+            cr.execute(sql_asientos)
+            moves = cr.fetchall()
+            move_ids_aux = []
+            for move in moves:
+                move_ids_aux.append(move[0])
+            self.write(cr, uid, [formulario['id']], {'move_ids': [[6,0, move_ids_aux]],'account_ids_with_child': [[6,0, account_ids2]]})
+            return True
+
+                
+    def crear_padre(self, data, data_suma, res):
+        if data['post'].parent_id:
+            data['padre'] = data['post'].parent_id
+            if res.get(data['post'].parent_id.code,False):
+                res[data['post'].parent_id.code]['planned_amount'] += data_suma['planned_amount']
+                res[data['post'].parent_id.code]['devengado_amount'] += data_suma['devengado_amount']
+                res[data['post'].parent_id.code]['devengado_balance'] += data_suma['devengado_balance']
+                res[data['post'].parent_id.code]['paid_amount'] += data_suma['paid_amount']
+                res[data['post'].parent_id.code]['codif_amount'] += data_suma['codif_amount']
+                res[data['post'].parent_id.code]['reform_amount'] += data_suma['reform_amount']
+                res[data['post'].parent_id.code]['commited_amount'] += data_suma['commited_amount']
+                res[data['post'].parent_id.code]['commited_balance'] += data_suma['commited_balance']
+            else:
+                res[data['post'].parent_id.code] = {
+                    'post': data['post'].parent_id,
+                    'padre': False, 
+                    'code':data['post'].parent_id.code,
+#                    'program':data['post'].parent_id.code,
+                    'general_budget_name':data['post'].parent_id.name,
+                    'planned_amount':data['planned_amount'],
+                    'devengado_amount':data['devengado_amount'],
+                    'devengado_balance':data['devengado_balance'],
+                    'paid_amount':data['paid_amount'],     
+                    'codif_amount':data['codif_amount'],
+                    'reform_amount':data['reform_amount'],
+                    'commited_amount':data['commited_amount'],
+                    'commited_balance':data['commited_balance'],
+                    'final': False,
+                    'tipo': data['tipo'],
+                    
+                }
+            self.crear_padre(res[data['post'].parent_id.code], data_suma,res)
+    
+    def get_cedula_data(self,cr, uid, ids, context):
+        res = { }
+        res_line = { }
+        result = []
+        date_from = context['date_from']
+        date_to = context['date_end']
+        c_b_lines_obj = self.pool.get('budget.item')
+        poa_obj = self.pool.get('budget.poa')
+        ids_lines = context['budget_ids']
+        poa_ids = poa_obj.search(cr, uid, [('date_start','>=',date_from),('date_start','<=',date_to)])
+        if not poa_ids:
+            texto = ustr("No hay presupuesto definido para el periodo fiscal seleccionado")
+            raise osv.except_osv('Error', texto)
+        contexto = {'by_date':True,'date_start': date_from, 'date_end': date_to,'poa_id':poa_ids[0]}            
+        planned_total=coded_total=reforma_total=balance_accured_total=practical_total=recaudado_total=0
+        #        totales = c_b_lines_obj._compute_budget_all(self.cr, self.uid, ids_lines,[],[], context)
+        parameter_obj = self.pool.get('ir.config_parameter')
+        codificacion_ids = parameter_obj.search(cr, uid, [('key','=','codigopartida')],limit=1)
+        if codificacion_ids:
+            code_budget = parameter_obj.browse(cr, uid, codificacion_ids[0]).value
+            if code_budget=='Si':
+                for line in c_b_lines_obj.browse(cr,uid,ids_lines, context=contexto):
+                    if line.commited_amount>0 or line.paid_amount>0 or line.devengado_amount>0:
+                  #      import pdb
+                  #      pdb.set_trace()
+                        if res_line.has_key(line.code)==False:
+                            res_line[line.code]={
+                                'post': line.budget_post_id,
+                                'program': line.program_id.id,
+                                'padre': False, 
+                                'code':line.code,
+                                'general_budget_name':line.budget_post_id.name,
+                                'planned_amount':line.planned_amount,
+                                'commited_amount':line.commited_amount,
+                                'devengado_amount':round(line.devengado_amount,2),
+                                'paid_amount':round(line.paid_amount,2),
+                                'devengado_balance':line.devengado_balance,
+                                'commited_balance':line.commited_balance,
+                                'codif_amount':line.codif_amount,
+                                'reform_amount':line.reform_amount,
+                                'final': False,
+                                'tipo': line.type_budget,
+                            }
+                            if res_line.has_key(line.budget_post_id.code)==False:
+                                res_line[line.budget_post_id.code]={
+                                    'post': line.budget_post_id,
+                                    'program': line.program_id.id,
+                                    'padre': False, 
+                                    'code': line.budget_post_id.code,
+                                    'general_budget_name':line.budget_post_id.name,
+                                    'planned_amount':line.planned_amount,
+                                    'commited_amount':line.commited_amount,
+                                    'devengado_amount':round(line.devengado_amount,2),
+                                    'paid_amount':round(line.paid_amount,2),
+                                    'devengado_balance':line.devengado_balance,
+                                    'commited_balance':line.commited_balance,
+                                    'codif_amount':line.codif_amount,
+                                    'reform_amount':line.reform_amount,
+                                    'final': True,
+                                    'tipo': line.type_budget,
+                                }
+                            else:
+                                res_line[line.budget_post_id.code]['planned_amount']+=line.planned_amount
+                                res_line[line.budget_post_id.code]['reform_amount']+=line.reform_amount
+                                res_line[line.budget_post_id.code]['codif_amount']+=line.codif_amount
+                                res_line[line.budget_post_id.code]['commited_amount']+=line.commited_amount
+                                res_line[line.budget_post_id.code]['devengado_amount']+=round(line.devengado_amount,2)
+                                res_line[line.budget_post_id.code]['paid_amount']+=round(line.paid_amount,2)
+                                res_line[line.budget_post_id.code]['commited_balance']+=line.commited_balance
+                                res_line[line.budget_post_id.code]['devengado_balance']+=line.devengado_balance
+                            self.crear_padre(res_line[line.code], res_line[line.code],res_line)
+                        else:              
+                            res_line[line.code[4:]]['planned_amount']+=line.planned_amount
+                            res_line[line.code[4:]]['reform_amount']+=line.reform_amount
+                            res_line[line.code[4:]]['codif_amount']+=line.codif_amount
+                            res_line[line.code[4:]]['commited_amount']+=line.commited_amount
+                            res_line[line.code[4:]]['devengado_amount']+=round(line.devengado_amount,2)
+                            res_line[line.code[4:]]['paid_amount']+=round(line.paid_amount,2)
+                            res_line[line.code[4:]]['commited_balance']+=line.commited_balance
+                            res_line[line.code[4:]]['devengado_balance']+=line.devengado_balance
+            else:
+                print "nr"
+        else:
+            for line in c_b_lines_obj.browse(cr,uid,ids_lines, context=contexto):
+                if res_line.has_key(line.code)==False:
+                    res_line[line.code]={
+                        'post': line.budget_post_id,
+                        'program': line.program_id.id,
+                        'padre': False, 
+                        'code':line.code,
+                        'general_budget_name':line.budget_post_id.name,
+                        'planned_amount':line.planned_amount,
+                        'commited_amount':line.commited_amount,
+                        'devengado_amount':round(line.devengado_amount,2),
+                        'paid_amount':round(line.paid_amount,2),
+                        'devengado_balance':line.devengado_balance,
+                        'commited_balance':line.commited_balance,
+                        'codif_amount':line.codif_amount,
+                        'reform_amount':line.reform_amount,
+                        'final': False,
+                        'tipo': line.type_budget,
+                    }
+                    if res_line.has_key(line.budget_post_id.code)==False:
+                        res_line[line.budget_post_id.code]={
+                            'post': line.budget_post_id,
+                            'program': line.program_id.id,
+                            'padre': False, 
+                            'code': line.budget_post_id.code,
+                            'general_budget_name':line.budget_post_id.name,
+                            'planned_amount':line.planned_amount,
+                            'commited_amount':line.commited_amount,
+                            'devengado_amount':round(line.devengado_amount,2),
+                            'paid_amount':round(line.paid_amount,2),
+                            'devengado_balance':line.devengado_balance,
+                            'commited_balance':line.commited_balance,
+                            'codif_amount':line.codif_amount,
+                            'reform_amount':line.reform_amount,
+                            'final': True,
+                            'tipo': line.type_budget,
+                        }
+                    else:
+                        res_line[line.budget_post_id.code]['planned_amount']+=line.planned_amount
+                        res_line[line.budget_post_id.code]['reform_amount']+=line.reform_amount
+                        res_line[line.budget_post_id.code]['codif_amount']+=line.codif_amount
+                        res_line[line.budget_post_id.code]['commited_amount']+=line.commited_amount
+                        res_line[line.budget_post_id.code]['devengado_amount']+=round(line.devengado_amount,2)
+                        res_line[line.budget_post_id.code]['paid_amount']+=round(line.paid_amount,2)
+                        res_line[line.budget_post_id.code]['commited_balance']+=line.commited_balance
+                        res_line[line.budget_post_id.code]['devengado_balance']+=line.devengado_balance
+                    self.crear_padre(res_line[line.code], res_line[line.code],res_line)
+                else:              
+                    res_line[line.code]['planned_amount']+=line.planned_amount
+                    res_line[line.code]['reform_amount']+=line.reform_amount
+                    res_line[line.code]['codif_amount']+=line.codif_amount
+                    res_line[line.code]['commited_amount']+=line.commited_amount
+                    res_line[line.code]['devengado_amount']+=round(line.devengado_amount,2)
+                    res_line[line.code]['paid_amount']+=round(line.paid_amount,2)
+                    res_line[line.code]['commited_balance']+=line.commited_balance
+                    res_line[line.code]['devengado_balance']+=line.devengado_balance
+#                res_line[line.budget_post_id.id+line.program_id.id]['planned_amount']+=line.planned_amount
+#                res_line[line.budget_post_id.id+line.program_id.id]['reform_amount']+=line.reform_amount
+#                res_line[line.budget_post_id.id+line.program_id.id]['codif_amount']+=line.codif_amount
+#                res_line[line.budget_post_id.id+line.program_id.id]['commited_amount']+=line.commited_amount
+#                res_line[line.budget_post_id.id+line.program_id.id]['devengado_amount']+=round(line.devengado_amount,2)
+#                res_line[line.budget_post_id.id+line.program_id.id]['paid_amount']+=round(line.paid_amount,2)
+#                res_line[line.budget_post_id.id+line.program_id.id]['commited_balance']+=line.commited_balance
+#                res_line[line.budget_post_id.id+line.program_id.id]['devengado_balance']+=line.devengado_balance
+
+        return res_line
+
+    
+    def get_balance_data(self, cr, uid, ids, context):
+        date_inicial_reporte = context['date_from']
+        date_final_reporte = context['date_end']
+        result = {}
+        fiscalyear_id = context['fiscalyear_id']
+        move_line_obj = self.pool.get('account.move.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        account_ids = context['account_ids']
+#        account_ids = account_obj.search(cr, uid, [('type','!=','view')])
+        #Buscar lineas de asientos de asiento de inicio
+        sql_move_inicio = """
+        select account_move.id,date from account_move,account_period
+        where account_move.period_id=account_period.id and account_period.fiscalyear_id=%s and is_start=True """%(fiscalyear_id[0],)
+        cr.execute(sql_move_inicio)
+        move_inicial = cr.fetchall()
+        if move_inicial:
+            move_id_inicio = move_inicial[0][0]
+            fecha_inicio = move_inicial[0][1]
+        else:
+            texto = ustr("No se ha marcado un asiento como de inicio para el periodo fiscal ") + ustr(fiscalyear_id[1])
+            raise osv.except_osv('Error', texto)
+
+        if fecha_inicio == date_inicial_reporte:
+            date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+            date_aux = date_aux + timedelta(days=1)
+            date_inicial_reporte_aux = date_inicial_reporte
+            date_inicial_reporte = date_aux.strftime('%Y-%m-%d')
+        else:
+            date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+            date_aux = date_aux - timedelta(days=1)
+            date_inicial_reporte_aux = date_aux.strftime('%Y-%m-%d')
+            
+#        account_ids = account_obj.search(cr, uid, [('level','<=', self.datas['form']['nivel']),('level','>',0)])
+        ctx = {}
+        ctx.update({'fiscalyear': fiscalyear_id[0]})
+        ctx.update({'state': 'posted'})
+        ctx.update({'date_from': fecha_inicio,
+                    'date_to': date_inicial_reporte_aux})
+        accounts_inicial = account_obj.read(cr, uid, account_ids, ['code','name','debit','credit', 'balance','level','esigef'], ctx)
+
+        ctx2 = {}
+        ctx2.update({'fiscalyear': fiscalyear_id[0]})
+        ctx2.update({'state': 'posted'})
+        ctx2.update({'date_from': date_inicial_reporte,
+                    'date_to': date_final_reporte})
+        accounts_flujo = account_obj.read(cr, uid, account_ids, ['code','name','debit','credit', 'balance','level'], ctx2)
+
+        accounts_inicial_dict = {}
+        for account_data in accounts_inicial:
+            debe_inicial = 0
+            haber_inicial = 0
+            saldo = account_data['debit'] - account_data['credit']
+            if saldo >= 0:
+                debe_inicial = saldo
+            else:
+                haber_inicial = saldo * - 1
+            accounts_inicial_dict[account_data['code']] = {
+                'code': account_data['code'],
+                'desc': account_data['name'],
+                'nivel': account_data['level'],
+                'debit': round(debe_inicial,2),
+                'credit': round(haber_inicial,2),
+                'esigef': account_data['esigef'],
+            }
+
+        accounts_flujo_dict = {}
+        for account_data in accounts_flujo:
+            accounts_flujo_dict[account_data['code']] = {
+                'debit': round(account_data['debit'],2),
+                'credit': round(account_data['credit'],2)
+            }
+
+        accounts_final_dict = {}
+        for code in accounts_inicial_dict:
+            debe_final = 0
+            haber_final = 0
+            saldo = (accounts_inicial_dict[code]['debit'] + accounts_flujo_dict[code]['debit']) - (accounts_inicial_dict[code]['credit'] + accounts_flujo_dict[code]['credit'])
+            if saldo >= 0:
+                debe_final = saldo
+            else:
+                haber_final = saldo * - 1
+            accounts_final_dict[code] = {
+                'esigef': accounts_inicial_dict[code]['esigef'],
+                'code': accounts_inicial_dict[code]['code'],
+                'desc': accounts_inicial_dict[code]['desc'],
+                'nivel': accounts_inicial_dict[code]['nivel'],
+                'debe_inicial': accounts_inicial_dict[code]['debit'],
+                'haber_inicial': accounts_inicial_dict[code]['credit'],
+                'debe_flujo': round(accounts_flujo_dict[code]['debit'],2),
+                'haber_flujo': round(accounts_flujo_dict[code]['credit'],2),
+                'debe_suma': accounts_inicial_dict[code]['debit'] + accounts_flujo_dict[code]['debit'],
+                'haber_suma': accounts_inicial_dict[code]['credit'] + accounts_flujo_dict[code]['credit'],
+                'debe_final': debe_final,
+                'haber_final': haber_final
+            }
+        return accounts_final_dict
+    
+BalanceCedula()
+
+
+class mayorCuentaLine(osv.TransientModel):
+    _name = 'mayor.cuenta.line'
+    _order = "date asc"
+    _columns = dict(
+        l_id = fields.many2one('mayor.line','Cuenta',ondelete='cascade'),
+        date = fields.date('Fecha'),
+        partner_id = fields.many2one('res.partner','Empresa/Beneficiario'),
+        name = fields.char('Referencia',size=256),
+        debit = fields.float('Debe'),
+        credit = fields.float('Haber'),
+        saldo = fields.float('Saldo'),
+        doc = fields.char('Ref.',size=20),
+    )
+mayorCuentaLine()
+
+class mayorLine(osv.TransientModel):
+    _name = 'mayor.line'
+    _columns =dict(
+        saldo_anterior = fields.float('Saldo Anterior'),
+        debe = fields.float('Total Debe'),
+        haber = fields.float('Total Haber'),
+        saldo_final = fields.float('Saldo Final'),
+        m_id = fields.many2one('mayor.cuenta','Mayor'),
+        account_id = fields.many2one('account.account','Cuenta Contable'),
+        name = fields.char('Cuenta',size=32),
+        line_line_ids = fields.one2many('mayor.cuenta.line','l_id','Detalle Cuenta'),
+    )
+mayorLine()
+
+class mayorCuenta(osv.TransientModel):
+    _name = 'mayor.cuenta'
+
+    def exportaExcel(self, cr, uid, ids, name, context={}):
+        for this in self.browse(cr, uid, ids):
+            writer = XLSWriter.XLSWriter()
+            cabecera_all = ['Codigo Cuenta','Nombre Cuenta']
+            writer.append(cabecera_all)
+            aux_debit = aux_credit = 0
+            for line_account in this.line_ids:
+                cabecera_cuenta = [line_account.account_id.code,line_account.account_id.name]
+                writer.append(cabecera_cuenta)
+                cabecera_all2 = ['','Fecha','RUC Beneficiario','Beneficiario','Descripcion','Comprobante','Debe','Haber','Saldo']
+                writer.append(cabecera_all2)
+                #saldo anterior
+                detalle_anterior = ['','','','','SALDO ANTERIOR','','','',line_account.saldo_anterior]
+                writer.append(detalle_anterior)
+                for line in line_account.line_line_ids:
+                    detalle_cuenta = ['',line.date,line.partner_id.ced_ruc,line.partner_id.name,line.name,line.doc,line.debit,line.credit,line.saldo]
+                    aux_debit += line.debit
+                    aux_credit += line.credit
+                    writer.append(detalle_cuenta)
+                aux_saldo = aux_debit - aux_credit
+            final = ['','','','','','SUMAS',aux_debit,aux_credit,aux_saldo]
+        writer.append(final)
+        writer.save("mayorCuenta.xls")
+        out = open("mayorCuenta.xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'datas': out, 'datas_fname': 'mayoCuenta.xls'})
+        return True
+
+    def onchange_mayor_acc(self, cr, uid, ids, name, context={}):
+        vals = {}
+        return {'value':{'name_to':name}}    
+
+    def loadMayor(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        move_line_obj = self.pool.get('account.move.line')
+        account_obj = self.pool.get('account.account')
+        mayor_line_obj = self.pool.get('mayor.cuenta.line')
+        line_obj = self.pool.get('mayor.line')
+        move_obj = self.pool.get('account.move')
+        partner_obj = self.pool.get('res.partner')
+        for this in self.browse(cr, uid, ids):
+            antes_ids = line_obj.search(cr, uid, [('m_id','=',this.id)])
+            line_obj.unlink(cr, uid, antes_ids)
+            account_ids = account_obj.search(cr, uid, [('code','>=',this.name.code),('code','<=',this.name_to.code),('type','!=','view')])
+            if account_ids:
+                #vamos por cada cuenta contable
+                for account_id in account_ids:
+                    debe_aux = haber_aux = 0
+                    #sacar con la funcion
+                    aux_start = this.date_start
+                    date_start = datetime.datetime.strptime(aux_start, "%Y-%m-%d")
+                    dias = timedelta(days=1)
+                    date_start2 = date_start - dias
+                    date_start2 = date_start2.strftime("%Y-%m-%d")
+                    ctx = {}
+                    ctx['fiscalyear'] = this.fiscalyear_id.id
+                    ctx['date_from'] = this.fiscalyear_id.date_start
+                    if this.fiscalyear_id.date_start==this.date_start:
+                        ctx['date_to'] =  this.date_start
+                    else:
+                        ctx['date_to'] =  date_start2
+                    ctx['state'] = 'posted'
+                    account = account_obj.read(cr, uid, account_id, ['id','type','code','name','debit','credit','balance','parent_id','level'], ctx)
+                    saldo_inicial = abs(account['balance'])
+                    debe_aux_f = haber_aux_f = 0
+                    if this.partner_id:
+                        move_line_ids = move_line_obj.search(cr, uid, [('account_id','=',account_id),('date','>=',this.date_start),('is_start','=',False),
+                                                                       ('date','<=',this.date_end),('move_id.state','=','posted'),
+                                                                       ('date','!=',this.fiscalyear_id.date_start),
+                                                                       ('state','=','valid'),('partner_id','=',this.partner_id.id)],order='date asc')
+                    else:
+                        move_line_ids = move_line_obj.search(cr, uid, [('account_id','=',account_id),('date','>=',this.date_start),('is_start','=',False),
+                                                                       ('date','<=',this.date_end),('move_id.state','=','posted'),
+                                                                       ('date','!=',this.fiscalyear_id.date_start),
+                                                                       ('state','=','valid')],order='date asc')
+                    if move_line_ids:
+                        for move_line_id in move_line_ids:
+                            move_line = move_line_obj.browse(cr, uid, move_line_id)
+                            if move_line.debit:
+                                if move_line.debit>0:
+                                    debe_aux_f += move_line.debit
+                            if move_line.credit:
+                                if move_line.credit>0:
+                                    haber_aux_f += move_line.credit
+                            #saldo_final = saldo_inicial + debe_aux_f - haber_aux_f
+                        saldo_final = saldo_inicial + debe_aux_f - haber_aux_f
+                        line_id = line_obj.create(cr, uid, {
+                            'm_id':this.id,
+                            'account_id':account_id,
+                            'saldo_anterior':saldo_inicial,
+                            'debe':debe_aux_f,
+                            'haber':haber_aux_f,
+                            'saldo_final':saldo_final,
+                        })
+                        saldo_aux = 0
+                        next_saldo = saldo_inicial
+                        #falta crear la linea de saldo inicial
+                        for move_line_id in move_line_ids:
+                            move_line = move_line_obj.browse(cr, uid, move_line_id)
+                            if move_line.debit!=0 or move_line.credit!=0:
+                                saldo_aux = move_line.debit - move_line.credit
+                                if move_line.move_id.narration:
+                                    aux_desc = move_line.move_id.name + move_line.move_id.narration
+                                else:
+                                    aux_desc = move_line.move_id.name
+                                if move_line.debit:
+                                    if move_line.debit>0:
+                                        next_saldo += move_line.debit
+                                elif move_line.credit:
+                                    if move_line.credit>0:
+                                        next_saldo -= move_line.credit
+                                #verificar el proveedor si  no esta
+                                aux_p_id = move_line.move_id.partner_id.id
+                                partner_ids = partner_obj.search(cr, uid, [('id','=',aux_p_id)])
+                                if partner_ids:
+                                    partner_id = partner_ids[0]
+                                else:
+                                    partner_id = 1
+                                mayor_line_id = mayor_line_obj.create(cr, uid, {
+                                    'l_id':line_id,
+                                    'doc':move_line.move_id.name,
+                                    'name':aux_desc,
+                                    'date':move_line.date,
+                                    'partner_id':partner_id,
+                                    'debit':move_line.debit,
+                                    'credit':move_line.credit,
+                                    'saldo':next_saldo,
+                                })
+        return True
+
+    def print_mayor_cta(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'mayor.cuenta'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'mayor.cuenta',
+            'model': 'mayor.cuenta',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    _columns = dict(
+        datas = fields.binary('Archivo'),
+        datas_fname = fields.char('Nombre archivo', size=32),
+        line_ids = fields.one2many('mayor.line','m_id','Cuentas'),
+        name = fields.many2one('account.account','Cuenta Contable Desde'),
+        name_to = fields.many2one('account.account','Cuenta Contable Hasta'),
+        date_start = fields.date('Desde'),
+        date_end = fields.date('Hasta'),
+        fiscalyear_id = fields.many2one('account.fiscalyear', 'Año fiscal', required=True),
+        partner_id = fields.many2one('res.partner','Beneficiario'),
+    )
+
+    def onchange_fiscalyear(self, cr, uid, ids, fiscalyear_id):
+        fiscalyear_obj = self.pool.get('account.fiscalyear')
+        fiscalyear = fiscalyear_obj.browse(cr, uid, fiscalyear_id)
+        res = {'value': {'date_start': fiscalyear.date_start, 'date_end': fiscalyear.date_stop}}
+        return res
+
+    
+    def _get_activeyear(self, cr, uid, context):
+        fiscalyear_obj = self.pool.get('account.fiscalyear')
+        fiscalyear_ids = fiscalyear_obj.search(cr, uid, [('state','=','draft')])
+        res = {}
+        if fiscalyear_ids:
+            return fiscalyear_ids[0]
+        else:
+            raise osv.except_osv('Error !', 'No existe un año fiscal abierto')
+    
+    _defaults = {
+        'fiscalyear_id': _get_activeyear,
+    }
+    
+    
+mayorCuenta()

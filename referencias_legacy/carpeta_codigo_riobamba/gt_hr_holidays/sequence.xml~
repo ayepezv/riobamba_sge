@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for requisition picking --> 
+        <record id="seq_type_picking_requisition" model="ir.sequence.type">
+            <field name="name">Requerimiento Bodega</field>
+            <field name="code">stock.requisition</field>
+        </record>
+        <record id="seq_picking_requisition" model="ir.sequence">
+            <field name="name">Requerimiento Bodega</field>
+            <field name="code">stock.requisition</field>
+            <field name="prefix">RB</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <!-- Sequences for product --> 
+        <record id="seq_product" model="ir.sequence.type">
+            <field name="name">Codigo Producto</field>
+            <field name="code">product.product</field>
+        </record>
+        <record id="seq_product_product" model="ir.sequence">
+            <field name="name">Codigo Producto</field>
+            <field name="code">product.product</field>
+            <field name="prefix">SIIM</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_create_driver" model="ir.ui.view">
+        <field name="name">Relacionar Empleado/Chofer</field>
+        <field name="model">driver.employee</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Relacionar un empleado de la Institución a un chofer">
+			
+            <group col="4" colspan="4">
+              <field name="employee_id" domain="[('driver','!=',True)]"/>
+              
+			  <newline/>
+			  <group col="3" colspan="4">
+				<button icon="gtk-cancel" special="cancel"
+	        			string="Salir" />
+				<button name="create_driver" type="object" icon="gtk-execute"  string="Crear Chofer" 
+						confirm="¿Está seguro que desea relacionar el empleado a un chofer"/>
+			  </group>
+			</group>
+          </form>
+        </field>
+      </record>
+	  
+
+      <record id="action_create_driver" model="ir.actions.act_window">
+        <field name="name">Relacionar Empleado/Chofer</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">driver.employee</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'view_id':'action_driver_inst'}</field>
+      </record>
+      
+      <menuitem id="menu_create_driver"
+		icon="STOCK_EXECUTE"
+		action="action_create_driver"
+		parent="menu_vehicle_driver"
+		name="Relacionar Empleado/Chofer"/>
+
+
+</data>
+</openerp>

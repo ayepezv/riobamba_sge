@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_acc_auth","account.authorisation","retention.model_account_authorisation","base.group_hr_manager",1,1,1,1
+"access_hr_acc_auth usr","account.authorisation","retention.model_account_authorisation","base.group_hr_user",1,1,1,1
+

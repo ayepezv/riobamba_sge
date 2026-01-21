@@ -1,0 +1,164 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr>
+      <td width="100%" style="font-size:22;text-align:center;"><b>${o.name or ''|entity}</b></td>	  	  
+    </tr>	
+    <tr>
+      <td width="100%" style="font-size:22;text-align:center;"><b>CONTRATO DE SERVICIOS OCACIONALES</b></td>	  	  
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  <table WIDTH=1000 style="font-size:20px;text-align: justify;">
+    <tr WIDTH=1000>
+      <td WIDTH=1000 >En la ciudad de ${user.company_id.city or ''|entity}, cabecera cantonal del mismo nombre, provincia de/del ${user.company_id.state_id.name or ''|entity}, el ${o.date_start or ''|entity} , se suscribe el presente contrato individual de trabajo a plazo indefinido el mismo que se estipula al tenor de las siguientes cláusulas:
+<P>
+<b>PRIMERA: COMPARECIENTES.-</b> 
+Comparecen a la celebración del presente contrato, por una parte el <b>${user.company_id.name or ''|entity}</b>, representado legalmente por sus personeros: Ingeniero Marcos Alberto Chica Cárdenas; y, Abogado Felipe Dau Ochoa, en sus calidades de ALCALDE Y PROCURADOR SÍNDICO MUNICIPAL, respectivamente en su orden, a quien para efecto y resultado del presente instrumento se lo denominará como <b>“EL CONTRATANTE”</b> o <b>“EL EMPLEADOR”</b>; y por otra parte comparece el señor <b>${o.employee_id.complete_name}</b>, portador de la cédula de ciudadanía Nº. <b>${o.employee_id.name}</b>, por sus propios derechos,  sin nombramiento en la Administración Pública, ni prestando servicios en ella capaz ante la Ley, a quien en adelante para los mismos efectos se llamará como <b>“EL CONTRATADO”</b>. Los comparecientes son mayores de edad, hábiles para obligarse, contratar y ejercer esta clase de actos, con capacidad civil amplia y suficiente cual en derecho se requiere.
+<P>
+<b>SEGUNDA: ANTECEDENTES.-</b>
+El <b>${user.company_id.name or ''|entity}</b> para el cumplimiento de sus actividades y desarrollo de las tareas propias de su actividad informa que luego del análisis realizado por dicha jefatura y con la finalidad de optimizar el desempeño de las funciones se hace indispensable la contratación de un/una ${o.employee_id.job_id.name}, asignado a la dependencia del Departamento de ${o.employee_id.department_id.name}.
+<P>
+<b>TERCERA: OBJETO DEL CONTRATO.-</b>
+${o.employee_id.complete_name} se compromete con el empleador a prestar sus servicios lícitos y personales en la clase de trabajo que le ha determinado la Unidad de Administración del Talento Humano en calidad de ${o.employee_id.job_id.name}, para lo cual declara tener los conocimientos y capacidades necesarias, sus acciones serán supervisadas por el Jefe de la Unidad de Administración de Talento Humano.
+<P>
+<BR>
+<b>CUARTA: OBLIGACIONES DE LA CONTRATADA.-</b>
+Por el presente instrumento, la contratada se compromete para con el Municipio, a cumplir las estipulaciones contenidas en este contrato, así como las disposiciones que para efecto determine la Jefatura de la Unidad de Administración del Talento Humano.
+
+La Contratada se obliga durante la vigencia del contrato a no adquirir ninguna nueva obligación que limite el cumplimiento de sus obligaciones para con el Municipio y observar confidencialidad sobre la información que le corresponda conocer durante la ejecución del contrato, así como luego de fenecido el plazo del mismo.
+<P>
+<b>SEXTA: PLAZO DE CONTRATO.-</b>
+El presente contrato estará vigente a partir del ${o.date_start} hasta el ${o.date_end}.
+<P>
+<b>SÉPTIMA: REMUNERACIÓN Y FORMA DE PAGO.-</b>
+El ${user.company_id.name or ''|entity} se compromete pagar a el/la CONTRATADA previa presentación de informes mensuales aprobados por el Jefe de Área, el valor de (${o.wage}), como remuneración mensual unificada, con cargo a la partida presupuestaria Nº. ${o.budget_id.code} denominada ${o.budget_id.name}.
+<P>
+<b>OCTAVA: REGISTRO.-</b>
+Este contrato se registrará en la Unidad de Administración del Talento Humano de la Municipalidad o en la que haga sus veces, como requisito para legalizar el pago de las remuneraciones acordadas de conformidad con lo señalado en el inciso cuarto del Art. 18 de la Ley Orgánica del Servicio Público.
+<P>
+<b>NOVENA: SUPERVISION.-</b>
+Corresponde a la Corporación Municipal, a través del Jefe del Talento Humano, efectuar la supervisión de la ejecución y cumplimiento del presente contrato.
+<P>
+<b>DÉCIMA: HORARIO DE TRABAJO.-</b>
+El horario establecido será de 08h00 a 17h00 como jornada ordinaria con periodo de descanso desde treinta minutos a una hora diaria para el almuerzo, de acuerdo a lo establecido en el literal a) del Art.25 de la Ley Orgánica del Servicio Público. Además la contratada asistirá a los actos solemnes, culturales, deportivos, sociales que realiza esta Corporación Municipal.
+<P>
+<b>DECIMA PRIMERA: DOMICILIO Y NOTIFICACIONES.-</b>
+Las partes de mutuo acuerdo señalan los siguientes domicilios para futuras notificaciones en las siguientes direcciones:
+
+${user.company_id.name or ''|entity}: ${user.company_id.street or ''|entity}
+Dirección del Trabajador: ${o.employee_id.address}
+<P>
+<b>DÉCIMA SEGUNDA: TERMINACIÓN DEL CONTRATO.-</b>
+El Contrato terminará por las siguientes causales:
+<OL type =A>
+<LI>Cumplimiento del plazo;
+<LI>Mutuo acuerdo de la partes;
+<LI>Renuncia voluntaria presentada;
+<LI>Incapacidad absoluta y permanente de la contratada para prestar servicios;
+<LI>Pérdida de los derechos de ciudadanía declarada judicialmente en providencia ejecutoriada;
+<LI>Por terminación unilateral del contrato por parte de la autoridad nominadora, sin que fuere necesario otro requisito previo;
+<LI>Si la contratada abandonare injustificadamente el lugar de trabajo por más de tres días consecutivos;
+<LI>Por obtener una calificación regular o insuficiente establecida mediante el proceso de la evaluación del desempeño;
+<LI>Destitución por incurrir en cualquiera de las causales determinadas en el Art.48 de la Ley Orgánica del Servicio Público; y,
+<LI>Muerte.
+</OL>
+<P>
+<b>DÉCIMA TERCERA: TERMINACIÓN ANTICIPADA Y UNILATERAL DEL CONTRATO.-</b>
+Las partes podrán dar por terminado de manera unilateral y anticipada el presente contrato por las siguientes causas:
+<OL type =A>
+<LI>Informe negativo del ejercicio de las funciones del servidor público municipal, emitido por el Jefe de la Unidad de Administración del Talento Humano; y/o,
+<LI>Por la designación del titular de dicho cargo o puesto.
+<LI>Este tipo de contratos, por su naturaleza puede darse por terminado en cualquier momento, conforme lo establece el Art.146 del Reglamento General a la Ley Orgánica del Servicio Público en concordancia con lo señalado en el inciso sexto del Art.58 de la Ley Orgánica del Servicio Público.
+</OL>
+<P>
+<b>DÉCIMA CUARTA: BENEFICIOS DE LEY.-</b>
+El personal que labora en el servicio público bajo esta modalidad, tendrá relación de dependencia y derecho a todos los beneficios económicos contemplados para el personal de nombramiento con excepción de las indemnizaciones por supresión de puestos o partida o incentivos para jubilación de acuerdo a lo señalado en el inciso tercero del Art.58 de la Ley Orgánica del Servicio Público.
+<P>
+<b>DÉCIMA QUINTA: CUMPLIMIENTO DE DEBERES.-</b>
+La contratada se compromete a cumplir con los deberes determinados en el Art.22 de la Ley Orgánica del Servicio Público, además con la presentación de documentos previo pago de su remuneración.
+<P>
+<b>DÉCIMA SEXTA: PROHIBICIONES.-</b>
+a) Los servidores o servidoras públicos sujetos a este tipo de contrato no ingresarán a la carrera del servicio público mientras dure su contrato, conforme lo establece el inciso cuarto del Art.58 de la Ley Orgánica del Servicio Público.
+
+b) No se concederán licencias y comisiones de servicios con o sin remuneración para estudios regulares o de posgrados dentro de las jornadas de trabajo, ni para prestar servicios en otro institución del sector público, según lo determinado en el inciso quinto del Art.58 de la Ley Orgánica del Servicio Público.
+<P>
+<b>DÉCIMA SÉPTIMA: ACLARACIÓN.-</b>
+Este tipo de contrato por su naturaleza de ninguna manera representará estabilidad laboral en el mismo, ni derecho adquirido para la emisión de un nombramiento permanente, pudiendo darse por terminado en cualquier momento, al tenor de lo determinado en el inciso sexto del Art.58 de la Ley Orgánica del Servicio Público. De igual manera la contratada deberá cumplir con el requisito de no estar incurso en inhabilidad, prohibición o impedimento para ejercer las funciones.
+<P>
+<b>DÉCIMA OCTAVA: CONTROVERSIAS.-</b>
+En caso de que surgieran controversias relacionadas con el presente contrato, las partes se someten libres y voluntariamente al proceso de Mediación establecido en la Ley de Arbitraje y Mediación. Finalmente de persistir controversias las partes se someten al trámite verbal sumario y a la jurisdicción de los jueces de la ciudad de ${user.company_id.city}, renunciando para ello fuero y domicilio.
+<P>
+<b>DÉCIMA NOVENA: DOCUMENTOS HABILITANTES.-</b>
+Son documentos habilitantes y partes integrantes del presente contrato los anexos, los oficios, memorando, y más documentos pertinentes, como los emitidos por la Unidad de Administración del Talento Humano, Dirección Financiera Municipal así como por la Autoridad Nominadora de conformidad con lo establecido en el inciso primero del Art.58 de la Ley Orgánica del Servicio Público, por lo que procede la contratación.
+<P>
+<b>VIGÉSIMA: FINAL.-</b>
+Estando las partes de acuerdo con todas y cada una de las cláusulas que anteceden, en señal de conformidad firman el presente contrato, en original y copia del mismo tenor y efecto legal.
+
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+    </tr>
+	<tr style="height:35px">
+	  <th></th>
+	  <th></th>
+	  <th></th>
+	</tr>
+	<tr style="height:35px">
+	  <th>_____________________________</th>
+	  <th>_____________________________</th>
+	  <th>_____________________________</th>
+	</tr>
+	<tr style="font-size:20px">
+	  <th width="33%">ING. Marcos Chica Cardenas</th>
+	  <th width="33%">${o.employee_id.complete_name or ''}</th>
+	  <th width="33%">Ab. Felipe Dau Ochoa</th>
+	</tr>  
+	<tr style="font-size:20px">
+	  <th width="33%">ALCALDE</th>
+	  <th width="33%">CC. Nro. ${o.employee_id.name or ''}</th>
+	  <th width="33%">PROCURADOR SINDICO</th>
+	</tr>  
+  </table>
+<p>
+C.C:  Alcaldía,
+Unidad de Talento Humano,
+Dirección Financiera,
+Asesoría Jurídica
+</p>
+  %endfor
+</html>

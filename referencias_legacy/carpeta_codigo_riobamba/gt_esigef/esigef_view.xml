@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem
+        parent="account.menu_finance_reporting"
+        id="esigef_menu_reports"
+        name="Reportes ESIGEF"/>
+
+    <menuitem parent="esigef_menu_reports" id="esigef_menu_account" name="Contables"/>
+    <menuitem parent="esigef_menu_reports" id="esigef_menu_budget" name="Presupuestarios"/>
+    
+    <record id="view_esigef_account_initial" model="ir.ui.view">
+      <field name="name">view.esigef.account.initial.form</field>
+      <field name="model">esigef.account.initial</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Asistente para Archivo Plano: APERTURA INICIAL">
+	  <group string="Información Contable" colspan="4" col="4" states="init">
+	    <field name="chart_account_id" string="Plan de Cuentas" 
+		   widget='selection' on_change="onchange_chart_id(chart_account_id, context)"/>
+            <field name="company_id" invisible="1"/>
+            <field name="fiscalyear_id" domain="[('company_id','=',company_id)]" string="Ejercicio Fiscal"/>
+	    <field name="period_from" required="1" domain="[('fiscalyear_id', '=', fiscalyear_id),('special','=',True)]" string="Periodo Inicial"/>
+	    <field name="period_to" required="1" domain="[('fiscalyear_id', '=', fiscalyear_id),('special','=',True)]" string="Periodo Final"/>
+	    <field name="target_move"/>
+	  </group>
+	  <notebook>
+	    <page string="Opciones">
+	      <field name="state" invisible="1"/>
+	      <group states="init">
+		<field name="separator" readonly="1"/>
+		<field name="level" readonly="1"/>
+	      </group>
+	      <group states="done">
+		<field name="filename"/>
+		<field name="data" filename="filename"/>
+	      </group>
+	    </page>
+            <page string="Diarios" name="journal_ids">
+              <field name="journal_ids" colspan="4" nolabel="1" readonly="1"/>
+            </page>
+	  </notebook>
+	  <group colspan="4" col="6">
+	    <separator string="Este asistente exportará el archivo plano."/>
+	    <button special="cancel" string="Cerrar" icon="gtk-cancel" states="init,done"/>
+	    <button name="action_export_file" type="object" string="Exportar Archivo" icon="gtk-execute" states="init"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_esigef_account_initial" model="ir.actions.act_window">
+      <field name="name">Archivo Plano: Apertura Inicial</field>
+      <field name="res_model">esigef.account.initial</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_esigef_account_initial"/>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+        icon="STOCK_PRINT"
+        name="Apertura Inicial"
+        parent="esigef_menu_account"
+        action="action_esigef_account_initial"
+        id="menu_esigef_account_initial_report"
+        />
+
+    <record id="view_esigef_account_balance" model="ir.ui.view">
+      <field name="name">view.esigef.account.balance.form</field>
+      <field name="model">esigef.account.balance</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Asistente para Archivo plano: Balance de Comprobación">
+	  <field name="state" invisible="1"/>
+	  <group string="Información Contable" colspan="4" col="4" states="init">
+            <field name="chart_account_id" widget="selection" on_change="onchange_chart_id(chart_account_id, context)" string="Plan de Cuentas"/>
+            <field name="company_id" invisible="1"/>
+            <field name="fiscalyear_id" domain="[('company_id','=',company_id)]" string="Ejercicio Fiscal"/>
+            <field name="target_move" string="Asientos"/>
+	  </group>
+          <notebook tabpos="up" colspan="4">
+            <page string="Parámetros" name="filters" attrs="{'invisible': [('state','=','done')]}">
+	      <field name="filter" on_change="onchange_filter(filter, fiscalyear_id)" colspan="4" string="Filtros" readonly="1"/>
+	      <separator string="Periodos" colspan="4"/>
+	      <field name="period_from" string="Periodo Desde" on_change="onchange_period_from(period_from)" 
+		     domain="[('fiscalyear_id', '=', fiscalyear_id),('special','=',False)]" 
+		     attrs="{'readonly':[('filter','!=','filter_period')], 'required':[('filter', '=', 'filter_period')]}" colspan="4"/>
+	      <field name="period_to" string="Periodo Hasta"
+		     domain="[('fiscalyear_id', '=', fiscalyear_id),('special','=',False)]" 
+		     attrs="{'readonly':[('filter','!=','filter_period')], 'required':[('filter', '=', 'filter_period')]}" colspan="4"/>
+            </page>
+	    <page string="Archivo Generado" attrs="{'invisible': [('state','=','init')]}">
+	      <group states="done">
+		<field name="filename" invisible="1"/>
+		<field name="data" filename="filename"/>
+	      </group>
+	    </page>
+            <page string="Diarios" name="journal_ids" attrs="{'invisible': [('state','=','done')]}">
+              <field name="journal_ids" colspan="4" nolabel="1" readonly="1"/>
+            </page>
+          </notebook>
+          <separator colspan="4"/>
+          <group col="4" colspan="4">
+            <button icon="gtk-cancel" special="cancel" string="Cerrar" colspan="2"/>
+            <button icon="gtk-execute" name="action_export_file" string="Exportar Archivo" type="object" colspan="2" default_focus="1"/>
+          </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_esigef_account_balance" model="ir.actions.act_window">
+      <field name="name">Archivo Plano: Balance de Comprobación</field>
+      <field name="res_model">esigef.account.balance</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_esigef_account_balance"/>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+        icon="STOCK_PRINT"
+        name="Balance de Comprobación"
+        parent="esigef_menu_account"
+        action="action_esigef_account_balance"
+        id="menu_esigef_account_balance_report"
+        />
+
+    <record id="view_esigef_account_transfers" model="ir.ui.view">
+      <field name="name">view.esigef.account.tranfers.form</field>
+      <field name="model">esigef.account.tranfers</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Asistente para Archivo Plano: Transferencias">
+	  <notebook>
+	    <page string="Información">
+	      <separator string="Se exportará todas las transferencias recibidas del Ministerio de Finanzas y las entregadas a Instituciones Públicas"/>
+	      <group string="Información" colspan="4">
+		<field name="partner_id"/>
+		<field name="fiscalyear_id" required="1" string="Ejercicio Fiscal"/>
+		<field name="period_from" string="Periodo de Consulta"
+		       domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',False)]" required="1"/>
+		<field name="state" invisible="1"/>
+	      </group>
+	    </page>
+	    <page string="Bancos">
+	      <field name="journal_ids" colspan="4" nolabel="1" readonly="1" attrs="{'invisible': [('state','=','done')]}"/>
+	    </page>
+	  </notebook>
+          <separator colspan="4"/>
+          <group col="4" colspan="4">
+            <button icon="gtk-cancel" special="cancel" string="Cerrar" colspan="2"/>
+            <button icon="gtk-execute" name="action_export_file" string="Exportar Archivo" type="object" colspan="2" default_focus="1"/>
+          </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_esigef_account_transfers" model="ir.actions.act_window">
+      <field name="name">Archivo Plano: Transferencias</field>
+      <field name="res_model">esigef.account.transfer</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_esigef_account_transfers"/>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+        icon="STOCK_PRINT"
+        name="Transferencias"
+        parent="esigef_menu_account"
+        action="action_esigef_account_transfers"
+        id="menu_esigef_account_transfers_report"
+        />
+
+    <record id="view_esigef_budget_initial" model="ir.ui.view">
+      <field name="name">view.esigef.budget.initial.form</field>
+      <field name="model">esigef.budget.initial</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Asistente para Archivo Plano: Presupuesto Inicial">
+	  <field name="state" invisible="1"/>
+	  <group string="Información de Presupuesto a Consultar" colspan="4" states="init">
+	    <field name="budget_id"/>
+	    <field name="fiscalyear_id" required="1" string="Ejercicio Fiscal"/>
+	    <field name="period_from" string="Periodo Inicial" required="1"
+		   on_change="onchange_period_from(period_from)"
+		   domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',True)]"/>
+	    <field name="period_to" string="Periodo Final" invisible="1"
+		   domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',True)]"/>
+	  </group>
+	  <group string="Archivo Generado" colspan="4" states="done">
+	    <field name="filename" invisible="1"/>
+	    <field name="data" filename="filename"/>
+	  </group>
+          <group col="4" colspan="4">
+            <button icon="gtk-cancel" special="cancel" string="Cerrar" colspan="2"/>
+            <button icon="gtk-execute" name="action_export_file" string="Exportar Archivo" type="object" colspan="2" default_focus="1"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_esigef_budget_initial" model="ir.actions.act_window">
+      <field name="name">Archivo Plano: Presupuesto Inicial</field>
+      <field name="res_model">esigef.budget.initial</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_esigef_budget_initial"/>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+        icon="STOCK_PRINT"
+        name="Presupuesto Inicial"
+        parent="esigef_menu_budget"
+        action="action_esigef_budget_initial"
+        id="menu_esigef_budget_initial_report"
+        />
+  </data>
+</openerp>

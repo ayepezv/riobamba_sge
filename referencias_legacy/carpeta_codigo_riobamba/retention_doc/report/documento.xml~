@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="mayor_cuentac" model="mayor.cuentac"
+	    name="mayor.cuentac" rml="gt_bank_conciliation/report/conciliacion.mako" header="False"
+	    usage="default" string="Mayor Cuenta" report_type="webkit"
+	    webkit_header="base_headers_webkit.financial_landscape_header"
+	    />
+
+    <report auto="False" id="no_contabilizado" model="bank.conciliation.mark"
+            name="no_contabilizado" rml="gt_bank_conciliation/report/no_contabilizado.mako"
+            usage="default" string="No Contabilizados" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

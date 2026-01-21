@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_recaudacion_manual,recaudacion.manual,model_recaudacion_manual,account.group_account_manager,1,1,1,1
+access_recaudacion_manual_line,recaudacion.manual.line,model_recaudacion_manual_line,account.group_account_manager,1,1,1,1
+access_budget_titulo,budget.titulo,model_budget_titulo,account.group_account_manager,1,1,1,1

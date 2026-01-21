@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_saldo_anticipo" model="ir.ui.view">
+        <field name="name">Saldo Anticipo</field>
+        <field name="model">saldo.anticipo</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Actualizar">
+	    <field name="year_id" colspan="2" required="1"/>
+	    <field name="employee_id" colspan="2"/>
+	    <newline/>
+            <separator colspan="4"/>
+            <group col="3" colspan="4">
+              <button icon='gtk-cancel' special="cancel"
+                      string="Cancelar" />
+              <button name="load_saldo_anticipo" string="Generar"
+                      colspan="1" type="object" icon="gtk-ok" />
+	      <button name="print_saldo_anticipo" string="Imprimir"
+                      colspan="1" type="object" icon="gtk-print" />
+            </group>
+	    <field name="line_ids" colspan="4">
+	      <tree>
+		<field name="employee_id"/>
+		<field name="total_anticipos"/>
+		<field name="total_devengado"/>
+		<field name="saldo"/>
+	      </tree>
+	      <form>
+		<field name="employee_id"/>
+		<field name="total_anticipos"/>
+		<field name="total_devengado"/>
+		<field name="saldo"/>
+		<field name="line_ids">
+		  <tree>
+		    <field name="referencia"/>
+		    <field name="fecha"/>
+		    <field name="monto" sum="TOTAL"/>
+		  </tree>
+		</field>
+	      </form>
+	    </field>
+          </form>
+        </field>
+        </record>
+      
+  <record id="action_saldo_anticipo" model="ir.actions.act_window">
+    <field name="name">Saldo Anticipo</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">saldo.anticipo</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>      
+  
+  <menuitem id="menu_saldo_anticipo" name="Saldo Anticipos" parent="menu_finance_anticipos" 
+	    action="action_saldo_anticipo" sequence='100'/>
+
+    </data>
+</openerp>

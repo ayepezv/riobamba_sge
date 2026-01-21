@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+
+    <record id="wizard_report_gob_form" model="ir.ui.view">
+      <field name="name">Reporte Gobierno Municipal</field>
+      <field name="model">report.gob.wizard</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Exportar Archiv ATS">
+	      <group col="4" colspan="4" fill="0">
+	        <field name="type" colspan="4" readonly="1"/>
+			<field name="date_from" required="1"/>
+	        <field name="date_end" required="1"/>
+	      </group>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="print_gob_report" string="Exportar XML" type="object"/>
+	        <button icon="gtk-ok" name="act_cancel" string="Cerrar" type="object"/>
+          </group>                    
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_gob_report_flow" model="ir.actions.act_window">
+      <field name="name">Flujo</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.gob.wizard</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+	  <field name="context">{'default_type':'FlujoEfectivo'}</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+	   name="Reportes Gob"
+       icon="STOCK_INDENT"
+       id="menu_gob_report"
+       parent="retention.menu_sri_reporting"
+       groups="account.group_account_user,account.group_account_manager"
+       sequence="13"/>
+
+    <menuitem
+        icon="STOCK_INDENT"
+        action="action_gob_report_flow"
+        id="menu_gob_report_flow"
+        parent="menu_gob_report"
+        groups="account.group_account_user,account.group_account_manager"
+        sequence="1"/>
+
+  </data>
+</openerp>

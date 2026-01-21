@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for accion personal --> 
+        <record id="seq_type_accion_personal" model="ir.sequence.type">
+            <field name="name">Accion Personal</field>
+            <field name="code">hr.accion.personal</field>
+        </record>
+        <record id="seq_accion_personal" model="ir.sequence">
+            <field name="name">Accion Personal</field>
+            <field name="code">hr.accion.personal</field>
+	    <field name="prefix">%(year)s</field>
+            <field name="suffix">GTH</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cliente,cliente,model_cliente,group_comisaria,1,1,1,1
+access_multa,multa,model_multa,group_comisaria,1,1,1,1
+access_ordenanza,ordenanza,model_ordenanza,group_comisaria,1,1,1,1
+access_predio,predio,model_predio,group_comisaria,1,1,1,1
+access_notificacion,notificacion,model_notificacion,group_comisaria,1,1,1,1
+

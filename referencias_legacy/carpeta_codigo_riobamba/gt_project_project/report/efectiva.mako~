@@ -1,0 +1,38 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;">RECAUDACION EFECTIVA</td>	  	  
+    </tr>	
+  </table>
+  <p></p>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+    <thead style="display: table-header-group">
+      <tr>
+        <th style="font-size:11px" width="60%">Partida</th>
+        <th style="font-size:11px" width="8%">Anio 1</th>
+        <th style="font-size:11px" width="8%">Anio 2</th>
+        <th style="font-size:11px" width="8%">Anio 3</th>
+        <th style="font-size:11px" width="8%">Promedio</th>
+        <th style="font-size:11px" width="8%">Actual</th>
+      </tr>
+    </thead>
+    %for line_budget in o.line_ids:
+    <tr>
+      <td style="font-size:11px" width="60%">${line_budget.budget_post.code} - ${line_budget.budget_post.name}</th>
+<td style="font-size:11px;text-align:right;" width="8%">${line_budget.anio1}</th>
+<td style="font-size:11px;text-align:right" width="8%">${line_budget.anio2}</th>
+<td style="font-size:11px;text-align:right" width="8%">${line_budget.anio3}</th>
+<td style="font-size:11px;text-align:right" width="8%">${line_budget.promedio}</th>
+<td style="font-size:11px;text-align:right" width="8%">${line_budget.actual}</th>
+</tr>
+%endfor
+</table>
+%endfor
+</html>

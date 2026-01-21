@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <record id="view_doc_contract_cancel" model="ir.ui.view">
+            <field name="name">Cancel_Contract_Form</field>
+            <field name="model">doc_contract.cancel</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cancel Contract">
+                    <separator colspan="4" string="Justificación"/>
+                    <field name="contrato" invisible="1"/>
+                    <field name="notes" nolabel="1" colspan="6"/>
+                    <group col="2" colspan="2">
+                        <button icon="gtk-cancel" special="cancel" string="Cerrar"/>
+                        <button icon="gtk-apply" name="cancel_contract" string="Anular Contrato" type="object" default_focus="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_doc_contract_cancel" model="ir.actions.act_window">
+            <field name="name">Anulación del Contrato</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">doc_contract.cancel</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+ </data>
+</openerp>

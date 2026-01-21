@@ -1,0 +1,131 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr>
+      <td width="100%" style="font-size:22;text-align:center;"><b>${o.contract_id.name or ''|entity}</b></td>	  	  
+    </tr>	
+    <tr>
+      <td width="100%" style="font-size:22;text-align:center;"><b>CONTRATO INDIVIDUAL DE TRABAJO A PLAZO INDEFINIDO</b></td>	  	  
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  <table WIDTH=1000 style="font-size:20px;text-align: justify;">
+    <tr WIDTH=1000>
+      <td WIDTH=1000 >En la ciudad de ${user.company_id.city or ''|entity}, cabecera cantonal del mismo nombre, provincia de/del ${user.company_id.state_id.name or ''|entity}, el ${o.contract_id.date_start or ''|entity} , se suscribe el presente contrato individual de trabajo a plazo indefinido el mismo que se estipula al tenor de las siguientes cláusulas:
+<P>
+<b>PRIMERA: COMPARECIENTES.-</b> 
+Comparecen a la celebración del presente contrato individual de trabajo a plazo indefinido, por una parte el <b>${user.company_id.name or ''|entity}</b>, representado legalmente por sus personeros: Ingeniero Marcos Alberto Chica Cárdenas; y, Abogado Felipe Dau Ochoa, en sus calidades de ALCALDE Y PROCURADOR SÍNDICO MUNICIPAL, respectivamente en su orden, a quien para efecto y resultado del presente instrumento se lo denominará como <b>“EL CONTRATANTE”</b> o <b>“EL EMPLEADOR”</b>; y por otra parte comparece el señor <b>${o.contract_id.employee_id.complete_name}</b>, portador de la cédula de ciudadanía Nº. <b>${o.contract_id.employee_id.name}</b>, por sus propios derechos, capaz ante la Ley, a quien en adelante para los mismos efectos se llamará como <b>“EL TRABAJADOR”</b>. Los comparecientes son mayores de edad, hábiles para obligarse, contratar y ejercer esta clase de actos, con capacidad civil amplia y suficiente cual en derecho se requiere.
+<P>
+<b>SEGUNDA: ANTECEDENTES.-</b>
+El <b>${user.company_id.name or ''|entity}</b> para el cumplimiento de sus actividades y desarrollo de las tareas propias de su actividad necesita contratar los servicios laborales para satisfacer exigencias de la municipalidad originadas por ${o.contract_id.employee_id.department_id.name}.
+
+En vista de que el empleado ${o.contract_id.employee_id.complete_name} fue contratado por El Empleador, y desde el ${o.contract_id.date_start} viene prestando sus servicios en la entidad municipal, se establece por esta circunstancia el presente contrato a plazo indefinido.
+
+El señor ${o.contract_id.employee_id.complete_name} declara tener los conocimientos necesarios para el desempeño del trabajo indicado, por lo que en base a las consideraciones anteriores y por lo expresado en los numerales siguientes, el EMPLEADOR y el TRABAJADOR proceden a celebrar el presente contrato individual de trabajo a plazo indefinido.
+<P>
+<b>TERCERA: OBJETO DEL CONTRATO.-</b>
+${o.contract_id.employee_id.complete_name} se compromete con el empleador a prestar sus servicios lícitos y personales a órdenes y bajo dependencia patronal del Gobierno Autónomo Descentralizado Municipal del cantón  Naranjal, y desempeñará las funciones de ${o.contract_id.employee_id.job_id.name} (Departamento de ${o.contract_id.employee_id.department_id.name}), para lo cual declara tener los conocimientos y capacidades necesarias, sus acciones serán supervisadas por el Director de ${o.contract_id.employee_id.department_id.name}.
+<P>
+<BR>
+<b>CUARTA: OBLIGACIONES DEL EMPLEADOR Y TRABAJADOR.-</b>
+En lo que respecta a las obligaciones, derechos y prohibiciones del empleador y trabajador, estos se sujetan estrictamente a lo dispuesto en el Código del Trabajo en su Capítulo IV del Título I de las obligaciones del empleador y trabajador, inclusive las estipuladas en este contrato, se consideran como faltas graves del trabajador, y por tanto suficientes para dar por terminada la relación laboral.
+
+El Trabajador se compromete para con el ${user.company_id.name or ''|entity}, a cumplir las cláusulas contenidas en este contrato, así como las disposiciones que para efecto determine la Jefatura de la ${user.context_department_id.name or ''|entity}; además se obliga durante la vigencia del contrato a no adquirir ninguna nueva obligación laboral que limite el cumplimiento de sus obligaciones para con el empleador y observar confidencialidad sobre la información que le corresponda conocer durante la ejecución del contrato.
+<P>
+<b>QUINTA: LUGAR DE PRESTACIÓN DE SERVICIOS.-</b>
+El lugar principal de trabajo del contratado se establece en el Palacio Municipal en las Oficinas del Departamento de ${o.contract_id.employee_id.department_id.name}, ubicado en el Edificio Municipal situado en ${user.company_id.street or ''|entity}  de la cabecera cantonal de ${user.company_id.city or ''|entity}, provincia de/del ${user.company_id.state_id.name or ''|entity}.
+<P>
+<BR>
+<b>SEXTA: HORARIO DE TRABAJO.-</b>
+El horario establecido será de una sola jornada de ocho horas diarias (desde las 08h00 a 17h00, de lunes a viernes con un intervalo de una hora todos los días de 12h00 a 13h00 o 13h00 a 14h00, para el almuerzo), observando el principio de continuidad, equidad y optimización del servicio, además el trabajador asistirá a los actos solemnes, culturales, deportivos, sociales que realiza el Municipio.  Dicho horario puede ser modificado de acuerdo con las necesidades de producción del Municipio.
+<P>
+<b>SÉPTIMA: REMUNERACIÓN Y FORMA DE PAGO.-</b>
+El ${user.company_id.name or ''|entity} se compromete pagar al trabajador previa presentación de informes mensuales aprobados por el Jefe de Área, el valor de (${o.contract_id.wage}), como remuneración mensual unificada, con cargo a la partida presupuestaria Nº. ${o.contract_id.budget_id.code}.
+<P>
+<b>OCTAVA: PLAZO DEL CONTRATO.-</b>
+El presente contrato tendrá un tiempo indefinido.  Este contrato entra en vigencia a partir de su suscripción.
+<P>
+<b>NOVENA: DOMICILIO Y NOTIFICACIONES.-</b>
+Las partes de mutuo acuerdo señalan los siguientes domicilios para futuras notificaciones en las siguientes direcciones:
+
+${user.company_id.name or ''|entity}: ${user.company_id.street or ''|entity}
+Dirección del Trabajador: ${o.contract_id.employee_id.address}
+<P>
+<b>DÉCIMA: TERMINACIÓN DEL CONTRATO.-</b>
+Este contrato podrá terminar por las causas establecidas en el Art.169 del Código de Trabajo en cuanto sean aplicadas para este tipo de contrato.
+<P>
+<b>DÉCIMA PRIMERA: DERECHO LABORAL APLICADO.-</b>
+En todo lo que no estuviere previsto en el presente contrato, las partes declaran incorporadas las disposiciones de la ley de la materia, en especial las relativas a las obligaciones y prohibiciones tanto del trabajador y empleador.
+<P>
+<b>DÉCIMA SEGUNDA: JURISDICCIÓN Y COMPETENCIA.-</b>
+En caso de suscitarse discrepancias en la interpretación, cumplimiento y ejecución del presente contrato y cuando fuere posible llegar a un acuerdo amistoso entre las partes, estas se someterán a los jueces competentes del lugar en que este contrato ha sido celebrado, así como a los procedimientos laborales determinados por la Ley.
+
+Para constancia de su aceptación, las partes suscriben el presente contrato en original y copia de igual tenor y efecto legal.
+
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+    </tr>
+	<tr style="height:35px">
+	  <th></th>
+	  <th></th>
+	  <th></th>
+	</tr>
+	<tr style="height:35px">
+	  <th>_____________________________</th>
+	  <th>_____________________________</th>
+	  <th>_____________________________</th>
+	</tr>
+	<tr style="font-size:20px">
+	  <th width="33%">${get_cargo('ALCALDE')}</th>
+	  <th width="33%">${o.contract_id.employee_id.complete_name or ''}</th>
+	  <th width="33%">${get_cargo('PROCURADOR SINDICO')}</th>
+	</tr>  
+	<tr style="font-size:20px">
+	  <th width="33%">ALCALDE</th>
+	  <th width="33%">CC. Nro. ${o.contract_id.employee_id.name or ''}</th>
+	  <th width="33%">PROCURADOR SINDICO</th>
+	</tr>  
+  </table>
+<p>
+C.C:  Alcaldía,
+Unidad de Talento Humano,
+Dirección Financiera,
+Asesoría Jurídica
+</p>
+  %endfor
+</html>

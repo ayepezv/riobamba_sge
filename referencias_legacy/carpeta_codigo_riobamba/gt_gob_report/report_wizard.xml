@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <menuitem
+	name="Informes Financieros"
+	icon="STOCK_INDENT"
+	id="menu_gob_report"
+	parent="retention.menu_sri_reporting"
+	groups="account.group_account_user,account.group_account_manager"
+	sequence="13"/>
+
+<!-- PRESUPUESTOS -->
+
+    <!--record id="action_budget_poa_conta" model="ir.actions.act_window">
+      <field name="name">Presupuestos</field>
+      <field name="res_model">budget.poa</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_budget_poa_conta" action="action_budget_poa_conta" parent="menu_gob_report" sequence="8"/-->
+
+<!-- PRESUPUESTO EN CONTABLE-->
+
+    <menuitem id="menu_cedulas_conta" 
+              parent="menu_gob_report" 
+	      sequence="8" name="Cedulas"/>
+
+    <menuitem id="menu_cta_financiera_conta" 
+              parent="menu_gob_report" 
+	      sequence="10" name="Cuenta Financiera"/>
+
+    <menuitem id="menu_cta_financiera_gastado_conta"
+	      icon="STOCK_EXECUTE"
+	      action="gt_project_project.action_cta_financiera_gastado"
+	      parent="menu_cta_financiera_conta"
+	      name="Gastado"/>
+
+    <menuitem id="menu_cta_financiera_comp_conta"
+	      icon="STOCK_EXECUTE"
+	      action="gt_project_project.action_cta_financiera"
+	      parent="menu_cta_financiera_conta"
+	      name="Comprometido"/>
+
+
+    <menuitem id="menu_esigef_detalle_conta"
+	      icon="STOCK_EXECUTE"
+	      action="gt_project_project.action_esigef_detalle"
+	      parent="gt_gob_report.menu_cedulas_conta"
+	      name="Reporte Esigef Detalle"
+	      sequence="15"/>
+
+
+    <menuitem id="menu_cedula_ingreso_conta"
+	      icon="STOCK_EXECUTE"
+	      action="gt_project_project.action_print_budget_card_income"
+	      parent="menu_cedulas_conta"
+	      sequence="1"
+	      name="Ingresos"/>
+
+    <menuitem id="menu_cedula_gasto_conta"
+	      icon="STOCK_EXECUTE"
+	      action="gt_project_project.action_print_budget_card_expense"
+	      parent="menu_cedulas_conta"
+	      sequence="2"
+	      name="Gastos"/>
+
+    <menuitem id="menu_ejec_presu_conta"
+	      icon="STOCK_EXECUTE"
+	      action="gt_project_project.action_print_budget_card"
+	      parent="menu_cedulas_conta"
+	      sequence="4"
+	      name="Ejecucion Presupuestaria"/>
+
+    <record id="wizard_cedula_auxiliar_form" model="ir.ui.view">
+      <field name="name">Cedula Auxiliar</field>
+      <field name="model">cedula.auxiliar</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reportes">
+	  <group col="4" colspan="4" fill="0">
+	    <field name="poa_id" required="1" colspan='4' widget="selection"/>
+	    <field name="date_start" required="1"  colspan='2'/>
+	    <field name="date_end" required="1" colspan='2'/>
+	  </group>
+          <group colspan="4">
+            <button icon="gtk-execute" name="exportCedulaAuxiliar" string="Exportar" type="object"/>
+            <button icon="gtk-execute" name="printCedulaAuxiliar" string="Imprimir" type="object"/>
+          </group>       
+	  <field name="filename" invisible="1" />
+	  <field name="data" filename="filename" colspan="4"/>             
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name='line_ids' nolabel="1">
+		<tree>
+		  <field name="program_id"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+    <record id="cedula_auxiliar" model="ir.actions.act_window">
+      <field name="name">Cedula Auxiliar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">cedula.auxiliar</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_cedula_auxiliar_conta"
+	      icon="STOCK_EXECUTE"
+	      action="cedula_auxiliar"
+	      parent="menu_cedulas_conta"
+	      sequence="3"
+	      name="Cedula Auxiliar"/>
+
+    <menuitem id="menu_cedula_auxiliar_budget"
+	      icon="STOCK_EXECUTE"
+	      action="cedula_auxiliar"
+	      parent="gt_project_project.menu_cedulas"
+	      sequence="3"
+	      name="Cedula Auxiliar"/>
+
+    
+
+<!--SITUACION AUXILIAR -->
+    <record id="wizard_situacion_aux_form" model="ir.ui.view">
+      <field name="name">Situacion Financiera Auxiliar</field>
+      <field name="model">situacion.auxiliar</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reportes">
+	  <group col="4" colspan="4" fill="0">
+	    <field name="fiscalyear_id" required="1"/>
+	    <field name="date_from" required="1"/>
+	    <field name="date_end" required="1"/>
+	  </group>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="load_situacion_auxiliar" string="Generar" type="object"/>
+            <button icon="gtk-execute" name="print_situacion_auxiliar" string="Imprimir" type="object"/>
+          </group>                    
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name='line_ids' nolabel="1">
+		<tree>
+		  <field name="account_id"/>
+		  <field name="anterior"/>
+		  <field name="actual"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+    <record id="action_situacion_aux" model="ir.actions.act_window">
+      <field name="name">Situacion Financiera Auxiliar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">situacion.auxiliar</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem
+	icon="STOCK_INDENT"
+	action="action_situacion_aux"
+	id="menu_situacion_aux"
+	parent="menu_gob_report"
+	groups="account.group_account_user,account.group_account_manager"
+	sequence="5"/>
+    
+<!-- -->
+    <record id="wizard_report_gob_form" model="ir.ui.view">
+      <field name="name">Reporte Gobierno Municipal</field>
+      <field name="model">report.gob.wizard</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reportes">
+	  <group colspan="4">
+	    <field name="type" colspan="4" readonly="1"/>
+	    <field name="fiscalyear" required="1" on_change="onchange_fiscalyear(fiscalyear)" widget="selection" colspan="2"/>
+	    <field name="nivel"  colspan="2"
+		   attrs="{'required':[('type','in',['BalanceComprobacion'])], 'invisible':[('type','in',['FlujoEfectivo','EstadoResultados','EstadoSituacion'])]}"/>
+	    <newline/>
+	    <field name="all_accounts" colspan="2" attrs="{'invisible':[('type','in',['FlujoEfectivo','EstadoResultados','EstadoSituacion'])]}"/>
+	    <field name="cierre" colspan="2" attrs="{'invisible':[('type','in',['FlujoEfectivo','EstadoResultados','EstadoSituacion'])]}"/>
+	    <field name="auxiliar" attrs="{'invisible':[('type','in',['BalanceComprobacion'])]}"  colspan="4"/>
+	    <field name="date_from" required="1" colspan="2"/>
+	    <field name="date_end" required="1" colspan="2"/>
+	  </group>
+	  <field name="filename" invisible="1" />
+	  <field name="data" filename="filename" colspan="4"/>
+	  <!--field name="data" filename="filename" colspan="4" attrs="{'invisible':[('type','in',['FlujoEfectivo','EstadoSituacion'])]}"/-->
+          <group colspan="4">
+            <button icon="gtk-execute" name="validate_report" string="Validar Flujo" type="object" 
+		    attrs="{'invisible':[('type','!=','FlujoEfectivo')]}"/>
+            <button icon="gtk-execute" name="print_gob_report" string="Imprimir Reporte" type="object"/>
+	    <!--<button icon="gtk-ok" name="act_cancel" string="Cerrar" type="object"/> -->
+	    <button name="gen_balance_excel" type="object" icon="gtk-print" string="Archivo Excel"/>
+          </group>                    
+	  <!--field name="diferencia" colspan="2" readonly="1" attrs="{'invisible':[('type','!=','FlujoEfectivo')]}"/-->
+	  <field name="notes" colspan="2" readonly="1" attrs="{'invisible':[('type','!=','FlujoEfectivo')]}"/>
+	  <field name='line_ids' colspan="2" readonly="1">
+	    <tree>
+	      <field name='dia' readonly="1"/>
+	      <field name='diferencia' readonly="1"/>
+	      <field name='cuadra' readonly="1"/>
+	    </tree>
+	    <form>
+	      <field name='dia' readonly="1"/>
+	      <field name='diferencia' readonly="1"/>
+	      <field name='cuadra' readonly="1"/>
+	    </form>
+	  </field>
+        </form>
+      </field>
+    </record>
+     
+	<!-- balance de comprobacion -->
+	<record id="action_gob_report_comprobacion" model="ir.actions.act_window">
+      <field name="name">Balance de comprobación</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.gob.wizard</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+	  <field name="context">{'default_type':'BalanceComprobacion'}</field>
+      <field name="target">new</field>
+    </record>
+	<menuitem
+        icon="STOCK_INDENT"
+        action="action_gob_report_comprobacion"
+        id="menu_gob_report_comprobacion"
+        parent="menu_gob_report"
+        groups="account.group_account_user,account.group_account_manager"
+        sequence="1"/>
+	<!-- estado de resultados -->
+	<record id="action_gob_report_estadoresultados" model="ir.actions.act_window">
+      <field name="name">Estado de resultados</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.gob.wizard</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+	  <field name="context">{'default_type':'EstadoResultados'}</field>
+      <field name="target">new</field>
+    </record>
+	<menuitem
+       icon="STOCK_INDENT"
+       action="action_gob_report_estadoresultados"
+       id="menu_gob_report_estadoresultados"
+       parent="menu_gob_report"
+       groups="account.group_account_user,account.group_account_manager"
+       sequence="2"/>
+	<!-- estado situacion financiera -->
+	<record id="action_gob_report_estadosituacion" model="ir.actions.act_window">
+      <field name="name">Estado de Situación Financiera</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.gob.wizard</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+	  <field name="context">{'default_type':'EstadoSituacion'}</field>
+      <field name="target">new</field>
+    </record>
+	<menuitem
+       icon="STOCK_INDENT"
+       action="action_gob_report_estadosituacion"
+       id="menu_gob_report_estadosituacion"
+       parent="menu_gob_report"
+       groups="account.group_account_user,account.group_account_manager"
+       sequence="3"/>
+	<!-- flujo de efectivo -->
+    <record id="action_gob_report_flow" model="ir.actions.act_window">
+      <field name="name">Estado de Flujo de Efectivo</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.gob.wizard</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+	  <field name="context">{'default_type':'FlujoEfectivo'}</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem
+        icon="STOCK_INDENT"
+        action="action_gob_report_flow"
+        id="menu_gob_report_flow"
+        parent="menu_gob_report"
+        groups="account.group_account_user,account.group_account_manager"
+        sequence="4"/>
+
+<!--SITUACION AUXILIAR -->
+    <record id="wizard_inicial_esigef_form" model="ir.ui.view">
+      <field name="name">Presupuesto Inicial Esigef</field>
+      <field name="model">presupuesto.inicial.esigef</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reportes">
+	  <group col="4" colspan="4" fill="0">
+	    <field name="budget_id" required="1" widget="selection"/>
+	    <field name="filename_cedulas" invisible="1"/>
+	    <field name="data_cedulas" filename="filename_cedulas" colspan="4"/>
+	  </group>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="genera_inicial_esigef" string="Generar" type="object"/>
+          </group>                    
+        </form>
+      </field>
+    </record>
+    <record id="action_inicial_esigef" model="ir.actions.act_window">
+      <field name="name">Presupuesto Inicial Esigef</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">presupuesto.inicial.esigef</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem
+	icon="STOCK_INDENT"
+	action="action_inicial_esigef"
+	id="menu_inicial_esigef"
+	parent="menu_gob_report"
+	groups="account.group_account_user,account.group_account_manager"
+	sequence="6"/>
+
+    <record id="wizard_balance_inicial_esigef_form" model="ir.ui.view">
+      <field name="name">Balance Inicial Esigef</field>
+      <field name="model">balance.inicial.esigef</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reportes">
+	  <group col="4" colspan="4" fill="0">
+	    <field name="fiscalyear_id" required="1" widget="selection"/>
+	    <field name="filename_balance" invisible="1"/>
+	    <field name="data_balance" filename="filename_balance" colspan="4"/>
+	  </group>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="genera_balance_inicial_esigef" string="Generar" type="object"/>
+          </group>                    
+        </form>
+      </field>
+    </record>
+    <record id="action_balance_inicial_esigef" model="ir.actions.act_window">
+      <field name="name">Balance Inicial Esigef</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">balance.inicial.esigef</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+	icon="STOCK_INDENT"
+	action="action_balance_inicial_esigef"
+	id="menu_inicial_balance_esigef"
+	parent="menu_gob_report"
+	groups="account.group_account_user,account.group_account_manager"
+	sequence="7"/>
+
+  </data>
+</openerp>

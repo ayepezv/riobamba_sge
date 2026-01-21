@@ -1,0 +1,61 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+
+class wizardCreaAsiento(osv.TransientModel):
+    _name = 'wizard.crea.asiento'
+
+    def action_crea_asientoc(self, cr, uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        period_obj = self.pool.get('account.period')
+        journal_obj = self.pool.get('account.journal')
+        anticipo_obj = self.pool.get('hr.payroll.advance')
+        partner_obj = self.pool.get('res.partner')
+        anticipo = anticipo_obj.browse(cr, uid, context['active_id'])
+        for this in self.browse(cr, uid, ids):
+            period_ids = period_obj.find(cr, uid, this.rol_id.date_end)
+            if not period_ids:
+                raise osv.except_osv('Error configuracion','No existe periodo para la fecha de comprobante.')
+            journal_ids = journal_obj.search(cr, uid, [('name','=','EGRESOS')],limit=1)
+            if not journal_ids:
+                raise osv.except_osv('Error configuracion','No existe diario de egresos.')
+            partner_ids = partner_obj.search(cr, uid, [('ced_ruc','=',anticipo.contract_id.employee_id.name)],limit=1)
+            if not partner_ids:
+                raise osv.except_osv('Error configuracion','El funcionario no tiene asignado un proveedor')
+            move_id = move_obj.create(cr, uid, {
+                'journal_id':journal_ids[0],
+                'period_id':period_ids[0],
+                'date':anticipo.fecha_ap,
+                'partner_id':partner_ids[0],
+                'narration':anticipo.name,
+            })
+            move_line_obj.create(cr, uid, {
+                'move_id':move_id,
+                'partner_id':partner_ids[0],
+                'account_id':this.bank_id.id,
+                'name':'Banco',
+                'credit':anticipo.amount,
+            })
+            move_line_obj.create(cr, uid, {
+                'move_id':move_id,
+                'partner_id':partner_ids[0],
+                'account_id':this.account_id.id,
+                'name':'Anticipo',
+                'debit':anticipo.amount,
+            })
+        return {'type':'ir.actions.act_window_close' }
+
+
+    _columns = dict(
+        bank_id = fields.many2one('account.account','Cuenta Banco'),
+        account_id = fields.many2one('account.account','Cuenta Anticipo'),
+    )
+wizardCreaAsiento()

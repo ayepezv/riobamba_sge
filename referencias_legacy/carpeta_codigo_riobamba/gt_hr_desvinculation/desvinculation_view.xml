@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+
+      <menuitem id="menu_hr_desvinculation_root" parent="hr.menu_hr_root" name="Liquidación" sequence="9" groups="base.group_hr_manager"/>
+      <menuitem id="menu_hr_liquidation_configuration" parent="hr.menu_hr_configuration" name="Liquidación"/>
+	# ------------------------------------------------------
+    # Formulario de Liquidacion
+    # ------------------------------------------------------
+    
+    <record model="ir.ui.view" id="view_hr_liquidation_compute_form">
+      <field name="name">hr.liquidation.compute.form</field>
+      <field name="model">hr.liquidation.compute</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Liquidación de empleado">
+	  <group colspan="4">
+	    <field name="name" readonly="1" colspan="2" attrs="{'readonly': [('state', '=','Liquidado')]}"/>
+	    <field name="date" colspan="2" attrs="{'readonly': [('state', 'in',('Liquidado','Anulado'))]}"/>
+	    <field name="description" required="1" colspan="4" attrs="{'readonly': [('state', 'in',('Liquidado','Anulado'))]}"/>
+	    <field name="contract_id" required="1" colspan="2" attrs="{'readonly': [('state', 'in',('Liquidado','Anulado'))]}"/>
+	    <field name="salida_id" required="1" colspan="2" attrs="{'readonly': [('state', 'in',('Liquidado','Anulado'))]}"/>
+	    <group colspan="6" col="6">
+	      <!--field name="mujer_embarazada" colspan="2"/>
+		  <field name="jefe_sindical" colspan="2"/>
+		  <field name="empleador_iess" colspan="2"/>
+		  <newline/-->
+	      <separator colspan="4"/>
+	    </group>
+	    <newline/>
+	    <notebook colspan="6">
+	      <page string="Detalle del cálculo">
+		<field name="line_ids" nolabel="1" attrs="{'readonly': [('state', 'in',('Liquidado','Anulado'))]}">
+		  <tree editable="bottom">
+	            <field name="salary_rule_id"/>
+	            <field name="amount" sum="TOTAL"/>
+	          </tree>
+	        </field>
+	      </page>
+	    </notebook>
+	    <newline/>
+	    <group colspan="4" col='5'>
+	      <field name="state" widget="statusbar"/>
+	      <button name="liquidaEmpleado" type="object" icon="gtk-execute" string="Liquidar" states="draft"/>
+	      <button name="regresaLiquidacion" type="object" icon="gtk-execute" string="Regresar" states="Liquidado"/>
+	      <button name="anulaLiquidacion" type="object" icon="gtk-cancel" string="Anular" states="draft"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+	<record model="ir.ui.view" id="view_hr_liquidation_compute_tree">
+	  <field name="name">hr.liquidation.compute.tree</field>
+	  <field name="model">hr.liquidation.compute</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+		<tree string="Liquidación de empleado">
+		  <field name="name"/>
+		  <field name="date"/>
+		  <field name="contract_id"/>
+		  <field name="salida_id"/>
+		  <field name="state"/>
+		</tree>
+	  </field>
+	</record>
+	
+	<record id="action_hr_liquidation_compute" model="ir.actions.act_window">
+	  <field name="name">Liquidación de empleado</field>
+	  <field name="res_model">hr.liquidation.compute</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+	
+	<record id="view_hr_liquidation_compute_filter" model="ir.ui.view">
+	  <field name="name">hr.liquidation.compute.search</field>
+	  <field name="model">hr.liquidation.compute</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Liquidación de empleado">
+	      <group col='10' colspan='4'>
+	        <!--filter icon="kanban-stop" name="desactivados" string="Desactivados" domain="[('active','=',False)]" separator="1"/>
+	        <separator orientation="vertical"/-->
+			<field name="name"/>
+			<field name="date"/>
+			<field name="contract_id"/>
+			<field name="salida_id"/>
+			<field name="state"/>
+			<newline/>
+			<group expand="1" string="Agrupar por..." colspan="4" col="10">
+			  <filter name="group_structure_id" string="Motivo de salida" icon="terp-stock_symbol-selection" context="{'group_by':'salida_id'}"/>
+			  <!--filter name="group_contract_id" string="Contrato" icon="terp-personal" context="{'group_by':'contract_id'}"/-->
+			  <filter name="group_state" string="Estado" icon="terp-stock_effects-object-colorize" context="{'group_by':'state'}"/>
+			  <filter name="group_date" string="Fecha" icon="terp-stock_effects-object-colorize" context="{'group_by':'date'}"/>
+        	</group>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	
+	<menuitem id="menu_hr_liquidation_compute"
+		  action="action_hr_liquidation_compute"
+		  parent="menu_hr_desvinculation_root"
+		  name="Liquidación de personal"/>
+
+
+</data>
+</openerp>

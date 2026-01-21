@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      
+
+    <record id="wizard_crea_asientoc_form" model="ir.ui.view">
+      <field name="name">Generar Comprobante</field>
+      <field name="model">wizard.crea.asiento</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Generar Comprobante">
+	  <group string="Informacion General">
+	    <field name="bank_id" required="1"/>
+	    <field name="account_id" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_crea_asientoc" string="Generar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_crea_asiento_wizard" model="ir.actions.act_window">
+      <field name="name">Generar Comprobante</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.crea.asiento</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    </data>      
+</openerp>

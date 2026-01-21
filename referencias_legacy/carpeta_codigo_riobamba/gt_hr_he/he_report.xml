@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="he_employee_report" model="hr.he.register.alone"
+            name="hr.he.register.alone" rml="gt_hr_he/report/he_employee.mako"
+            usage="default" string="Resumen Hora Extra" header="True" report_type="webkit"/>
+    <report auto="False" id="he_resumen_report" model="hr.he.register"
+            name="hr.he.register" rml="gt_hr_he/report/he_resumen.mako"
+            usage="default" string="Resumen Hora Extra" header="True" report_type="webkit"/>
+    
+  </data>
+</openerp>

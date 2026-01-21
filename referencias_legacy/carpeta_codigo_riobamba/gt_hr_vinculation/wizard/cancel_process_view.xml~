@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+        <record id="cancel_process_sol_form" model="ir.ui.view">
+            <field name="name">cancel.process.sol.form</field>
+            <field name="model">cancel.process.sol</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form>
+				<field name="name" required="1" colspan="4"/>
+                <separator string="" colspan="4" />
+                <label string="" colspan="2"/>
+                <group col="2" colspan="2">
+                  <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+                  <button name="cancel_process" string="Anular" confirm="Esta seguro que desea anular el proceso???" colspan="1" type="object" icon="gtk-cancel" />
+                  <!--button name="do_return_state" string="Regresar" confirm="Esta seguro que desea regresar???" colspan="1" type="object" icon="gtk-go-back" /-->
+                </group>
+              </form>
+            </field>
+        </record>
+		
+        <record id="action_cancel_process_sol" model="ir.actions.act_window">
+            <field name="name">Anular</field>
+            <field name="res_model">cancel.process</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>

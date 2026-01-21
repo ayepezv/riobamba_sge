@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<document filename="test.pdf">
+  <template pageSize="(142.0,71.0)" title="Test" author="Martin Simon" allowSplitting="20">
+    <pageTemplate id="first">
+      <frame id="first" x1="1.0" y1="3.0" width="136" height="65"/>
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <blockTableStyle id="Standard_Outline">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Tabla1">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="P1" fontName="Helvetica" alignment="LEFT"/>
+    <paraStyle name="P2" fontName="Helvetica" fontSize="4.0" leading="5" alignment="LEFT"/>
+    <paraStyle name="P3" fontName="Helvetica" fontSize="6.0" leading="8" alignment="LEFT"/>
+    <paraStyle name="Standard" fontName="Helvetica"/>
+    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="Index" fontName="Helvetica"/>
+    <paraStyle name="Table Contents" fontName="Helvetica"/>
+    <paraStyle name="Table Heading" fontName="Helvetica" alignment="CENTER"/>
+    <images/>
+  </stylesheet>
+  <story>
+   
+      <section>
+          <para style="P1">
+        	<font face="Helvetica">[[repeatIn(objects,'o')]]</font>
+        </para>
+           <blockTable colWidths="145.0" style="Tabla1">
+	    <tr>
+		<td width="100%">        
+		  <barCode code="Code128" quiet="0" fontName='Arial' style="barcode" barWidth="0.535" barHeight="15" >[[ o.code ]]</barCode>
+		  <para style="P3">[[ o.code or '' ]]</para>
+		  <para style="P3">[[ o.name[0:35] or '' ]]</para>
+		  <!--para style="P3">[[ o.type or '' ]]</para-->
+		  <para style="P3">SIIM - ACTIVOS FIJOS - [[ o.type or '' ]]</para>
+	    	</td>
+	    </tr>
+    	</blockTable>
+ </section>
+  </story>
+</document>
+

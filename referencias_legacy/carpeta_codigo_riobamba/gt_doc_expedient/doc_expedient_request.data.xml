@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Request for doc.expedient --> 
+        <record id="doc_expedient_res_request_link" model="res.request.link">
+            <field name="name">Tramites</field>
+            <field name="object">doc_expedient.expedient</field>
+        </record>
+
+        <record id="doc_expedient_task_res_request_link" model="res.request.link">
+            <field name="name">Tareas</field>
+            <field name="object">doc_expedient.task</field>
+        </record>
+        
+    </data>
+</openerp>

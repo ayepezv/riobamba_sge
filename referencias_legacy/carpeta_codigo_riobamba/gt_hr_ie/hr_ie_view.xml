@@ -1,0 +1,292 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_hr_ie_root" 
+			  parent="hr_payroll.menu_hr_root_payroll" 
+			  name="Ingresos/Egresos"
+			  groups="base.group_hr_manager" sequence="100"/>
+
+    <!-- JUDICIAL CON APROBACION OBREROS-->
+    <record id="view_judicial_descuento" model="ir.ui.view">
+      <field name="name">Genera Desc. Judicial</field>
+      <field name="model">judicial.descuento</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Genera descuento judicial">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="name" colspan="2" required="1" widget="selection"/>
+	      <field name="date" colspan="2" required="1"/>
+	      <field name="tipo_rol" colspan="4" required="1" widget="selection"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="computeJudicial" type="object" icon="gtk-execute"  string="Genera descuento judicial" 
+		      confirm="Se genera el descuento para aprobacion en egresos masivos"/>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_judicial_aprueba" model="ir.actions.act_window">
+        <field name="name">Genera Desc. Judicial</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">judicial.descuento</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_judicial_aprueba"
+		icon="STOCK_EXECUTE"
+		action="action_judicial_aprueba"
+		parent="menu_hr_ie_root"
+		sequence="100"
+		name="Genera Desc. Judicial"/>
+
+      <!-- Allowance/Deduction views
+		-->
+      
+      <record id="view_asiento_anticipo" model="ir.ui.view">
+        <field name="name">Genera Asiento</field>
+        <field name="model">asiento.anticipo</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Generar Comprobante">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="account_id" required="1" colspan="4"/>
+		<field name="partner_id" required="1" colspan="4"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="asientoAnticipo" type="object" icon="gtk-execute"  string="Genera Asiento"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_asiento_anticipo" model="ir.actions.act_window">
+        <field name="name">Genera Asiento</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">asiento.anticipo</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+
+      <record model="ir.ui.view" id="view_ie_head_form">
+	<field name="name">hr.ie.head.form</field>
+	<field name="model">hr.ie.head</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Rubro">
+	    <group col="6" colspan="4">
+	      <field name="name" colspan="4" domain="[('category_id','not in',('Total','Extra Rol','Basic'))]"/>
+	      <field name="period_id" colspan="2"  domain="[('state','=','abierto')]" widget='selection'/>
+	      <field name="date" colspan="2" required="1"/>
+	      <field name="label" colspan="2"/>
+	    </group>
+	    <group col="8" colspan="4">
+	      <field name="department_id" colspan="2"/>
+	      <field name="valor" colspan="2"/>
+	      <button name="load_employee" colspan="2" string="Cargar Empleados" type="object" icon="gtk-execute"/>
+	      <button name="verificar_descuentos" colspan="2" string="Verificar Descontado" type="object" icon="gtk-execute"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string='Cargado'>
+		<field name="line_ids" colspan="4" nolabel="1">
+		  <tree string="Detalle" editable="bottom">
+		    <field name="employee_id"/>
+		    <field name="name_aux" invisible="1"/>
+		    <field name="state"/>
+		    <field name="valor" sum="SUBTOTAL RUBROS $$"/>
+		    <!--field name="valor_original" string='Valor Original' sum="SUBTOTAL RUBROS $$"/-->
+		  </tree>
+		</field>
+	      </page>
+	      <page string='Generado'>
+		<field name="verifi_ids" colspan="4" nolabel="1">
+		  <tree string="Detalle verificado" editable="bottom">
+		    <field name="employee_id"/>
+		    <field name="monto" sum="SUBTOTAL RUBROS $$"/>
+		  </tree>
+		</field>
+	      </page>
+	      <page string='No Generado'>
+		<field name="no_ids" colspan="4" nolabel="1">
+		  <tree string="Detalle no generado" editable="bottom">
+		    <field name="employee_id"/>
+		    <field name="monto" sum="SUBTOTAL RUBROS $$"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	    <group>
+	      <field name="state"  widget="statusbar" statusbar_colors='{"draft":"black","pendiente":"blue","pagado":"green"}'/>
+	      <button name="pendiente" states="draft" string="Procesar" type="object" icon="gtk-execute" groups="base.group_hr_manager,account.group_account_user"/>
+	      <button name="%(action_asiento_anticipo)d" states="pendiente" string="Genera Comprobante" type="action" 
+		      icon="gtk-execute" groups="base.group_hr_manager,account.group_account_user"/>
+	      <button name="a_borrador" states="pendiente" string="Regresar Borrador" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	    </group>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_ie_head_tree" model="ir.ui.view">
+		<field name="name">hr.ie.head.tree</field>
+		<field name="model">hr.ie.head</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+		  <tree string="Ingresos/Egresos" colors="black:state == 'draft';blue:state == 'pendiente';green:state == 'pagado'">
+			<field name="name"/>
+			<field name="period_id"/>
+			<field name="label"/>
+			<field name="department_id"/>
+			<field name="state"/>
+		  </tree>
+		</field>
+      </record>
+
+      <record id="view_ie_head_filter" model="ir.ui.view">
+	<field name="name">Ingresos/Egresos</field>
+	<field name="model">hr.ie.head</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Periodos">
+	    <field name="name"/>
+	    <field name="period_id"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_categ" string="Rubro" icon="STOCK_INDENT" domain="[]" context="{'group_by':'name'}"/>
+	      <filter name="group_period_id" string="Periodo" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+	      <filter name="group_state" string="Estado" icon="terp-stage" domain="[]" context="{'group_by':'state'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_ie_head" model="ir.actions.act_window">
+		<field name="name">Ingresos/Egresos Masivo</field>
+		<field name="res_model">hr.ie.head</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<!--field name="context">{'search_default_group_period_id':1,'default_internal_type':'N'}</field-->
+      </record>
+	  
+      <menuitem id="menu_hr_ie_head"
+				action="action_ie_head"
+				parent="menu_hr_ie_root"
+				name="Ingresos/Egresos Masivo"
+				groups="base.group_hr_manager"/>
+
+      <!-- -->
+
+      <record id="action_ie_head_conta" model="ir.actions.act_window">
+	<field name="name">Otros Anticipos</field>
+	<field name="res_model">hr.ie.head</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+	<field name="domain">[('internal_type','=','ANT')]</field>
+	<field name="context">{'search_default_group_period_id':1,'default_internal_type':'ANT'}</field>
+      </record>
+
+      <menuitem id="menu_hr_ie_head_otros_conta"
+		action="action_ie_head_conta"
+		parent="retention.menu_finance_anticipos"
+		name="Otros Anticipos"
+		groups="base.group_hr_manager,account.group_account_user"/>
+      <!-- -->
+      <record model="ir.ui.view" id="view_ie_line_form">
+		<field name="name">hr.ie.line.form</field>
+		<field name="model">hr.ie.line</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		  <form string="Rubro">
+		    <field name="employee_id"/>
+		    <field name="date" required="1"/>
+		    <field name="categ_id" domain="[('category_id','not in',('Total','Extra Rol','Basic'))]"/>
+		    <field name="period_id" domain="[('state','=','abierto')]" widget="selection"/>
+		    <field name="valor"/>
+		    <field name="label"/>
+		    <field name="referencia"/>
+		    <newline/>
+		    <group string="Varios" colspan="4">
+		      <field name="head_id" readonly="1"/>
+		    </group>
+		    <newline/>
+		    <group colspan="4" col="4">
+		      <field name="state" widget="statusbar" statusbar_colors='{"draft":"black","pendiente":"blue","pagado":"green"}'/>
+		      <button name="realizado_l" states="draft" string="Procesar" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+		      <button name="a_borrador_l" states="pendiente" string="Regresar Borrador" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+		    </group>
+		  </form>
+		</field>
+      </record>
+	  
+	  
+      <record id="view_ie_line_tree" model="ir.ui.view">
+	<field name="name">hr.ie.line.tree</field>
+	<field name="model">hr.ie.line</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Ingresos/Egresos Individual" colors="black:state == 'draft';blue:state == 'pendiente';green:state == 'pagado'">
+	    <!--field name="name"/-->
+	    <field name="employee_id"/>
+	    <field name="categ_id"/>
+	    <field name="period_id"/>
+	    <field name="date"/>
+	    <field name="label"/>
+	    <field name="valor"/>
+	    <field name="state"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_ie_line_filter" model="ir.ui.view">
+	<field name="name">Ingresos/Egresos</field>
+	<field name="model">hr.ie.line</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Periodos">
+	    <field name="employee_id"/>
+	    <field name="categ_id"/>
+	    <field name="period_id"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_employee_id" string="Empleado" icon="terp-personal" domain="[]" context="{'group_by':'employee_id'}"/>
+	      <filter name="group_categ_id" string="Rubro" icon="STOCK_INDENT" domain="[]" context="{'group_by':'categ_id'}"/>
+	      <filter name="group_period_id" string="Periodo" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+	      <filter name="group_date_id" string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+	      <filter name="group_state" string="Estado" icon="terp-stage" domain="[]" context="{'group_by':'state'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+
+      <record id="action_ie_line" model="ir.actions.act_window">
+		<field name="name">Ingresos/Egresos Individual</field>
+		<field name="res_model">hr.ie.line</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+		<!--field name="context">{'search_default_group_period_id':1}</field-->
+      </record>
+	  
+      <menuitem id="menu_hr_ie_line"
+				action="action_ie_line"
+				parent="menu_hr_ie_root"
+				name="Ingresos/Egresos Individual"
+				groups="base.group_hr_manager"/>
+
+    </data>
+</openerp>

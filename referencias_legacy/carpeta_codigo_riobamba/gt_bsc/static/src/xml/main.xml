@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+	<t t-name="bsc_main">
+		<div class="pruebas"/>
+		<div class="oe_bsc_homepage">
+			<ul id="navigation">
+				<li class="oe_bsc_menu_item"><a href="#" t-att-data-category-id="1">Inicio</a></li>
+				<!--li class="sub">
+					<a href="#">About</a>
+					<ul>
+						<li><a href="#">Us</a></li>
+						<li><a href="#">Our Work</a></li>
+						<li><a href="#">Projects</a></li>
+					</ul>
+				</li-->
+				<li class="oe_bsc_menu_item"><a href="#" t-att-data-category-id="2">Filosofía Institucional</a></li>
+				<li class="oe_bsc_menu_item"><a href="#" t-att-data-category-id="3">Ejes Estratégicos</a></li>
+				<li class="oe_bsc_menu_item"><a href="#" t-att-data-category-id="4">Perspectivas</a></li>
+			</ul>
+		</div>
+		<table class="bsc_homepage_table" width="70%" style="position:relative;">
+			<tr>
+				<td class="oe_bsc_homepage_right">
+				</td>
+			</tr>
+		</table>
+    </t>
+    
+    <t t-name="bsc_formulacion">
+    	<table width="100%"><tr><td class="oe_bsc_homepage"  width="70%">
+	    	<center>
+	    		<h1 class="titulo2">Filosofía Institucional</h1>
+	    	</center>
+	    	<div style="position:relative" width="90%">
+				<table class="bsc_mision_table" width="100%">
+					<tr>
+						<td colspan="2" width="30%" class="bsc_mision" style="position:relative;">
+							<h1 class="titulo3">Misión:</h1>
+						</td>
+						<td colspan="1" width="20%">
+							<div id="bsc_mision_promedio" style="width:150px;height:175px;"/>
+						</td>
+					
+						<td colspan="2" width="30%" class="bsc_vision" style="position:relative;">
+							<h1 class="titulo3">Visión:</h1>
+						</td>
+						<td colspan="1" width="20%">
+							<div id="bsc_vision_promedio" style="width:150px;height:175px;"/>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" width="30%" class="bsc_politica" style="position:relative;">
+							<h1 class="titulo3">Política Calidad:</h1>
+						</td>
+						<td colspan="1" width="20%">
+							<div id="bsc_politica_promedio" style="width:150px;height:175px;"/>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</td><td width="30%"></td></tr></table>
+    </t>
+    
+    <t t-name="bsc_ejesestrategicos">
+    	<table width="100%"><tr><td class="oe_bsc_homepage"  width="70%">
+	    	<center>
+	    		<h1 class="titulo2">Ejes Estratégicos</h1>
+	    	</center>
+	    	<div class="bsc_div_mapa" width="90%" style="position:relative;"/>
+    	</td><td width="30%"></td></tr></table>
+    </t>
+    
+    <t t-name="bsc_estrategias">
+    	<h1 class="titulo2">Estrategias</h1>
+    	<div class="pruebas"/>
+    	<div class="dropdown dropdown-dark">
+			<select name="ejes_estrategicos" class="dropdown-select" style="height:30px;width:500px;">
+			</select>
+		</div>
+		<br/><br/>
+    	<div>
+    		<table class="bsc_div_estrategias" width="90%" style="position:relative;">
+    			<tr>
+					<td colspan="1" class="bsc_estrategia_eje" width="40%" style="position:relative;">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="1" class="bsc_estrategia_estrategia" style="position:relative;">
+					</td>
+					<td colspan="1" class="bsc_estrategia_proyectos" style="position:relative;">
+					</td>
+				</tr>
+    		</table>
+		</div>
+    </t>
+    
+    <t t-name="bsc_perspectivas">
+    	<table width="100%"><tr><td class="oe_bsc_homepage"  width="70%">
+	    	<center>
+	    		<h1 class="titulo2">Perspectivas</h1>
+	    	</center>
+	    	<div class="pruebas"/>
+	    	<div>
+	    		<table class="table_bsc_perspectivas" width="90%" style="position:relative;"/>
+			</div>
+		</td><td width="30%"></td></tr></table>
+    </t>
+    
+    <t t-name="bsc_inicio">
+    	<table width="100%"><tr><td class="oe_bsc_homepage"  width="70%">
+	    	<center>
+		    	<h1 class="titulo2">Gobierno Provincial del Azuay</h1>
+		    	<div>
+		    		<table width="90%" style="position:relative;">
+		    			<tr>
+		    				<td class="bsc_inicio_indicador1" width="50%">
+		    					<center><div id="bsc_indicador1" style="width:250px;height:300px;"/></center>
+		    				</td>
+		    				<td class="bsc_inicio_indicador2" width="50%">
+		    					<center><div id="bsc_indicador2" style="width:250px;height:300px;"/></center>
+		    				</td>
+		    			</tr>
+		    		</table>
+				</div>
+			</center>
+		</td><td width="30%"></td></tr></table>
+    </t>
+    
+    
+</templates>

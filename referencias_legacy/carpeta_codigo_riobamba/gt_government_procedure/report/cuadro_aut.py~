@@ -1,0 +1,62 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+##############################################################################
+
+import time
+from report import report_sxw
+from osv import osv
+import pooler
+
+class requisitionCuadro(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(requisitionCuadro, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'get_solicitud_value':self.get_solicitud_value,
+            'get_select':self.get_select,
+            'get_in_stock':self.get_in_stock,
+        })
+
+    def get_in_stock(self, po):
+        aux = ''
+        if po.in_stock:
+            aux = 'Si'
+        return aux
+
+    def get_select(self, po):
+        aux = ''
+        if po.selected:
+            aux = 'Seleccionada'
+        return aux
+
+    def get_solicitud_value(self, order, product_id, position):
+        aux = ''
+        purchase_line_obj = self.pool.get('purchase.order.line')
+            #devolver lista de 3, con los valores para cada uno de los proveedores
+        ids = order.purchase_ids[0:3]
+            #sacar la linea q tenga ese product_id y que sea de la OC de la lista de ocs
+        if ids[position]:
+            line_oc_ids = purchase_line_obj.search(self.cr, self.uid, [('product_id','=',product_id.id),('order_id','=',ids[position].id)],limit=1)
+        if line_oc_ids:
+            purchase_line = purchase_line_obj.browse(self.cr, self.uid, line_oc_ids[0])
+            aux = str(purchase_line.product_qty) + ' * ' + str(purchase_line.price_unit) + ' = ' + str(purchase_line.price_subtotal) + ' + I'
+        return aux
+   
+report_sxw.report_sxw('report.purchase.req.cuadro','purchase.requisition','addons/gt_government_procedure/report/cuadro.rml',parser=requisitionCuadro)

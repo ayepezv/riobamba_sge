@@ -1,0 +1,187 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2012-now Gnuthink Software Labs Co. Ltd. (<http://www.gnuthink.com>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from time import strftime, strptime
+
+from osv import osv, fields
+
+_STATE = [('draft','Borrador'),('pendiente','Pendiente'),('pagado','Pagado')]
+
+class hrIEHead(osv.osv):
+    _name = 'hr.ie.head'
+    _description = 'Ingresos/Egresos'
+    _order = 'name'
+
+    _columns = dict(
+        name = fields.many2one('hr.salary.rule','Regla Salarial',readonly=True,required=True,
+                               states={'draft': [('readonly', False)]}),
+        period_id = fields.many2one('hr.work.period.line','Periodo',required=True,readonly=True,
+                                    states={'draft': [('readonly', False)]}),
+        observaciones = fields.char('Observaciones',size=128,readonly=True,states={'draft': [('readonly', False)]}),
+        department_id = fields.many2one('hr.department','Departamento'),
+        valor = fields.float('Valor', help="En caso de 'Cargar Empleados', este valor se aplicara para todos"),
+        line_ids = fields.one2many('hr.ie.line','head_id','Detalle',readonly=True,states={'draft': [('readonly', False)]}),
+        state = fields.selection(_STATE,'Estado'),
+        )
+
+    def unlink(self, cr, uid, ids, *args, **kwargs):
+        for this in self.browse(cr, uid, ids):
+            if this.state!='draft':
+                raise osv.except_osv(('Operación no permitida !'), ('No puede eliminar, solo puede realizar esta operacion en estado Borrador'))
+            for linea in this.line_ids:
+                if linea.state!='draft':
+                    raise osv.except_osv(('Operación no permitida !'), ('No puede eliminar, solo puede realizar esta operacionsi todas las lineas se encuentran en estado borrador'))
+        return super(hrIEHead, self).unlink(cr, uid, ids, *args, **kwargs)
+    
+    def name_get(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        if not ids:
+            return []
+        res = []
+        reads = self.browse(cr, uid, ids, context=context)
+        for record in reads:
+            name = record.period_id.name + ' - ' + record.name.name
+            res.append((record.id, name))
+        return res
+    
+    def load_employee(self, cr, uid, ids, context=None):
+        r_line_obj=self.pool.get('hr.ie.head')
+        emp_obj=self.pool.get('hr.employee')
+        this=r_line_obj.read(cr, uid, ids) 
+        con_obj=self.pool.get('hr.contract')
+        line_pool=self.pool.get('hr.ie.line')
+        for line in self.browse(cr, uid, ids, context=context):
+            old_line_ids = line_pool.search(cr, uid, [('head_id','=',line.id)], context=context)
+            line_pool.unlink(cr, uid, old_line_ids, context=context)
+            for reg in this:
+                val={}
+                if reg['department_id']:
+                    em_ids =emp_obj.search(cr, uid,[('department_id','=',reg['department_id'][0])])
+                else:
+                    em_ids =emp_obj.search(cr, uid,[])
+                if em_ids:
+                    line = self.pool.get('hr.ie.line')
+                    periodo=self.pool.get('hr.work.period.line').browse(cr, uid, reg['period_id'][0])
+                    for item in em_ids:
+                        contrato=con_obj.search(cr, uid,[('employee_id','=',item),
+                                                         ('date_start','<=',periodo.date_stop),
+                                                         '|',
+                                                         ('date_end','>=',periodo.date_start),
+                                                         ('date_end','=',False)])
+                        if contrato:
+                            empleado=emp_obj.browse(cr, uid, item)
+                            val['head_id']=int(",".join(map(str,ids)))            
+                            val['employee_id']=item
+                            val['name']=empleado.name
+                            val['valor']= reg['valor']
+                            val['categ_id']=reg['name'][0]
+                            val['period_id']= periodo.id
+                            line.create(cr, uid, val)
+                else:
+                    raise osv.except_osv(('Aviso !'), ('No existen empleados o no estan activos'))
+
+    def a_borrador(self, cr, uid, ids, context=None):
+        line_obj=self.pool.get('hr.ie.line')
+        for this in self.browse(cr, uid, ids):
+            self.write(cr, uid, this.id,{'state':'draft'})
+            for line in this.line_ids:
+                line_obj.write(cr, uid, line.id,{
+                        'state':'draft',
+                        })
+
+    def pendiente(self, cr, uid, ids, context=None):
+        line_obj=self.pool.get('hr.ie.line')
+        for this in self.browse(cr, uid, ids):
+            self.write(cr, uid, this.id,{'state':'pendiente'})
+            for line in this.line_ids:
+                line_obj.write(cr, uid, line.id,{
+                        'state':'pendiente',
+                        })
+
+    _defaults = dict(
+        state = 'draft',
+        )
+
+hrIEHead()
+
+class hrIELine(osv.osv):
+   _name = 'hr.ie.line'
+   _description = 'Lineas'
+   _order = 'name'
+
+   def a_borrador_l(self, cr, uid, ids, context=None):
+       for this in self.browse(cr, uid, ids):
+           self.write(cr, uid, this.id,{'state':'draft'})
+           
+   def realizado_l(self, cr, uid, ids, context=None):
+       for this in self.browse(cr, uid, ids):
+           self.write(cr, uid, this.id,{'state':'pendiente'})
+
+   def create(self, cr, uid, values, context=None):
+       print values
+       if not(values.has_key('period_id')):
+           if values.has_key('head_id'):
+               obj_head = self.pool.get('hr.ie.head')
+               cabecera = obj_head.browse(cr, uid, values['head_id'], context)
+               values['period_id'] = cabecera.period_id.id
+               values['categ_id'] = cabecera.name.id
+           else:
+               raise osv.except_osv('Error al almacenar', 'No se encuentra asignado un periodo de pago')
+       return super(hrIELine, self).create(cr, uid, values, context=context)
+   
+   def unlink(self, cr, uid, ids, *args, **kwargs):
+        for this in self.browse(cr, uid, ids):
+            if this.state!='draft':
+                raise osv.except_osv(('Operación no permitida !'), ('No puede eliminar, solo puede realizar esta operacion en estado Borrador'))
+        return super(hrIELine, self).unlink(cr, uid, ids, *args, **kwargs)
+    
+   def _validar_mayor_cero(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids[0], context=context)
+        if obj.valor <= 0:
+            return False
+        return True
+           
+   _columns = dict(
+       name = fields.char('Empleado',size=128),
+       employee_id = fields.many2one('hr.employee','Empleado',required=True, 
+                                     readonly=True,states={'draft': [('readonly', False)]}),
+       date = fields.date('Fecha', readonly=True,states={'draft': [('readonly', False)]}),
+       valor = fields.float('Valor',required=True,
+                            readonly=True,states={'draft': [('readonly', False)]}),
+       categ_id = fields.many2one('hr.salary.rule','Regla Salarial',required=True, 
+                                  readonly=True,states={'draft': [('readonly', False)]}),
+       head_id = fields.many2one('hr.ie.head','Cabecera',ondelete='cascade'),
+       period_id = fields.many2one('hr.work.period.line','Periodo',required=True, 
+                                   readonly=True,states={'draft': [('readonly', False)]}),
+       state = fields.selection(_STATE,'Estado',readonly=True),
+       )
+
+   _defaults = dict(
+       state = 'draft',
+       date = strftime("%Y-%m-%d")
+       )
+   
+   _constraints = [
+                    (_validar_mayor_cero, 'Los valores deben ser superiores a cero', ['valor']),
+                    ]
+   
+hrIELine()

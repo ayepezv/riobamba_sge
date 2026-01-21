@@ -1,0 +1,758 @@
+<openerp>
+<data>
+	
+	
+	<!--menuitem name="Configuración" id="menu_document_manager_configuration" parent="gt_document_manager.menu_document_manager" sequence="2"/-->
+	<menuitem name="Gestion de convenios" 
+		      id="menu_doc_covenant_configuration" 
+		      parent="gt_document_manager.menu_document_manager_configuration"
+		      groups="gt_document_manager.group_doc_covenant" 
+		      sequence="40"/>
+
+    <record model="ir.ui.view" id="view_doc_covenant_historial_tree">
+        <field name="name">view_doc_covenant_historial_tree</field>
+        <field name="model">doc.covenant.historial</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+          <tree>
+            <field name="fecha_hora"/>
+            <field name="usuario"/>
+            <field name="name"/>
+          </tree>
+        </field>
+    </record>
+
+<!--DOC_COVENANT_COVENANT FORM TREE ACTION--> 
+<record model="ir.ui.view" id="view_doc_covenant_form">
+  <field name="name">DOC_COVENANT FORM</field>
+  <field name="model">doc_covenant.covenant</field>
+  <field name="priority" eval="1"/>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Convenios">
+      <group colspan="4" col="6">
+		<group colspan="6" string="Estado" col="2">
+		  <field name="state" widget="statusbar"/>
+		</group>
+		<group colspan="6" string="Información General" col="6">
+		  <field name="user_id" colspan="2" widget="selection"/>
+		  <field name="creation_date" colspan="2"/>
+	      <field name="expedient_id" string="Trámite" colspan="2"
+				 attrs="{'readonly': ['|',('state', '!=','draft'),('info_general','=',False)]}"/>
+		  <field name="code_covenant" colspan="2" required="True"
+				 attrs="{'readonly': ['|',('state', '!=','draft'),('info_general','=',False)]}"/>
+          <!--field name="year" colspan="2" required="True" 
+				 attrs="{'readonly': [('state', 'not in',('draft'))]}"/-->
+	      <field name="subscription_date" colspan="2" required="True"
+				 attrs="{'readonly': ['|',('state', 'not in',('draft')),('info_general','=',False)]}"/>
+		  <field name="term" required="True" colspan="1" 
+				 attrs="{'readonly': ['|',('state', 'not in',('draft')),('info_general','=',False)]}"/>
+	      <field name="name" colspan="6" attrs="{'readonly': ['|',('state', 'not in',('draft')),('info_general','=',False)]}"/>
+		  <field name="doc_covenant_type_id" colspan="2"
+				 attrs="{'readonly': ['|',('state', 'not in',('draft')),('info_general','=',False)]}"/>
+		  <field name="other_type" colspan="2" 
+				 attrs="{'readonly': ['|',('state', 'not in',('draft')),('info_general','=',False)]}"/>
+		  <field name="department_id" required="True" colspan="2"
+				 attrs="{'readonly': ['|',('state', 'not in',('draft')),('info_general','=',False)]}"/>
+		  <!--field name="amount" required="True" colspan="2"
+				 attrs="{'readonly': [('state', 'not in',('draft')),('info_general','=',False)]}"/>
+		  <field name="crossovered_budget_certificate_id" required="True" colspan="4" 
+				 domain="[('state','in',['certified','compromised']),('is_lock','=',False)]"
+				 attrs="{'readonly': [('state', 'not in',('draft'))]}"/-->
+		  <group colspan="6" col="8" string="Firmas" 
+				 attrs="{'invisible':[('state','=','draft')]}">
+         	<!--field name="firmas" widget="statusbar"/-->
+         	<field name="firma_contratista" colspan="1" 
+				   attrs="{'readonly': ['|',('state', 'not in',('legalizing')),('info_general','=',False)]}"/>
+            <field name="firma_max" colspan="1"
+				   attrs="{'readonly': ['|',('state', 'not in',('legalizing')),('info_general','=',False)]}"/>
+            <field name="delegado" attrs="{'readonly':['|',('state', 'not in',('legalizing')),('firma_max','=',False)]}"
+				   colspan="4"/>
+		  </group>
+		  <!--field name="code_covenant" readonly="True" colspan="1"/>
+		  <field name="name" colspan="4"/>
+		  <field name="doc_covenant_stage_id" widget="selection"/>
+		  <field name="state_stage" invisible="1"/-->
+		  <field name="owner_cv" invisible="1"/>
+		  <field name="info_general" invisible="1"/>
+		  <field name="chk_acta_cierre" invisible="1"/>
+		  <field name="distribucion_cv" invisible="1"/>
+		  <field name="fiscalizacion_cv" invisible="1"/>
+		  <field name="not_stage" invisible="1"/>
+		</group>
+      </group>
+      <notebook colspan="4">
+		<page string="Datos Relacionados">
+		  <notebook colspan="4">
+		    <page string="Beneficiarios / Contraparte">
+			  <field name="beneficiary_ids" required="1" nolabel="1" colspan="6" widget="many2many"
+					 attrs="{'readonly':['|',('state','!=','draft'),
+							('info_general','=',False)]}"/>
+		    </page>
+			<page string="Proyección Pagos">
+			  <!--field name="payment_term_id" required="True" colspan="2" /-->
+			  <newline/>
+			  <field name="payment_lines" nolabel="1" colspan="4" 
+					 attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}">
+				<tree editable="bottom">
+				  <field name="desc" required="1"/>
+				  <field name="date" required="1"/>
+				  <field name="amount" required="1" sum="TOTAL"/>
+				</tree>
+			  </field>
+			</page>
+			<page string="Localidades">
+			  <field name="ubication_cv_ids" required="1" nolabel="1" colspan="6" 
+					 attrs="{'readonly':['|',('state','!=','draft'),('info_general','=',False)]}">
+				<tree editable="top">
+				  <field name="canton" required="True" on_change="onchange_parish()"/>
+				  <field name="parroquia" required="True" domain="[('canton_id','=',canton)]"/>
+			    <field name="comunidad"/>   
+				</tree>
+			  </field>
+			</page>
+			<page string="Referencia de Trámites">
+			<field name="expedient_ids" nolabel="1" widget="many2many" colspan="6"
+				   attrs="{'readonly': [('state', 'in',['cancelled','done'])]}">
+			  <tree editable="bottom">
+				<field name="code" readonly="True"/>
+				<field name="name" readonly="True"/>
+			    <field name="resumen" readonly="True"/>
+			  </tree>	
+			</field>
+		    </page>
+			<!-- colocar facturas e ingresos a bodega -->
+			<page string="Solicitudes de pago">
+			  <field name="pay_ids" readonly="1" nolabel="1"/>
+			</page>
+			<page string="Docs. Presupuestarios">
+			  <field name="prf_ids" readonly="1" nolabel="1"/>
+			</page>
+		  </notebook>
+		  <!--group col="5" colspan="4" groups="gt_document_manager.group_cv_info_general">
+		    <field name="state_stage_planning" widget="selection" 
+				   domain="[('stage_sequence','=',1)]"
+				   attrs="{'readonly':['|',('stage_contract','!=','planning'),
+						  ('owner_cv','=',False)]}"/>
+		    <button name="stage_change_planning" string="Finalizar Etapa" 
+					type="object" icon="gtk-execute"
+					attrs="{'readonly':['|',('stage_contract','!=','planning'),
+						   ('owner_cv','=',False)]}"/>   
+		  </group-->
+		</page>
+		<page string="Distribución" attrs="{'readonly':[('state','!=','open')]}">
+	      <group col="8" colspan="8">
+	        <!--field name="admin_uid" colspan="4" attrs="{'readonly':[('state','!=','open'),('distribucion_cv','=',False)]}"/>
+	        <field name="cambiar_administrador" attrs="{'readonly':[('state','!=','open'),('distribucion_cv','=',False)]}"/-->
+	        <field name="admin_uid" colspan="4" 
+				   attrs="{'readonly':['|',('state','!=','open'),
+						  ('distribucion_cv','=',False),
+						  ('cambiar_administrador','=',False)],
+						  'required':[('distribucion_cv','=',True),
+						  ('info_general','=',False)]}"/>
+	        <field name="cambiar_administrador" 
+				   attrs="{'readonly':['|',('state','!=','open'),
+						  ('distribucion_cv','=',False)]}"/>
+			<newline/>
+	        <field name="date_received" colspan="2" 
+				   attrs="{'readonly':['|',('state','!=','open'),
+						  ('distribucion_cv','=',False)],
+	                      'required':[('distribucion_cv','=',True),
+						  ('info_general','=',False)]}"/>
+	        <field name="dispatch_office_number" colspan="2" 
+				   attrs="{'readonly':['|',('state','!=','open'),
+						  ('distribucion_cv','=',False)],
+	               		  'required':[('distribucion_cv','=',True),
+						  ('info_general','=',False)]}"/>
+	        <field name="data_contract" widget="file_select" 
+				   filename="data_covenant_fname"
+				   attrs="{'readonly':['|',('state','!=','open'),'|',('chk_covenant','=',True),
+						  ('distribucion_cv','=',False)],
+						  'required':[('distribucion_cv','=',True)]}"/>
+            <field name="data_covenant_fname" select="1" invisible="1" 
+				   attrs="{'required':[('distribucion_cv','=',True),('info_general','=',False)]}"/>
+	        <button name="subir_convenio" attrs="{'readonly':['|',('state','!=','open'),'|',('chk_covenant','=',True),
+												 ('distribucion_cv','=',False)]}"
+					confirm="Esta seguro que desea adjuntar el documento como copia del convenio?"
+	               	icon="gtk-save-as" 
+					groups="gt_document_manager.group_cv_distribucion" 
+					type="object" string="Adjuntar Convenio"/>
+	        <field name="chk_covenant" readonly="True" invisible="1"/>
+	      </group>
+	      <!--separator colspan="4" string="Distribución de Documentos"/-->
+		  <notebook colspan="4">
+			<page string="Distribucion de documentos">
+			  <field name="distribucion_users" colspan="4" widget="many2many"
+					 nolabel="1" attrs="{'readonly':['|',('state','!=','open'),('distribucion_cv','=',False)]}">
+				<tree>
+				  <field name="name" string="Nombre Usuario" attrs="{'readonly':[('state','!=','open')]}"/>
+				  <field name="context_department_id" string="Departamento" attrs="{'readonly':[('state','!=','open')]}"/>
+				</tree>
+			  </field>
+			</page>
+			<page string="Observaciones">
+			  <field colspan="4" nolabel="1" name="stage_secretary_notes" 
+					 attrs="{'readonly':['|',('state','!=','open'),('distribucion_cv','=',False)]}"/>
+			</page>
+		  </notebook>
+		</page>
+	  <page string="Ejecución">
+
+		  <group colspan="8" col="8">
+            <field name="supervisory" colspan="4" 
+				   attrs="{'readonly':['|',('state','!=','execution'),'|',
+						  ('fiscalizacion_cv','=',False),'|',('cambiar_fiscalizador','=',False)]}"/>
+		    <field name="cambiar_fiscalizador" 
+			       attrs="{'readonly':['|',('state','!=','execution'),
+						  ('fiscalizacion_cv','=',False)]}"/>
+			<newline/>	 
+            <field name="fecha_inicio" colspan="2"
+				   attrs="{'readonly':['|',('state','!=','execution'),
+						  ('fiscalizacion_cv','=',False)]}"/>
+			<field name="fecha_terminacion" colspan="2" 
+				   attrs="{'readonly':['|',('state','!=','execution'),
+						  ('fiscalizacion_cv','=',False)]}"/>
+			<field name="data_acta_cierre" colspan="3" widget="file_select" 
+				   filename="data_acta_cierre_fname"
+				   attrs="{'readonly':['|',('state','!=','execution'),'|',
+						  ('fiscalizacion_cv','=',False),'|',('chk_acta_cierre','=',True)]}"/>
+			<field name="data_acta_cierre_fname" select="1" invisible="1"/> 
+			<button name="subir_doc_acta_cierre" colspan="1" 
+					confirm="Esta seguro que desea adjuntar el documento como Acta de Cierre?" 
+					groups="gt_document_manager.group_cv_fiscalizacion"
+					icon="gtk-save-as" 
+					attrs="{'readonly':['|',('state','!=','execution'),'|',
+						   ('fiscalizacion_cv','=',False),'|',('chk_acta_cierre','=',True)]}"
+					type="object" string="Subir Doc.Acta Cierre"/>
+          </group>
+          <notebook colspan="4">
+			<page string="Aportes Compremetidos">
+			<group colspan="2" col="2">
+			  <separator string="GPA" colspan="2"/>
+			  <field name="compromised_contribution_company" 
+					 attrs="{'readonly':['|',('state','!=','execution'),
+							('fiscalizacion_cv','=',False)]}"/>
+			  <field name="total_compromised_contribution_company" 
+					 attrs="{'readonly':['|',('state','!=','execution'),
+							('fiscalizacion_cv','=',False)]}"/>
+			  <field name="obs" 
+					 attrs="{'readonly':['|',('state','!=','execution'),
+							('fiscalizacion_cv','=',False)]}"/>
+			</group>
+			<group colspan="2" col="2">
+			  <separator string="Contraparte" colspan="2"/>
+			  <field name="compromised_contribution_counterpart" 
+					 attrs="{'readonly':['|',('state','!=','execution'),
+							('fiscalizacion_cv','=',False)]}"/>
+			  <field name="total_compromised_contribution_counterpart" 
+					 attrs="{'readonly':['|',('state','!=','execution'),
+							('fiscalizacion_cv','=',False)]}"/>
+			  <field name="obs1" 
+					 attrs="{'readonly':['|',('state','!=','execution'),
+							('fiscalizacion_cv','=',False)]}"/>
+			</group>
+		  </page>
+		  <page string="Beneficiarios y Obras">
+			<field name="beneficiary_covenant_ids" widget="one2many" nolabel="1" colspan="6"
+				   attrs="{'readonly':['|',('state','!=','execution'),('fiscalizacion_cv','=',False)],
+						  'required':[('state','=','execution')]}">
+			  <form>
+				<field name="beneficiary_id" required="1"/>
+				<field name="economic" required="1"/>
+				<field name="total" required="1"/>
+				<field name="realized" required="1"/>
+				<field name="works_ids" colspan="4"/>
+			  </form>
+			</field>
+		  </page>
+		</notebook>
+        <!--group col="5" colspan="4">
+		  <field name="state_stage_fiscalizacion" widget="selection"
+				 domain="[('stage_sequence','=',4)]"
+				 attrs="{'readonly':['|',('stage_contract','!=','fiscalizacion'),
+						('fiscalizacion_cv','=',False)]}"/>
+		  <button name="stage_change_fiscalizacion" string="Finalizar Etapa"
+				  type="object" icon="gtk-execute"
+				  groups="gt_document_manager.group_cv_fiscalizacion" 
+				  attrs="{'readonly':['|',('stage_contract','!=','fiscalizacion'),
+						 ('fiscalizacion_cv','=',False)]}"/>    
+        </group-->
+	  </page>
+	  <page string="Documentos del Convenio">
+		<field name="document_ids" nolabel="1" widget="one2many_list" 
+			   attrs="{'readonly': [('state', 'in',['cancelled','done'])]}">
+		  <tree string="Documentos">
+			<field name="name" string="Descripción"/>
+			<field name="parent_id" invisible="0"/>
+			<field name="datas_fname"/>
+			<field name="create_uid" string="Subido por"/>
+			<field name="create_date" string="Fecha adjunto"/>		
+		  </tree>
+		  <form string="Documentos">
+			<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+			<field name="name"/>
+			<field name="parent_id" 
+				   domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+			<!--field name="datas"/>
+			<field name="datas_fname"/-->
+			<field name="datas_fname" select="1" invisible="1"/>
+			<field name="datas" filename="datas_fname" widget="file_select"/>
+		  </form>
+		</field>    
+	  </page>
+	  <page string="Observaciones">
+		<field name="observaciones" nolabel="1" attrs="{'readonly': [('state', 'in',['cancelled','done'])]}"/>
+	  </page>              
+	  <page string="Historial">
+	    <field name="historial_lines" nolabel="1" readonly="True"/>    
+	  </page>		
+	</notebook>
+    <group string="Acciones" colspan="6" col="6">
+  	  <!--field name="state" widget="statusbar" statusbar_visible="draft,open,cancelled,done" statusbar_colors='{"pending":"blue"}' select="1"/-->
+  	  <button name="wkf_draft_open"  string="INICIAR CONVENIO" states="draft" 
+			  groups="gt_document_manager.group_cv_info_general" 
+			  confirm="Esta seguro que desea iniciar el Convenio?" colspan="6" 
+			  icon="gtk-media-play"
+			  type="object"
+  	    	  />
+	  <button name="wkf_open_distribution"  string="Pasar Distribución" states="legalizing" 
+			  groups="gt_document_manager.group_cv_info_general" 
+			  confirm="Esta seguro que desea pasar a distribución?" colspan="6" 
+			  icon="gtk-execute"
+			  type="object"
+  	    	  />
+
+	  <button name="wkf_distribution_ejec"  string="Pasar Ejecución" states="open" 
+			  groups="gt_document_manager.group_cv_distribucion" 
+			  confirm="Esta seguro que desea pasar a distribución?" colspan="6" 
+			  icon="gtk-execute"
+			  type="object"
+  	    	  />
+  	  <button name="%(action_doc_covenant_cancel)d" type="action" 
+			  string="ANULAR CONVENIO" icon="gtk-cancel" colspan="3"
+			  groups="gt_document_manager.group_cv_info_general"
+			  states="legalizing,open,execution"
+  	    	  />
+  	  <button name="wkf_open_done" string="FINALIZAR CONVENIO" 
+			  groups="gt_document_manager.group_cv_fiscalizacion" icon="terp-dialog-close"
+			  colspan="3" states="execution"
+			  type="object"
+			  confirm="Esta seguro que desea Finalizar el Convenio?"/>
+  	  <!--button name="wkf_open_draft" states="open" string="Borrador" icon="gtk-indent"
+  	    		 attrs="{'readonly':['|',('stage_contract','!=','planning'),('owner_cv','=',False)]}"/-->
+  	  <!--button name="wkf_done_open" states="done" string="Reactivar" icon="gtk-convert"/-->
+  	  <field name="stage_contract" invisible="1" widget="statusbar"/>
+    </group> 
+  </form>
+</field>
+</record>		
+
+    <record model="ir.ui.view" id="view_doc_covenant_tree">
+        <field name="name">VIEW DOC_COVENANT TREE</field>
+        <field name="model">doc_covenant.covenant</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+          <!--tree colors="grey:state in ('cancelled','done');red:planned_end_date and (planned_end_date&lt;current_date) and (state in ('draft','open'))"-->
+          <tree colors="grey:state in ('cancelled');blue:state in ('legalizing');blue:state in ('open');blue:state in ('execution');green:state in ('done')">
+            <field name="code_covenant"/>
+            <field name="name"/>
+            <field name="subscription_date"/>
+            <field name="doc_covenant_type_id"/>
+			<field name="state"/>
+          </tree>
+        </field>
+    </record>
+    
+    
+    <record id="view_doc_covenant_search" model="ir.ui.view">
+      <field name="name">doc.covenant.search.form</field>
+      <field name="model">doc_covenant.covenant</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+		<search string="Convenios">
+          <group>
+            <!--filter name="draft" string="Borrador" help="Convenios en Borrador" icon="gtk-indent"/>
+            <filter name="open" string="En Progreso" help="Convenios en Progreso" icon="terp-camera_test"/>
+            <filter name="cancelled" string="Anulados"  help="Convenios Anulados" icon="terp-dialog-close"/>
+            <filter name="done" string="Finalizados" help="Convenios Finalizados" icon="terp-check"/>
+		    <separator orientation="vertical"/-->
+            <field name="code_covenant"/>
+            <field name="name"/>
+            <field name="state"/>
+            <field name="doc_covenant_type_id"/>
+            <!-- field name="user_id">
+            <filter domain="[('user_id','=',uid)]"  help="Convenios Asignados" icon="terp-personal" />
+            <filter domain="[('user_id','=',False)]"  help="Convenios No Asignados" icon="terp-personal-" />
+            </field>
+            <field name="doc_covenant_stage_id"/-->
+          </group>
+          <newline/>
+          <!--group expand="0" string="Group By...">
+            <filter string="Creador" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'user_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Estado" name="group_covenant_state" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+            <filter string="Etapa" name="group_covenant_stage" icon="terp-stage" domain="[]" context="{'group_by':'doc_covenant_stage_id'}"/>
+            <filter string="Tipo" name="group_covenant_type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'doc_covenant_type_id'}"/>
+            
+            <separator orientation="vertical"/>
+            <filter string="Contratista" name="group_partner_id" icon="terp-personal" domain="[]" context="{'group_by':'partner_id'}"/>
+            <filter string="Cantón" name="group_canton" icon="terp-personal" domain="[]" context="{'group_by':'canton'}"/>
+            <filter string="Parroquia" name="group_parroquia" icon="terp-personal" domain="[]" context="{'group_by':'parroquia'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Fecha Subscripción" icon="terp-go-month" domain="[]" context="{'group_by':'subscription_date'}"/>
+            <filter string="Fecha Cumplimiento" icon="terp-go-month" domain="[]" context="{'group_by':'planned_end_date'}"/>
+          </group-->
+        </search>
+      </field>
+	</record>
+    
+
+    <record model="ir.actions.act_window" id="action_doc_covenant_form">
+        <field name="name">Convenios</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.covenant</field>
+        <field name="view_type">form</field>
+        <field name="help">Gestion de Convenios</field>
+    </record>
+
+    <!--ACTION PARA CONSULTA DE ADMINISTRADOR DE CONvenios-->
+    <record model="ir.actions.act_window" id="action_doc_covenant_form_admin">
+        <field name="name">Administración de Convenios</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.covenant</field>
+        <field name="view_type">form</field>
+        <field name="help">Administración Convenios</field>
+        <field name="domain">[('admin_uid','=',uid)]</field>
+    </record>
+
+	<menuitem name="Convenios" id="menu_doc_covenant" parent="gt_document_manager.menu_document_manager" sequence="40"/>
+	<menuitem
+        name="Convenios"
+        action="action_doc_covenant_form"
+        id="menu_doc_covenant_form"
+        parent="menu_doc_covenant"
+        groups="gt_document_manager.group_doc_covenant"
+        sequence="6"/>
+        
+    <menuitem
+        name="Administración Convenios"
+        action="action_doc_covenant_form_admin"
+        id="menu_doc_covenant_form_admin"
+        parent="menu_doc_covenant"
+        groups="gt_document_manager.group_cv_fiscalizacion"
+        sequence="5"/>      
+  
+        
+        <!--DOC_CONTRACT_STAGE FORM TREE ACTION-->        
+    <record model="ir.ui.view" id="view_doc_covenant_stage_form">
+        <field name="name">VISTA FORM DOC_COVENANT_STAGE</field>
+        <field name="model">doc_covenant.stage</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Etapas">
+                <group colspan="4" col="6">
+                    <field name="seq_stage" invisible="1"/>
+                    <field name="name" readonly="True"/>
+                </group>
+                <notebook colspan="4">
+                <page string="Estados">
+                	<field name="state_ids" nolabel="1" widget="many2many"/>
+                </page>	
+                <!--page string="Usuarios responsables">
+                	<field name="user_ids" nolabel="1" widget="many2many"/>
+                </page-->	
+                <page string="Descripción">
+                	<field name="desc" nolabel="1"/>
+                </page>
+                <!--page string="Grupos de usuarios">
+                	<field name="group_ids" nolabel="1" widget="many2many"/>
+                </page-->	
+
+                </notebook>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_covenant_stage_tree">
+        <field name="name">VIEW DOC_COVENANT_STAGE TREE</field>
+        <field name="model">doc_covenant.stage</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="seq_stage" invisible="1"/>
+                <field name="name"/>
+                <field name="user_id"/>
+           </tree>
+        </field>
+    </record>
+    	
+    <record model="ir.actions.act_window" id="action_doc_covenant_stage_form">
+        <field name="name">Etapas Convenios</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.stage</field>
+        <field name="view_type">form</field>
+        <field name="help">Definicion de etapas de los convenios</field>
+    </record>	    
+        
+    <menuitem
+        name="Etapas"
+        action="action_doc_covenant_stage_form"
+        id="menu_doc_covenant_stage"
+        parent="menu_doc_covenant_configuration"
+        groups="gt_document_manager.group_doc_manager"
+        sequence="1"/>
+        
+        
+    <!--DOC_CONTRACT_STATE FORM TREE ACTION-->        
+    <record model="ir.ui.view" id="view_doc_covenant_state_form">
+        <field name="name">VISTA FORM DOC_COVENANT_STATE</field>
+        <field name="model">doc_covenant.state</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Estados">
+                <group colspan="4" col="6">
+                    <field name="seq_state"/>
+                    <field name="name"/>
+                    <!--field name="stage_sequence"/-->
+                </group>	
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_covenant_state_tree">
+        <field name="name">VIEW DOC_COVENANT_STATE TREE</field>
+        <field name="model">doc_covenant.state</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="seq_state"/>
+                <field name="name"/>
+                <!--field name="stage_id"/-->
+           </tree>
+        </field>
+    </record>
+    	
+    <record model="ir.actions.act_window" id="action_doc_covenant_state_form">
+        <field name="name">Estados de las etapas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.state</field>
+        <field name="view_type">form</field>
+        <field name="help">The Documents repository gives you access to all att.</field>
+    </record>	    
+        
+        
+    <!--DOC_COVENANT_TYPE FORM TREE ACTION--> 
+    <record model="ir.ui.view" id="view_doc_covenant_type_form">
+        <field name="name">doc_covenant.type</field>
+        <field name="model">doc_covenant.type</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Tipos de convenios">
+                <group colspan="4" col="6">
+                    <!--field name="code"/-->
+                    <field name="name"/>
+                    <!--field name="ir_sequence_id"/-->
+                </group>
+                <notebook colspan="4">	
+                <page string="Descripcion">
+                	 <field name="desc" nolabel="1"/>                	 
+                </page>	
+                </notebook>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_covenant_type_tree">
+        <field name="name">VIEW DOC_covenant.TYPE TREE</field>
+        <field name="model">doc_covenant.type</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="desc"/>
+           </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_covenant_type_form">
+        <field name="name">Tipos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.type</field>
+        <field name="view_type">form</field>
+        <field name="help">The Documents repository gives you access to all att.</field>
+    </record>	    
+        
+    <menuitem
+        name="Tipos de convenios"
+        action="action_doc_covenant_type_form"
+        id="menu_doc_covenant_type"
+        parent="menu_doc_covenant_configuration"
+        groups="gt_document_manager.group_cv_info_general"
+        sequence="5"/>
+        
+        
+        
+    <!--DOC_COVENANT_BENEFICIAY FORM TREE ACTION--> 
+    <record model="ir.ui.view" id="view_doc_covenant_beneficiary_form">
+        <field name="name">doc_covenant_beneficiary</field>
+        <field name="model">doc_covenant.beneficiary</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Beneficiarios">
+                <group colspan="4" col="6">
+                    <field name="name"/>
+                    <field name="representative"/>
+                    <newline/>
+                    <field name="canton" on_change="onchange_parish()"/>
+                    <field name="parroquia" domain="[('canton_id','=',canton)]"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_covenant_beneficiary_tree">
+        <field name="name">VIEW_DOC_covenant_beneficiary_TREE</field>
+        <field name="model">doc_covenant.beneficiary</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Beneficiarios">
+                <field name="name"/>
+                <field name="representative"/>
+                <field name="canton"/>
+                <field name="parroquia"/>
+           </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_covenant_beneficiary_form">
+        <field name="name">Beneficiarios</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.beneficiary</field>
+        <field name="view_type">form</field>
+        <field name="help">Benificiarios de los Convenios</field>
+    </record>	    
+        
+    <menuitem
+        name="Beneficiarios"
+        action="action_doc_covenant_beneficiary_form"
+        id="menu_doc_covenant_beneficiary"
+        parent="menu_doc_covenant_configuration"
+        groups="gt_document_manager.group_cv_info_general"
+        sequence="25"/>
+        
+        
+        
+    <!--COVENANT_BENEFICIAY_REL FORM TREE ACTION--> 
+    <record model="ir.ui.view" id="view_covenant_beneficiary_rel_form">
+        <field name="name">covenant_beneficiary_rel</field>
+        <field name="model">covenant_beneficiary.rel</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Beneficiarios">
+                <group colspan="4" col="6">
+				   <field name="beneficiary_id" required="True"/>
+                  <field name="economic" required="True"/>
+                  <field name="total" required="True"/>
+                  <field name="realized" required="True"/>
+                  <separator string="Obras" colspan="6"/>
+                  <field name="works_ids" nolabel="1" colspan="6"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_covenant_beneficiary_rel_tree">
+        <field name="name">view_covenant_beneficiary_rel_tree</field>
+        <field name="model">covenant_beneficiary.rel</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Beneficiarios">
+			    <field name="beneficiary_id"/>
+                <field name="economic"/>
+                <field name="total"/>
+                <field name="realized"/>
+                <field name="works_ids" nolabel="1" colspan="6"/>
+           </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_covenant_beneficiary_rel_form">
+        <field name="name">Beneficiarios</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">covenant_beneficiary.rel</field>
+        <field name="view_type">form</field>
+        <field name="help">Benificiarios de los Convenios</field>
+    </record>	    
+        
+    <!--menuitem
+        name="Beneficiarios"
+        action="action_doc_covenant_beneficiary_form"
+        id="menu_doc_covenant_beneficiary"
+        parent="menu_doc_covenant_configuration"
+        sequence="25"/-->
+        
+        
+        
+        
+        
+    <!--DOC_COVENANT_WORK FORM TREE ACTION--> 
+    <record model="ir.ui.view" id="view_doc_covenant_work_form">
+        <field name="name">doc_covenant_work</field>
+        <field name="model">doc_covenant.work</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Obras">
+                <group colspan="4" col="6">
+                    <field name="name"/>
+                    <field name="economic"/>
+                    <field name="total"/>
+                    <field name="realized"/>
+                    <field name="partial_delivery_date"/>
+                    <field name="provisional_date_final"/>
+                    <field name="state"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_doc_covenant_work_tree">
+        <field name="name">VIEW_DOC_covenant_work_TREE</field>
+        <field name="model">doc_covenant.work</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="name"/>
+                <field name="economic"/>
+                <field name="total"/>
+                <field name="realized"/>
+                <field name="partial_delivery_date"/>
+                <field name="provisional_date_final"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_covenant_work_form">
+        <field name="name">Obras</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_covenant.work</field>
+        <field name="view_type">form</field>
+        <field name="help">Obras de Beneficiarios</field>
+    </record>	    
+                                     
+</data>
+</openerp>

@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_change_job","hr.change.job","model_hr_change_job","base.group_hr_manager",1,1,1,1
+"access_hr_payroll_update_wage","hr.payroll.update.wage","model_hr_payroll_update_wage","base.group_hr_manager",1,1,1,1
+"access_hr_payroll_update_masive_wage","hr.payroll.update.masive.wage","model_hr_payroll_update_masive_wage","base.group_hr_manager",1,1,1,1

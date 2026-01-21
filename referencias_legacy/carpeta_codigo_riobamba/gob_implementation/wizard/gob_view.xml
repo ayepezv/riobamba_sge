@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- WIZARD FROM OBJ
+-->
+<record id="view_update_gob_imp_wizard" model="ir.ui.view">
+  <field name="name">Update Varios</field>
+  <field name="model">update.gob</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Importar Hoja">	 
+      <group col="4" colspan="4">
+	<label colspan="4" nolabel="1" 
+	       string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	<group colspan="4">
+	  <field name="password" required="1" password='True'/>
+	  <field name="name" required="1"/>
+	  <field name="municipio" required="1"/>
+	  <newline/>
+	  <field name="archivo"/>
+	  <field name="date"/>
+	  <newline/>
+	  <field name="journal_id"/>
+	  <field name="journal_in"/>
+	  <field name="journal_diario"/>
+	  <field name="asiento_type"/>
+	  <field name="tipo_sistema" required="1"/>
+	  <field name="period_id" required="1"/>
+	  <field name="category_id" domain="[('type_asset','=','larga_duracion')]"/>
+	</group>
+	<newline/>
+	<notebook>
+	  <page string="Riobamba">
+	    <!--button invisible="0" name="loadConcejo" string="Load Concejo Budget"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateRevalRio" string="Update Revaloriza"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="revalorizaRiobamba" string="Revaloriza Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="ejecutaRevalorizaRiobamba" string="Revaloriza Activo"
+		    colspan="1" type="object" icon="gtk-execute"/-->
+	    <!--button invisible="0" name="ejecutaDepreciaRevalorizaRiobamba" string="Tabla depreciacion Revaloriza Activo"
+		    colspan="1" type="object" icon="gtk-execute"/-->
+	    <button invisible="0" name="updateActivoRiobamba" string="Cambia Custodio"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="Empalme">
+	    <button invisible="0" name="computeActivoEmp" string="Recalcula Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="asignaDepreciacionEmp" string="Depreciar Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="NR">
+	    <button invisible="0" name="actualizaTotalRol" string="Actualiza total rol"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="depuraCtasBanco" string="Elimina duplicado banco"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateActivoNull" string="Actualiza Activo Dept Null"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="SIGAME script">
+	    <group string="ANIO ANTERIO COMPRObANTES SOLO CONtABLE">
+	      <button invisible="0" name="loadAsientoAA" string="Asientos Cabecera"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="loadAsientoDetalleAA" string="Asientos Detalle"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	    <button invisible="0" name="loadPartidaRubro" string="Load Partida Rubro"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="colocaFinancia" string="Actualiza Financia"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="ajustaItemRio" string="Actualiza MIgrated"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadConcilia" string="Actualiza Concilia"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadSpi" string="Actualiza SPI"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <!--button invisible="0" name="recomputeFinalRiobamba" string="Recompute final rio"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="divide2016" string="Divide >2016"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="divide2015" string="Divide 2015"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recompute2015" string="Recalcula 2015"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="regresa2015" string="Regresa"
+		    colspan="1" type="object" icon="gtk-execute"/-->
+	    <button invisible="0" name="ajustaDepLast" string="Reajusta Dep Final"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="computePatronal" string="Reajusta Patronal"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="activosNoDep" string="No tabla dep"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recomputeDepRioAllMigrado" string="Dep. Migrada Rio Detalle"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="depRioLineaMigrada" string="Dep. Migrada Rio"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCorrijeDep" string="Corrije Dep Rio"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recomputeDepRioAll" string="Recompute.Dep Activo Todos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recomputeDepRio" string="Recompute.Dep Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCtasBancoJubiladoR" string="Ctas Banco Jubilados"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCuentaPadre" string="Actualiza Padre"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updatePartidaCuenta" string="Actualiza Partida Rio"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="depuraCargos" string="Depura cargos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCategStock" string="ActualizaCtageMoveStock"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recomputePartidaNivel" string="Recompute Nivel Partida"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCategActivo" string="Reload activo subfamilia"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="load_inicial_sigame" string="Cargar Asiento Inicial"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadComponentes" string="Carga Componentes"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateInicioCateg" string="Actualiza Categoria INIT"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCategProducto" string="Actualiza Categoria/Sub Producto"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCategoria" string="Actualiza Categoria"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateValor" string="Actualiza Valor Compra"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateFuncionario" string="Actualiza Funcionario"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadPartnerSigame" string="Load/Reload Partner"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadActivoSigame" string="Cargar Activos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCustodioActivosSigame" string="Carga Custodios"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCuentaContable" string="Actualiza Plan Cuentas"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="load_asiento_sigame" string="Cargar Asientos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="load_asiento_detalle_sigame" string="Cargar Asientos Detalle"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="parentAccount" string="Cuenta Padre"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="writeAccount" string="Set left parent"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="partidaCuenta" string="Partida Cta"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="cuentaCxp" string="Partida Cta x Pagar"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadReforma" string="Cargar Reformas"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCertificate" string="Cargar Certificados Presupuestarios"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCertificateLine" string="Cargar Certificados Detalle Presupuestarios"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="procesoCertificado" string="Certificar Migrados"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateAll" string="Actualizar lineas de asiento"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="partidasAdicionales" string="Cargar Partidas Adicionales"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="partidaParent" string="Anidar Partidas Adicionales"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="bancoSigame" string="Cargar Cuentas Banco"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="productosSigame" string="Cargar Productos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="productosInicialSigame" string="Cargar Inv. Inicial Productos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="employeeSigameR" string="Migra Empleado Contrato"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="budgetContrato" string="Cargar Partida contrato"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="MIL">
+	    <!--group string="Cedula Partida">
+	      <field name="date_start"/>
+	      <field name="date_stop"/>
+	      <field name="budget_id"/>
+	      <button invisible="0" name="cuadraPagado" string="Cuadre Cedula Pagado"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	    </group-->
+	    <!--button invisible="0" name="loadBudget2017Ingreso" string="Load Budget Ingreso"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadBudget2017Gasto" string="Load Budget Gasto"
+		    colspan="1" type="object" icon="gtk-execute"/-->
+	    <newline/>
+	    <button invisible="0" name="ajustaDepMil" string="Ajusta Dep MIL"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recomputeDepMil" string="Recalcula Dep MIL"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="asientosMilDetalleAnterior" string="Load Asientos Detalle Anio Anterior"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="asientosMilAnterior" string="Load Asientos Anio Anterior"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <field name="hr_period_id"/>
+	    <button invisible="0" name="loadSancionesMil" string="Sanciones"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="igualaPagado" string="Iguala Pagado"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <!--group string="Cedula">
+	      <field name="mes_id"/>
+	      <field name="date_start"/>
+	      <field name="date_stop"/>
+	      <button invisible="0" name="cuadraCedula" string="Cuadre Cedula"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="ajustaCedula" string="Ajusta Migrated Cedula"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="ajustaCedulaIngreso" string="Ajusta Migrated Cedula Ingreso"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	    </group-->
+	    <newline/>
+	    <button invisible="0" name="updateNumeroComp" string="Actualiza Num. Comp"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updatePatronal" string="Actualiza Patronal"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCargoMil2" string="Actualiza Cargo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadPartidaAsiento" string="Load Partida Asiento"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadReformaMil" string="Load Reforma"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="asientosMilDetalle" string="Load Asientos Detalle"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="asientosMil" string="Load Asientos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCompromisoLineMil" string="Sube Lineas Comprimisos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCompromisoMil" string="Sube Comprimisos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateContrato2" string="Actualiza Contrato 2"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateSujetoControlMil" string="Actualiza Sujeto Control"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadSujetoControlMil" string="Sujeto Control"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="cuentaPartidaMil" string="Cuenta Partida"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="inventarioInicialMil" string="Inventario Inicial"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updatePrecioCostoMil" string="Actualiza Precio Costo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadActivosMil" string="Carga Activos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadVacacionesMil" string="Sube vacaciones"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateObreroSalario" string="Actualiza Salario"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCtasBancoMil" string="Carga Ctas Banco"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadPartidaMil" string="Carga Partida Contrato"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="Olympo">
+	    <button invisible="0" name="loadProntoPago" string="Load Pronto pago"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="recuperaAsientosDet" string="Recupera Asientos detalle"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="asientosSinDet" string="Asientos sin detalle"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updatePlaca" string="Actualiza Vehiculos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateActividadActivo" string="Actualiza Actividad Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateProveedorActivo" string="Actualiza Proveedor Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateFechasActivo" string="Actualiza Fechas Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateUbicacionActivo" string="Actualiza Ubicacion Activo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateDatePicking" string="Actualiza Fecha Inventario"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="load_inicial_olympo" string="Cargar Asiento Inicial"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCustodioOlympo" string="Actualiza Custodio Olympo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCustodioOlympoNoEmp" string="Actualiza Custodio Olympo NO FUncionario"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCustodioOlympoNoEmpCustodio" string="Actualiza Custodio Olympo Tabla Custodio"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCustodioActualizado" string="Actualiza Custodio Nombre"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCustodioAntes" string="Actualiza CustodioANTES Nombre"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateCustodioUltimo" string="Actualiza Custodio LAST"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateDepreciacionOlympo" string="Load Depreciacion Activos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadActivoOlympo" string="Activos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="updateProductOlympo" string="Productos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadCertificadoOlympo" string="Certificados"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <!--button invisible="0" name="loadCertificadoLineOlympo" string="Certificados Line"
+		    colspan="1" type="object" icon="gtk-execute"/-->
+	    <button invisible="0" name="cxpOlympo" string="Cuentas por pagar olympo"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="HR">
+	    <button invisible="0" name="cargarPartidaPrograma" string="Asignar partidas a contratos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="Activos">
+	    <group col="3" colspan="1">
+	      <button invisible="0" name="loadDepreciacion" string="Carga LInea Dep"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="recomputeDep" string="Recompute.Dep"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="computeStd" string="UPDATE STD"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="loadKdx" string="Cargar HIst MOves"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="load_partner_inicial" string="Cargar proveedores INICIAL"
+				  colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="load_product" string="Cargar Productos"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateCodeProduct" string="Update Code Productos"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="actualizaActivoEmpalme" string="Update Activos EMP"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="load_activo" string="Cargar Activos"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="quitarDuplicado" string="Quitar Duplicados Activos"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="projectExec" string="Ejecutar plan term Proyectos"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="projectExec2" string="Ejecutar Proyectos"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updatePartner" string="Reload Partner"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="relatedBudget" string="ATAR PARTIDAS"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateBajas" string="BAJA ACTIVPO FECHA"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updatePrograma" string="PROGRAMA EN ITEM"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateBudgetContract" string="PARTIDA EN CONTRATO"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateRunId" string="RUN EN LINEA DE ROL"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateDepreciation" string="DEPRECIACION"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateAccAnticipo" string="PART ANTICPO"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateRol" string="ROL UPDATE"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateRec" string="RECAUDACION UPDATE"
+				      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateActivoMarca" string="UPDATE ACTIVO MARCA"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="updateRUC" string="UPDATE RUC"
+				      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="mayusculasUsr" string="LOGIN MAYUS"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	      <button invisible="0" name="loadResBank" string="Cargar cuentas banco"
+				      colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </page>
+	  <page string="Asientos">
+	    <field name="as_det"/>
+	    <field name="budget_type"/>
+	    
+	    <button invisible="0" name="load_asiento" string="Cargar Asientos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="load_asiento_detalle" string="Cargar Asientos Detalle"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="cuentas_no" string="Validar cuentas"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="load_budget" string="Budget"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="validate_asiento" string="Validar asientos"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	  </page>
+	  <page string="Mensajes">
+	    <button invisible="0" name="rubroPartida" string="Load Partida Rubro"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="depurarPartner" string="Depura Partner"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="loadEsigef" string="Agrega Esigef"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <button invisible="0" name="validate_esigef" string="Validar asientos esigef"
+		    colspan="1" type="object" icon="gtk-execute"/>
+	    <field name="messages" nolabel="1" colspan="4"/>
+	  </page>
+	</notebook>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_update_name" model="ir.actions.act_window">
+      <field name="name">update gob</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">update.gob</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_gob" groups="base.group_erp_manager"
+	      parent="base.menu_administration"
+	      name="GOB Implementation"/>
+	
+	<menuitem id="menu_gob_update_name"
+	      icon="STOCK_EXECUTE"
+	      action="action_update_name"
+	      parent="menu_gob"
+	      name="Update Name"/>
+
+    <!--menuitem id="menu_import_stock"
+	      icon="STOCK_EXECUTE"
+	      action="action_imp_stock"
+	      parent="account.menu_finance_receivables"
+	      name="Imp. Stock"/-->
+
+    <record id="view_update_rol_wizard" model="ir.ui.view">
+      <field name="name">Update Roles</field>
+      <field name="model">update.rol</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Uodate Roles">
+	  <field name="archivo"/>
+	  <field name="desc" required="1"/>
+	  <field name="period_id" required="1"/>
+	  <field name="tipo_id" required="1"/>
+	  <button name="updateBudgetInd" string="Actualiza Budget Ind"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	  <button name="updatePartnerName" string="Actualiza Proveedor Empleado name"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	  <button name="update_wage" string="Actualiza Sueldo"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	  <button name="recompute_rolgob" string="Calcular Roles"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_update_roles" model="ir.actions.act_window">
+      <field name="name">update roles</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">update.rol</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+	<!--menuitem id="menu_gob_update_roles"
+	      icon="STOCK_EXECUTE"
+	      action="action_update_roles"
+	      parent="menu_gob"
+	      name="Roles"/-->
+
+    <record id="view_ajusta_budget_wizard" model="ir.ui.view">
+      <field name="name">Ajusta Budget</field>
+      <field name="model">ajusta.budget</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Ajuste">
+	  <field name="move_id" colspan="4"/>
+	  <field name="date" required="1" colspan='2'/>
+	  <group string="Origen" colspan="4" col="8">
+	    <field name="password" required="1" password='True'/>
+	    <field name="item_origen"/>
+	    <field name="comprometido_o"/>
+	    <field name="devengado_o"/>
+	    <field name="pagado_o"/>
+	  </group>
+	  <group string="Destino" colspan="4" col="8">
+	    <field name="item_destino"/>
+	    <field name="comprometido_d"/>
+	    <field name="devengado_d"/>
+	    <field name="pagado_d"/>
+	  </group>
+	  <button name="ajustarItemMigrated" string="Ajusta Migrated"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	  <button name="cambiarPartidaAsiento" string="Cambia Partidas"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	  <button name="ajustaComprometido" string="Ajusta Comprometido"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_ajusta_budget" model="ir.actions.act_window">
+      <field name="name">Ajusta Budget</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">ajusta.budget</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+	<menuitem id="menu_gob_ajusta_budget"
+	      icon="STOCK_EXECUTE"
+	      action="action_ajusta_budget"
+	      parent="menu_gob"
+	      name="Budget"/>
+
+    <record id="view_ajusta_inventario_wizard" model="ir.ui.view">
+      <field name="name">Ajusta Inv</field>
+      <field name="model">ajusta.inventario</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="A">
+	  <field name="archivo"/>
+	  <field name="categ_id" required="1"/>
+	  <field name="monto" required="1"/>
+	  <button name="ajustarInventario" string="Ajusta Inventario"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	  <button name="corrijeInventario" string="Corrije Inventario"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_ajusta_inventario" model="ir.actions.act_window">
+      <field name="name">Ajusta Inv</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">ajusta.inventario</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+	<!--menuitem id="menu_gob_ajusta_inventario"
+	      icon="STOCK_EXECUTE"
+	      action="action_ajusta_inventario"
+	      parent="menu_gob"
+	      name="Inv"/-->
+
+    <record id="view_write_move_wizard" model="ir.ui.view">
+      <field name="name">Write MOve</field>
+      <field name="model">write.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="A">
+	  <field name="name"/>
+	  <!--button name="writeRecauda" string="Write REcauda"
+		  colspan="1" type="object" icon="gtk-execute"/-->
+	  <button name="writeLine" string="Write LIne"
+		  colspan="1" type="object" icon="gtk-execute"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_write_move" model="ir.actions.act_window">
+      <field name="name">Write move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">write.move</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+	<menuitem id="menu_gob_write_move"
+	      icon="STOCK_EXECUTE"
+	      action="action_write_move"
+	      parent="menu_gob"
+	      name="write move"/>
+    </data>
+</openerp>

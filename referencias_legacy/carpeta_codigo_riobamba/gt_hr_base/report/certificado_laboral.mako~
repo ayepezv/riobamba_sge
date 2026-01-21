@@ -1,0 +1,76 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+	<tr>
+	  <td width="100%" style="font-size:18;text-align:center;"><b>CERTIFICADO DE BIENES MUEBLES</b></td>	  	  
+    </tr>	
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+  <table WIDTH=1000 style="font-size:14px">
+    <tr WIDTH=1000>
+      <td WIDTH=1000 >Quien suscribe, despues de revisar los reportes de inventario de activos y registros que reposan en esta unidad y que se encuentran bajo mi responsabilidad.
+<b>CERTIFICA</b> 
+Que el/la funcionario(a) <b>${o.employee_id.complete_name or ''|entity}</b> con CI # <b>${o.employee_id.name or ''|entity}</b>, <b>${o.employee_id.job_id.name or ''|entity}</b> del departamento <b>${o.employee_id.department_id.name or ''|entity}</b>, Hizo la entrega formal al departamento de ${user.employee_id.department_id.name or ''} de los bienes muebles que estaban a su cargo.</td>
+    </tr>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </table>
+    <tr>
+      <td WIDTH=1000 >
+	En constancia de fe de lo actuado, firman las partes intervinientes.
+      </td>
+    </tr>
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+    <tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+	<tr style="height:35px">
+	  <th></th>
+	  <th></th>
+	  <th></th>
+	</tr>
+	<tr style="height:35px">
+	  <th>_____________________________</th>
+	  <th>_____________________________</th>
+	</tr>
+	<tr style="font-size:11px">
+	  <th width="33%">${user.employee_id.complete_name or ''}</th>
+	  <th width="33%">${o.employee_id.complete_name or ''}</th>
+	</tr>  
+  </table>
+  %endfor
+</html>

@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<openerp>
+    <data> <!-- vista principal es la superior la del modulo mecanica
+		-->
+
+    <menuitem id="menu_mecanica" name="Mecanica" web_icon="images/mecanica.png" web_icon_hover="images/mecanica.png"/>
+
+	<!-- formulario de vista tree -->	  
+	<record id="view_mecanica_varios_tree" model="ir.ui.view">
+	  <field name="name">mecanica varios tree</field>
+	  <field name="model">mecanica.varios</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Varios" >
+	      <field name="name"/>
+	      
+	    </tree>
+	  </field>
+	</record>
+	
+	<!-- formulario de varios -->
+	<record model="ir.ui.view" id="view_mecanica_varios_form">
+	  <field name="name">mecanica varios form</field>
+	  <field name="model">mecanica.varios</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Varios">
+	      <group col="4" colspan="4">
+		<field name="name" colspan="2" required="1"/> <!-- cuando readonly="1"  que se activa para solo lectura-->
+                <field name="create_user_id" colspan="2" readonly="1" string="Creado por:"/>                   
+		<newline/>
+	      </group>
+	      <newline/>
+	      <notebook colspan="4">
+    
+		<!-- pagina de combustibles de vehiculo -->
+		<page string="Combustibles">
+		  <field colspan="4" name="combustible_ids" nolabel="1" widget="one2many_list"> 
+		      <tree string="Combustibles de los distintos bienes" editable="bottom">
+		      <field name="date" required="1"/>
+                      <field name="responsable_id" required="1"/>
+		      <field name="cantidad" required="1"/>
+                      <field name="unidad_id" required="1"/>		      
+                      <field name="tipo_combustible_id" required="1"/>
+		    </tree> 
+		  </field>    
+		</page>
+              </notebook>
+	    </form>
+	  </field>
+	</record>
+	
+	<!-- formulario de vista para la busqueda del 
+	-->
+	<record id="view_mecanica_varios_filter" model="ir.ui.view">
+	  <field name="name">Varios Busqueda</field>
+	  <field name="model">mecanica.varios</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Varios">
+	    <field name="name"/>
+	    <newline />
+	    <newline />
+	  </search>
+	</field>
+      </record>
+
+	<!-- Redefinicion del menu de activos fijos y
+		 de bienes sujetos a control -->
+   
+    <record model="ir.actions.act_window" id="action_mecanica_varios">
+        <field name="name">Varios - Combustibles</field>
+        <field name="res_model">mecanica.varios</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+
+
+
+    <menuitem id="menu_mecanica_varios"  sequence="3" parent="menu_mecanica" name="Varios" action="action_mecanica_varios"/>
+
+
+
+    </data>
+</openerp>

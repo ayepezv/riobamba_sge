@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_request_manager,payment.request,model_payment_request,gt_payment_request.group_payment_manager,1,1,1,1
+access_payment_request_user,payment.request,model_payment_request,gt_payment_request.group_payment_user,1,1,1,0
+access_res_partner_pu,res.partner,base.model_res_partner,gt_payment_request.group_payment_user,1,0,0,0
+access_res_partner_pu_man,res.partner,base.model_res_partner,gt_payment_request.group_payment_manager,1,0,0,0
+access_ir_exports_pu,ir.exports,base.model_ir_exports,gt_payment_request.group_payment_user,1,0,0,0
+access_ir_exports_man,ir.exports,base.model_ir_exports,gt_payment_request.group_payment_manager,1,0,0,0
+access_partner_request_user,res.partner,base.model_res_partner,gt_payment_request.group_payment_user,1,1,1,0
+access_fiscal_request_user,account.fiscal.position,account.model_account_fiscal_position,gt_payment_request.group_payment_user,1,1,1,0
+access_account_request_user,accoun.account,account.model_account_account,gt_payment_request.group_payment_user,1,1,1,0
+access_product_pricelist_request_user,product.pricelist,product.model_product_pricelist,gt_payment_request.group_payment_user,1,1,1,0
+access_bank_request_user,res.partner.bank,base.model_res_partner_bank,gt_payment_request.group_payment_user,1,1,1,0
+access_bank_bank_request_user,res.bank,base.model_res_bank,gt_payment_request.group_payment_user,1,1,1,0
+access_prq_user,ir.property,base.model_ir_property,gt_payment_request.group_payment_user,1,1,1,0
+access_prq_partadress_user,res.partner.address,base.model_res_partner_address,gt_payment_request.group_payment_user,1,1,1,0
+

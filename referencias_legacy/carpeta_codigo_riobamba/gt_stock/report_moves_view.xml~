@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False"
+	    id="report_account_statement_move" 
+	    model="account.bank.statement"
+	    name="account.statement.move" 
+	    rml="gt_payment_multi/report_move.rml" string="Comprobante Contable" menu="False"/>
+	
+
+	<record model="ir.ui.view" id="statement_bank_form_inherit">
+	  <field name="name">statement.bank.form.inherit</field>
+	  <field name="type">form</field>
+	  <field name="model">account.bank.statement</field>
+	  <field name="inherit_id" ref="account.view_bank_statement_form"/>
+	  <field name="arch" type="xml">
+	    <!--xpath expr="//field[@name='name']" position="attributes">
+	      <attribute name="readonly">1</attribute>
+	    </xpath-->
+	    <xpath expr="/form/group[@col='7']" position="replace">
+		  <group colspan="4" col="9">
+			<field name="name" select="1" readonly="1"/>
+			<field name="date" select="1" on_change="onchange_date(date, company_id)"/>
+			<field name="reference"/>
+			<field name="certificate_id" attrs="{'readonly': [('state','=','confirm')]}" required="1"/>
+			<field name="balance_start" invisible="1"/>
+			<field name="balance_end_real" invisible="1"/>
+			<!--field name="balance_end" invisible="1"/-->
+			<field name="currency" invisible="1"/>
+		  </group>
+		  <group colspan="4" col="7">
+			<field name="period_id" colspan="2"/>
+			<field name="journal_id" colspan="3" domain="[('type', '=', 'bank')]" on_change="onchange_journal_id(journal_id)" 
+				   select="1" widget="selection"/>
+		  </group>
+		</xpath>
+		<!--field name="period_id" position="after">
+	      <field name="reference" required="1"/>
+	      <field name="certificate_id" attrs="{'readonly': [('state','=','confirm')]}" required="1"/>
+	    </field-->
+	    <field name="balance_start" position="replace"></field>
+	    <field name="balance_end_real" position="replace"></field>
+	    <field name="balance_end" position="replace"></field>
+	    <xpath expr="/form/notebook/page/field/tree/field[@name='analytic_account_id']" position="replace"></xpath>
+	    <xpath expr="/form/notebook/page/field/tree/field[@name='name']" position="replace"></xpath>
+	    <xpath expr="/form/group/button[@name='button_cancel']" position="replace">
+	      <button name="print_move_multi_pay" colspan="4" string="Imprimir" states="confirm" type="object" icon="gtk-print"/>
+	    </xpath>
+	    <xpath expr="/form/group[@col='8']" position="before">
+	      <separator string="Detalle del Comprobante" colspan="4"/>
+	      <field name="notes" nolabel="1" attrs="{'readonly': [('state','=','confirm')]}"/>
+	    </xpath>
+	  </field>
+	</record>
+
+<!-- VISTA DE TREE MODIFICADA
+-->
+
+    <record model="ir.ui.view" id="multi_payment_tree_modified">
+      <field name="name">bank.statement.tree.modified</field>
+      <field name="type">form</field>
+      <field name="model">account.bank.statement</field>
+      <field name="inherit_id" ref="account.view_bank_statement_tree"/>
+      <field name="arch" type="xml">
+        <xpath expr="/tree/field[@name='balance_start']" position="replace"></xpath>
+	<xpath expr="/tree/field[@name='name']" position="after">
+	  <field name="reference" select="1"/>
+	</xpath>
+        <xpath expr="/tree/field[@name='balance_end_real']" position="replace">
+		  <field name="balance_end_real" invisible="1"/>
+		  <field name="balance_end" string="TOTAL"/>
+		</xpath>
+      </field>
+    </record>
+
+<!-- VISTA DE SEARCH MODIFICADA
+-->
+
+    <record model="ir.ui.view" id="multi_payment_search_modified">
+      <field name="name">bank.statement.search.modified</field>
+      <field name="type">search</field>
+      <field name="model">account.bank.statement</field>
+      <field name="inherit_id" ref="account.view_bank_statement_search"/>
+      <field name="arch" type="xml">
+        <xpath expr="/search/group/field[@name='name']" position="after">
+		  <field name="reference"/>
+		</xpath>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="multi_payment_search_modified">
+      <field name="name">bank.statement.search.modified</field>
+      <field name="type">form</field>
+      <field name="model">account.bank.statement</field>
+      <field name="inherit_id" ref="account.view_bank_statement_search"/>
+      <field name="arch" type="xml">
+	<field name="name" position="after">
+	  <field name="reference"/>
+	</field>
+      </field>
+    </record>
+	
+  </data>      
+</openerp>

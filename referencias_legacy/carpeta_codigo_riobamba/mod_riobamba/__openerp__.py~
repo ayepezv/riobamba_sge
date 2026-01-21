@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+{
+    "name" : "Bomberos Simon Bolivar",
+    "version" : "1.0",
+    "author" : 'Mario Chogllo',
+    "description": """ 
+   Este módulo implementa funcionalidad unica para el cuerpo de bomberos de Simon Bolivar
+    """,
+    "category" : "GAD",
+    "website" : "http://www.goberp.com",
+    "depends" : ['gt_project_project','retention'],
+    "init_xml" : [],
+    "demo_xml" : [],
+    "update_xml" : [
+        'sb_report.xml',
+        ],
+    "installable": True,
+}

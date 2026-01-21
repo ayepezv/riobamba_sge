@@ -1,0 +1,68 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_anual_projection","hr.anual.projection","model_hr_anual_projection","base.group_hr_manager",1,1,1,1
+"access_hr_contract_projection","hr.contract.projection","model_hr_contract_projection","base.group_hr_manager",1,1,1,1
+"access_hr_projection_line","hr.projection.line","model_hr_projection_line","base.group_hr_manager",1,1,1,1
+"access_hr_anual_rent_tax","hr.anual.rent.tax","model_hr_anual_rent_tax","base.group_hr_manager",1,1,1,1
+"access_hr_rent_tax","hr.rent.tax","model_hr_rent_tax","base.group_hr_manager",1,1,1,1
+"access_hr_hist_wage","hr.hist.wage","model_hr_hist_wage","base.group_hr_manager",1,1,1,1
+"access_hr_hist_job","hr.hist.job","model_hr_hist_job","base.group_hr_manager",1,1,1,1
+"access_hr_novedad","hr.novedad","model_hr_novedad","base.group_hr_manager",1,1,1,1
+"access_hr_family_item","hr.family.item","model_hr_family_item","base.group_hr_manager",1,1,1,1
+"access_hr_employee_course","hr.employee.course","model_hr_employee_course","base.group_hr_manager",1,1,1,1
+"access_hr_employee_title","hr.employee.title","model_hr_employee_title","base.group_hr_manager",1,1,1,1
+"access_title","title","model_title","base.group_hr_manager",1,1,1,1
+"access_employee_type","employee.type","model_employee_type","base.group_hr_manager",1,1,1,1
+"access_hr_marital_status","hr.marital.status","model_hr_marital_status","base.group_hr_manager",1,1,1,1
+"access_hr_deduction","hr.deduction","model_hr_deduction","base.group_hr_manager",1,1,1,1
+"access_hr_work_period_line","hr.work.period.line","model_hr_work_period_line","base.group_hr_manager",1,1,1,1
+"access_hr_work_period","hr.work.period","model_hr_work_period","base.group_hr_manager",1,1,1,1
+"access_hr_base_retention","hr.base.retention","model_hr_base_retention","base.group_hr_manager",1,1,1,1
+"access_hr_base_retention_line","hr.base.retention.line","model_hr_base_retention_line","base.group_hr_manager",1,1,1,1
+"access_hr_projection_max","hr.projection.max","model_hr_projection_max","base.group_hr_manager",1,1,1,1
+"access_hr_job_line","hr.job.line","model_hr_job_line","base.group_hr_manager",1,1,1,1
+"access_sectorial_comision","sectorial.comision","model_sectorial_comision","base.group_hr_manager",1,1,1,1
+"access_hr_sectorial_table","hr.sectorial.table","model_hr_sectorial_table","base.group_hr_manager",1,1,1,1
+"access_sectorial_rama","sectorial.rama","model_sectorial_rama","base.group_hr_manager",1,1,1,1
+"access_hr_sectorial_table_line","hr.sectorial.table.line","model_hr_sectorial_table_line","base.group_hr_manager",1,1,1,1
+"access_hr_base_configuration","hr.base.configuration","model_hr_base_configuration","base.group_hr_manager",1,1,1,1
+"access_grupo_ocupational_manager","grupo.ocupacional","model_grupo_ocupacional","base.group_hr_manager",1,1,1,1
+"access_grupo_ocupational_line_manager","grupo.ocupacional.line","model_grupo_ocupacional_line","base.group_hr_manager",1,1,1,1
+"access_grupo_actividad_manager","grupo.actividad","model_grupo_actividad","base.group_hr_manager",1,1,1,1
+"access_hr_last_work","hr.last.work","model_hr_last_work","base.group_hr_manager",1,1,1,1
+"access_hr_last_work_usr","hr.last.work","model_hr_last_work","base.group_hr_user",1,1,1,1
+"access_hr_contract_type_type","hr.contract.type.type","model_hr_contract_type_type","base.group_hr_manager",1,1,1,1
+"access_hr_contract_type_type_usr","hr.contract.type.type","model_hr_contract_type_type","base.group_hr_user",1,1,1,1
+"access_res_country_state_canton","res.country.state.canton","country_ec.model_res_country_state_canton","base.group_hr_manager",1,1,1,1
+"access_res_country_state_canton_usr","res.country.state.canton","country_ec.model_res_country_state_canton","base.group_hr_user",1,1,1,1
+"access_res_country_state_city","res.country.state.city","country_ec.model_res_country_state_city","base.group_hr_manager",1,1,1,1
+"access_res_country_state_city_usr","res.country.state.city","country_ec.model_res_country_state_city","base.group_hr_user",1,1,1,1
+"access_res_country_state_parish","res.country.state.parish","country_ec.model_res_country_state_parish","base.group_hr_manager",1,1,1,1
+"access_res_country_state_parish_usr","res.country.state.parish","country_ec.model_res_country_state_parish","base.group_hr_user",1,1,1,1
+"access_res_partner_bank_mn","res.partner.bank","base.model_res_partner_bank","base.group_hr_manager",1,1,1,0
+"access_res_partner_bank_usr","res.partner.bank","base.model_res_partner_bank","base.group_hr_user",1,1,1,0
+"access_res_partner","res.partner","base.model_res_partner","base.group_hr_manager",1,1,1,0
+"access_res_partner_usr","res.partner","base.model_res_partner","base.group_hr_user",1,1,1,0
+"access_res_bank","res.bank","base.model_res_bank","base.group_hr_manager",1,1,1,0
+"access_res_bank","res.bank","base.model_res_bank","base.group_hr_user",1,1,1,0
+access_account_journal_hrusr,account.journal hr user,account.model_account_journal,base.group_hr_user,1,1,1,1
+access_account_journal_hrmn,account.journal hr mn,account.model_account_journal,base.group_hr_manager,1,1,1,1
+access_account_move_hrusr,account.move,account.model_account_move,base.group_hr_user,1,1,1,1
+access_account_move_hrmn,account.move,account.model_account_move,base.group_hr_manager,1,1,1,1
+access_account_move_line_hrusr,account.move.line,account.model_account_move_line,base.group_hr_user,1,1,1,1
+access_account_move_line_hrmn,account.move.line,account.model_account_move_line,base.group_hr_manager,1,1,1,1
+access_project_program_manager_hr,project.program,gt_project_project.model_project_program,base.group_hr_manager,1,0,0,0
+access_budget_item_hr,budget.item,gt_budget.model_budget_item,base.group_hr_manager,1,0,0,0
+access_budget_post_hr,budget.post,gt_budget.model_budget_post,base.group_hr_manager,1,0,0,0
+"access_hr_aportable_line","aportable.line","model_aportable_line","base.group_hr_manager",1,1,1,1
+"access_hr_aportable_line usr","aportable.line","model_aportable_line","base.group_hr_user",1,1,1,1
+"access_hr_accion_personal","hr.accion.personal","model_hr_accion_personal","base.group_hr_manager",1,1,1,1
+"access_hr_accion_personal usr","hr.accion.personal","model_hr_accion_personal","base.group_hr_user",1,1,1,1
+access_budget_distributivo_hr,budget.distributivo,model_budget_distributivo,base.group_hr_manager,1,1,1,1
+"access_empoyee_judicial","employee.judicial","model_employee_judicial","base.group_hr_manager",1,1,1,1
+"access_employee_sancion","employee.sancion","model_employee_sancion","base.group_hr_user",1,1,1,1
+access_contract_budget,hr.contract,hr_contract.model_hr_contract,gt_budget.group_budget_manager,1,0,0,0
+access_partner_accountcctthh,partner.account,retention.model_partner_account,base.group_hr_manager,1,0,0,0
+"access_contrato_nivel","contrato.nivel","model_contrato_nivel","base.group_hr_manager",1,1,1,1
+"access_hr_account_configuration usr","hr_account_configuration","model_hr_account_configuration","base.group_hr_user",1,0,0,0
+"access_hr_contract_nivel","hr.contract.nivel","model_hr_contract_nivel","base.group_hr_manager",1,1,1,1
+"access_hr_contract_nivel usr","hr.contract.nivel","model_hr_contract_nivel","base.group_hr_user",1,0,0,0

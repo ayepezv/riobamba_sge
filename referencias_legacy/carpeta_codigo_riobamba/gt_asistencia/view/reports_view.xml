@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+	<menuitem name="Reportes" id="menu_attendance_reports" parent="hr.menu_hr_reporting"/>
+	
+	
+	
+</data>
+</openerp>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      
+      <record id="view_ejecuta_ie" model="ir.ui.view">
+        <field name="name">Ejecuta Ie</field>
+        <field name="model">ejecuta.ie</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Ejecutar Descuentos">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="period_id" colspan="4" required="1"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="ejecuta_ie" type="object" icon="gtk-execute"  string="Ejecutar" 
+			confirm="Confirmar"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_ejecuta_ie" model="ir.actions.act_window">
+        <field name="name">Ejecuta Descuentos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ejecuta.ie</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_ejecuta_ie"
+		icon="STOCK_EXECUTE"
+		action="action_ejecuta_ie"
+		parent="menu_hr_wizard"
+		name="Ejecuta Descuentos"
+		sequence='100'
+		/>
+
+
+</data>
+</openerp>

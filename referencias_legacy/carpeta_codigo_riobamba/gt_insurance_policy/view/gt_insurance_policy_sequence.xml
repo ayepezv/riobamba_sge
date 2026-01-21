@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+    	<record id="seq_type_temporal_policy" model="ir.sequence.type">
+            <field name="name">Poliza temporal</field>
+            <field name="code">gt.insurance.policy.temporal</field>
+        </record>
+        <record id="seq_temporal_policy" model="ir.sequence">
+            <field name="name">temporal_policy</field>
+            <field name="code">gt.insurance.policy.temporal</field>
+            <field name="prefix"></field>
+            <field name="padding">3</field>
+        </record>
+        <record id="seq_type_branch_policy" model="ir.sequence.type">
+            <field name="name">Rama de poliza</field>
+            <field name="code">gt.insurance.policy.branch</field>
+        </record>
+        <record id="seq_branch_policy" model="ir.sequence">
+            <field name="name">Rama de poliza</field>
+            <field name="code">gt.insurance.policy.branch</field>
+            <field name="prefix">RP-</field>
+            <field name="padding">3</field>
+        </record>            
+		<record id="seq_type_type_policy" model="ir.sequence.type">
+            <field name="name">Tipo de Poliza</field>
+            <field name="code">gt.insurance.policy.type</field>
+        </record>
+        <record id="seq_type_policy" model="ir.sequence">
+            <field name="name">Tipo de Poliza</field>
+            <field name="code">gt.insurance.policy.type</field>
+            <field name="prefix">TP-</field>
+            <field name="padding">3</field>
+        </record> 
+        
+		<record id="seq_type_sinister_code" model="ir.sequence.type">
+            <field name="name">Actualización de Póliza</field>
+            <field name="code">gt.insurance.policy.transfer</field>
+        </record>
+        <record id="seq_act_poliza_code" model="ir.sequence">
+            <field name="name">Actualziación de Póliza</field>
+            <field name="code">gt.insurance.policy.transfer</field>
+            <field name="prefix">AP-</field>
+            <field name="padding">4</field>
+        </record>
+        <record id="seq_type_sinister_code_line" model="ir.sequence.type">
+            <field name="name">Código de actialización</field>
+            <field name="code">gt.insurance.policy.tr.line</field>
+        </record>
+        <record id="seq_act_poliza_code_line_" model="ir.sequence">
+            <field name="name">Codigo de actializacion</field>
+            <field name="code">gt.insurance.policy.tr.line</field>
+            <field name="prefix">CA-</field>
+            <field name="padding">4</field>
+        </record>  
+        <record id="seq_type_insurance_policy_code" model="ir.sequence.type">
+            <field name="name">Codigo de poliza</field>
+            <field name="code">gt.insurance.policy.code</field>
+        </record>
+        <record id="seq_insurance_policy_code" model="ir.sequence">
+            <field name="name">Codigo de poliza</field>
+            <field name="code">gt.insurance.policy.code</field>
+            <field name="prefix"></field>
+            <field name="padding">4</field>
+        </record> 
+          
+    </data>
+</openerp>

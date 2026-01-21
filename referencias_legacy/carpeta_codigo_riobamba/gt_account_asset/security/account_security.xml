@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_gt_account_asset_manager" model="res.groups">
+      <field name="name">Activos / Manager</field>
+    </record>
+    <record id="group_gt_account_asset_readonly" model="res.groups">
+      <field name="name">Activos / Readonly</field>
+    </record>
+	<record id="group_gt_account_asset_user" model="res.groups">
+      <field name="name">Activos / User</field>
+    </record>
+</data>
+</openerp>

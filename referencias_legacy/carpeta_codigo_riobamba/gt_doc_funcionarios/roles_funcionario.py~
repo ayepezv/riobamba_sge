@@ -1,0 +1,122 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import osv, fields
+import time
+import netsvc
+from gt_tool import tool
+
+
+class roles_empleado_line(osv.TransientModel):
+    _name = 'roles.empleado.line'
+    _columns = dict(
+        roles_id = fields.many2one('roles.empleado','Saldo'),
+        periodo = fields.char('Periodo', size=10),
+        remuneracion_unificada = fields.float('Remuneracion Unificada'),
+        total_otros_ingresos = fields.float('Total otros ingresos'),
+        total_egresos = fields.float('Total egresos'),
+        total = fields.float('Total a recibir'),
+	rol_id = fields.many2one('hr.payslip','Rol'),
+    )
+
+    def print_rol(self,cr, uid, ids, context=None):
+	rol_obj = self.pool.get('hr.payslip')
+	for this in self.browse(cr, uid, ids):
+            if not context:
+                context = {}
+            rol = self.browse(cr, uid, [this.rol_id.id], context)[0]
+            datas = {'ids': [rol.id], 'model': 'hr.payslip'}
+            return {
+                'type': 'ir.actions.report.xml',
+                'report_name': 'rol_individual_gpa',
+                'model': 'hr.payslip',
+                'datas': datas,
+                'nodestroy': True,                        
+            }
+
+roles_empleado_line()
+
+class roles_empleado(osv.TransientModel):
+   _name = 'roles.empleado'
+   _columns = dict(
+      name = fields.char('Nombre',size=32),
+       
+      line_ids = fields.one2many('roles.empleado.line','roles_id','Detalle'),
+      empleado_id = fields.many2one('hr.employee','Empleado'),
+      #empleado_id = fields.many2one('res.users','Empleado'),
+      periodo_id = fields.many2one('hr.work.period.line','Periodo'),
+
+   )
+
+   def mostrar_roles(self, cr, uid, ids, context=None):
+       periodo_obj = self.pool.get('hr.work.period.line')
+       payslip_obj = self.pool.get('hr.payslip')
+       line_rol_obj = self.pool.get('roles.empleado.line')
+       empleado_obj = self.pool.get('hr.employee')
+       res = {}
+       for this in self.browse(cr, uid, ids):
+           line_ids_antes = line_rol_obj.search(cr, uid, [('roles_id','=',this.id)])#esto que hace
+           if line_ids_antes:
+               line_rol_obj.unlink(cr, uid, line_ids_antes)
+           
+           if this.periodo_id:
+               roles_ids = payslip_obj.search(cr, uid, [('employee_id','=',this.empleado_id.id),('period_id','=',this.periodo_id.id)])
+           else: 
+               roles_ids = payslip_obj.search(cr, uid, [('employee_id','=',this.empleado_id.id)])
+           #roles_ids = payslip_obj.search(cr, uid, [('employee_id','=',this.empleado_id.id),('period_id','=',this.period_id.id)])
+           if roles_ids:
+               for line_id in roles_ids:
+                   roles = payslip_obj.browse(cr, uid, line_id)
+                   line_rol_obj.create(cr, uid, {
+                       'roles_id':this.id,#por que se pone esto
+                       'periodo':roles.period_id.name,
+                       'remuneracion_unificada':roles.basic,
+                       'total_otros_ingresos':roles.allowance,
+                       'total_egresos':roles.deduction,
+                       'total':roles.net,
+                       'rol_id':line_id,
+                     
+                   })
+           else:
+               raise osv.except_osv(('Aviso'), ('El funcionario no tiene roles'))
+       return True
+
+   def default_get(self, cr, uid, fields, context=None):
+      user_obj = self.pool.get('res.users')
+      if context is None:
+         context = {}
+      res = {}
+      user = user_obj.browse(cr, uid, uid)
+      if user.employee_id:
+          res.update({'empleado_id':user.employee_id.id})
+      else:
+          raise osv.except_osv(('Error de configuración'), ('El usuario no tiene funcionario relacionado'))
+      return res
+
+   def print_roles(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'reporte.mantenimiento'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'reporte_mantenimiento',
+            'model': 'reporte.mantenimiento',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+   defaults = dict(
+      date_stop= time.strftime('%Y-%m-%d'),
+      
+   )
+roles_empleado()
+
+
+
+

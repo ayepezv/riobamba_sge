@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_he_alone" model="res.groups">
+        <field name="name">HE Registrar Individual</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+    <record id="group_he_aprove" model="res.groups">
+        <field name="name">HE Autorizar</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+    <record id="group_he_validate" model="res.groups">
+        <field name="name">HE Validar</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+</data>
+</openerp>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+    <record id="view_create_job_obj" model="ir.ui.view">
+      <field name="name">Crear Puestos trabajo Objeto</field>
+      <field name="model">create.job.obj</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+		<form string="Crear">	 
+		  <group col="4" colspan="4">
+			<group colspan="4">
+			  <field name="desc"/>
+			</group>
+			<newline/>	   
+			<group col="3" colspan="1">
+	      <button name="create_job_obj" string="Crear" colspan="1" type="object" icon="gtk-execute"/>
+	      <button name="name_name_job" string="Relacionar name_id" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_create_job_obj" model="ir.actions.act_window">
+      <field name="name">Crear Puestos de trabajo objeto</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">create.job.obj</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_create_job_obj"
+	      icon="STOCK_EXECUTE"
+	      action="action_create_job_obj"
+	      parent="menu_fya_root"
+	      name="Crear puestos trabajo objeto"/>\
+<!--
+-->
+
+    <record id="view_create_job" model="ir.ui.view">
+      <field name="name">Crear Puestos trabajo</field>
+      <field name="model">create.job</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+		<form string="Crear">	 
+		  <group col="4" colspan="4">
+			<label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls)"/>
+			<group colspan="4">
+			  <field name="desc"/>
+			</group>
+			<newline/>	   
+			<group col="3" colspan="1">
+	      <button name="create_job_" string="Crear" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_create_job" model="ir.actions.act_window">
+      <field name="name">Crear Puestos de trabajo</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">create.job</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_create_job"
+	      icon="STOCK_EXECUTE"
+	      action="action_create_job"
+	      parent="menu_fya_root"
+	      name="Crear puestos trabajo"/>
+
+<!-- WIZARD FROM OBJ
+-->
+    <record id="view_import_ctas_wizard" model="ir.ui.view">
+      <field name="name">Importar Ctas</field>
+      <field name="model">import.ctas</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_ctas_" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_ctas" model="ir.actions.act_window">
+      <field name="name">Imp. Ctas</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.ctas</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_ctas"
+	      icon="STOCK_EXECUTE"
+	      action="action_ctas"
+	      parent="menu_fya_root"
+	      name="Imp. Ctas"/>
+    
+    </data>
+</openerp>

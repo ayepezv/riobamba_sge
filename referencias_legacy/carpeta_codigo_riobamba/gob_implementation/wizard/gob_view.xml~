@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- WIZARD FROM OBJ
+-->
+    <record id="view_imp_stock_wizard" model="ir.ui.view">
+      <field name="name">Importar Stock</field>
+      <field name="model">import.stock</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" 
+			   string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="name" required="1"/>
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_stock" string="Importar"
+				  colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_imp_stock" model="ir.actions.act_window">
+      <field name="name">Imp. Stock</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.stock</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+	
+
+    <menuitem id="menu_import_stock"
+	      icon="STOCK_EXECUTE"
+	      action="action_imp_stock"
+	      parent="account.menu_finance_receivables"
+	      name="Imp. Stock"/>
+    
+    </data>
+</openerp>

@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+from time import strftime
+
+class liquidaPermisoW(osv.TransientModel):
+   _name = 'liquida.permisow'
+   
+   def liquida_permisos(self, cr, uid, ids, context=None):
+      permiso_obj = self.pool.get('permiso.hora')
+      for this in self.browse(cr, uid, ids):
+         if this.permiso_ids:
+            for permiso_id in this.permiso_ids:
+               permiso_obj.phora_liquidado(self, cr, uid, [permiso_id.id])
+      return {'type':'ir.actions.act_window_close' }
+
+   _columns = dict(
+      employee_id = fields.many2one('hr.employee','Funcionario'),
+      permiso_ids = fields.many2many('permiso.hora','l_p_id','l_id','p_id','Permisos'),
+   )
+liquidaPermisoW()
+
+class hr_changeJob(osv.osv_memory):
+
+   _name ='hr.change.job'
+   _columns = {
+        'contract_id': fields.many2one('hr.contract', 'Contrato',required=True),
+        'job_ant': fields.related('contract_id','job_id', type='many2one', relation='hr.job', 
+                                  string='Cargo Anterior', store=True, readonly=True),
+        'job_new':fields.many2one('hr.job','Cargo Nuevo', required=True),
+        'date':fields.date('Fecha'),
+       }
+   
+   def onchange_contract(self, cr, uid, ids, contract_id=False, context=None):
+      res = {}
+      if contract_id:
+         contract = self.pool.get('hr.contract').browse(cr, uid, contract_id, context=context)
+         if contract.job_id:
+            res.update({'job_ant': contract.job_id.id})
+      return {
+         'value':res
+         }
+
+   def update_job(self, cr, uid, ids, context):
+      if context is None:
+         context = {}
+      data = self.read(cr, uid, ids)[0]
+      new_job = data['job_new'][0]
+      job_anterior=data['job_ant'][0]
+      contract_id = data['contract_id'][0]
+      contract_obj = self.pool.get('hr.contract')
+      job_hist_obj= self.pool.get('hr.hist.job')
+      contract = contract_obj.browse(cr, uid, contract_id)
+      contract_obj.write(cr, uid, contract.id,{'job_id':new_job,
+                                               })
+      h_j_id = job_hist_obj.create(cr, uid, {'name':data['date'],'date_end':strftime('%Y-%m-%d'),
+                                             'job_id':job_anterior,'new_job':new_job,
+                                             'contract_job_id':contract_id})
+      return {'type':'ir.actions.act_window_close' }
+
+   _defaults = {
+                'date': time.strftime('%Y-%m-%d'),
+    }
+
+hr_changeJob()
+
+

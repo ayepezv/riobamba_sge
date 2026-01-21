@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>
+
+    <record id="email_template_bombero_permiso" model="email.template">
+      <field name="name">Permiso Funcionamiento Bombero</field>
+      <field name="email_from">${user.company_id.email}</field>
+      <field name="email_to">${object.email}</field>
+      <field name="subject"> PERMISO DE FUNCIONAMIENTO - ${user.company_id.name} - ${object.name} DEL - ${object.fiscalyear_id.name}</field>
+      <field name="email_recipients"></field>
+      <field name="model_id" ref="bomberos.model_bombero_permiso"/>
+      <field name="auto_delete" eval="True"/>
+      <field name="report_template" ref="bomberos.bomberopermiso"/>
+      <field name="report_name">PERMISO DE FUNCIONAMIENTO_${(object.name or '').replace('/','_')}</field>
+      <field name="lang"></field>
+      <field name="body_html"><![CDATA[
+      Estimado Cliente ${object.cliente_id.name}. <b>${user.company_id.name}</b> informa.
+      <BR/>
+      Adjunto al mail sirvase encontrar su permiso de funcionamiento correspondiente al ${object.fiscalyear_id.name}.
+      <BR/>
+      <BR/>
+      <BR/>
+      <BR/>
+      GOBERP Sistema de Gestion Empresarial para Empresas Publicas y Privadas, GADS, EPS, ONGs.   
+      <BR/>
+      <a href="http://www.goberp.com">www.goberp.com</a>
+      <BR/>
+      Telf. (+593) 074092170
+      <BR/>
+      Cel. 0995314603
+      ]]>
+      </field>
+    </record>
+
+
+    <record id="email_template_bombero_inspeccion" model="email.template">
+      <field name="name">Inspeccion Permiso Funcionamiento</field>
+      <field name="email_from">${user.company_id.email}</field>
+      <field name="email_to">${object.p2_id.cliente_id.email}</field>
+      <field name="subject"> INSPECCION DE PERMISO DE FUNCIONAMIENTO - ${user.company_id.name} - ${object.name} DEL - ${object.p2_id.fiscalyear_id.name}</field>
+      <field name="email_recipients"></field>
+      <field name="model_id" ref="bomberos.model_bombero_inspeccion"/>
+      <field name="auto_delete" eval="True"/>
+      <field name="report_template" ref="bomberos.bomberoinspeccion"/>
+      <field name="report_name">INSPECCION DE PERMISO DE FUNCIONAMIENTO_${(object.name or '').replace('/','_')}</field>
+      <field name="lang"></field>
+      <field name="body_html"><![CDATA[
+      Estimado Cliente ${object.p2_id.cliente_id.name}. <b>${user.company_id.name}</b> informa.
+      <BR/>
+      Adjunto al mail sirvase encontrar el informe de inspeccion del permiso de funcionamiento correspondiente al ${object.p2_id.fiscalyear_id.name}.
+      <BR/>
+      <BR/>
+      <BR/>
+      <BR/>
+      GOBERP Sistema de Gestion Empresarial para Empresas Publicas y Privadas, GADS, EPS, ONGs.   
+      <BR/>
+      <a href="http://www.goberp.com">www.goberp.com</a>
+      <BR/>
+      Telf. (+593) 074092170
+      <BR/>
+      Cel. 0995314603
+      ]]>
+      </field>
+    </record>
+
+    <record id="email_template_bombero_deuda" model="email.template">
+      <field name="name">Emision Deuda Pendiente</field>
+      <field name="email_from">${user.company_id.email}</field>
+      <field name="email_to">${object.email}</field>
+      <field name="subject">EMISION DEUDA PENDIENTE - ${user.company_id.name} - ${object.emision_id.name} DEL - ${object.fiscalyear_id.name}</field>
+      <field name="email_recipients"></field>
+      <field name="model_id" ref="bomberos.model_bombero_permiso"/>
+      <field name="auto_delete" eval="True"/>
+      <field name="report_template" ref="bomberoemision"/>
+      <field name="report_name">EMISION DEUDA PENDIENTE_${(object.emision_id.name or '').replace('/','_')}</field>
+      <field name="lang"></field>
+      <field name="body_html"><![CDATA[
+      Estimado Cliente ${object.cliente_id.name}. <b>${user.company_id.name}</b> informa.
+      <BR/>
+      Adjunto al mail sirvase encontrar el valor por permiso de funcionamiento correspondiente al ${object.fiscalyear_id.name}.
+      <BR/>
+      VALOR TOTAL USD. ${object.emision_id.total} 
+      <BR/>
+      <BR/>
+      <BR/>
+      GOBERP Sistema de Gestion Empresarial para Empresas Publicas y Privadas, GADS, EPS, ONGs.   
+      <BR/>
+      <a href="http://www.goberp.com">www.goberp.com</a>
+      <BR/>
+      Telf. (+593) 074092170
+      <BR/>
+      Cel. 0995314603
+      ]]>
+      </field>
+    </record>      
+
+
+    </data>
+</openerp>

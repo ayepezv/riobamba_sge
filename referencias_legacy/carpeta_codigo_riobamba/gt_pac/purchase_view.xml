@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<record model="ir.ui.view" id="purchase_req_inherit_2">
+  <field name="name">purchase.req.form.inherit2</field>
+  <field name="type">form</field>
+  <field name="model">purchase.requisition</field>
+  <field name="inherit_id" ref="gt_government_procedure.purchase_req_inherit"/>
+  <field name="arch" type="xml">
+    <xpath expr="/form/notebook/page[@string='Registro de cotizaciones']/field[@name='purchase_ids']/form/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+      <field name="uom_desc" required="1"/>
+    </xpath>
+  </field>
+</record>
+
+
+      <!-- requisition sin required producto -->
+      
+      <record model="ir.ui.view" id="view_purchaserq_norequired">
+	<field name="name">purchase.requisition.noreq</field>
+	<field name="type">form</field>
+	<field name="model">purchase.requisition</field>
+	<field name="inherit_id" ref="gt_government_procedure.purchase_req_inherit"/>
+	<field name="arch" type="xml">
+	  <field  name='date_start'>
+	    <field name='date_start' attrs="{'readonly': [('state', 'not in',('draft','start'))]}"/>
+	  </field>
+	  <field name='presp_ref' position="replace">
+	    <field name="pac_id" colspan="4" required="1"/>
+	  </field>
+	  <xpath expr="/form/notebook/page[@string='Products']/field[@name='line_ids']" position="replace">
+	    <field name="line_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', 'not in',('draft','start','aproved'))]}">
+	      <tree string="Products" editable="bottom">
+		<field name="pac_line_id" required="1" domain="[('pac_id','=',parent.pac_id)]"
+		       attrs="{'readonly': [('state', 'not in',('draft','start'))]}"/>
+		<field name="product_qty" required="1" attrs="{'readonly': [('state', 'not in',('draft','start','aproved'))]}"/>
+		<field name="desc" attrs="{'readonly': [('state', 'not in',('draft','start'))]}" required="1"/>
+		<field name="state" invisible="1"/>
+	      </tree>
+	    </field>
+	  </xpath>
+	</field>
+      </record>
+
+    </data>
+</openerp>

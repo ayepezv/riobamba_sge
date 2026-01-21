@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_budget_cierre" model="ir.ui.view">
+        <field name="name">Iniciacion Planificacion Siguiente Anio</field>
+        <field name="model">budget.cierre</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente Migracion de Planificacion">
+	    <field name="valor" colspan="2" required="1"/>
+	    <group col="4" colspan="4">
+	      <group colspan="4" string="Anio fiscal">
+		<field name="year_ant_id" colspan="2" required="1" string="Periodo anterior"/>
+		<field name="year_id" colspan="2" required="1" string="Periodo nuevo"/>
+	      </group>
+	      <group colspan="4" string="Presupuesto">
+		<field name="poa_ant_id" colspan="2" required="1" string="Presupuesto Anterior"/>
+		<field name="poa_id" colspan="2" required="1" string="Presupuesto Nuevo"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="budget_cargar" type="object" icon="gtk-execute"  string="Cargar Proyectos"/>
+		<button name="budget_cerrar" type="object" icon="gtk-execute"  string="Migrar" 
+			confirm="Esta seguro que desea crear la planificacion del nuevo anio"/>
+	      </group>
+	      <newline/>
+	      <notebook>
+		<page string="Detalle">
+		  <field name="line_ids" nolabel="1">
+		    <tree editable='bottom'>
+		      <field name="project_id" readonly="1"/>
+		      <field name="opcion"/>
+		    </tree>
+		  </field>
+		</page>
+	      </notebook>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_budget_cierre" model="ir.actions.act_window">
+        <field name="name">Iniciacion Planificacion Siguiente Anio</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.cierre</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_budget_cierre"
+		icon="STOCK_EXECUTE"
+		action="action_budget_cierre"
+		parent="menu_budget_configuration"
+		name="Iniciacion Planificacion Siguiente Anio"/>
+
+      <!-- START PROYECTOS-->
+      <record id="view_project_eject" model="ir.ui.view">
+        <field name="name">Ejecutar Planificacion</field>
+        <field name="model">project.eject.new</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente Ejecucion">
+	    <group col="4" colspan="4">
+	      <field name="year_id" colspan="2" required="1"/>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="project_eject_new" type="object" icon="gtk-execute"  string="Ejecutar" 
+			confirm="Esta seguro que desea ejecutar la planificacion nuevo anio"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_project_eject" model="ir.actions.act_window">
+        <field name="name">Ejecutar Planificacion</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">project.eject.new</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_project_ejectnew"
+		icon="STOCK_EXECUTE"
+		action="action_project_eject"
+		parent="menu_budget_configuration"
+		name="Ejecutar Planificacion"/>
+
+</data>
+</openerp>

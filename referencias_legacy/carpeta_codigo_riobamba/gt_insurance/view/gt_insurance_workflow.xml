@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>       
+        <!--FLUJO PARA DOCUMENTO SOLICITADO A EMPLEADO-->
+        <record model="workflow" id="wkf_gt_internal_inform">
+            <field name="name">Inform wkf</field>
+            <field name="osv">gt.insurance.inform</field>
+            <field name="on_create">True</field>
+        </record>
+        <record model="workflow.activity" id="act_draft_inform">
+            <field name="wkf_id" ref="wkf_gt_internal_inform" />
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">action_inform_draft()</field>
+        </record>
+        <record model="workflow.activity" id="act_open_inform">
+            <field name="wkf_id" ref="wkf_gt_internal_inform" />
+            <field name="name">open</field>
+            <field name="kind">function</field>
+            <field name="action">action_inform_open()</field>
+        </record>
+        <record model="workflow.activity" id="act_response_inform">
+            <field name="wkf_id" ref="wkf_gt_internal_inform" />
+            <field name="name">response</field>
+            <field name="kind">function</field>
+            <field name="action">action_inform_response()</field>
+        </record>     
+        <record model="workflow.activity" id="act_close_inform">
+            <field name="wkf_id" ref="wkf_gt_internal_inform" />
+            <field name="name">close</field>
+            <field name="kind">function</field>
+            <field name="action">gt_internal_inform_close()</field>
+        </record>
+        <record model="workflow.activity" id="act_cancel_inform">
+            <field name="wkf_id" ref="wkf_gt_internal_inform" />
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">action_inform_cancel()</field>
+        </record>
+        <!-- flujos-->
+        <record model="workflow.transition" id="draft_open">
+            <field name="act_from" ref="act_draft_inform" />
+            <field name="act_to" ref="act_open_inform" />
+            <field name="signal">gt_internal_inform_open</field>
+        </record>       
+        <record model="workflow.transition" id="open_response">
+            <field name="act_from" ref="act_open_inform" />
+            <field name="act_to" ref="act_response_inform" />
+            <field name="signal">gt_internal_inform_response</field>
+        </record>   
+        <record id="response_close" model="workflow.transition">
+            <field name="act_from" ref="act_response_inform"/>
+            <field name="act_to" ref="act_close_inform"/>
+            <field name="signal">gt_internal_inform_close</field>
+        </record>
+        <record id="response_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_response_inform"/>
+            <field name="act_to" ref="act_cancel_inform"/>
+            <field name="signal">gt_internal_inform_cancel</field>
+        </record>
+        <record id="response_draft" model="workflow.transition">
+            <field name="act_from" ref="act_cancel_inform"/>
+            <field name="act_to" ref="act_draft_inform"/>
+            <field name="signal">gt_internal_inform_draft</field>
+        </record>
+        
+        <!-- Siniestro-->
+        <record id="wkf_siniestro_" model="workflow">
+            <field name="name">Siniestro workflow</field>
+            <field name="osv">gt.insurance.sinister.memory</field>
+            <field name="on_create">True</field>
+        </record>
+        <record id="act_draft_siniestro" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_siniestro_"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">action_draft_siniestro()</field>
+        </record>
+                
+  		<record id="act_open_siniestro" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_siniestro_"/>
+            <field name="name">open</field>
+            <field name="kind">function</field>
+            <field name="action">action_draft_open_siniestro()</field>
+        </record>
+		<record id="act_close_siniestro" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_siniestro_"/>
+            <field name="name">close</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_close_siniestro()</field>
+        </record>
+        <record id="act_cancel_siniestro" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_siniestro_"/>
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_cancel_siniestro()</field>
+        </record>        
+        <!--Trnas-->
+        <record id="trans_draft_open_siniestro" model="workflow.transition">
+            <field name="act_from" ref="act_draft_siniestro"/>
+            <field name="act_to" ref="act_open_siniestro"/>
+            <field name="signal">wkf_draft_open_siniestro</field>
+        </record>
+        <record id="trans_open_close_siniestro" model="workflow.transition">
+            <field name="act_from" ref="act_open_siniestro"/>
+            <field name="act_to" ref="act_close_siniestro"/>
+            <field name="signal">wkf_open_close_siniestro</field>
+        </record>
+        <record id="trans_open_cancel_siniestro" model="workflow.transition">
+            <field name="act_from" ref="act_open_siniestro"/>
+            <field name="act_to" ref="act_cancel_siniestro"/>
+            <field name="signal">wkf_open_cancel_siniestro</field>
+        </record>  
+        <record id="trans_cancel_draft_siniestro" model="workflow.transition">
+            <field name="act_from" ref="act_cancel_siniestro"/>
+            <field name="act_to" ref="act_draft_siniestro"/>
+            <field name="signal">wkf_cancel_draft_siniestro</field>
+        </record>
+
+    </data>
+</openerp>

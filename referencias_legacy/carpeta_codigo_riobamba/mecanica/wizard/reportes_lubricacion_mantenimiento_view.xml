@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- ASISTENTE(WIZARD)  REPORTES DE MANTENIMIENTO -->
+
+       <record id="view_reporte_mantenimientos" model="ir.ui.view">
+	 <field name="name">Reportes</field>
+	 <field name="model">reporte.mantenimiento</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Reportes">
+            <group col="4" colspan="4">
+             <!--<field name="create_user_id" colspan="2" string="Creado por:"/> -->
+             <field name="opcion"  colspan="2" required="1" on_change="pulsar_opcion()"/>
+             <field name="vehiculor_id" required="1" domain="[('type','=',opcion)]" />	     
+	     <field name="opc" required="1"/>
+	     <newline/>
+	     <field name="date_start" attrs="{'invisible':[('opc', '!=',True)]}"/>
+	     <field name="date_stop" attrs="{'required': [('opc', '=',True)],'invisible':[('opc', '!=',True)]}"/>
+	   </group>  
+             <newline/>
+	     <group col="2" colspan="4">
+	       <button icon="gtk-cancel" special="cancel"
+		       string="Salir" />
+	       <button name="print_mantenimiento_vehiculo" type="object" icon="gtk-execute"  string="Imprimir"/>
+	     </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_reporte_mantenimientos" model="ir.actions.act_window">
+        <field name="name">Reporte Lubricación - Mantenimientos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">reporte.mantenimiento</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+  
+      <menuitem id="menu_reporte_mecanica" parent="menu_mecanica" name="Reportes" />
+    
+      <menuitem id="menu_reporte_mecanica_mantenimientos" action="action_reporte_mantenimientos" 
+                parent="menu_reporte_mecanica" name="Lubricación - Mantenimientos" />
+    </data>
+</openerp>

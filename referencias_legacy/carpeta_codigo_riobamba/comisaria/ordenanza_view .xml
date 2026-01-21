@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_comisaria" 
+			   
+			  name="Comisaria"
+/>
+
+      <!-- comisaria vistas
+		-->
+	<!-- formulario del ingreso de la ordenanza
+		-->
+      <record model="ir.ui.view" id="view_ordenanza_form">
+		<field name="name">ordenanza.form</field>
+		<field name="model">ordenanza</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		  <form string="Ordenanza">
+			<group col="2"colspan="2" >
+			  <field name="name" colspan="2" nolabel="1"/>
+			</group>
+			
+		  </form>
+		</field>
+      </record>
+	<!-- formulario de vista de las ordenanzas listado
+		-->	  
+      <record id="view_ordenanza_tree" model="ir.ui.view">
+		<field name="name">ordenanza.tree</field>
+		<field name="model">ordenanza</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+		  <tree string="Ordenanzas" >
+			<field name="name"/>
+		  </tree>
+		</field>
+      </record>
+	<!-- formulario de vista para la busqueda de las ordenanzas
+		-->
+      <record id="view_ordenanza_filter" model="ir.ui.view">
+	<field name="name">Ordenanza Busqueda</field>
+	<field name="model">ordenanza</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Ordenanzas">
+	    <field name="name"/>
+	    <newline />
+	  </search>
+	</field>
+      </record>
+	<!-- al hacer click se abren el formulario de ingreso de la ordenanza
+		-->  
+      <record id="action_ordenanza" model="ir.actions.act_window">
+		<field name="name">Ordenanzas</field>
+		<field name="res_model">ordenanza</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+      </record>
+	<!-- el menu en la parte izquierda donde aparece la ordenanza
+		-->   
+      <menuitem id="menu_comisaria_ordenanza"
+				action="action_ordenanza"
+				parent="menu_comisaria"
+				name="Ordenanzas" />
+
+
+    </data>
+</openerp>

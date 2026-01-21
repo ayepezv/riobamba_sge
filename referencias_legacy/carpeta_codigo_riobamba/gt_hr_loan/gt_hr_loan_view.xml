@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+		<record model="ir.ui.view" id="view_prestamos_form">
+		  <field name="name">hr.payroll.prestamo.form</field>
+		  <field name="model">hr.payroll.loan</field>
+		  <field name="type">form</field>
+		  <field name="arch" type="xml">
+		    <form string="Prestamo">
+		      <group colspan="4" col="6">
+			<field name="name" select="1" colspan="2"/>
+			<field name="category_id" required="1"/>
+			<field name="amount" on_change="onchange_amount(amount)"/>
+			<field name="num_pagos"/>
+			<!--field name="pendiente" readonly="1"/-->
+			<field name="period_id" required="1"/>
+			<field name="employee_id"/>
+			<field name="fecha"/>
+			<field name="fecha_ap" readonly="1"/>
+			<field name="state" readonly="1"/>
+		      </group>
+		      <field name="line_ids" nolabel="1" colspan="4" readonly="1"/>
+		      <!--field name="pagos_ids" nolabel="1" colspan="4" readonly="1">
+				<tree string="Lineas de pago">
+		          	<field name="num_pago"/>
+			  		<field name="period_id"/>
+		          	<field name="total"/>
+			  		<field name="state"/>
+			  		<field name="saldo"/>
+		        </tree>
+		      </field-->
+		      <group colspan="4" col="6">
+				<group colspan="3" col="1">
+				  <!--button name="prestamo_draft_aprobar" states="draft" string="Aprobar" icon="gtk-ok" type="object"/-->
+				  <button name="draft_to_aprobar" states="draft" string="Aprobar" icon="gtk-ok" type="object"/>
+				  <button name="recompute_loan" icon="terp-stock_effects-object-colorize" string="Refinanciar" type="object" states="aprobado" confirm="Esta seguro que desea cancelar el prestamo? si lo hace los valores pendientes pasaran a borrador y el prestamo sera refinanciado"/>
+				  <button name="prestamo_draft_cancel" states="aprobado" string="Cancelar Prestamo" icon="gtk-cancel" type="object" confirm="Esta seguro que desea cancelar el prestamo? si lo hace los valores pendientes pasaran a borrador y el prestamo sera anulado"/>
+				  <button name="prestamo_draft_anular" states="draft" string="Anular" icon="gtk-cancel"/>
+				</group>
+				<group colspan="3" col="2">
+				  <field name="interes_valor" colspan="1"/>
+				  <field name="interes" colspan="1"/>
+				  <field name="a_pagar" readonly="1" colspan="1"/>
+				  <field name="saldo_pendiente" readonly="1" colspan="1"/>
+				</group>
+		      </group>
+		    </form>
+		  </field>
+		</record>
+
+		
+		<record model="ir.ui.view" id="view_payroll_prestamo_line_tree">
+		  <field name="name">hr.payroll.prestamo.view.tree</field>
+		  <field name="model">hr.payroll.loan</field>
+		  <field name="type">tree</field>
+		  <field name="arch" type="xml">
+		    <tree string="Prestamos Empleados">
+		      <field name="employee_id"/>
+		      <field name="name"/>
+		      <field name="category_id"/>
+		      <field name="amount"/>
+		      <field name="fecha"/>
+		      <field name="fecha_ap"/>
+		      <field name="period_id"/>
+		      <field name="state"/>
+		    </tree>
+		  </field>
+		</record>
+		
+		<record id="view_payroll_loan_filter" model="ir.ui.view">
+		  <field name="name">payroll.loan.list.select</field>
+		  <field name="model">hr.payroll.loan</field>
+		  <field name="type">search</field>
+		  <field name="arch" type="xml">
+		    <search string="Buscar Prestamos">
+		      <group col='10' colspan='4'>
+		        <filter icon="terp-document-new" name="l_draft" string="Borrador" domain="[('state','=','draft')]" separator="1"/>
+		        <filter icon="terp-check" name="l_approved" string="Aprobado" domain="[('state','=','aprobado')]" separator="1" />
+		        <filter icon="terp-check" name="l_approved" string="Anulado" domain="[('state','=','anulado')]" separator="1"/>
+		        <separator orientation="vertical"/>
+		        <field name="name" select="1" string="Reference"/>
+		        <field name="employee_id" select="1"/>
+		        <field name="fecha" select="1"/>
+		        <field name="fecha_ap" select="1"/>
+		      </group>
+		      <newline/>
+		      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		        <filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'employee_id'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Estado" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Fecha Solicitud" icon="terp-go-month" domain="[]" context="{'group_by':'fecha'}"/>
+		        <filter string="Fecha Aprobacion" icon="terp-go-month" domain="[]" context="{'group_by':'fecha_ap'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Periodo Inicial" icon="terp-document-new" domain="[]" context="{'group_by':'period_id'}"/>
+		        <filter string="Cabecera Salarial" icon="terp-go-month" domain="[]" context="{'group_by':'category_id'}"/>
+		      </group>
+		    </search>
+		  </field>
+		</record>
+		
+		
+		<!--menuitem id="menu_hr_payroll_prestamo" parent="hr.menu_hr_root" name="Prestamos" sequence="9" groups="base.group_hr_manager"/-->
+		
+		<record id="action_hr_payroll_prestamo_" model="ir.actions.act_window">
+		  <field name="name">Prestamos Empleados</field>
+		  <field name="res_model">hr.payroll.loan</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem id="menu_hr_payroll_prestamo_"
+			  action="action_hr_payroll_prestamo_"
+			  parent="gt_hr_ie.menu_hr_ie_root"
+			  name="Ingresos/Egresos Diferidos"
+			  groups="base.group_hr_manager"/>
+			  
+			 
+			 
+		<record model="ir.ui.view" id="view_prestamos_form_line">
+		  <field name="name">hr.payroll.prestamo.form.line</field>
+		  <field name="model">hr.payroll.loan.line</field>
+		  <field name="type">form</field>
+		  <field name="arch" type="xml">
+		    <form string="Prestamo">
+		      	<group colspan="4" col="4">
+					<field name="name" colspan="2" readonly="1"/>
+					<field name="employee_id" colspan="2" readonly="1"/>
+					<field name="prestamo_id" colspan="2" readonly="1" required="1"/>
+					<field name="categ_id" colspan="2" readonly="1"/>
+					<newline/>
+					<field name="period_id" colspan="2" readonly="1"/>
+					<field name="num_pago" colspan="2" readonly="1"/>
+					<field name="saldo" colspan="2" readonly="1"/>
+					<field name="total" colspan="2" readonly="1"/>
+					<field name="state" colspan="2" readonly="1"/>
+				</group>
+		    </form>
+		  </field>
+		</record>
+		
+		<record model="ir.ui.view" id="view_payroll_prestamo_line_line_tree">
+		  <field name="name">hr.payroll.prestamo.line.view.tree</field>
+		  <field name="model">hr.payroll.loan.line</field>
+		  <field name="type">tree</field>
+		  <field name="arch" type="xml">
+		    <tree string="Prestamos Empleados">
+		      <field name="employee_id"/>
+		      <field name="period_id"/>
+		      <field name="categ_id"/>
+		      <!--field name="type"/-->
+		      <field name="total"/>
+		      <field name="state"/>
+		    </tree>
+		  </field>
+		</record>
+		
+		<record id="view_payroll_loan_line_filter" model="ir.ui.view">
+		  <field name="name">payroll.loan.line.list.select</field>
+		  <field name="model">hr.payroll.loan.line</field>
+		  <field name="type">search</field>
+		  <field name="arch" type="xml">
+		    <search string="Buscar Prestamos Empleados">
+		      <group col='10' colspan='4'>
+		        <filter icon="terp-document-new" name="l_draft" string="Pendiente" domain="[('state','=','pendiente')]" separator="1"/>
+		        <filter icon="terp-check" name="l_approved" string="Pagado" domain="[('state','=','pagado')]" separator="1" />
+		        <filter icon="terp-check" name="l_approved" string="Anulado" domain="[('state','=','anulado')]" separator="1"/>
+		        <separator orientation="vertical"/>
+		        <field name="employee_id" select="1"/>
+		        <field name="period_id" select="1"/>
+		        <field name="categ_id" select="1"/>
+		        <!--field name="type" select="1"/-->
+		      </group>
+		      <newline/>
+		      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		        <filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'employee_id'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Estado" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Periodo" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+		        <filter string="Cabecera Salarial" icon="terp-document-new" domain="[]" context="{'group_by':'categ_id'}"/>
+		        <!--filter string="Tipo de Cabecera" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'type'}"/-->
+		      </group>
+		    </search>
+		  </field>
+		</record>
+
+		<record id="action_hr_payroll_prestamo_line" model="ir.actions.act_window">
+		  <field name="name">Prestamos Empleados</field>
+		  <field name="res_model">hr.payroll.loan.line</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		</record>
+
+		<!--menuitem id="menu_hr_payroll_prestamo_line"
+			  action="action_hr_payroll_prestamo_line"
+			  parent="menu_hr_payroll_prestamo"
+			  name="Detalle de Prestamos"
+			  groups="base.group_hr_manager"/-->
+			  
+			  
+		<!-- ingresos egresos para prestamos /-->
+		
+		<record model="ir.ui.view" id="view_hr_ie_line_inherit_form">
+		  <field name="name">hr.ie.line.inherit.loan</field>
+		  <field name="model">hr.ie.line</field>
+		  <field name="inherit_id" ref="gt_hr_ie.view_ie_line_form"/>
+		  <field name="type">tree</field>
+		  <field name="arch" type="xml">
+		      <field name="head_id" position="after">
+		      	<field name="pago_id" readonly="1"/>
+		      </field>
+		  </field>
+		</record>
+
+		
+    </data>
+</openerp>

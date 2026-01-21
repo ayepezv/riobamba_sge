@@ -1,0 +1,1466 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <menuitem id="base.menu_main_pm" name="Gestión de Proyectos" sequence="10"/>
+    <delete model="ir.model.data" search="[('name','=','menu_project_config_project')]" />
+    <delete model="ir.ui.menu" search="[('name','=','Projects and Stages')]" />
+    <delete model="ir.ui.menu" search="[('name','=','Stages')]"/>
+
+    <menuitem id="menu_development_plan_base" parent="project.menu_definitions" name="Plan Nacional de Desarrollo" sequence="10" groups="gt_project_project.group_project_all_config"/>
+    <menuitem id="menu_project_properties_catalog" parent="project.menu_definitions" name="Propiedades y Tipos" sequence="15" groups="gt_project_project.group_project_all_config"/>
+    <menuitem id="menu_project_kpi_management" parent="project.menu_definitions" name="Configuración Indicadores" sequence="16" groups="gt_project_project.group_project_all_config"/>
+    <menuitem id="menu_project_exec_register" 
+              parent="base.menu_main_pm" sequence="25" name="Ejecución de Proyectos" groups="project.group_project_manager"/>
+    <menuitem id="menu_project_exec_expost" 
+              parent="base.menu_main_pm" sequence="30" name="Ejecución de ExPost" groups="project.group_project_manager"/>
+    <menuitem id="menu_project_query_all" 
+              parent="base.menu_main_pm" sequence="40" name="Consultar Proyectos" groups="gt_project_project.group_project_consult"/>
+
+    <!-- record id="view_hr_department_code_form" model="ir.ui.view">
+      <field name="name">view.hr.deparment.code.form</field>
+      <field name="model">hr.department</field>
+      <field name="inherit_id" ref="hr.view_department_form"/>
+      <field name="arch" type="xml">
+        <field name="name" position="before">
+          <field name="sequence"/>
+        </field>
+      </field>
+    </record -->
+
+    <record id="view_project_configuration_form" model="ir.ui.view">
+      <field name="name">view.project.configuration.form</field>
+      <field name="model">project.configuration</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Configuración de Proyectos">
+          <separator string="Definición de Variables para Proyectos"/>
+          <group string="Variables" colspan="6">
+            <field name="scope" on_change="onchange_vars(scope,time,budget)"/>
+            <field name="time" on_change="onchange_vars(scope,time,budget)"/>
+            <field name="budget" on_change="onchange_vars(scope,time,budget)"/>
+            <field name="fiscalyear_id"/>
+            <field name="active"/>
+          </group>
+          <newline/>
+          <group string="Rangos de Colores para Cumplimiento de Proyectos" colspan="6" col="8">
+            <field name="red_start"/>
+            <field name="red_end" nolabel="1"/>
+            <label string=""/>
+            <label string="" colspan="2"/>
+            <newline/>
+            <field name="yel_start"/>
+            <field name="yel_end" nolabel="1"/>
+            <newline/>
+            <field name="blue_start"/>
+            <field name="blue_end" nolabel="1"/>
+          </group>
+          <group string="Años Fiscales">
+            <field name="fiscalyear_plan_id" widget="selection"/>
+            <field name="fiscalyear_exec_id" widget="selection"/>
+          </group>
+          <button name="update_budget_codes" string="Actualizar codigos de partidas" type="object" icon="gtk-execute"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_configuration_tree" model="ir.ui.view">
+      <field name="name">view.project.configuration.tree</field>
+      <field name="model">project.configuration</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Configuración de Proyectos">
+          <field name="scope" on_change="onchange_vars(scope,time,budget)"/>
+          <field name="time" on_change="onchange_vars(scope,time,budget)"/>
+          <field name="budget" on_change="onchange_vars(scope,time,budget)"/>
+          <field name="fiscalyear_id"/>
+          <field name="active"/>          
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_project_configuration_base2" model="ir.actions.act_window">
+      <field name="name">Variables de Proyectos</field>
+      <field name="res_model">project.configuration</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" eval="False"/>      
+    </record>
+
+
+    <menuitem action="action_project_configuration_base2" id="menu_project_configuration_base2" parent="project.menu_definitions" sequence="60" groups="gt_project_project.group_project_all_config"/>
+
+    <record id="action_view_task2" model="ir.actions.act_window">
+      <field name="name">Registro de Avance de Actividades</field>
+      <field name="res_model">project.task</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar,gantt,graph</field>
+      <field eval="False" name="filter"/>
+      <field name="view_id" eval="False"/>
+      <field name="context">{"search_default_draft": 1, "search_default_open":1, "search_default_project_id": project_id}</field>
+      <field name="search_view_id" ref="project.view_task_search_form"/>
+      <field name="help">A task represents a work that has to be done. Each user works in his own list of tasks where he can record his task work in hours. He can work and close the task itself or delegate it to another user. If you delegate a task to another user, you get a new task in pending state, which will be reopened when you have to review the work achieved. If you install the project_timesheet module, task work can be invoiced based on the project configuration. With the project_mrp module, sales orders can create tasks automatically when they are confirmed.</field>
+    </record>
+
+    <record id="view_project_property_key_form" model="ir.ui.view">
+      <field name="name">view.project.property.key.form</field>
+      <field name="model">project.property.key</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Categoría de Propiedades">
+          <separator string="Categoría de Propiedades para proyectos" colspan="4"/>
+          <field name="name"/>
+        </form>
+      </field>
+    </record>
+    <record id="view_project_property_key_tree" model="ir.ui.view">
+      <field name="name">view.project.property.key.tree</field>
+      <field name="model">project.property.key</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Categorías de Propiedades">
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+    <record id="action_project_property_key" model="ir.actions.act_window">
+      <field name="name">Categoría de Propiedades de Proyectos</field>
+      <field name="res_model">project.property.key</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem action="action_project_property_key" id="menu_project_properties_categ" parent="menu_project_properties_catalog" sequence="5" groups="gt_project_project.group_project_all_config"/>
+
+    <record id="view_project_type_form" model="ir.ui.view">
+      <field name="name">view.project.type.form</field>
+      <field name="model">project.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tipo de Proyectos">
+          <group string="Información de Tipo de Proyectos, este definirá las propiedades por defecto" colspan="4">
+            <field name="name"/>
+            <field name="show_fields"/>
+            <field name="active" invisible="1"/>
+          </group>
+          <notebook>
+            <page string="Propiedades">
+              <field name="properties_ids" widget="one2many_list" colspan="4" nolabel="1">
+                <tree editable="bottom">
+                  <field name="categ_id"/>
+                </tree>
+              </field>
+            </page>
+	    <page string="Partidas">
+	      <field name="budget_ids" nolabel="1" colspan="4"/>
+	    </page>
+            <!--page string="Indicadores">
+              <field name="kpi_ids" widget="many2many" colspan="4" nolabel="1" domain="[('project_type_id','=',False)]"/>
+            </page-->
+          </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_type_tree" model="ir.ui.view">
+      <field name="name">view.project.type.tree</field>
+      <field name="model">project.type</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Tipos de Proyectos">
+          <field name="name"/>
+          <field name="active"/>
+          <field name="properties_ids"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_project_type" model="ir.actions.act_window">
+      <field name="name">Tipos de Proyectos</field>
+      <field name="res_model">project.type</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem action="action_project_type" id="menu_project_type" parent="menu_project_properties_catalog" sequence="6" groups="gt_project_project.group_project_all_config"/>
+
+    <record id="view_project_property_tree" model="ir.ui.view">
+      <field name="name">view.project.property.tree</field>
+      <field name="model">project.property</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Propiedades de Proyecto" editable="bottom">
+          <field name="categ_id" select="1"/>
+          <field name="name" select="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_project_kpi_type_form" model="ir.ui.view">
+      <field name="name">view.project.kpi.type.form</field>
+      <field name="model">project.kpi.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tipo de Indicador">
+	  <group colspan="4">
+            <field name="name"/>
+            <field name="department_id"/>
+	  </group>
+	  <notebook>
+	    <page string="Indicadores">
+              <field name="kpi_ids" nolabel="1" colspan="4" widget="many2many"/>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_kpi_type_tree" model="ir.ui.view">
+      <field name="name">view.project.kpi.type.tree</field>
+      <field name="model">project.kpi.type</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Tipos de Indicador">
+          <field name="name"/>
+          <field name="department_id"/>
+        </tree>
+      </field>
+    </record>
+
+  <record id="action_project_kpi_type" model="ir.actions.act_window">
+    <field name="name">Tipos de Indicadores</field>
+    <field name="res_model">project.kpi.type</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem action="action_project_kpi_type" id="menu_project_kpi_type" parent="menu_project_kpi_management" sequence="12" groups="gt_project_project.group_project_all_config"/>
+
+    <record id="view_project_kpi_form" model="ir.ui.view">
+      <field name="name">view.project.kpi.form</field>
+      <field name="model">project.kpi</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Indicador">
+          <group string="Información del Indicador" colspan="4">
+            <field name="name"/>
+	    <field name="to_report"/>
+          </group>
+          <newline/>
+          <group string="Fórmula" colspan="4">
+            <field name="numerador"/>
+            <newline/>
+            <field name="denominador"/>
+          </group>
+          <group string="Unidad de Medida" colspan="4">
+            <field name="uom_id" colspan="2"/>
+          </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_kpi_tree" model="ir.ui.view">
+      <field name="name">view.project.kpi.tree</field>
+      <field name="model">project.kpi</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Indicadores">
+          <field name="name"/>
+	  <field name="to_report"/>
+          <field name="formula"/>
+          <field name="uom_id"/>
+        </tree>
+      </field>
+    </record>
+
+  <record id="action_project_kpi" model="ir.actions.act_window">
+    <field name="name">Indicadores</field>
+    <field name="res_model">project.kpi</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem action="action_project_kpi" id="menu_project_kpi" parent="menu_project_kpi_management" sequence="11" groups="gt_project_project.group_project_all_config"/>
+
+  <record model="ir.ui.view" id="view_project_kpi_work_tree">
+    <field name="name">project.kpi.work.tree</field>
+    <field name="model">project.kpi.work</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+      <tree string="Avance de Meta">
+        <field name="name"/>
+        <field name="project_id"/>
+        <field name="kpi_id"/>
+        <field name="user_id"/>
+        <field name="exec_done"/>
+      </tree>
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="view_project_kpi_work_graph">
+    <field name="name">project.kpi.work.graph</field>
+    <field name="model">project.kpi.work</field>
+    <field name="type">graph</field>
+    <field name="arch" type="xml">
+      <graph string="Avance de Meta" type="bar">
+        <field name="kpi_id"/>
+        <field name="planned"/>
+        <field name="exec_done" operator="+"/>
+      </graph>
+    </field>
+  </record>
+
+  <record id="view_project_kpi_work_filter" model="ir.ui.view">
+    <field name="name">project.project.kpi.select</field>
+    <field name="model">project.kpi.work</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search string="Search Project">
+        <group>
+          <field name="project_id" string="Proyecto"/>
+        </group>
+        <newline />
+        <group expand="1" string="Agrupar por..." groups="base.group_extended">
+          <filter string="Meta" name="plan_objective" context="{'group_by': 'kpi_id'}"/>          
+          <filter string="Proyecto" name="project" icon="terp-folder-blue" domain = "[]" context="{'group_by':'project_id'}"/>
+          <separator orientation="vertical"/>
+          <filter string="Actividad" name="axis"  help="Eje" icon="terp-folder-blue" domain="[]" context="{'group_by':'task_id'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+  
+  <record id="action_project_kpi_work" model="ir.actions.act_window">
+    <field name="name">Análisis de Metas</field>
+    <field name="res_model">project.kpi.work</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,graph</field>
+    <field name="search_view_id" ref="view_project_kpi_work_filter"/>
+  </record>
+
+  <!--menuitem action="action_project_kpi_work" id="menu_project_kpi_work" parent="project.menu_project_management" sequence="5"/-->  
+  
+  <record id="action_mail_request_ok" model="ir.actions.act_window">
+    <field name="name">Enviar Mail</field>
+    <field name="res_model">mail.compose.message</field>
+    <field name="src_model">project.project</field>
+    <field name="view_type">form</field>
+    <field name="context" eval="{'mail.compose.message.mode':'mass_mail', 'mail.compose.template_id': ref('gt_project_project.template_edi_project')}"/>
+    <field name="view_id" ref="mail.email_compose_message_wizard_form"/>
+    <field name="target">new</field>
+  </record>
+
+        <record id="project.view_task_tree2" model="ir.ui.view">
+            <field name="name">project.task.tree</field>
+            <field name="model">project.task</field>
+            <field name="type">tree</field>
+            <field eval="2" name="priority"/>
+            <field name="arch" type="xml">
+                <tree colors="grey:state in ('cancelled','done');blue:state == 'pending';red:date_end and (date_end&lt;current_date) and (state in ('draft','pending','open'))" string="Tasks">
+                    <field name="sequence" invisible="not context.get('seq_visible', False)"/>
+                    <field name="name"/>
+                    <field name="project_id" icon="gtk-indent" invisible="context.get('user_invisible', False)"/>
+                    <field name="user_id" invisible="context.get('user_invisible', False)"/>
+                    <field name="date_start" invisible="1"/>
+                    <field name="date_end" invisible="1"/>
+                    <field name="progress_time" widget="progressbar" invisible="context.get('set_visible',False)"/>
+                    <field name="state" invisible="context.get('set_visible',False)"/>
+                    <button name="do_open" states="pending,draft,done,cancelled" string="Start Task" type="object" icon="gtk-media-play" help="For changing to open state" invisible="context.get('set_visible',False)"/>
+                    <button name="action_close" states="draft,pending,open" string="Done" type="object" icon="terp-dialog-close" help="For changing to done state"/>
+                </tree>
+            </field>
+        </record>
+
+     <record id="view_wizard_project_task_avance" model="ir.ui.view">
+      <field name="name">view.wizard.project.avance.form</field>
+      <field name="model">wizard.project.task.avance</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Registro de Avance">
+          <group string="Registre el Avance de la actividad al porcentaje alcanzado" colspan="4">
+            <field name="project_id" colspan="4"/>
+            <field name="task_id" colspan="4"/>
+            <field name="last_avance"/>
+            <field name="last_date"/>
+            <newline/>
+            <field name="name" colspan="4"/>
+            <field name="new_avance" on_change="onchange_avance(new_avance, last_avance)"/>
+            <field name="valor" colspan="4" groups='base.group_erp_manager'/>
+            <field name="tipo_budget" colspan="4" groups='base.group_erp_manager'/>
+            <field name="archivo" colspan="4" groups='base.group_erp_manager'/>
+          </group>
+          <button special="cancel" string="Cerrar" icon="gtk-close"/>
+          <button name="action_register_avance" type="object" icon="gtk-execute" string="Registrar"/>
+	  <button string="Migrar Presupuesto" type="object" icon="gtk-execute" colspan="1" name="migrar_budget" 
+		  groups="base.group_erp_manager"/>
+	  <button string="Preparar Nuevo" type="object" icon="gtk-execute" colspan="1" name="budgetNuevo" 
+		  groups="base.group_erp_manager"/>
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_register_avance" model="ir.actions.act_window">
+      <field name="name">Registro de Avance</field>
+      <field name="res_model">wizard.project.task.avance</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+  
+    <record id="project.view_task_form2" model="ir.ui.view">
+      <field name="name">view.project.task.inh.form</field>
+      <field name="model">project.task</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <group string="Información" colspan="4">
+          <field name="code"/>
+          <field name="name" string="Actividad" readonly="1"/>
+          <field name="user_id" readonly="1"/>
+          <field name="project_id" readonly="1"/>
+          <field name="weight" readonly="1"/>
+        </group>
+        <group string="Avances">
+          <field name="progress_time" widget="progressbar"/>
+        </group>
+        <group string="Planificación de Fechas" colspan="4">
+          <field name="date_start" readonly="1"/>
+          <field name="date_end" readonly="1"/>
+        </group>
+        <notebook colspan="4">
+          <page string="Ejecución" attrs="{'invisible': [('state','=','draft')]}">
+            <label string="" colspan="2"/>
+            <button name="%(action_register_avance)d" string="Registrar Avance" icon="gtk-execute" type="action" states="open"/>
+            <field name="executed_ids" nolabel="1" attrs="{'invisible': [('state','=','draft')]}" readonly="1" colspan="4">
+              <tree string="Historial de Avance">
+                <field name="name"/>
+                <field name="executed" on_change="onchange_executed(executed, task_id)"/>
+                <field name="user_id"/>
+                <field name="date_done"/>
+              </tree>
+            </field>
+          </page>
+        </notebook>
+        <group col="11" colspan="4">
+          <field name="state" widget="statusbar" statusbar_visible="draft,open,done" select="1"/>
+          <button name="do_open" states="pending,draft" string="Start Task" type="object" icon="gtk-media-play"/>
+          <button name="%(project.action_project_task_reevaluate)d" states="done,cancelled" string="Reactivate" type="action" icon="gtk-convert" context="{'button_reactivate':True}" />
+          <button name="do_pending" states="open" string="Pending" type="object" icon="gtk-media-pause"/>
+          <button name="action_close" states="pending,open" string="Done" type="object" icon="terp-dialog-close"/>
+        </group>
+      </field>
+    </record>
+
+    <record id="project.view_task_calendar" model="ir.ui.view">
+      <field name="name">project.task.calendar</field>
+      <field name="model">project.task</field>
+      <field name="type">calendar</field>
+      <field eval="2" name="priority"/>
+      <field name="arch" type="xml">
+        <calendar color="user_id" date_start="date_start" string="Tasks">
+          <field name="name"/>
+          <field name="project_id"/>
+        </calendar>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_project_kanban">
+      <field name="name">project.project.kaban</field>
+      <field name="model">project.project</field>
+      <field name="type">kanban</field>
+      <field name="arch" type="xml">
+        <kanban default_group_by="state" >
+          <field name="name"/>
+          <field name="state"/>
+          <field name="date_start"/>
+          <field name="date"/>
+          <field name="description"/>
+          <field name="state"/>
+          <templates>
+            <t t-name="project_details">
+              <ul class="oe_kanban_tooltip">
+                <li><b>Proyecto:</b> <field name="description"/></li>
+              </ul>
+            </t>
+            <t t-name="kanban-box">
+              <div>
+                <div class="oe_kanban_box oe_kanban_color_border">
+                  <table class="oe_kanban_table oe_kanban_box_header oe_kanban_color_bgdark oe_kanban_color_border oe_kanban_draghandle">
+                    <tr>
+                      <td align="left" valign="middle" class="oe_kanban_title" tooltip="project_details">
+                        <field name="description"/>
+                      </td>
+                    </tr>
+                  </table>
+                  <div class="oe_kanban_buttons_set oe_kanban_color_border oe_kanban_color_bglight oe_kanban_box_show_onclick">
+                    <div class="oe_kanban_left">
+                      <a string="Editar" icon="gtk-edit" type="edit"/>
+                      <a string="Cambiar Color" icon="color-picker" type="color" name="color"/>
+                    </div>
+                    <div class="oe_kanban_clear"/>
+                  </div>
+                </div>
+              </div>                          
+            </t>
+          </templates>
+        </kanban>
+      </field>
+    </record>
+
+    <record id="view_wizard_budget_task" model="ir.ui.view">
+      <field name="name">view.wizard.budget.task</field>
+      <field name="model">wizard.project.budget.task</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Presupuesto de Actividad">
+          <group string="Actividad" colspan="4">
+            <field name="task_id" nolabel="1"/> 
+          </group>
+          <group string="Detalle Presupuesto" colspan="4">
+            <field name="department_id"/>
+            <field name="amount_total"/>
+            <field name="fy_id" required="1" on_change="onchange_fy(fy_id)"/>
+            <field name="amount_projects"/>
+            <field name="budget_project"/>
+            <field name="task_amount"/>
+          </group>
+          <notebook colspan="4">
+            <page string="Presupuestación" >
+              <separator string="Para actualizar use el siguiente botón:"/>
+              <button name="action_update_wizard" string="Calcular" icon="gtk-execute" type="object"/>
+              <newline/>
+              <field name="budget_planned_ids" nolabel="1" widget="one2many_list" colspan="4">
+                <tree editable="bottom" string="Presupuestación de Actividad">
+                  <field name="budget_post_id" domain="[('internal_type','!=','view')]"/>
+                  <field name="name"/>
+                  <field name="planned_amount" sum="TOTAL"/>
+                </tree>
+              </field>
+            </page>
+            <page string="Planificación de Gasto">
+              <field name="expense_planned_ids" nolabel="1" widget="one2many_list" >
+                <tree string="Planificación de Gasto" editable="bottom">
+                  <field name="period_id" readonly="1" domain="[('fiscalyear_id','=',parent.fy_id),('special','=',False)]"/>
+                  <field name="amount" sum="TOTAL"/>
+                </tree>
+              </field>              
+            </page>
+          </notebook>
+          <button special="cancel" string="Cerrar" icon="gtk-close"/>
+          <button name="action_save_budget" type="object" string="Presupuestar" icon="terp-stock_format-scientific"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_view_wizard_budget_task" model="ir.actions.act_window">
+      <field name="name">Presupuestar por Actividad</field>
+      <field name="res_model">wizard.project.budget.task</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <record id="action_add_exec_kpi" model="ir.actions.act_window">
+      <field name="name">Registrar Avance</field>
+      <field name="res_model">wizard.project.execute.kpi</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <record id="action_add_condition" model="ir.actions.act_window">
+      <field name="name">Registrar Condición</field>
+      <field name="res_model">wizard.project.condition</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>            
+
+    <record id="project.edit_project" model="ir.ui.view">
+    <field name="name">view.project.edit.form</field>
+    <field name="model">project.project</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Definición de Proyecto">
+        <group colspan="6" col="6">
+          <field name="analytic_account_id" invisible="1" required="0"/>
+          <field name="state" widget="statusbar" statusbar_colors='{"open":"blue","exec":"green"}' statusbar_visible="open,exec,expost,done" select="1" readonly="1"/>
+          <field name="activity_progress" widget="progressbar"/>
+          <field name="compliance" widget="progressbar"/>
+          <!-- button name="%(action_mail_request_ok)d" icon="gtk-execute" string="Solicitar Aprobación" type="action"/ -->
+        </group>
+        <group string="Proyecto" colspan="6">
+          <field name="code" attrs="{'readonly':[('state','!=','open')]}" required="1"/>
+		  <field name="poa_id" attrs="{'readonly':[('state','!=','open')]}" required="1"/>
+          <newline/>
+          <field name="name" string="Descripcion" attrs="{'readonly': [('state','not in',['open'])]}" colspan="4"/>
+		  <newline/>
+          <field name="date_start" on_change="onchange_dates(date_start,date,fy_id,department_id)"/>
+          <field name="date" string="Fecha Fin"/>
+          <field name="department_id" on_change="onchange_department(department_id, fy_id)" 
+				 colspan="4" string="Componente Operativo"/>
+          <!--field name="user_id" string="Responsable" domain="[('context_department_id','child_of',department_id)]" 
+				 colspan="4" attrs="{'readonly': [('state','not in',['open','replaning'])]}"/-->
+	  <field name="user_id" string="Responsable" 
+		 colspan="4" attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+        </group>
+        <notebook colspan="6">
+          <page string="Información General">
+            <group colspan="6">
+              <field name="axis_id" widget="selection" attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+              <!--field name="estrategy_id" attrs="{'readonly': [('state','not in',['open','replaning'])]}"/-->
+              <field name="program_id" 
+		     attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+              <field name="type_id" on_change="onchange_type(type_id)" widget="selection" 
+					 attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+	      <button string="CrearCERTIngreso" type="object" icon="gtk-execute" colspan="1" name="create_certingreso"
+		      groups="base.group_erp_manager"/>
+              <field name="show_fields" invisible="1"/>
+              <field name="type_budget" required="1" groups="gt_project_project.group_project_all_config"/>
+              <!-- field name="has_project_related"/ -->
+              <!-- field name="parent_id" domain="[('state','=','done_poa')]" string="Proyecto Vinculado"
+                     attrs="{'invisible':[('has_project_related','=',False)], 'required':[('has_project_related','=',True)]}"/ -->
+              <field name="fy_id" invisible="1"/>
+              <field name="canton_id" attrs="{'readonly': [('state','not in',['open'])]}" on_change="onchange_canton(canton_id)"/>
+              <field name="parish_id" domain="[('canton_id','=',canton_id)]" attrs="{'readonly': [('state','not in',['open'])]}"/>
+            </group>
+            <group colspan="4" col="12">
+              <separator string="Antecedentes" colspan="2"/>
+			  <separator string="Justificación" colspan="2"/>
+			  <newline/>
+              <field name="background" nolabel="1" colspan="2" attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+			  <field name="justification" nolabel="1" colspan="2" attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+			  <newline/>
+              <separator string="Objetivo General" colspan="2"/>
+			  <separator string="Objetivos Específicos" colspan="2"/>
+			  <newline/>
+              <field name="general_objective" nolabel="1" colspan="2" 
+					 attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+              <field name="specific_objectives" nolabel="1" colspan="2" 
+					 attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+            </group>
+          </page>
+          <page string="Información de Obras" attrs="{'invisible': [('show_fields','=',False)]}">
+            <group colspan="4" col="4">
+              <field name="build_program_id" widget="selection" on_change="onchange_programa_obra(build_program_id)" 
+					 attrs="{'required': [('show_fields','=',True)]}"/>
+              <field name="build_type_id" domain="[('program_id','=',build_program_id)]"
+					 attrs="{'required': [('show_fields','=',True)]}"/>
+              <field name="build_indole_id" widget="selection" attrs="{'required': [('show_fields','=',True)]}"/>
+              <field name="build_mode_id" widget="selection" attrs="{'required': [('show_fields','=',True)]}"/>
+            </group>
+            <group string="Información de Obra" colspan="4" col="4">
+              <field name="amount_long_obra" attrs="{'required':[('show_fields','=',True)]}"/>
+              <field name="uom_id" attrs="{'required':[('show_fields','=',True)]}"/>
+              <field name="ancho_obra"/>
+              <field name="avance_periodo_anterior" attrs="{'required': [('show_fields','=',True)]}"/>
+              <field name="avance_percent_anterior" attrs="{'required': [('show_fields','=',True)]}"/>
+              <field name="inversion_periodo_anterior" attrs="{'required': [('show_fields','=',True)]}"/>
+            </group>
+          </page>
+          <page string="Formulación">
+            <notebook>
+              <page string="Información">
+                <group string="Observaciones" colspan="6" >
+                  <field name="description" colspan="6" nolabel="1" 
+						 attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+                </group>
+				<group string="Plan Nacional del Buen Vivir" colspan="2" >
+                  <separator string="Relación con el Plan Nacional de Desarrollo" colspan="4"/>
+                  <field name="plan_objective_id" domain="[('type','=','objetivo')]" colspan="4" 
+						 attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+                  <separator string="Políticas" colspan="4"/>
+                  <field name="plan_politics_ids" mode="tree" nolabel="1" domain="[('type','=','politica')]" 
+						 colspan="4" attrs="{'readonly': [('state','not in',['open','replaning'])]}">
+					<tree string="Políticas del Plan Nacional de Desarrollo">
+                      <field name="sequence"/>
+                      <field name="name"/>
+					</tree>
+                  </field>
+				</group>
+				<group string="Condiciones de Cierre" colspan="2">
+                  <field name="close_condition_ids" mode="tree" nolabel="1" colspan="4" 
+						 attrs="{'readonly': [('state','not in',['open','replaning'])]}">
+					<tree string="Detalle de Condiciones de Cierre" editable="bottom">
+                      <field name="name"/>
+                      <field name="state" invisible="1"/>
+                      <field name="done"/>
+					</tree>
+                  </field>
+              </group>
+			  </page>
+            </notebook>
+          </page>
+          <page string="Actividades">
+            <notebook>
+              <page string="Presupuesto">
+                <field name="roof_limit_id" invisible="0" readonly="1"/>
+                <group colspan="4" col="8" string="Valores de Presupuestos de Dirección Coordinación">
+                  <group colspan="2" col="2">
+                    <field name="amount_total"/>
+                    <field name="amount_projects"/>
+                    <field name="amount_budget"/>
+                    <field name="amount_available" context="{'budget_avai': amount_available}"/>
+                  </group>
+                  <button string="Calcular" type="object" icon="gtk-execute" colspan="1" name="compute_dummy"/>
+                </group>
+                <field name="tasks" nolabel="1" colspan="6" 
+		       attrs="{'readonly': [('state','not in',['open','replaning'])]}" 
+		       context="{'budget_avai': amount_available, 'project_type': type_id, 'default_fy_id': fy_id}">
+                  <tree string="Planificación de Actividades">
+                    <field name="project_id" invisible="1"/>
+                    <field name="sequence" invisible="1"/>
+                    <field name="name" string="Actividad"/>
+                    <field name="user_id" invisible="1"/>
+                    <field name="date_start" required="1"/>
+                    <field name="date_end" required="1"/>
+                    <field name="weight" sum="Total Pesos" />
+                    <field name="own_type" required="1" invisible="1"/>
+                    <field name="planned_amount" sum="TOTAL PRESUPUESTADO"/>
+                    <field name="state" invisible="1"/>
+                    <field name="progress_time" widget="progressbar"/>
+                    <field name="progress_money2" widget="progressbar"/>
+                    <button name="%(action_register_avance)d" icon="gtk-execute" type="action" states="open,draft" 
+                            help="Registrar Avance" groups="gt_project_project.group_project_executing,base.group_erp_manager"/>
+                  </tree>
+                  <form string="Actividad Planificada">
+                    <group string="Información" colspan="6">
+                      <field name="fy_id" invisible="1"/>
+                      <field name="sequence" invisible="1"/>
+                      <field name="user_id" invisible="1"/>                      
+                      <field name="name" string="Actividad"/>
+                      <field name="weight"/>
+                      <field name="own_type" invisible="1"/>
+                      <field name="date_start" required="1"/>
+                      <field name="date_end" required="1"/>
+                      <field name="department_id" readonly="1" context="{'default_department_id': parent.department_id}" invisible="1"/>
+                      <field name="planned_amount" string="Presupuesto de Actividad"/>
+		      <field name="datas" groups="base.group_erp_manager"/>
+		      <button name="loadPresupuesto" icon="gtk-execute" string="Migra Budget"
+			      confirm="Está seguro ?" type="object"/>
+                      <field name="fy_id" string="Año Fiscal" required="1"
+                             invisible="1" on_change="onchange_fy(fy_id)"/>
+                      <!--field name="budget_avai" context="{'budget_avai': amount_available}"/-->
+                    </group>
+                    <field name="state" invisible="1"/>
+                    <notebook colspan="6">
+                      <!--page string="Presupuestación">
+                        <field name="budget_planned_ids" widget="one2many_list" nolabel="1" colspan="6"/>
+                      </page-->
+                      <page string="Presupuestación">
+                        <field name="budget_planned_ids" nolabel="1" colspan="6">
+			  <tree editable="top">
+			    <field name="task_id" invisible="1"/>
+			    <field name="budget_post_id" domain="[('internal_type','!=','view'),('activo','=',True)]"/>
+			    <field name="name" invisible="1"/>
+			    <!--field name="financia_id"/-->
+			    <field name="planned_amount" sum="TOTAL"/>
+			    <!--field name="commited_amount" sum="TOTAL COMPROMETIDO" invisible="1"/>
+			    <field name="avai_amount" sum="TOTAL DISPONIBLE" invisible="1"/-->
+			  </tree>
+			</field>
+                      </page>
+                      <page string="Planificación de Gasto">
+                        <separator string="En esta planificación debe considerar los montos mensuales que van a desembolsarse,"
+								   colspan="4"/>
+                        <separator string="la suma debe ser igual al presupuesto de la partida" colspan="4"/>
+                        <field name="expense_planned_ids" nolabel="1" widget="one2many_list" 
+							   context="{'fiscalyear': parent.fy_id}" mode="tree">
+                          <tree string="Planificación de Gasto" editable="bottom">
+                            <field name="period_id" readonly="1" 
+								   domain="[('fiscalyear_id','=',parent.fy_id),('special','=',False)]"/>
+                            <field name="amount" sum="TOTAL" 
+								   on_change="onchange_plan_amount(parent.date_start,parent.date_end,period_id,amount)"/>
+                          </tree>
+                        </field>
+                      </page>                                    
+                      <page string="Ejecución" attrs="{'invisible': [('state','=','draft')]}">
+                        <field name="executed_ids" nolabel="1"  readonly="1" colspan="4">
+                          <tree string="Historial de Avance">
+                            <field name="name"/>
+                            <field name="executed" on_change="onchange_executed(executed, task_id)"/>
+                            <field name="user_id"/>
+                            <field name="date_done"/>
+                          </tree>
+                        </field>
+                      </page>
+                    </notebook>
+                  </form>
+                </field>
+              </page>
+              <page string="Presupuestos Refenciales" attrs="{'invisible': ['!',('state','in',['exec'])]}">
+                <field name="certificate_ids" widget="one2many_list" domain="[('state','=','commited')]" mode="tree,form" nolabel="1" readonly="1">
+                  <tree string="Presupuestos Referenciales">
+                    <field name="name_aux"/>
+		    <field name="budget_post"/>
+                    <field name="amount_commited" sum="TOTAL COMPROMETIDO"/>
+                    <field name="budget_accrued" sum="TOTAL DEVENGADO"/>
+                    <field name="budget_paid" sum="TOTAL PAGADO"/>
+                  </tree>
+                  <form string="Presupuestos Referenciales">
+                    <field name="name_aux"/>
+                    <field name="amount_commited"/>
+                  </form>
+                </field>
+              </page>
+            </notebook>
+          </page>
+          <page string="Indicadores">
+            <notebook colspan="4">
+              <page string="Ambito">
+                <field name="type_kpi_id" 
+                       on_change="onchange_type_kpi(type_kpi_id,fy_id)" 
+                       attrs="{'readonly': [('state','not in',['open','replaning'])]}"/>
+                <field name="pointer_detail_ids" nolabel="1" colspan="4" widget="one2many_list"
+					   domain="[('type_id','=',type_kpi_id)]"
+                       context="{'default_type_kpi_id': type_kpi_id, 'fy_id': fy_id, 'default_fy_id': fy_id}"
+                       attrs="{'readonly': [('state','not in',['open','replaning'])]}">
+                  <tree string="Indicadores">
+                    <field name="sequence" invisible="1"/>
+                    <field name="type_kpi_id" invisible="1"/>
+                    <field name="kpi_id"/>
+                    <field name="type_internal"/>
+                    <field name="weight" sum="TOTAL"/>
+                    <field name="planned"/>
+                    <field name="progress" widget="progressbar"/>
+                    <button name="%(action_add_exec_kpi)d" icon="gtk-execute" type="action"
+							groups="gt_project_project.group_project_executing"/>
+                  </tree>
+                  <form string="Detalle de Indicador">
+                    <group string="Indicador" colspan="6" col="4">
+                      <field name="kpi_id" on_change="onchange_kpi(kpi_id)"/>
+                      <field name="uom_id" readonly="1"/>
+                      <field name="planned" on_change="onchange_request(planned)"/>
+                      <field name="weight"/>
+                      <field name="type_internal"/>
+                      <field name="detail"/>
+                      <field name="fy_id" invisible="1" domain="[('id','=',parent.fy_id)]" required="True"
+                             on_change="onchange_fy(fy_id)"/>
+                    </group>
+                    <notebook>
+                      <page string="Planificación">
+                        <field name="plan_ids" nolabel="1" widget="one2many_list" context="{'fy_id': parent.fy_id}">
+                          <tree string="Planificación de Avance" editable="bottom">
+                            <field name="period_id" readonly="1" 
+								   domain="[('fiscalyear_id','=',parent.fy_id),('special','=',False)]"/>
+                            <field name="planned" sum="TOTAL PLANIFICADO"/>
+                          </tree>
+                        </field>
+                      </page>
+                      <page string="Ejecución">
+                        <field name="work_ids" widget="one2many_list" readonly="1" mode="tree" colspan="4" nolabel="1">
+                          <tree string="Avance de Indicador">
+                            <field name="name"/>
+                            <field name="exec_done"/>
+                            <field name="user_id"/>
+                            <field name="date"/>
+                          </tree>
+                        </field>
+                      </page>
+                    </notebook>
+                  </form>
+                </field>
+              </page>
+              <!-- page string="ExPost">
+                <field name="pointer_expost_ids" nolabel="1" colspan="4">
+                  <tree string="Indicadores ExPost">
+                    <field name="kpi_id"/>
+                    <field name="uom_id"/>
+                  </tree>
+                  <form string="Indicador ExPost">
+                    <field name="kpi_id" on_change="onchange_kpi(kpi_id)"/>
+                    <field name="uom_id"/>
+                    <field name="plan_ids" nolabel="1" widget="one2many_list" colspan="4">
+                      <tree string="Planificación" editable="bottom">
+                        <field name="date_limit"/>
+                        <field name="planned"/>
+                      </tree>
+                    </field>
+                  </form>
+                </field>
+              </page -->
+            </notebook>
+          </page>
+          <page string="Usuarios del Proyecto">
+            <field name="members" nolabel="1"/>
+          </page>
+          <!-- page string="Historial de Estados">
+            <field name="record_ids" widget="one2many_list" mode="tree" nolabel="1" readonly="1">
+              <tree string="Historial">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="hora"/>                
+              </tree>
+            </field>
+          </page -->
+        </notebook>
+        <group colspan="8" col="8">
+          <button name="signal_planning" string="Planificación Terminada" states="open" icon="gtk-convert"
+				  context="{'new_state': 'plan_done'}" confirm="Está seguro ?"/>
+          <button name="signal_planning" string="Aprobar" states="plan_done" context="{'new_state': 'plan_ok'}" 
+				  confirm="Está seguro ?"/>
+          <button name="signal_execution" icon="gtk-go-forward" string="Iniciar Ejecucion" states="plan_ok"
+				  context="{'new_state': 'exec'}" confirm="Está seguro ?"/>
+          <button name="signal_execution" icon="gtk-go-forward" string="Terminado" states="exec"
+				  context="{'new_state': 'exec_done'}" confirm="Está seguro ?"/>
+          <button name="set_replanning" icon="gtk-execute" string="Replanificar" states="exec" 
+				  confirm="Está seguro ?" type="object"/>
+          <button name="set_close" icon="gtk-execute" string="Finalizar" states="exec" 
+				  confirm="Está seguro ?" type="object"/>
+          <button name="set_re_execution" icon="gtk-execute" string="Ejecutar" states="replaning"
+				  confirm="Está seguro ?" type="object"/>
+          <button name="signal_goback" icon="gtk-go-back" string="Regresar" 
+				  states="plan_done,plan_ok,exec_done,exec_ok,done_wo_end,expost,expost_done,expost_ok,done_poa"
+				  confirm="Está seguro ?"/>
+          <button name="set_reopen" string="Re-open project" states="pending" type="object" icon="gtk-ok" 
+				  confirm="Está seguro ?"/>
+          <button name="set_pending" string="Suspender" type="object" states="exec" icon="gtk-media-pause"
+				  confirm="Está seguro ?"/>
+          <!--button name="crear_financiamiento" string="Genera Financiamiento" type="object" states="exec" icon="gtk-execute"
+				  confirm="Está seguro ?"/-->
+        </group>
+      </form>
+    </field>
+    </record>
+
+    <record id="project.view_project" model="ir.ui.view">
+      <field name="name">project.project.tree</field>
+      <field name="model">project.project</field>
+      <field name="type">tree</field>
+      <field name="field_parent">child_ids</field>
+      <field name="arch" type="xml">
+        <tree string="Projects">
+          <field name="sequence" invisible="1"/>
+          <field name="code"/>
+          <field name="date" invisible="1"/>
+	  <field name="program_id" string="Programa"/>
+          <field name="name" string="Proyecto"/>
+          <field name="department_id" invisible="0"/>
+	  <field name="poa_id"/>
+          <field name="activity_progress" widget="progressbar"/>
+          <field name="compliance" widget="progressbar"/>
+          <field name="amount_budget" sum="TOTAL PRESUPUESTADO"/>
+          <field name="state"/>
+          <field name="canton_id" invisible="1"/>
+          <field name="type_id" invisible="1"/>
+        </tree>
+      </field>
+    </record>
+
+  <record id="project.view_project_project_filter" model="ir.ui.view">
+    <field name="name">project.project.select</field>
+    <field name="model">project.project</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search string="Search Project">
+        <group>
+          <separator orientation="vertical"/>
+          <!--field name="fy_id" groups="gt_project_project.group_project_consult"/-->
+	  <field name="program_id" string="Programa"/>
+	  <field name="name" string="Proyecto"/>
+	  <field name="department_id"/>
+	  <field name="code"/>
+          <field name="type_id"/>
+          <!--field name="axis_id" string="Componente"/>
+          <field name="estrategy_id" string="Política pública"/-->
+          <field name="poa_id" string="Presupuesto Anio">
+            <filter domain="[('user_id','=',uid)]" help="Projects in which I am a manager" icon="terp-personal"/>
+          </field>
+          <newline/>
+          <field name="state" string="Estado de Proyecto"/>          
+        </group>
+        <newline />
+        <group expand="1" string="Group By...">
+          <filter string="Presupuesto Anio" icon="terp-personal" domain="[]" context="{'group_by':'poa_id'}"/>
+          <separator orientation="vertical"/>
+          <!--filter string="Componente" help="Eje" icon="terp-folder-blue" domain="[]" context="{'group_by':'axis_id'}"/>
+          <filter string="Política pública" domain="[]" icon="terp-folder-blue" context="{'group_by': 'estrategy_id'}"/-->
+          <filter string="Programa" help="Programa" icon="terp-folder-blue" domain="[]" context="{'group_by':'program_id'}"/>
+          <filter string="Estado" domain="[]" context="{'group_by':'state'}" icon="terp-folder-blue"/>
+          <filter string="Cantón" help="Cantón de Ejecución de Proyecto" icon="terp-folder-blue" domain="[]" 
+				  context="{'group_by':'canton_id'}"/>
+          <filter string="Tipo" help="Tipo de Proyecto" icon="terp-folder-blue" domain="[]" context="{'group_by':'type_id'}"/>
+          <filter string="COMPONENTE OPERATIVO" name="department_id"  
+                  help="Componente Operativo encargada del proyecto" icon="terp-folder-blue" domain="[]" 
+				  context="{'group_by':'department_id'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+
+  <record id="project.open_view_project_all" model="ir.actions.act_window">
+    <field name="name">Proyectos</field>
+    <field name="res_model">project.project</field>
+    <field name="view_type">form</field>
+    <field name="domain">[]</field>
+    <field name="view_mode">tree,form,gantt</field>
+    <field name="view_id" ref="project.view_project"/>
+    <field name="search_view_id" ref="project.view_project_project_filter"/>
+    <field name="context">{'search_default_member': 1, 'planning': True}</field>
+    <field name="help">A project contains a set of tasks or issues that will be performed by your resources assigned to it. A project can be hierarchically structured, as a child of a Parent Project. This allows you to design large project structures with different phases spread over the project duration cycle. Each user can set his default project in his own preferences to automatically filter the tasks or issues he usually works on. If you choose to invoice the time spent on a project task, you can find project tasks to be invoiced in the billing section.</field>
+  </record>
+
+  <menuitem action="project.open_view_project_all" id="project.menu_open_view_project_all" 
+			parent="project.menu_project_management" sequence="1"/>
+
+  <record id="exec_view_project_all" model="ir.actions.act_window">
+    <field name="name">Proyectos</field>
+    <field name="res_model">project.project</field>
+    <field name="view_type">form</field>
+    <field name="domain">[]</field>
+    <field name="view_mode">tree,form,gantt</field>
+    <field name="view_id" ref="project.view_project"/>
+    <field name="search_view_id" ref="project.view_project_project_filter"/>
+    <field name="context">{'search_default_member': 1, 'execute': True}</field>
+  </record>
+  <menuitem action="exec_view_project_all" id="menu_open_view_project_all_exec" parent="menu_project_exec_register" sequence="1"/>
+
+  <record id="exec_view_project_query" model="ir.actions.act_window">
+    <field name="name">Todos los Proyectos</field>
+    <field name="res_model">project.project</field>
+    <field name="view_type">form</field>
+    <field name="domain">[]</field>
+    <field name="view_mode">tree,form</field>
+    <field name="view_id" ref="project.view_project"/>
+    <field name="search_view_id" ref="project.view_project_project_filter"/>
+    <field name="context">{'search_default_member': 1}</field>
+  </record>
+  <menuitem action="exec_view_project_query" id="menu_open_view_project_all_query" parent="menu_project_query_all" sequence="1"/>  
+  
+
+
+    <record id="view_hr_department_tree_organico" model="ir.ui.view">
+      <field name="name">view.hr.department.tree.all</field>
+      <field name="model">hr.department</field>
+      <field name="type">tree</field>
+      <field name="field_parent">child_ids</field>
+      <field name="arch" type="xml">
+	    <tree toolbar="1">
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_hr_department_tree" model="ir.actions.act_window">
+      <field name="name">Estructura Orgánica Funcional</field>
+      <field name="res_model">hr.department</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="domain">[('parent_id','=',False)]</field>
+      <field name="view_type">tree</field>
+      <field name="view_id" ref="view_hr_department_tree_organico"/>
+    </record>
+
+    <menuitem action="action_hr_department_tree" id="menu_hr_department_tree_all" parent="project.menu_definitions" 
+			  sequence="5" groups="gt_project_project.group_project_all_config"/>
+
+    <record id="view_project_axis_form" model="ir.ui.view">
+    <field name="name">view.project.axis.form</field>
+    <field name="model">project.axis</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+	  <form string="Componente">
+        <separator string="Información Básica" colspan="4"/>
+        <field name="name"/>
+        <group string="Objetivo" colspan="4">
+          <field name="legal_base" nolabel="1"/>
+        </group>
+      </form>
+    </field>
+    </record>
+    <record id="view_project_axis_tree" model="ir.ui.view">
+    <field name="name">view.project.axis.tree</field>
+    <field name="model">project.axis</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+	  <tree string="Componentes">
+        <field name="name"/>
+        <field name="legal_base"/>
+      </tree>
+    </field>
+    </record>
+
+    <record id="action_project_axis" model="ir.actions.act_window">
+      <field name="name">Definición de Componentes</field>
+      <field name="res_model">project.axis</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_project_axis_filter" model="ir.ui.view">
+      <field name="name">project.project.select</field>
+      <field name="model">project.axis</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Componentes">
+          <group>
+            <field name="name" string="Componente"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <menuitem action="action_project_axis" id="menu_project_project_axis" parent="menu_development_plan_base" sequence="5"/>
+
+
+    <record id="view_project_estrategy_form" model="ir.ui.view">
+    <field name="name">view.project.estrategy.form</field>
+    <field name="model">project.estrategy</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Politicas publicas">
+        <field name="sequence" required="1"/>
+        <field name="name" required="1"/>
+        <field name="politica_id" required="1"/>
+        <field name="tipo" required="1"/>
+      </form>
+    </field>
+    </record>
+
+    <record id="view_project_estrategy_tree" model="ir.ui.view">
+      <field name="name">view.project.estrategy.tree</field>
+      <field name="model">project.estrategy</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Politica publica">
+          <field name="sequence"/>
+          <field name="name"/>
+	  <field name="axis_id"/>
+	</tree>
+      </field>
+    </record>
+
+    <record id="action_project_estrategy" model="ir.actions.act_window">
+      <field name="name">Definicion de Politicas publicas</field>
+      <field name="res_model">project.estrategy</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_estrategy" id="menu_project_estrategy_id" parent="menu_development_plan_base" sequence="10"/>
+
+    <!-- orientacion del gasto -->
+
+    <record id="view_tipo_politica_form" model="ir.ui.view">
+    <field name="name">view.tipo.politica.form</field>
+    <field name="model">tipo.politica</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Tipo Politica">
+        <field name="name" required="1"/>
+      </form>
+    </field>
+    </record>
+
+    <record id="view_tipo_politica_tree" model="ir.ui.view">
+      <field name="name">view.tipo.politica.tree</field>
+      <field name="model">tipo.politica</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Tipo Política pública">
+          <field name="name" select="1"/>
+	</tree>
+      </field>
+    </record>
+
+    <record id="action_tipo_politica" model="ir.actions.act_window">
+      <field name="name">Tipo Politicas</field>
+      <field name="res_model">tipo.politica</field>
+      <field name="view_type">form</field>
+      <field name="domain">[]</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_tipo_politica" id="menu_tipo_politica_id" parent="gt_budget.menu_budget_configuration" sequence="12"/>
+
+    <record id="view_budget_estrategy_form" model="ir.ui.view">
+    <field name="name">view.budget.estrategy.form</field>
+    <field name="model">budget.estrategy</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Gasto">
+	<field name="poa_id" required="1"/>
+	<field name="program_id" required="1" />
+        <field name="budget_id" required="1" domain="[('poa_id','=',poa_id),('program_id','=',program_id)]"/>
+	<field name="tipo" required="1"/>
+	<field name="estrategy_id" required="1" domain="[('tipo','=','regular'),('politica_id','=',tipo)]"/>
+      </form>
+    </field>
+    </record>
+
+    <record id="view_project_estrategy_tree" model="ir.ui.view">
+      <field name="name">view.budget.estrategy.tree</field>
+      <field name="model">budget.estrategy</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Política pública">
+          <field name="poa_id" select="1"/>
+          <field name="program_id" select="1"/>
+          <field name="budget_id" select="1"/>
+          <field name="tipo" select="1"/>
+	  <field name="estrategy_id" select="1"/>
+	</tree>
+      </field>
+    </record>
+
+    <record id="action_budget_estrategy" model="ir.actions.act_window">
+      <field name="name">Orientacion Presupuesto Gasto</field>
+      <field name="res_model">budget.estrategy</field>
+      <field name="view_type">form</field>
+      <field name="domain">[]</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_budget_estrategy" id="menu_budget_estrategy_id" parent="gt_budget.menu_budget_configuration" sequence="11"/>
+
+    <record id="view_budget_politica_anual_form" model="ir.ui.view">
+    <field name="name">view.budget.politica.anual.form</field>
+    <field name="model">budget.politica.anual</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Politicas Anual">
+	<group colspan="4" col="4">
+	  <field name="poa_id" required="1" colspan="2"/>
+	  <field name="program_id" required="1" colspan="2"/>
+	</group>
+	<group colspan="4" col="6">
+          <!--field name="project_id" domain="[('poa_id','=',poa_id),('program_id','=',program_id)]" colspan="4"/-->
+	  <button name="loadPoliticaAnual" string="Cargar Partidas" type="object" icon="gtk-execute" colspan="1"/>	
+	  <button name="loadPoliticaAnualConfirma" string="Confirmar Partidas" type="object" icon="gtk-execute" colspan="1"/>	
+	</group>
+	<notebook colspan="4">
+	  <page string="Detalle">
+	    <field name="line_ids" nolabel="1">
+	      <tree editable='bottom'>
+		<field name="budget_id" domain="[('poa_id','=',poa_id),('program_id','=',program_id)]"/>
+		<field name="tipo" required="1"/>
+		<field name="estrategy_id" required="1" domain="[('tipo','=','regular'),('politica_id','=',tipo)]"/>
+	      </tree>
+	    </field>
+	  </page>
+	</notebook>
+      </form>
+    </field>
+    </record>
+
+    <record id="view_politica_anual_tree" model="ir.ui.view">
+      <field name="name">view.budget.politica.anual.tree</field>
+      <field name="model">budget.politica.anual</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Política pública Anual">
+          <field name="poa_id" select="1"/>
+          <field name="program_id" select="1"/>
+	</tree>
+      </field>
+    </record>
+
+    <record id="action_budget_politica_anual" model="ir.actions.act_window">
+      <field name="name">Orientacion Presupuesto Gasto Anual</field>
+      <field name="res_model">budget.politica.anual</field>
+      <field name="view_type">form</field>
+      <field name="domain">[]</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_budget_politica_anual" id="menu_budget_estrategy_anual_id" parent="gt_budget.menu_budget_configuration" sequence="12"/>
+
+    <!-- Politcas -->
+     <record id="action_budget_politica" model="ir.actions.act_window">
+       <field name="name">Politicas Orientacion Gasto</field>
+       <field name="res_model">project.estrategy</field>
+       <field name="view_type">form</field>
+       <field name="view_mode">tree,form</field>
+     </record>
+
+     <menuitem id="menu_budget_politica" action="action_budget_politica" parent="gt_budget.menu_budget_configuration"/>
+
+ <!-- -->
+
+    <record id="view_project_program_form" model="ir.ui.view">
+    <field name="name">view.project.program.form</field>
+    <field name="model">project.program</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Definición de Programas">
+      <group colspan="4" col="8">
+        <separator string="Información" colspan="8"/>
+        <field name="sequence" colspan="2"/>
+        <field name="name" colspan="4"/>
+        <field name="active" colspan="2"/>
+        <separator string="Información de Unidad" colspan="8"/>
+        <field name="estrategy_id" on_change="onchange_estrategy(estrategy_id)" colspan="4"/>
+        <field name="axis_id" widget="selection" colspan="4"/>
+        <group string="Descripción" colspan="8">
+          <field name="description" nolabel="1" colspan="8"/>
+        </group>
+      </group>
+      </form>
+    </field>
+    </record>
+
+    <record id="view_project_program_tree" model="ir.ui.view">
+    <field name="name">view.project.program.tree</field>
+    <field name="model">project.program</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+	  <tree string="Lista Programas">
+        <field name="sequence"/>
+        <field name="name"/>
+        <field name="axis_id"/>
+        <field name="estrategy_id"/>
+      </tree>
+    </field>
+    </record>
+
+    <record id="view_project_program_filter" model="ir.ui.view">
+      <field name="name">project.program.select</field>
+      <field name="model">project.program</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Programas">
+          <group>
+            <field name="name" string="Programa"/>
+            <field name="axis_id" string="Componente"/>
+            <field name="estrategy_id" string="Política pública"/>
+          </group>
+          <newline/>
+          <group expand="1" string="Agrupar por...">
+            <filter string="Componente" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'axis_id'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_project_program" model="ir.actions.act_window">
+      <field name="name">Definición de Programas</field>
+      <field name="res_model">project.program</field>
+      <field name="view_type">form</field>
+      <field name="domain">[]</field>
+      <field name="search_view_id" ref="view_project_program_filter"/>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_program" id="menu_project_program" parent="menu_development_plan_base" sequence="20"/>
+
+    <record id="view_project_development_plan_form" model="ir.ui.view">
+      <field name="name">view.project.development.plan.form</field>
+      <field name="model">project.development.plan</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Plan Nacional de Desarrollo">
+          <field name="sequence"/>
+          <field name="type"/>
+          <field name="name" colspan="4"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_development_plan_tree" model="ir.ui.view">
+      <field name="name">view.project.development.plan.tree</field>
+      <field name="model">project.development.plan</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Objetivos y Políticas del Plan Nacional de Desarrollo">
+          <field name="sequence"/>
+          <field name="name"/>
+          <field name="type"/>
+        </tree>
+      </field>
+    </record>
+
+  <record id="view_project_development_plan_filter" model="ir.ui.view">
+    <field name="name">view.project.development.plan.filter</field>
+    <field name="model">project.development.plan</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search string="Buscar Objetivos y Políticas - Plan Nacional de Desarrollo">
+        <filter name="objetivo" string="Objetivos"
+                icon="terp-gnome-cpu-frequency-applet+" domain="[('type','=','objetivo')]"/>
+        <filter name="politica" string="Políticas"
+                icon="terp-gnome-cpu-frequency-applet+" domain="[('type','=','politica')]"/>        
+        <group>
+          <field name="sequence"/>
+          <field name="name"/>
+          <field name="type"/>
+        </group>
+        <newline/>
+        <group expand="1" string="Agrupar por...">
+          <filter string="Tipo" icon="terp-project" domain="" context="{'group_by': 'type'}"/>
+          <separator orientation="vertical"/>
+          <filter string="Numeral" name="sequence" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'sequence'}"/>
+        </group>
+      </search>
+    </field>
+  </record>    
+
+  <record id="action_project_development_plan_tree" model="ir.actions.act_window">
+    <field name="name">Objetivos y Políticas</field>
+    <field name="res_model">project.development.plan</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="search_view_id" ref="view_project_development_plan_filter"/>
+  </record>
+
+  <menuitem id="menu_development_plan" action="action_project_development_plan_tree" 
+			parent="menu_development_plan_base" sequence="25"/>
+  
+
+  <record id="view_budget_item_form" model="ir.ui.view">
+    <field name="name">view.budget.item</field>
+    <field name="model">budget.item</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Planificacion de Actividades">
+        <field name="task_id" invisible="1"/>
+        <field name="budget_post_id" domain="[('internal_type','!=','view')]"/>
+        <field name="name"/>
+        <field name="planned_amount" sum="TOTAL"/>
+        <field name="commited_amount" sum="TOTAL COMPROMETIDO" invisible="1"/>
+        <field name="avai_amount" sum="TOTAL DISPONIBLE" invisible="1"/>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_budget_item_tree" model="ir.ui.view">
+    <field name="name">view.budget.item</field>
+    <field name="model">budget.item</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+      <tree string="Partidas presupuestarias">
+	<field name="code"/>
+	<field name="name"/>
+	<field name="budget_id" string="Proyecto"/>
+	<field name="poa_id"/>
+	<field name="planned_amount" sum="TOTAL ASIGNADO"/>
+	<!--field name="reform_amount" sum="TOTAL REFORMA"/>
+	<field name="codif_amount" sum="TOTAL CODIFICADO"/>
+	<field name="commited_amount" sum="TOTAL COMPROMETIDO"/>
+	<field name="devengado_amount" sum="TOTAL DEVENGADO"/>
+	<field name="paid_amount" sum="TOTAL PAGADO/COBRADO"/>
+	<field name="commited_balance" sum="TOTAL SALDO COMPROMETER"/>
+	<field name="devengado_balance" sum="TOTAL SALDO DEVENGAR"/>
+	<field name="avai_amount" sum="TOTAL DISPONIBLE"/>
+	<field name="state"/>
+	<field name="commited_sobregiro" invisible="0"/-->
+      </tree>
+      <!--tree string="Planifiacion de Actividades" editable="top">
+        <field name="task_id"  invisible="1"/>
+        <field name="budget_post_id" domain="[('internal_type','!=','view')]"/>
+        <field name="name" invisible="1"/>
+        <field name="planned_amount" sum="TOTAL"/>
+        <field name="commited_amount" sum="TOTAL COMPROMETIDO" invisible="1"/>
+        <field name="avai_amount" sum="TOTAL DISPONIBLE" invisible="1"/>
+      </tree-->
+    </field>
+  </record>
+
+
+    <record id="action_project_budget_plan" model="ir.actions.act_window">
+      <field name="name">Planificacion de Actividades</field>
+      <field name="res_model">budget.item</field>
+      <field name="view_type">form</field>
+      <field name="domain">[]</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_budget_plan" id="menu_project_budget_plan" 
+			  parent="menu_development_plan_base" sequence="33"/>
+
+  
+</data>
+</openerp>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_hr_wizard" 
+			  parent="hr.menu_hr_root" 
+			  name="Asistentes"
+			  groups="base.group_hr_manager"/>
+
+    <menuitem id="menu_hr_wizard_wage" 
+			  parent="menu_hr_wizard" 
+			  name="Actualizar Sueldo"
+			  groups="base.group_hr_manager"/>
+
+
+
+    </data>
+</openerp>

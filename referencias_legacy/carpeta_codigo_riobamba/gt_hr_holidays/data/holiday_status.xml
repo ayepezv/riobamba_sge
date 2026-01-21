@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+	<!-- hr.holidays.status -->
+      
+		<!-- Casual leave -->
+    <record model="hr.holidays.status" id="holiday_status_vac">
+      <field name="name">Vacaciones de Ley</field>
+      <field name="code">VAC</field>
+      <field name="limit">True</field>
+      <field name="color_name">black</field>
+    </record>
+
+    <!-- Sick leave -->
+    <record model="hr.holidays.status" id="holiday_status_enf">
+      <field name="name">Ausencias por Enfermedad</field>
+      <field name="code">ENF</field>
+      <field name="limit">True</field>
+      <field name="color_name">brown</field>
+    </record>
+
+
+    <!-- Compensatory Days -->
+    <record model="hr.holidays.status" id="holiday_status_mat">
+      <field name="name">Ausencias por Maternidad</field>
+      <field name="code">MAT</field>
+      <field name="limit">True</field>
+      <field name="color_name">brown</field>
+    </record>
+
+    <!--Unpaid Leave -->
+    <record model="hr.holidays.status" id="holiday_status_falta">
+      <field name="name">Faltas</field>
+      <field name="code">FALTA</field>
+      <field name="limit">True</field>
+      <field name="color_name">red</field>
+    </record>
+
+
+    </data>
+</openerp>

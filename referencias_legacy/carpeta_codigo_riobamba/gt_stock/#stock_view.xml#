@@ -1,0 +1,1339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+	  <delete id="stock.menu_action_pdct_in" model="ir.ui.menu"/>
+	  <delete id="stock.menu_action_pdct_out" model="ir.ui.menu"/>
+	  <delete id="stock.menu_stock_products_moves" model="ir.ui.menu"/>
+
+	  <delete id="stock.menu_action_tracking_form" model="ir.ui.menu"/>
+	  <delete id="stock.menu_action_production_lot_form" model="ir.ui.menu"/>
+	  
+	  <delete id="stock.menu_action_incoterm_open" model="ir.ui.menu"/>
+
+	  <delete id="procurement.menu_stock_proc_schedulers" model="ir.ui.menu"/>
+	  <delete id="procurement.menu_stock_procurement_action" model="ir.ui.menu"/>
+	  <delete id="procurement.menu_stock_sched" model="ir.ui.menu"/>
+
+	  <delete id="procurement.menu_stock_order_points" model="ir.ui.menu"/>
+	  <delete id="procurement.menu_stock_procurement" model="ir.ui.menu"/>
+	  <delete id="stock.menu_action_stock_journal_form" model="ir.ui.menu"/>
+
+	  <delete id="stock.menu_board_warehouse" model="ir.ui.menu"/>
+	  <delete id="stock.menu_dashboard_stock" model="ir.ui.menu"/>
+	 
+	  
+
+<!--record model="ir.rule" id="location_user_rule">
+  <field name="name">Bodegas por Usuario</field>
+  <field name="model_id" ref="stock.model_stock_location"/>
+  <field name="domain_force">[('usuario_ids','in',[user.id])]</field>
+  <field name="groups" eval="[(4,ref('stock.group_stock_manager'))]"/>
+</record-->
+
+<record id="stock_inv_line_tree_modified" model="ir.ui.view">
+  <field name="name">stock.inventory.line.tree.modified</field>
+  <field name="model">stock.inventory.line</field>
+  <field name="type">tree</field>
+  <field name="inherit_id" ref="stock.stock_inventory_line_tree"/>
+  <field name="arch" type="xml">
+    <field name="product_uom" position="after">
+      <field name="category_id"/>
+    </field>
+  </field>
+</record>
+
+<record id="stock_inventory_modified" model="ir.ui.view">
+  <field name="name">stock.inventory.modified</field>
+  <field name="model">stock.inventory</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="stock.view_inventory_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="/form/notebook/page/field/tree/field[@name='product_uom']" position="after">
+      <field name='category_id'/>
+    </xpath>
+  </field>
+</record>
+
+<!-- MENU DE BODEGAS
+-->
+
+
+
+<record id="action_bodega_form" model="ir.actions.act_window">
+  <field name="name">Bodegas</field>
+  <field name="res_model">stock.location</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<!--menuitem action="action_bodega_form" id="menu_action_bodega_form" 
+		  parent="stock.menu_warehouse_config" sequence="1" /-->
+
+	  <!--record model="ir.ui.view" id="doc_contract_form_modify_pick">
+		<field name="name">doc.contract.contract.modify.pick</field>
+		<field name="type">form</field>
+		<field name="model">doc_contract.contract</field>
+		<field name="inherit_id" ref="gt_doc_contract.view_doc_contract_form"/>
+		<field name="arch" type="xml">
+		  <xpath expr="//page[@string='Garantias']" position="after">
+
+		  </xpath>
+		</field>
+	  </record-->
+	  
+    <!--
+	Contabilizacion de egresos de bodega
+    -->
+
+    <menuitem name="Inventarios" id="menu_stock_move_account" parent="account.menu_finance" sequence="10"/>
+
+     <record id="view_stock_account_move_form" model="ir.ui.view">
+       <field name="name">view.stock.account.move.form</field>
+       <field name="model">stock.account.move</field>
+       <field name="type">form</field>
+       <field name="arch" type="xml">
+	 <form string="Egresos de Inventario">
+	   <group string="Información" colspan="4" col="6">
+	     <!--field name="name"/-->
+	     <field name="fiscalyear_id"/>
+	     <field name="period_id" domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',False)]"/>
+	     <newline/>
+	     <field name="tipo" required="1"/>
+	     <button name="action_read_moves" string="Cargar Egresos" icon="gtk-go-forward" type="object"/>
+	     <!--field name="all_locations"/>
+	     <field name="location_id" attrs="{'invisible': [('all_locations','=',True)], 'required': [('all_locations','=',False)]}"/-->
+	   </group>
+	   <notebook colspan="4">
+	     <page string="Detalle Egresos Categoria">
+	       <field name="detalle_ids" nolabel="1">
+		 <tree>
+		   <field name="categ_id"/>
+		   <field name="total" sum="Total"/>
+		 </tree>
+	       </field>
+	     </page>
+	     <page string="Egresos de Bodega">
+	       <label string="Permite cargar egresos de bodega para interfaz contable."/>
+	       
+	       <newline/>
+	       <field name="stock_line_ids" widget="one2many_list" nolabel="1" readonly="1" colspan="4">
+		 <tree string="Egresos">
+		   <field name="product_id"/>
+		   <field name="product_qty"/>
+		   <field name="product_uom"/>
+		   <field name="picking_id"/>
+		   <field name="location_id"/>
+		   <field name="location_dest_id"/>
+		   <field name="state"/>
+		 </tree>
+	       </field>
+	     </page>
+	     <page string="Detalle contable" attrs="{'invisible': [('state','in',['draft'])]}"> 
+	       <field name="move_id"/>
+	     </page>
+	   </notebook>
+	   <group colspan="4">
+	     <field name="state" widget="statusbar"/>
+	     <button string="Reversar" name="action_cancel" icon="gtk-cancel" type="object" states="contabilizado" confirm="Seguro de Reversar la transacción ?"/>
+	     <button string="Contabilizar" name="action_create_move" icon="gtk-execute" type="object" states="draft" confirm="Seguro de generar el asiento contable?"/>
+	   </group>
+	 </form>
+       </field>
+     </record>
+
+     <record id="view_stock_account_move_tree" model="ir.ui.view">
+       <field name="name">view.stock.account.move.tree</field>
+       <field name="model">stock.account.move</field>
+       <field name="type">tree</field>
+       <field name="arch" type="xml">
+	 <tree string="Contabilización de Egresos de Bodega">
+	   <field name="name" select="1"/>
+	   <field name="period_id" select="1"/>
+	 </tree>
+       </field>
+     </record>
+
+     <record id="action_stock_account_move1" model="ir.actions.act_window">
+       <field name="name">Diarios de Egresos</field>
+       <field name="res_model">stock.account.move</field>
+       <field name="type">ir.actions.act_window</field>
+       <field name="view_type">form</field>
+       <field name="view_mode">tree,form</field>
+     </record>
+
+     <menuitem action="action_stock_account_move1" id="menu_stock_account_move" 
+	       parent="menu_stock_move_account"/>
+	  
+
+     <record id="view_ie_type_form" model="ir.ui.view">
+       <field name="name">view.ie.type.form</field>
+       <field name="model">ie.type</field>
+       <field name="type">form</field>
+       <field name="arch" type="xml">
+	 <form string="Tipo de transaccion">
+	   <field name="name"/>
+	   <!--field name="movimiento"/-->
+	 </form>
+       </field>
+     </record>
+     
+     <record id="view_ie_type_tree" model="ir.ui.view">
+       <field name="name">view.ie.type.tree</field>
+       <field name="model">ie.type</field>
+       <field name="type">tree</field>
+       <field name="arch" type="xml">
+	 <tree string="Tipo de transaccion">
+	   <field name="name" select="1"/>
+	   <!--field name="movimiento" select="1"/-->
+	 </tree>
+       </field>
+     </record>
+     
+     <!--record id="action_ie_type_form" model="ir.actions.act_window">
+       <field name="name">Tipo de transaccion</field>
+       <field name="res_model">ie.type</field>
+       <field name="type">ir.actions.act_window</field>
+       <field name="view_type">form</field>
+       <field name="view_mode">tree,form</field>
+     </record>
+
+     <menuitem action="action_ie_type_form" id="menu_ie_type_form" 
+	       parent="stock.menu_warehouse_config"/-->
+
+
+<!--
+DOC TYPES
+-->
+
+<record id="view_picking_doc_type_form" model="ir.ui.view">
+  <field name="name">picking.doc.type.form</field>
+  <field name="model">picking.doc.type</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Tipo de documento">
+	  <field name="name"/>
+	  <!--field name="movimiento"/-->
+	  <field name="generar_factura"/>
+	</form>
+  </field>
+</record>
+
+<record id="view_picking_doc_type_tree" model="ir.ui.view">
+  <field name="name">picking.doc.type.tree</field>
+  <field name="model">picking.doc.type</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Tipo de documento">
+      <field name="name" select="1"/>
+      <!--field name="movimiento" select="1"/-->
+      <field name="generar_factura"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_picking_doc_type_form" model="ir.actions.act_window">
+  <field name="name">Tipo de documento</field>
+  <field name="res_model">picking.doc.type</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+</record>
+
+<menuitem action="action_picking_doc_type_form" id="menu_picking_doc_type_form" 
+		  parent="stock.menu_warehouse_config"/>
+
+<!--
+MENUS PADRE INGRESOS Y EGRESOS
+-->
+
+<menuitem name="Ingresos" id="menu_action_picking_ingresos_parent" 
+		  parent="stock.menu_stock_warehouse_mgmt" sequence="1"/>
+
+<menuitem name="Egresos" id="menu_action_picking_egresos_parent" 
+		  parent="stock.menu_stock_warehouse_mgmt" sequence="2"/>
+
+<!--
+-->
+<record id="stock_location_modified" model="ir.ui.view">
+  <field name="name">stock.location.modified</field>
+  <field name="model">stock.location</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="stock.view_location_form"/>
+  <field name="arch" type="xml">
+	<field name="usage" position="after">
+	  <field name="type_loc"/>
+	  <field name="responsable_id"/>
+	</field>
+	<field name="location_id" position="after">
+	  <separator string="Usuarios" colspan="4"/>
+	  <field name="usuario_ids" colspan="4" nolabel="1"/>
+	</field>
+  </field>
+</record>
+
+<!-- PICKING IN MODIFIED -->
+
+<record model="ir.ui.view" id="view_picking_in_form_modified2">
+  <field name="name">stock.picking.in.modified</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Ingreso">
+      <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+      <field name="type" colspan="2" invisible="1"/>
+      <field name="backorder_id" colspan="2" invisible="1"/>
+      <field name="auto_picking" colspan="2" invisible="1"/>
+      <group colspan="4" string="Detalle de Registro" col="8">
+	<field name="create_user_id" colspan="4" readonly="1" />
+	<field name="date" string="Fecha de creacion" colspan="2" readonly="1"/>
+	<field name="name" string='Codigo' colspan="2" readonly="1" attrs="{'invisible': [('state', '!=','done')]}"/>
+	<field name="purchase_id" colspan="2" readonly="1"/>
+	<field name="min_date" string='Fecha OC' colspan="2" readonly="1"/>
+	<field name="partner_id" colspan="4" required="1" string="Proveedor" 
+	       attrs="{'readonly': ['|',('state', 'not in',('draft','assigned','confirmed')),
+		      ('is_oc','=',True)]}"/>
+	<field name="document_id" colspan="4" required="1"   
+	       on_change="onchange_documento(document_id)" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="number" colspan="2" required="1" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="document_date" colspan="2" required="1" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="is_oc" invisible="1"/>
+      </group>
+      <group colspan="4" string="Detalle de Transaccion" col="8">
+	<field name="bodega_id" colspan="4" required="1" on_change="onchange_bodega(bodega_id)"
+	       domain="[('usuario_ids.id','=',uid),('usage','=','internal')]" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="responsable_id" colspan="4" string="Responsable/Autoriza"/>
+	<field name="type_loc" invisible="1"/>
+	<!--field name="ie_type" colspan="2" required="1"   
+	    attrs="{'readonly': ['|',('state', 'not in',('draft','assigned','confirmed')),('is_oc','=',True)]}"/-->
+	<field name="invoice_state" colspan="2" readonly="1" string="Control factura"/>
+	<field name="date_done" colspan="2" readonly="0"/>
+	<field name="solicitant_id" colspan="4" required="1" on_change="onchange_solicitant(solicitant_id)" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="unidad_id" colspan="4" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="receptor_id" colspan="4" required="1" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<!--field name="project_id" colspan="4" 
+	    attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	    <field name="project_type" colspan="4" 
+	    attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))],
+	    'invisible':[('type_loc','=','Corriente')],
+	    'required':[('type_loc','!=','Corriente')]}"/>
+	    <field name="objeto_id_id" colspan="4" 
+	    attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/-->
+      </group>
+      <notebook colspan="8">
+	<page string="Productos">
+	  <field name="move_lines" nolabel="1" widget="one2many_list" 
+		 domain="[('location_id','=',parent.bodega_id)]" context="{'type':'in'}" 
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}">
+	    <tree editable="bottom">
+	      <field name="product_id" on_change="onchange_product_line(product_id)" 
+		     domain="[('location_id','=',parent.bodega_id)]"/>
+		  <!--field name="categ_id" on_change="onchange_product_line(product_id)" readonly="1"/-->
+		  <field name="product_qty" required="1"/>
+		  <!--field name="product_uom" on_change="onchange_product_line(product_id)" readonly="1"/-->
+		  <field name="price_unit" readonly="1" sum='P. Unitario'/>
+		  <field name="tax_type"/>
+		  <field name="subtot" required="1" sum='Subtotal'/>
+		  <field name="imp_iva" required="1" sum='IVA'/>
+		  <!--field name="imp_ice" required="1" sum='ICE'/>
+		  <field name="imp_verde" required="1" sum='I. Verde'/-->
+		  <field name="total" readonly="1" sum='Total'/>
+		  <field name="state" invisible="1"/>
+		</tree>
+		<form>
+		  <field name="product_id" domain="[('location_id','=',parent.bodega_id)]" 
+				 on_change="onchange_product_line(product_id)"/>
+		  <field name="categ_id" readonly="1"/>
+		  <field name="product_qty" required="1"/>
+		  <field name="product_uom" readonly="1"/>
+		  <field name="tax_type"/>
+		  <field name="price_unit" readonly="1"/>
+		  <field name="subtot" readonly="1"/>
+		  <field name="imp_iva" required="1"/>
+		  <!--field name="imp_ice" required="1"/>
+		  <field name="imp_verde" required="1"/-->
+		  <field name="total" required="1"/>
+		  <field name="state" invisible="1"/>
+		</form>
+	      </field>
+	    </page>
+	    <page string="Observaciones">
+	      <field name="note" nolabel="1"/>
+	    </page>
+	  </notebook>
+	  <group col="10" colspan="8">
+	    <button name="button_cancel" states="assigned,confirmed,draft" 
+				string="_Cancel" icon="gtk-cancel"/>
+	    <!--button name="draft_force_assign" states="draft" string="Process Later" type="object" icon="gtk-apply"/-->
+	    <button name="draft_validate" states="draft" string="Validar" 
+				type="object" icon="gtk-media-play" context="{'type':'in'}"/>
+	    <!--button name="action_assign" states="confirmed" string="Check Availability" type="object" icon="gtk-find"/>
+		<button name="force_assign" states="confirmed" string="Force Availability" type="object" icon="gtk-jump-to"/-->
+	    <button name="action_process" states="assigned" string="Procesar"  
+				groups="stock.group_stock_user" type="object" icon="gtk-go-forward"/>
+	    <button name="%(stock.action_stock_invoice_onshipping)d" string="Crear Factura"  
+				attrs="{'invisible': ['|','|',('state','&lt;&gt;','done'),
+					   ('invoice_state','=','invoiced'),('invoice_state','=','none')]}"  
+				type="action" icon="terp-gtk-go-back-rtl" />
+	    <button name="action_revert_done" string="Reversar" states="done" 
+				type="object" icon="gtk-cancel"
+				confirm="Esta seguro que desea reversar el movimiento?"/>
+	    <button name="action_print_picking" string="Imprimir" states="done" 
+				type="object" icon="gtk-print"/>
+	  </group>
+  </form>	
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_picking_in_dev_form_modified2">
+  <field name="name">stock.picking.in.dev.modified</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Ingreso">
+      <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+      <newline/>
+      <group colspan="6" col="6">
+	<field name="bodega_id" colspan="4" required="1" on_change="onchange_bodega(bodega_id)" 
+	       domain="[('usuario_ids.id','=',uid),('usage','=','internal')]" 
+	       attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	<field name="responsable_id" colspan="2" readonly="1" string="Responsable"/>
+	<field name="related_picking" required="1" string="Egreso Relacionado" 
+	       domain="[('type','=','out'),('bodega_id','=',bodega_id),('state','=','done')]" colspan="4"/>
+	<button name="action_load_line" string="Cargar" colspan="2" states="draft" 
+		type="object" icon="gtk-execute" 
+		confirm="Esta seguro que desea cargar ?"/>
+      </group>
+      <group colspan="4">
+	<field name="type" colspan="2" invisible="1"/>
+	<field name="backorder_id" colspan="2" invisible="1"/>
+	<field name="auto_picking" colspan="2" invisible="1"/>
+	<group colspan="4" string="Detalle de Registro" col="8">
+	  <field name="create_user_id" colspan="4" 
+		 readonly="1"/>
+	  <field name="date" string="Fecha de creacion" colspan="2" readonly="1"/>
+	  <field name="name" string='Codigo' colspan="2" readonly="1"/>
+	  <field name="purchase_id" colspan="2" readonly="1"/>
+	  <field name="min_date" string='Fecha OC' colspan="2" readonly="1"/>
+	  <field name="document_id" colspan="4" readonly="1" 
+		 on_change="onchange_documento(document_id)"
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="number" colspan="2" required="1" readonly="1" 				     
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="document_date" colspan="2" readonly="1"
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="is_oc" invisible="1"/>
+	  <field name="partner_id" colspan="4" readonly="1" string="Proveedor" 
+		 attrs="{'readonly': ['|',('state', 'not in',('draft','assigned','confirmed')),
+			('is_oc','=',True)]}"/>
+	</group>
+	
+	<group colspan="4" string="Detalle de Transaccion" col="8">
+	  <!--field name="ie_type" colspan="2" readonly="1"   
+	      attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/-->
+	  <field name="invoice_state" colspan="2" readonly="1" string="Control factura"/>
+	  <field name="date_done" colspan="2" readonly="1" 
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="solicitant_id" colspan="4" readonly="1" on_change="onchange_solicitant(solicitant_id)" 
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="unidad_id" colspan="4" readonly="1"
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	</group>
+	<notebook colspan="8">
+	  <page string="Productos">
+	    <field name="move_lines" nolabel="1" widget="one2many_list" readonly="1"
+		   domain="[('location_id','=',parent.bodega_id)]" context="{'type':'in'}">
+	      <tree editable="bottom">
+		<field name="product_id" on_change="onchange_product_line(product_id)" 
+		       domain="[('location_id','=',parent.bodega_id)]"/>
+		<field name="categ_id" on_change="onchange_product_line(product_id)"/>
+		<field name="product_qty" required="1"/>
+		<field name="product_uom" on_change="onchange_product_line(product_id)" readonly="1"/>
+		<field name="price_unit" readonly="1" sum='P. Unitario'/>
+				  <field name="subtot" readonly="1" sum='Subtotal'/>
+				  <field name="imp_iva" required="1" sum='IVA'/>
+				  <field name="imp_ice" required="1" sum='ICE'/>
+				  <field name="imp_verde" required="1" sum='I. Verde'/>
+				  <field name="total" required="1" sum='Total'/>
+				  <field name="state" invisible="1"/>
+				</tree>
+				<form>
+				  <field name="product_id" domain="[('location_id','=',parent.bodega_id)]" 
+						 on_change="onchange_product_line(product_id)"/>
+				  <field name="categ_id" readonly="1"/>
+				  <field name="product_qty" required="1"/>
+				  <field name="product_uom" readonly="1"/>
+				  <field name="price_unit" readonly="1"/>
+				  <field name="subtot" readonly="1"/>
+				  <field name="imp_iva" required="1"/>
+				  <field name="imp_ice" required="1"/>
+				  <field name="imp_verde" required="1"/>
+				  <field name="total" required="1"/>
+				  <field name="state" invisible="1"/>
+				</form>
+			  </field>
+			</page>
+			<page string="Observaciones">
+			  <field name="note" nolabel="1"/>
+			</page>
+		  </notebook>
+		  <group col="10" colspan="8">
+			<button name="button_cancel" states="assigned,confirmed,draft" 
+					string="_Cancel" icon="gtk-cancel"/>
+	    <!--button name="draft_force_assign" states="draft" string="Process Later" type="object" icon="gtk-apply"/-->
+	    <button name="draft_validate" states="draft" string="Validar" 
+				type="object" icon="gtk-media-play" context="{'type':'in'}"/>
+	    <!--button name="action_assign" states="confirmed" string="Check Availability" type="object" icon="gtk-find"/>
+		<button name="force_assign" states="confirmed" string="Force Availability" type="object" icon="gtk-jump-to"/-->
+	    <button name="action_process" states="assigned" string="Procesar"  
+				groups="stock.group_stock_user" type="object" icon="gtk-go-forward"/>
+	    <button name="%(stock.action_stock_invoice_onshipping)d" string="Crear Factura"  
+				attrs="{'invisible': ['|','|',('state','&lt;&gt;','done'),
+					   ('invoice_state','=','invoiced'),('invoice_state','=','none')]}"  
+				type="action" icon="terp-gtk-go-back-rtl" />
+	    <button name="action_revert_done" string="Reversar" states="done" 
+				type="object" icon="gtk-cancel" 
+				confirm="Esta seguro que desea reversar el movimiento?"/>
+		  </group>
+	  </group>
+    </form>	
+  </field>
+</record>
+
+<!-- PICKING INTERNAL MODIFIED -->
+
+<record model="ir.ui.view" id="view_picking_internal_form_modified">
+  <field name="name">stock.picking.internal.modified</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="stock.view_picking_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="/form" position="replace">
+      <form string="Transferencia">
+	<field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+	<group colspan="4" col="4">
+	  <group invisible="1">
+	    <field name="type" colspan="2"/>
+	    <field name="backorder_id" colspan="2" invisible="1"/>
+	    <field name="auto_picking" colspan="2" invisible="1"/>
+	    <field name="invoice_state" colspan="2" invisible="1"/>
+	  </group>
+	  <group colspan="4" string="Detalle de Registro" col="8">
+	    <field name="create_user_id" colspan="4" readonly="1"/>
+	    <field name="date" string="Fecha de creacion" colspan="2" readonly="1"/>
+	    <field name="name" colspan="2" readonly="1" string="Codigo"/>
+	    <field name="document_id" colspan="2" required="1"  />
+	    <field name="number" colspan="2" required="1"/>
+	    <field name="document_date" colspan="2" required="1"/>
+		<field name="date_done" colspan="2" readonly="1"/>
+	  </group>
+	  <group colspan="4" string="Detalle de Transaccion" col="8">
+	    <field name="bodega_id" colspan="4" required="1" on_change="onchange_bodega(bodega_id)" 
+			   domain="[('usuario_ids.id','=',uid),('usage','=','internal')]" 
+			   attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	    <field name="responsable_id" colspan="4" readonly="1"/>
+	    <!--field name="ie_type" colspan="2" invisible="1"/-->
+	    <field name="bodega_dest_id" colspan="4" required="1"/>
+		<field name="solicitant_id" colspan="4" required="1" on_change="onchange_solicitant(solicitant_id)"/>
+	    <newline/>
+	    <field name="unidad_id" colspan="4" invisible="1"/>
+	    <field name="receptor_type" colspan="4"/>
+	    <group colspan="4" col="4">
+	      <field name="receptor_id" colspan="2" 
+				 attrs="{'invisible':[('receptor_type','=',False)],
+						'required':[('receptor_type','=',True)]}"/>
+	      <field name="receptor" colspan="2" 
+				 attrs="{'invisible':[('receptor_type','=',True)],
+						'required':[('receptor_type','=',False)]}"/>
+	    </group>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Productos">
+	      <field name="move_lines" nolabel="1" widget="one2many_list">
+		<tree editable="bottom">
+		  <field name="product_id" on_change="onchange_product_line(product_id)" 
+				 domain="[('location_id','=',parent.bodega_id)]"/>
+		  <field name="product_qty" required="1"/>
+		  <field name="state" invisible="1"/>
+		</tree>
+		<form>
+		  <field name="product_id" on_change="onchange_product_line(product_id)" 
+				 domain="[('location_id','=',parent.bodega_id)]"/>
+		  <field name="product_qty" required="1"/>
+		  <field name="state" invisible="1"/>
+		</form>
+	      </field>
+	    </page>
+	    <page string="Observaciones">
+	      <field name="note" nolabel="1"/>
+	    </page>
+	  </notebook>
+	  <group col="10" colspan="8">
+	    <button name="button_cancel" states="assigned,confirmed,draft" 
+				string="_Cancel" icon="gtk-cancel"/>
+	    <button name="draft_force_assign" states="draft" string="Process Later" 
+				type="object" icon="gtk-apply"/>
+	    <button name="draft_validate" states="draft" string="Process Now"
+				type="object" icon="gtk-media-play"/>
+	    <button name="action_assign" states="confirmed" string="Check Availability" 
+				type="object" icon="gtk-find"/>
+	    <button name="force_assign" states="confirmed" string="Force Availability" 
+				type="object" icon="gtk-jump-to"/>
+	    <button name="action_process" states="assigned" string="Process"  
+				groups="stock.group_stock_user" type="object" icon="gtk-go-forward"/>
+	    <button name="%(stock.action_stock_invoice_onshipping)d" string="Create Invoice"  
+				attrs="{'invisible': ['|','|',('state','&lt;&gt;','done'),
+					   ('invoice_state','=','invoiced'),('invoice_state','=','none')]}" 
+				type="action" icon="terp-gtk-go-back-rtl" />
+	    <button name="action_revert_done" string="Reversar" states="done" 
+				type="object" icon="gtk-cancel" 
+				confirm="Esta seguro que desea reversar el movimiento?"/>
+	  </group>
+	</group>
+      </form>	
+    </xpath>
+  </field>
+</record>
+
+
+
+<!-- PICKING OUT MODIFIED -->
+
+<record model="ir.ui.view" id="view_picking_out_form_modified2">
+  <field name="name">stock.picking.out.modified</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Egreso">
+      <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+      <group colspan="4" col="4">
+	<field name="type" colspan="2" invisible="1"/>
+	<field name="move_type" colspan="2" invisible="1"/>
+	<field name="backorder_id" colspan="2" invisible="1"/>
+	<field name="auto_picking" colspan="2" invisible="1"/>
+	<group colspan="4" string="Detalle de Registro" col="8">
+	  <field name="create_user_id" colspan="4" readonly="1"/>
+	  <field name="date" string="Fecha de creacion" colspan="2" readonly="1"/>
+	  <field name="name" colspan="2" readonly="1" string="Codigo"  attrs="{'invisible': [('state', '!=','done')]}"/>
+	  <field name="document_id" colspan="2" required="1" 
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="number" colspan="2" required="1"
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="document_date" colspan="2" required="1"
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="date_done" colspan="2"/>
+	</group>
+	<group colspan="4" string="Detalle de Transaccion" col="8">
+	  <field name="bodega_id" colspan="4" required="1" on_change="onchange_bodega(bodega_id)"
+		 domain="[('usuario_ids.id','=',uid),('usage','=','internal')]" 
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="type_loc" invisible="1"/>
+	  <field name="responsable_id" colspan="4" readonly="1" string="Responsable/Autoriza"/>
+	  <!--field name="ie_type" colspan="2" invisible="1"/-->
+	  <field name="invoice_state" colspan="2" invisible="1"/>
+	  
+	  <field name="type_loc" colspan="2" readonly="1" invisible="1"/>
+	  <newline/>
+	  <field name="solicitant_id" colspan="4" required="1" on_change="onchange_solicitant(solicitant_id)"
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="unidad_id" colspan="4" 
+		 attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <field name="receptor_type" colspan="4" attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	  <group colspan="4" col="4">
+	    <field name="receptor_id" colspan="2"
+		   attrs="{'invisible':[('receptor_type','=',False)],
+			  'required':[('receptor_type','=',True)],
+			  'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	    <field name="receptor" colspan="2"
+		   attrs="{'invisible':[('receptor_type','=',True)],
+			  'required':[('receptor_type','=',False)]}"/>
+	  </group>
+	  <!--field name="project_id" colspan="4" domain="[('usage','=','cost')]"
+	      attrs="{'invisible':[('type_loc','=','Corriente')]}"/>
+	      <field name="project_id" colspan="4"
+	      attrs="{'invisible':[('type_loc','=','Corriente')]}"/>
+	      <field name="objeto_id_id" colspan="4"/>
+	      <field name="project_type" colspan="4" 
+	      attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))],
+	      'invisible':[('type_loc','=','Corriente')],
+	      'required':[('type_loc','!=','Corriente')]}"/-->
+	</group>
+	<notebook colspan="4">
+	  <page string="Productos">
+	    <field name="move_lines" nolabel="1" widget="one2many_list">
+	      <tree editable="bottom">
+		<field name="product_id" domain="['|',('type','!=','service'),('purchase_ok','=',True)]"
+		       on_change="onchange_product_line(product_id)"/>
+		<field name="product_qty" required="1"/>
+		<field name="price_unit" readonly="1" sum='P. Unitario'/>
+		<!--field name="tax_type"/>
+		    <field name="subtot" required="1" sum='Subtotal'/>
+		    <field name="imp_iva" required="1" sum='IVA'/-->
+		<field name="subtot" readonly="1" sum='Subtotal'/>
+		<field name="state" invisible="1"/>
+	      </tree>
+	      <form>
+		<field name="product_id" domain="[('location_id','=',parent.bodega_id)]"
+		       on_change="onchange_product_line(product_id)"/>
+		<field name="product_qty" required="1"/>
+		<field name="state" invisible="1"/>
+	      </form>
+	    </field>
+	  </page>
+	  <page string="Observaciones">
+	    <field name="note" nolabel="1"/>
+	  </page>
+	</notebook>
+	<group col="10" colspan="8">
+	  <button name="button_cancel" states="assigned,confirmed,draft" 
+		  string="_Cancel" icon="gtk-cancel"/>
+	  <!--button name="draft_force_assign" states="draft" string="Process Later" 
+	      type="object" icon="gtk-apply"/-->
+	  <button name="draft_validate" states="draft" string="Process Now" 
+		  type="object" icon="gtk-media-play"/>
+	  <button name="action_assign" states="confirmed" string="Check Availability"
+		  type="object" icon="gtk-find"/>
+	  <button name="force_assign" states="confirmed" string="Force Availability"
+		  type="object" icon="gtk-jump-to"/>
+	  <button name="action_process" states="assigned" string="Process"  
+		  groups="stock.group_stock_user" type="object" icon="gtk-go-forward"/>
+	  <button name="%(stock.action_stock_invoice_onshipping)d" string="Create Invoice"
+		  attrs="{'invisible': ['|','|',('state','&lt;&gt;','done'),
+			 ('invoice_state','=','invoiced'),('invoice_state','=','none')]}" 
+		  type="action" icon="terp-gtk-go-back-rtl" />
+	  <button name="action_revert_done" string="Reversar" states="done" 
+		  type="object" icon="gtk-cancel" 
+		  confirm="Esta seguro que desea reversar el movimiento?"/>
+	  <button name="action_print_picking" string="Imprimir" states="done" 
+		  type="object" icon="gtk-print"/>
+	</group>
+      </group>
+    </form>	
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_picking_out_dev_form_modified2">
+  <field name="name">stock.picking.out.dev.modified</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Egreso">
+	  <field name="state" widget="statusbar" statusbar_visible="draft,assigned,done"/>
+	  <newline/>
+	  <group colspan="6" col="6">
+	    <field name="bodega_id" colspan="4" required="1" on_change="onchange_bodega(bodega_id)" 
+			   domain="[('usuario_ids.id','=',uid),('usage','=','internal')]" 
+			   attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+	    <field name="responsable_id" colspan="2" readonly="1"/>
+		<field name="related_picking" string="Ingreso Relacionado" required="1" 
+			   domain="[('type','=','in'),('bodega_id','=',bodega_id),('state','=','done')]" colspan="4"/>
+		<button name="action_load_line" string="Cargar" colspan="2" states="draft" 
+				type="object" icon="gtk-execute" 
+				confirm="Esta seguro que desea cargar ?"/>
+	  </group>
+	  <group colspan="4" col="4">
+	    <field name="type" colspan="2" invisible="1"/>
+	    <field name="move_type" colspan="2" invisible="1"/>
+	    <field name="backorder_id" colspan="2" invisible="1"/>
+	    <field name="auto_picking" colspan="2" invisible="1"/>
+		<group colspan="4" string="Detalle de Registro" col="8">
+	      <field name="create_user_id" colspan="4" readonly="1"/>
+	      <field name="date" string="Fecha de creacion" colspan="2" readonly="1"/>
+	      <field name="name" colspan="2" readonly="1" string="Codigo"/>
+	      <field name="document_id" colspan="2" readonly="1" />
+	      <field name="number" colspan="2" readonly="1"/>
+	      <field name="document_date" colspan="2" readonly="1"/>
+		</group>
+		<group colspan="4" string="Detalle de Transaccion" col="8">
+
+	      <!--field name="ie_type" colspan="2" readonly="1"/-->
+	      <field name="invoice_state" colspan="2" invisible="1"/>
+	      <field name="date_done" colspan="2" readonly="1"/>
+	      <newline/>
+	      <field name="solicitant_id" colspan="4" readonly="1" on_change="onchange_solicitant(solicitant_id)"/>
+	      <field name="unidad_id" colspan="4" readonly="1"/>
+	      <field name="receptor_type" colspan="4" readonly="1"/>
+	      <group colspan="4" col="4">
+			<field name="receptor_id" colspan="2" readonly="1"
+				   attrs="{'invisible':[('receptor_type','=',False)],
+						  'required':[('receptor_type','=',True)]}"/>
+			<field name="receptor" colspan="2" readonly="1"
+				   attrs="{'invisible':[('receptor_type','=',True)],
+						  'required':[('receptor_type','=',False)]}"/>
+	      </group>
+	      <!--field name="project_id" colspan="4" readonly="1"/>
+	      <field name="objeto_id_id" colspan="4" readonly="1"/-->
+		</group>
+		<notebook colspan="4">
+	      <page string="Productos">
+			<field name="move_lines" nolabel="1" widget="one2many_list" readonly="1">
+			  <tree editable="bottom">
+				<field name="product_id" domain="[('location_id','=',parent.bodega_id)]" 
+					   on_change="onchange_product_line(product_id)"/>
+				<field name="product_qty" required="1"/>
+				<field name="state" invisible="1"/>
+			  </tree>
+			  <form>
+				<field name="product_id" domain="[('location_id','=',parent.bodega_id)]" 
+					   on_change="onchange_product_line(product_id)"/>
+				<field name="product_qty" required="1"/>
+				<field name="state" invisible="1"/>
+			  </form>
+			</field>
+	      </page>
+	      <page string="Observaciones">
+			<field name="note" nolabel="1"/>
+	    </page>
+	  </notebook>
+	  <group col="10" colspan="8">
+	    <button name="button_cancel" states="assigned,confirmed,draft" 
+				string="_Cancel" icon="gtk-cancel"/>
+	    <!--button name="draft_force_assign" states="draft" string="Process Later" 
+				type="object" icon="gtk-apply"/-->
+	    <button name="draft_validate" states="draft" string="Process Now"
+				type="object" icon="gtk-media-play"/>
+	    <button name="action_assign" states="confirmed" string="Check Availability" 
+				type="object" icon="gtk-find"/>
+	    <button name="force_assign" states="confirmed" string="Force Availability" 
+				type="object" icon="gtk-jump-to"/>
+	    <button name="action_process" states="assigned" string="Process"  
+				groups="stock.group_stock_user" type="object" icon="gtk-go-forward"/>
+	    <button name="%(stock.action_stock_invoice_onshipping)d" string="Create Invoice" 
+				attrs="{'invisible': ['|','|',('state','&lt;&gt;','done'),
+					   ('invoice_state','=','invoiced'),('invoice_state','=','none')]}" 
+				type="action" icon="terp-gtk-go-back-rtl" />
+	    <button name="action_revert_done" string="Reversar" states="done" 
+				type="object" icon="gtk-cancel" 
+				confirm="Esta seguro que desea reversar el movimiento?"/>
+	  </group>
+	  </group>
+    </form>	
+  </field>
+</record>
+
+<!-- VISTAS TREE -->
+
+<record id="stock.vpicktree" model="ir.ui.view">
+  <field name="name">stock.picking.tree</field>
+  <field name="model">stock.picking</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree colors="black:state == 'draft';grey:state == 'cancel';blue:state in ('confirmed','assigned');green:state == 'done'"
+	  string="Picking list">
+      <field name="name"/>
+      <field name="partner_id"/>
+      <field name="number"/>
+      <field name="origin"/>
+      <field name="date_done"/>
+      <field name="bodega_id"/>
+      <field name="state"/>
+      <field name="document_id"/>
+      <field name="objeto_id"/>
+    </tree>
+  </field>
+</record>
+
+<record id="stock.view_picking_in_tree" model="ir.ui.view">
+  <field name="name">stock.picking.in.tree</field>
+  <field name="model">stock.picking</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree colors="blue:state == 'draft';grey:state == 'done';
+		  red:state not in ('cancel', 'done') and date &lt; current_date" 
+	  string="Picking list">
+      <field name="name"/>
+      <field name="partner_id" />
+      <field name="backorder_id" groups="base.group_extended"/>
+      <field name="date_done"/>
+      <field name="invoice_state" groups="base.group_extended"/>
+      <field name="bodega_id"/>
+      <field name="objeto_id"/>
+      <field name="state"/>
+    </tree>
+  </field>
+</record>
+
+<!-- VISTAS SEARCH-->
+
+<record id="view_picking_in_search_gpa" model="ir.ui.view">
+  <field name="name">stock.picking.in.search.gpa</field>
+  <field name="model">stock.picking</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Ingresos">
+      <group>
+        <filter icon="terp-check" name="available" string="Procesar"
+		domain="[('state','=','assigned')]" help="Incoming Shipments Available" />
+        <filter icon="terp-dialog-close" name="done" string="Realizado"
+		domain="[('state','=','done')]" help="Incoming Shipments already processed"/>
+        <separator orientation="vertical" />
+        <filter icon="terp-accessories-archiver-minus" string="Pendientes" 
+		domain="[('backorder_id', '!=', False)]"
+		help="Is a Back Order" groups="base.group_extended"/>
+        <separator orientation="vertical"/>
+        <filter string="A facturar" name="to_invoice" icon="terp-dolar"
+		domain="[('invoice_state', '=', '2binvoiced')]" />
+        <separator orientation="vertical"/>
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="origin"/>
+	<field name="date_done" string="Fecha Desde" filter_domain="[('date_done','&gt;=',self)]"/>
+	<field name="date_done" string="Fecha Hasta" filter_domain="[('date_done','&lt;=',self)]"/>
+	<newline/>
+	<field name="document_id"/>
+	<field name="presp_ref"/>
+	<field name="objeto_id"/>
+	<field name="bodega_id"/>
+        <field name="company_id" widget="selection" groups="base.group_multi_company" />
+      </group>
+      <newline/>
+      <group expand="1" string="Group By...">
+	<filter string="Bodega" icon="terp-partner" domain="[]" 
+		context="{'group_by':'bodega_id'}"/>
+	<filter string="Proveedor" icon="terp-partner" domain="[]" 
+		context="{'group_by':'partner_id'}"/>
+        <separator orientation="vertical" />
+        <filter icon="terp-stock_effects-object-colorize" name="state" 
+		string="State" domain="[]" context="{'group_by':'state'}"/>
+        <separator orientation="vertical" />
+        <filter string="Order Date" icon="terp-go-month" domain="[]" 
+		context="{'group_by':'date_done'}"/>
+        <separator orientation="vertical" />
+	<filter string="Proveedor" icon="terp-folder-orange" domain="[]" 
+		context="{'group_by':'partner_id'}"/>
+	<filter string="Documento" icon="terp-folder-orange" domain="[]" 
+		context="{'group_by':'document_id'}"/>
+	<filter string="Objeto Receptor" icon="terp-folder-orange" domain="[]" 
+		context="{'group_by':'objeto_id'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record id="view_picking_out_search_gpa" model="ir.ui.view">
+  <field name="name">stock.picking.out.search.gpa</field>
+  <field name="model">stock.picking</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Egresos">
+      <group>
+        <filter icon="terp-check" name="available" string="Procesar" 
+		domain="[('state','=','assigned')]" help="Incoming Shipments Available" />
+        <filter icon="terp-dialog-close" name="done" string="Realizado" 
+		domain="[('state','=','done')]" help="Incoming Shipments already processed"/>
+        <separator orientation="vertical" />
+        <filter icon="terp-accessories-archiver-minus" string="Pendientes"
+		domain="[('backorder_id', '!=', False)]" help="Is a Back Order" 
+		groups="base.group_extended"/>
+        <separator orientation="vertical"/>
+        <filter string="A facturar" name="to_invoice" icon="terp-dolar" 
+		domain="[('invoice_state', '=', '2binvoiced')]" />
+        <separator orientation="vertical"/>
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="origin"/>
+	<field name="date_done" string="Fecha Desde" filter_domain="[('date_done','&gt;=',self)]"/>
+	<field name="date_done" string="Fecha Hasta" filter_domain="[('date_done','&lt;=',self)]"/>
+	<newline/>
+	<field name="document_id"/>
+	<field name="presp_ref"/>
+	<field name="objeto_id"/>
+	<field name="bodega_id"/>
+        <field name="company_id" widget="selection" groups="base.group_multi_company" />
+      </group>
+      <newline/>
+      <group expand="1" string="Group By...">
+        <filter string="Bodega" icon="terp-partner" domain="[]" 
+				context="{'group_by':'bodega_id'}"/>
+        <filter string="Proveedor" icon="terp-partner" domain="[]" 
+				context="{'group_by':'partner_id'}"/>
+        <separator orientation="vertical" />
+        <filter icon="terp-stock_effects-object-colorize" name="state" 
+				string="State" domain="[]" context="{'group_by':'state'}"/>
+        <separator orientation="vertical" />
+        <filter string="Fecha" icon="terp-go-month" domain="[]"  
+				context="{'group_by':'date_done'}"/>
+        <separator orientation="vertical" />
+	<filter string="Proveedor" icon="terp-folder-orange" domain="[]"
+		context="{'group_by':'partner_id'}"/>
+	<filter string="Documento" icon="terp-folder-orange" domain="[]" 
+		context="{'group_by':'document_id'}"/>
+	<filter string="Objeto Receptor" icon="terp-folder-orange" domain="[]" 
+		context="{'group_by':'objeto_id'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record id="view_picking_internal_search_gpa" model="ir.ui.view">
+  <field name="name">stock.picking.internal.search.gpa</field>
+  <field name="model">stock.picking</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Internal Picking List">
+      <group>
+        <filter icon="terp-check" name="available" string="Procesar" 
+				domain="[('state','=','assigned')]" help="Assigned Internal Moves"/>
+        <filter icon="terp-camera_test" name="confirmed" string="Esperando" 
+				domain="[('state','=','confirmed')]" help="Confirmed Internal Moves" />
+        <separator orientation="vertical"/>
+        <field name="name"/>
+        <field name="origin"/>
+        <!--field name="ie_type"/-->
+        <field name="company_id" widget="selection"/>
+      </group>
+      <newline/>
+      <group expand="1" string="Group By...">
+        <filter string="State" icon="terp-stock_effects-object-colorize" 
+				domain="[]" context="{'group_by':'state'}"/>
+        <separator orientation="vertical"/>
+        <filter string="Order Date" icon="terp-go-month" domain="[]"  
+				context="{'group_by':'date'}"/>
+        <!--filter string="Expected Date" icon="terp-go-month" domain="[]"  
+				context="{'group_by':'min_date'}"/-->
+        <separator orientation="vertical"/>
+        <filter string="Origin" icon="terp-gtk-jump-to-rtl" domain="[]"
+				context="{'group_by':'origin'}"/>
+        <separator orientation="vertical" />
+        <!--filter string="Tipo" icon="terp-folder-orange" domain="[]"
+				context="{'group_by':'ie_type'}" groups="base.group_extended"/-->
+      </group>
+    </search>
+  </field>
+</record>
+
+<!-- ACTIONS -->
+
+    <record id="action_picking_tree4_gpa" model="ir.actions.act_window">
+        <field name="name">Ingresos</field>
+        <field name="res_model">stock.picking</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="domain">[('type','=','in'),('type_internal_menu','=','in')]</field>
+        <field name="context">{'contact_display': 'partner_address',
+		  'type':'in','type_internal_menu':'in'}</field>
+        <field name="search_view_id" ref="view_picking_in_search_gpa"/>
+    </record>
+
+    <record id="action_picking_tree_in_gpa" model="ir.actions.act_window.view">
+      <!--field eval="1" name="sequence"/-->
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="stock.vpicktree"/>
+      <field name="act_window_id" ref="action_picking_tree4_gpa"/>
+    </record>
+    
+    <record id="action_picking_form_in_gpa" model="ir.actions.act_window.view">
+      <!--field eval="1" name="sequence"/-->
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_picking_in_form_modified2"/>
+      <field name="act_window_id" ref="action_picking_tree4_gpa"/>
+    </record>
+
+<!--
+
+    <record id="action_picking_tree4_dev_gpa" model="ir.actions.act_window">
+        <field name="name">Ingresos Devolución</field>
+        <field name="res_model">stock.picking</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="domain">[('type','=','in')]</field>
+        <field name="context">{'contact_display': 'partner_address',"search_default_available":1,
+		  'type':'in','type_internal':'in_dev'}</field>
+        <field name="search_view_id" ref="view_picking_in_search_gpa"/>
+    </record>
+
+    <record id="action_picking_tree_in_dev_gpa" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="stock.vpicktree"/>
+      <field name="act_window_id" ref="action_picking_tree4_dev_gpa"/>
+    </record>
+    
+    <record id="action_picking_form_in_dev_gpa" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_picking_in_dev_form_modified2"/>
+      <field name="act_window_id" ref="action_picking_tree4_dev_gpa"/>
+    </record>
+-->
+    <record id="action_picking_tree4_dev_gpa_1" model="ir.actions.act_window">
+        <field name="name">Ingresos Devolución</field>
+        <field name="res_model">stock.picking</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar</field>
+        <field name="domain">[('type','=','in'),('type_internal_menu','=','indev')]</field>
+        <field name="context">{'contact_display': 'partner_address',
+		  'type':'in','type_internal_menu':'indev'}</field>
+        <field name="search_view_id" ref="view_picking_in_search_gpa"/>
+    </record>
+
+    <record id="action_picking_tree_in_dev_gpa_1" model="ir.actions.act_window.view">
+      <!--field eval="1" name="sequence"/-->
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="stock.vpicktree"/>
+      <field name="act_window_id" ref="action_picking_tree4_dev_gpa_1"/>
+    </record>
+    
+    <record id="action_picking_form_in_dev_gpa_1" model="ir.actions.act_window.view">
+      <!--field eval="1" name="sequence"/-->
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_picking_in_dev_form_modified2"/>
+      <field name="act_window_id" ref="action_picking_tree4_dev_gpa_1"/>
+    </record>
+
+    <record id="action_picking_tree6_gpa" model="ir.actions.act_window">
+      <field name="name">Transferencias Internas</field>
+      <field name="res_model">stock.picking</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="domain">[('type','=','internal'),('type_internal_menu','=','internal')]</field>
+      <field name="context">{'default_type': 'internal', 'contact_display': 'partner_address', 
+		"type":"internal",'type_internal_menu':'internal'}</field>
+      <field name="search_view_id" ref="view_picking_internal_search_gpa"/>
+    </record>
+
+    <record id="action_picking_tree_internal_gpa" model="ir.actions.act_window.view">
+      <field eval="1" name="sequence"/>
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="stock.vpicktree"/>
+      <field name="act_window_id" ref="action_picking_tree6_gpa"/>
+    </record>
+    
+    <record id="action_picking_form_internal_gpa" model="ir.actions.act_window.view">
+      <field eval="1" name="sequence"/>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_picking_internal_form_modified"/>
+      <field name="act_window_id" ref="action_picking_tree6_gpa"/>
+    </record>
+    
+    <record id="action_picking_tree_gpa_out_123" model="ir.actions.act_window">
+      <field name="name">Egresos</field>
+      <field name="res_model">stock.picking</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="domain">[('type','=','out'),('type_internal_menu','=','out')]</field>
+      <field name="context">{'default_type': 'out', 'contact_display': 'partner_address', 
+		'search_default_confirmed': 1,"type":"out",
+		'type_internal_menu':'out'}</field>
+      <field name="search_view_id" ref="view_picking_out_search_gpa"/>
+    </record>
+
+    <record id="action_picking_tree_out_gpa_123" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="stock.vpicktree"/>
+      <field name="act_window_id" ref="action_picking_tree_gpa_out_123"/>
+    </record>
+    
+    <record id="action_picking_form_out_gpa_123" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_picking_out_form_modified2"/>
+      <field name="act_window_id" ref="action_picking_tree_gpa_out_123"/>
+    </record>
+
+
+    <record id="action_picking_tree_gpa_out_dev_123" model="ir.actions.act_window">
+      <field name="name">Egresos Devolucion</field>
+      <field name="res_model">stock.picking</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="domain">[('type','=','out'),('type_internal_menu','=','outdev')]</field>
+      <field name="context">{'default_type': 'out', 'contact_display': 'partner_address', 
+		"type":"out",'type_internal_menu':'outdev'}</field>
+      <field name="search_view_id" ref="view_picking_out_search_gpa"/>
+    </record>
+
+    <record id="action_picking_tree_out_dev_gpa_123" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="stock.vpicktree"/>
+      <field name="act_window_id" ref="action_picking_tree_gpa_out_dev_123"/>
+    </record>
+    
+    <record id="action_picking_form_out_dev_gpa_123" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_picking_out_dev_form_modified2"/>
+      <field name="act_window_id" ref="action_picking_tree_gpa_out_dev_123"/>
+    </record>
+    
+    <!-- MENUS -->
+
+<delete model="ir.ui.menu" search="[('name','=','Incoming Shipments')]"/>
+<delete model="ir.ui.menu" search="[('name','=','Internal Moves')]"/>
+<delete model="ir.ui.menu" search="[('name','=','Delivery Orders')]"/>
+<menuitem action="action_picking_tree4_gpa" name="Ingresos" id="menu_action_picking_ingresos" 
+		  parent="menu_action_picking_ingresos_parent" sequence="1"/>
+<!--menuitem action="action_picking_tree4_dev_gpa_1" name="Ingresos Devolucion" 
+		  id="menu_action_picking_ingresos_dev" parent="menu_action_picking_ingresos_parent"
+		  sequence="2"/-->
+<menuitem action="action_picking_tree6_gpa" name="Internos" id="menu_action_picking_internos"
+		  parent="stock.menu_stock_warehouse_mgmt" sequence="100"/>
+<menuitem action="action_picking_tree_gpa_out_123" name="Egresos" 
+		  id="menu_action_picking_egresos" parent="menu_action_picking_egresos_parent" 
+		  sequence="2"/>
+<!--menuitem action="action_picking_tree_gpa_out_dev_123" name="Egresos Devolución" 
+		  id="menu_action_picking_egresos_dev" parent="menu_action_picking_egresos_parent"
+		  sequence="3"/-->
+
+
+
+<!-- menu de movimientos de inventario
+-->
+<record id="view_move_tree_gpa" model="ir.ui.view">
+  <field name="name">stock.move.tree.gpa</field>
+  <field name="model">stock.move</field>
+  <field name="type">tree</field>
+  <field eval="1" name="priority"/>
+  <field name="arch" type="xml">
+    <tree colors="grey:state == 'cancel';
+		  red:(state not in ('cancel','done')) and date > current_date" 
+	  string="Moves" editable="top">
+      <field name="name"/>
+      <field name="picking_id" string="Reference"/>
+      <field name="department_id"/>
+      <field name="create_date" invisible="1"/>
+      <field name="partner_id" string="Proveedor"/>
+      <field name="product_id"/>
+      <field name="categ_id"/>
+      <field name="product_qty" 
+	     on_change="onchange_quantity(product_id, product_qty, product_uom, product_uos)"/>
+      <field name="price_unit"/>
+      <field name="product_uom" string="UoM"/>
+      <field name="product_uos" groups="product.group_uos"/>
+      <field name="objeto_id"/>
+      <!--field name="location_id"/>
+      <field name="location_dest_id"/>
+      <field name="receptor_id"/>
+      <field name="project_id"/-->
+      <field name="date"/>
+      <field name="date_expected"/>
+      <field name="state"/>
+    </tree>
+  </field>
+</record>
+
+<record id="view_move_search_gpa" model="ir.ui.view">
+  <field name="name">stock.move.search.gpa</field>
+  <field name="model">stock.move</field>
+  <field name="type">search</field>
+  <field eval="1" name="priority"/>
+  <field name="arch" type="xml">
+    <search string="Stock Moves">
+      <group>
+        <!--filter icon="terp-camera_test" string="Ready" name="ready" 
+				domain="[('state','=','assigned')]" help="Stock moves that are Available (Ready to process)"/>
+        <filter icon="terp-stock" string="Futuro" name="future" 
+				domain="[('state','in',('assigned','confirmed','waiting'))]" 
+				help="Stock moves that are Confirmed, Available or Waiting"/>
+        <filter icon="terp-dialog-close" string="Done" name="done" 
+		domain="[('state','=','done')]" help="Stock moves that have been processed"/-->
+        <separator orientation="vertical"/>
+        <filter icon="terp-go-today" string="Today" 
+		domain="[('date','&lt;=',time.strftime('%%Y-%%m-%%d 23:59:59')),
+			('date','&gt;=',time.strftime('%%Y-%%m-%%d 00:00:00'))]" 
+		help="Orders processed Today or planned for Today"/>
+        <separator orientation="vertical"/>
+	<field name="categ_id" string="Categoria/Familia"/>
+        <field name="product_id"/>
+	<field name="department_id"/>
+	<field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	<field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+	<field name="objeto_id"/>
+      </group>
+      <newline/>
+      <group expand="1" string="Group By..." groups="base.group_extended">
+        <filter string="Product" name="by_product" icon="terp-accessories-archiver" 
+				domain="[]"  context="{'group_by':'product_id'}"/>
+       <filter string="Departamento" name="by_department" icon="terp-accessories-archiver" 
+				domain="[]"  context="{'group_by':'department_id'}"/>
+
+        <filter string="Categoria/Familia" name="by_categ" icon="terp-accessories-archiver" 
+				domain="[]"  context="{'group_by':'categ_id'}"/>
+        <filter string="Objeto Receptor" name="by_obj" icon="terp-accessories-archiver" 
+				domain="[]"  context="{'group_by':'objeto_id'}"/>
+        <filter string="Picking" name="groupby_picking_id" icon="terp-accessories-archiver"
+				domain="[]"  context="{'group_by':'picking_id'}"/>
+        <separator orientation="vertical"/>
+        <filter icon="terp-stock_effects-object-colorize" string="State" domain="[]" 
+				context="{'group_by':'state'}" />
+        <separator orientation="vertical"/>
+        <filter string="Fecha" name="groupby_date" icon="terp-go-month"
+				domain="[]" context="{'group_by':'date'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record id="action_move_form2_gpa" model="ir.actions.act_window">
+  <field name="name">Movimientos de Inventario(Kardex)</field>
+  <field name="res_model">stock.move</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+  <field name="view_id" ref="view_move_tree_gpa"/>
+  <field name="search_view_id" ref="view_move_search_gpa"/>
+  <field name="context">{'search_default_ready':1}</field>
+</record>
+
+<menuitem action="action_move_form2_gpa" id="stock.menu_action_move_form2" 
+		  parent="stock.menu_traceability" sequence="3" name="Movimiento Inventario(Kardex)"/>
+
+<!--
+CONFIG SEQUENCES
+-->
+
+<record id="view_picking_seq_form" model="ir.ui.view">
+  <field name="name">stock.config.sequence.form</field>
+  <field name="model">stock.config.sequence</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Configuración Secuencias">
+	  <field name="bodega_id" domain="[('usage','=','internal')]"/>
+	  <field name="in_seq"/>
+	  <field name="in_dev_seq"/>
+	  <field name="out_seq"/>
+	  <field name="out_dev_seq"/>
+	  <field name="internal_seq"/>
+	</form>
+  </field>
+</record>
+
+<record id="view_stock_config_seq_tree" model="ir.ui.view">
+  <field name="name">stock.config.seq.tree</field>
+  <field name="model">stock.config.sequence</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Secuencias">
+	  <field name="bodega_id"/>
+	  <field name="in_seq"/>
+	  <field name="in_dev_seq"/>
+	  <field name="out_seq"/>
+	  <field name="out_dev_seq"/>
+	  <field name="internal_seq"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_stock_config_seq_form" model="ir.actions.act_window">
+  <field name="name">Secuencias</field>
+  <field name="res_model">stock.config.sequence</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_stock_config_seq_form" id="menu_stock_config_seq_form" 
+		  parent="stock.menu_warehouse_config"/>
+
+
+    </data>
+</openerp>

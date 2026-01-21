@@ -1,0 +1,54 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2011-2013 Gnuthink Software Labs Cia. Ltda.
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+__author__ = 'Mario Chogllo'
+
+import time
+import logging
+
+from osv import osv, fields
+
+class hrDecimoTercer(osv.Model):
+    _name = 'hr.decimo.tercer'
+    _columns = dict(
+        name = fields.many2one('hr.work.period','Año Laboral',required=True),
+        date_start = fields.date('Fecha Desde',required=True),
+        date_end = fields.date('Fecha Hasta',required=True),
+        state = fields.selection([('Borrador','Borrador'),('Terminado','Terminado')],'Estado'),
+        )
+    _defaults = dict(
+        state = 'Borrador'
+        )
+hrDecimoTercer
+
+
+class hrDecimoCuarto(osv.Model):
+    _name = 'hr.decimo.cuarto'
+    _columns = dict(
+        name = fields.many2one('hr.work.period','Año Laboral',required=True),
+        date_start = fields.date('Fecha Desde',required=True),
+        date_end = fields.date('Fecha Hasta',required=True),
+        state = fields.selection([('Borrador','Borrador'),('Terminado','Terminado')],'Estado'),
+        )
+    _defaults = dict(
+        state = 'Borrador'
+        )
+hrDecimoCuarto

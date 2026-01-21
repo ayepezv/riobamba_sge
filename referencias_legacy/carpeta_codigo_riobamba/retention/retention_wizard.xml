@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem name="Reportes y Pagos SRI" id="menu_sri_reporting" parent="account.menu_finance"/>
+
+    <record id="wizard_export_ats_form" model="ir.ui.view">
+      <field name="name">Exportar ATS XML</field>
+      <field name="model">wizard.ats</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Exportar Archiv ATS">
+          <group col="4" colspan="4" states="choose" fill="0">
+	        <separator string="Se exportara la informacion de la empresa a la que pertenece el usuario actual." colspan="4"/>
+	        <field name="company_id" required="1" readonly="1"/>
+		<field name="fy_id"/>
+	        <field name="period_id" required="1" domain="[('fiscalyear_id','=',fy_id),('special','=',False)]"/>
+		<field name="no_validate" invisible="1"/>
+		<field name="num_estab_ruc"/>
+		<field name="pay_limit" readonly="1"/>
+		<field name="opt"/>
+          </group>
+	  <group col="4" colspan="4" states="export" fill="0">
+	    <separator string="Archivo generado correctamente, guardelo en su ubicacion de preferencia." colspan="4"/>
+	    <field name="name" colspan="4"/>
+	    <field name="filename" invisible="1"/>
+	    <field name="data" filename="filename" colspan="4"/>
+	  </group>
+	      <field name="state" invisible="1"/>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" states="choose" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="act_export_ats" states="choose" string="Exportar XML" type="object"/>
+	        <button icon="gtk-ok" name="act_cancel" states="export" string="Cerrar" type="object"/>
+          </group>                    
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_export_ats" model="ir.actions.act_window">
+      <field name="name">Exportar Anexo Transaccional Simplificado</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.ats</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_export_ats" id="menu_export_ats" parent="menu_sri_reporting"/>
+
+    <!-- REOC -->
+
+    <record id="wizard_export_reoc_form" model="ir.ui.view">
+      <field name="name">Exportar REOC XML</field>
+      <field name="model">wizard.reoc</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Exportar Archiv REOC">
+          <group col="4" colspan="4" states="choose" fill="0">
+	        <separator string="Se exportara la informacion de la empresa a la que pertenece el usuario actual." colspan="4"/>
+	        <field name="company_id" required="1" readonly="1"/>
+		<field name="fy_id"/>
+	        <field name="period_id" required="1" domain="[('fiscalyear_id','=',fy_id),('special','=',False)]"/>
+		<field name="no_validate" invisible="1"/>
+		<field name="num_estab_ruc"/>
+		<field name="pay_limit" readonly="1"/>
+		<field name="opt"/>
+          </group>
+	  <group col="4" colspan="4" states="export" fill="0">
+	    <separator string="Archivo generado correctamente, guardelo en su ubicacion de preferencia." colspan="4"/>
+	    <field name="name" colspan="4"/>
+	    <field name="filename" invisible="1"/>
+	    <field name="data" filename="filename" colspan="4"/>
+	  </group>
+	      <field name="state" invisible="1"/>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" states="choose" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="act_export_reoc" states="choose" string="Exportar XML" type="object"/>
+	        <button icon="gtk-ok" name="act_cancel" states="export" string="Cerrar" type="object"/>
+          </group>                    
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_export_reoc" model="ir.actions.act_window">
+      <field name="name">Exportar REOC</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.reoc</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_export_reoc" id="menu_export_reco" parent="menu_sri_reporting"/>
+    
+
+    <!-- DEVOLUCION IVA -->
+
+    <record id="wizard_export_iva_form" model="ir.ui.view">
+      <field name="name">Exportar DEVOLUCION IVA XML</field>
+      <field name="model">wizard.iva</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Exportar Archivo Devolucion IVA">
+          <group col="4" colspan="4" states="choose" fill="0">
+	        <separator string="Se exportara la informacion de la empresa a la que pertenece el usuario actual." colspan="4"/>
+	        <field name="company_id" required="1" readonly="1"/>
+		<field name="fy_id"/>
+	        <field name="period_id" required="1" domain="[('fiscalyear_id','=',fy_id),('special','=',False)]"/>
+		<field name="no_validate" invisible="1"/>
+		<field name="num_estab_ruc"/>
+		<field name="pay_limit" readonly="1"/>
+		<field name="opt"/>
+          </group>
+	  <group col="4" colspan="4" states="export" fill="0">
+	    <separator string="Archivo generado correctamente, guardelo en su ubicacion de preferencia." colspan="4"/>
+	    <field name="name" colspan="4"/>
+	    <field name="filename" invisible="1"/>
+	    <field name="data" filename="filename" colspan="4"/>
+	  </group>
+	      <field name="state" invisible="1"/>
+          <group colspan="4">
+            <button icon="gtk-cancel" name="act_cancel" special="cancel" states="choose" string="Cancelar" type="object"/>
+            <button icon="gtk-execute" name="act_export_iva" states="choose" string="Exportar XML" type="object"/>
+	        <button icon="gtk-ok" name="act_cancel" states="export" string="Cerrar" type="object"/>
+          </group>                    
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_export_iva" model="ir.actions.act_window">
+      <field name="name">Exportar Devolucion IVA</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.iva</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem action="action_export_iva" id="menu_export_iva" parent="menu_sri_reporting"/>
+
+    <!-- -->
+
+
+    
+    <menuitem
+        icon="STOCK_INDENT"
+        action="account.action_account_tax_chart"
+        id="account.menu_action_tax_code_tree"
+        parent="menu_sri_reporting"
+        groups="account.group_account_user,account.group_account_manager"
+        sequence="12"/>
+
+
+
+
+
+    <!-- Vouchers para SRI filtro extra_type='sri'-->
+
+        <record id="action_vendor_payment_sri" model="ir.actions.act_window">
+            <field name="name">Pagos Realizados al SRI</field>
+            <field name="res_model">account.voucher</field>
+            <field name="view_type">form</field>
+            <field name="domain">[('journal_id.type', 'in', ['bank', 'cash']), ('type','=','payment'),('extra_type','=','sri')]</field>
+            <field name="context">{'type':'payment', 'extra_type': 'sri'}</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="account_voucher.view_voucher_filter_vendor_pay"/>
+            <field name="target">current</field>
+        </record>
+        <record id="action_vendor_payment_sri_tree" model="ir.actions.act_window.view">
+            <field eval="1" name="sequence"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="action_vendor_payment_sri"/>
+        </record>
+        <record id="action_vendor_payment_sri_form" model="ir.actions.act_window.view">
+            <field eval="2" name="sequence"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="account_voucher.view_vendor_payment_form"/>
+            <field name="act_window_id" ref="action_vendor_payment_sri"/>
+        </record>
+
+        <!--menuitem action="action_vendor_payment_sri" icon="STOCK_JUSTIFY_FILL" sequence="12"
+            id="menu_action_vendor_payment_sri"  parent="menu_sri_reporting"/-->
+
+
+    <record id="wizard_payment_sri" model="ir.ui.view">
+      <field name="name">Pago de Impuesto</field>
+      <field name="model">wizard.payment.sri</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Pago de Impuestos">
+	  <group string="Información de Pago" colspan="4" col="4">
+	    <field name="period_id"/>
+	    <field name="journal_id" widget="selection"/>
+	    <field name="date_payment"/>
+	    <!--field name="name"/-->
+	    <field name="total"/>
+	    <field name="total_marcado"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_payment" string="Pagar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_payment_sri" model="ir.actions.act_window">
+      <field name="name">Generar Pago de Impuestos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.payment.sri</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_account_payment_sri_tree" model="ir.ui.view">
+      <field name="name">Pago Impuestos</field>
+      <field name="model">account.payment.sri</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<field name="name" select="1"/>
+	<field name="period_id" select="1"/>
+	<field name="partner_id"/>
+	<field name="state"/>
+      </field>
+    </record>
+
+    <record id="view_account_payment_sri_form" model="ir.ui.view">
+      <field name="name">Pago Impuestos</field>
+      <field name="model">account.payment.sri</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Pagos SRI">
+	  <group string="Información de Consulta" colspan="4" col="4">
+	    <field name="name"/>
+	    <field name="period_id"/>
+	    <field name="date_start" required="1"/>
+	    <field name="date_end" required="1"/>
+	    <field name="partner_id"/>
+	    <field name="move_id" string='Asiento Contable'/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <group col="6" colspan="4">
+		<label string="Aquí se detalla la información de impuestos del mes consultado." colspan="2"/>
+		<button name="action_query" string="Cargar" icon="gtk-execute" type="object" colspan="2"/>
+		<button name="%(action_payment_sri)d" string="Pagar" icon="gtk-execute" type="action" colspan="2"/>
+	      </group>
+	      <group col="4" colspan="4">
+		<newline/>
+		<separator string="Ctas. Impuestos Retenidos" colspan="2"/>
+		<separator string="Detalle Retenciones" colspan="2"/>
+		<field name="account_ids" colspan="2" nolabel="1">
+		  <tree>
+		    <field name='code'/>
+		    <field name='name'/>
+		  </tree>
+		</field>
+		<field name="line_ids" mode="tree" nolabel="1" colspan="2">
+		  <tree string="Detalle" editable="top">
+		    <field name="partner_id" readonly="1"/>
+		    <field name="ref" string='Ref. Factura'  readonly="1"/>
+		    <field name="move_id" readonly="1"/>
+		    <field name="date" readonly="1"/>
+		    <field name="name" readonly="1"/>
+		    <field name="account_id" readonly="1"/>
+		    <field name="budget_id" readonly="1"/>
+		    <field name="to_pay2"/>
+		    <field name="credit" sum="TOTAL CREDITO" readonly="1"/>
+		  </tree>
+		</field>
+	      </group>
+	    </page>
+	  </notebook>
+	  <group>
+	    <field name="state" widget="statusbar"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_payment_sri_wiz" model="ir.actions.act_window">
+      <field name="name">Pago de Impuestos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">account.payment.sri</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        icon="STOCK_INDENT"
+        action="action_payment_sri_wiz"
+        id="menu_payment_sri"
+        parent="menu_sri_reporting"
+        groups="account.group_account_user,account.group_account_manager"
+        sequence="11"/>
+
+  </data>
+</openerp>

@@ -1,0 +1,30 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_holidays_period","holidays.period","model_holidays_period","base.group_hr_manager",1,1,1,1
+"access_doc_holidays_register","hr.doc.holidays","model_hr_doc_holidays","gt_hr_holidays.group_holidays_register",1,1,1,0
+"access_hr_holidays_status","hr.holidays.status","hr_holidays.model_hr_holidays_status","gt_hr_holidays.group_holidays_register",1,0,0,0
+"access_permiso_hora","permiso.hora","model_permiso_hora","base.group_hr_manager",1,1,1,1
+"access_permiso_hora_holi","permiso.hora","model_permiso_hora","gt_hr_holidays.group_holidays_register",1,1,1,1
+"access_permiso_hora_usr","permiso.hora","model_permiso_hora","base.group_hr_user",1,1,1,1
+"access_permiso_cert_holi","certificado.permiso","model_certificado_permiso","gt_hr_holidays.group_holidays_register",1,1,1,1
+"access_permiso_cert_usr","certificado.permiso","model_certificado_permiso","base.group_hr_user",1,1,1,1
+"access_permiso_cert_inst_holi","certificado.institute","model_certificado_institute","gt_hr_holidays.group_holidays_register",1,1,1,1
+"access_permiso_cert_inst_usr","certificado.institute","model_certificado_institute","base.group_hr_user",1,1,1,1
+"access_permiso_hora_doc","permiso.hora","model_permiso_hora","gt_document_manager.group_doc_user",1,1,1,0
+"access_atraso_holi","holiday.atraso","model_holiday_atraso","gt_hr_holidays.group_holidays_register",1,1,1,1
+"access_atraso_usr","holiday.atraso","model_holiday_atraso","base.group_hr_user",1,1,1,1
+"access_lqatraso_holi","liquida.atraso","model_liquida_atraso","gt_hr_holidays.group_holidays_register",1,1,1,1
+"access_lqatraso_usr","liquida.atraso","model_liquida_atraso","base.group_hr_user",1,1,1,1
+"access_descuenta_holy","descuenta.holy","model_descuenta_holy","base.group_hr_manager",1,1,1,1
+"access_descuenta_holy_holi","descuenta.holy","model_descuenta_holy","gt_hr_holidays.group_holidays_register",1,1,1,1
+"access_descuenta_holy_doc","descuenta.holy","model_descuenta_holy","gt_document_manager.group_doc_user",1,0,0,0
+"access_holidays_period_doc","holidays.period","model_holidays_period","gt_document_manager.group_doc_user",1,0,0,0
+"access_certificado_permiso_doc","certificado.permiso","model_certificado_permiso","gt_document_manager.group_doc_user",1,1,1,0
+"access_permiso_cert_inst_usr_doc","certificado.institute","model_certificado_institute","gt_document_manager.group_doc_user",1,0,0,0
+"access_lqpermiso_usr","liquida.permiso","model_liquida_permiso","base.group_hr_user",1,1,1,1
+"access_calculo_vacaciones_usr","calculo.vacaciones","model_calculo_vacaciones","base.group_hr_user",1,1,1,1
+"access_calculo_vacaciones_line_usr","calculo.vacaciones.line","model_calculo_vacaciones_line","base.group_hr_user",1,1,1,1
+"access_permiso_hora alone","permiso.hora","model_permiso_hora","gt_document_manager.group_doc_readonly",1,1,1,1
+"access_hr_employee alone","hr.employee","hr.model_hr_employee","gt_document_manager.group_doc_readonly",1,0,0,0
+"access_descuenta_holy_doc alone","descuenta.holy","model_descuenta_holy","gt_document_manager.group_doc_readonly",1,0,0,0
+"access_account_sequence_fiscalyear alone","account.sequence.fiscalyear","account.model_account_sequence_fiscalyear","gt_document_manager.group_doc_readonly",1,0,0,0
+"access_hr_job alone","hr.job","hr.model_hr_job","gt_document_manager.group_doc_readonly",1,0,0,0

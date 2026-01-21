@@ -1,0 +1,51 @@
+# -*- coding: utf-8 -*-
+
+from osv import osv, fields
+
+
+class ProductCategory(osv.Model):
+    _inherit = 'product.category'
+
+    def name_get(self, cr, uid, ids, context=None):
+        BUDGET = {
+            'corriente': 'CORRIENTE',
+            'inversion': 'INVERSION',
+            'general': 'GENERAL',
+            'ogastos': 'OTROS GASTOS (CORRIENTE)',
+            'opublica': 'OBRAS PUBLICAS (INVERSION)',
+            'ginversion': 'GASTOS DE INVERSION',
+            'tranf': 'TRANSF. DE INVERSION',
+            'bienesld': 'BIENES DE LARGA DURACION (INVERSION)'}           
+        if not len(ids):
+            return []
+        reads = self.read(cr, uid, ids, ['name', 'budget'], context=context)
+        res = []
+        for record in reads:
+            name = '%s (%s)' % (record['name'], BUDGET[record['budget']])
+            res.append((record['id'], name))
+        return res    
+
+    _columns = dict(
+        budget = fields.selection([('corriente','CORRIENTE'),
+                                   ('inversion','INVERSION'),
+                                   ('general','GENERAL'),
+                                   ('ogastos','OTROS GASTOS (CORRIENTE)'),
+                                   ('opublica','OBRAS PUBLICAS (INVERSION)'),
+                                   ('ginversion', 'GASTOS DE INVERSION'),
+                                   ('tranf','TRANSF. DE INVERSION'),
+                                   ('bienescontrol','BIENES SUJETO CONTROL'),
+                                   ('bienesld','BIENES DE LARGA DURACION'),],
+                                  string='Aplicacion Presupuestaria.', required=True),
+        presp_aplic_id = fields.many2one('presp.ref.aplication', string='Aplicación Presupuestaria'),
+        taxes_id = fields.many2many('account.tax', 'categ_taxes_rel',
+                                    'prod_id', 'tax_id', 'Customer Taxes',
+                                    domain=[('parent_id','=',False),('type_tax_use','in',['sale','all'])]),
+        supplier_taxes_id = fields.many2many('account.tax',
+                                             'categ_supplier_taxes_rel', 'prod_id', 'tax_id',
+                                             'Supplier Taxes', domain=[('parent_id', '=', False),('type_tax_use','in',['purchase','all'])]),        
+        )
+
+    _defaults = {
+        'budget': 'corriente',
+        }
+

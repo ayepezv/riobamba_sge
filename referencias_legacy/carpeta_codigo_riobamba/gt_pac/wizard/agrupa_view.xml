@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_agrupa_pac" model="ir.ui.view">
+        <field name="name">Agrupar Pac</field>
+        <field name="model">agrupa.pac</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente agrupar Pac">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="user_id" colspan="4" readonly="1"/>
+		<field name="department_id" colspan="4"/>
+	      </group>
+	      <newline/>
+	      <group colspan="4">
+		<field name="pac_ids" colspan="4" required="1" domain="[('department_id','=',department_id)]"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="agrupa_pac" type="object" icon="gtk-execute"  string="Agrupar" 
+			confirm="Esta seguro que desea agrupar"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_agrupa_pac" model="ir.actions.act_window">
+        <field name="name">Agrupar Pac</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">agrupa.pac</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_agrupar_pac"
+		icon="STOCK_EXECUTE"
+		action="action_agrupa_pac"
+		parent="gt_government_procedure.menu_purchase_requisition_document"
+		name="Agrupar Pac"
+		sequence="3"/>
+
+      <!-- Exportar excel -->
+      <record id="view_export_pac" model="ir.ui.view">
+        <field name="name">Exportar Pac</field>
+        <field name="model">export.pac</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Exportar Pac">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="year_id" colspan="2" widget="selection" required="1"/>
+		<field name="tipo" colspan="2" required="1"/>
+	      </group>
+	      <group colspan="4">
+		<field name="datas_fname" colspan="2" invisible="1"/>
+		<field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	      </group>
+	      <newline/>
+	      <group colspan="4">
+		<field name="pac_ids" colspan="4" attrs="{'invisible': [('tipo', '=','Todo')],'required': [('tipo', '!=','Todo')]}"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="exportaPac" type="object" icon="gtk-execute"  string="Exportar" 
+			confirm="Esta seguro que desea exportar"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_export_pac" model="ir.actions.act_window">
+        <field name="name">Exportar Pac</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">export.pac</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_export_pac"
+		icon="STOCK_EXECUTE"
+		action="action_export_pac"
+		parent="menu_purchase_pac"
+		name="Exportar Pac"
+		sequence="6"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Gestion de Obras - GobERP
+#    Copyright (C) 2013 Mario Chogllo
+#    mariofchogllo@gmail..com
+#    $Id$
+#
+##############################################################################
+
+from osv import osv, fields
+
+class ObraObraPago(osv.Model):
+    _name = 'obra.obra.pago'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra'),
+        name = fields.char('Descripcion',size=64,required=True),
+        date = fields.date('Fecha Pago'),
+        valor = fields.float('Monto'),
+    )
+ObraObraPago()
+
+class ObraObra(osv.Model):
+    _name = 'obra.obra'
+    _columns = dict(
+        state = fields.selection([('Borrador','Borrador'),('Ejecucion','Ejecucion'),('Finalizado','Finalizado')],'Estado',readonly=True)
+        name = fields.char('Nombre',size=128,required=True),
+        project_id = fields.many2one('project.project','Proyecto/Programa POA',required=True),
+        partner_id = fields.many2one('res.partner','Contratista',required=True),
+        monto_anticipo = fields.float('Anticipo'),
+        date_start = fields.date('Fecha Inicio'),
+        date_end = fields.date('Fecha Fin'),
+        pay_ids = fields.one2many('obra.obra.pago','obra_id','Terminos Pago'),
+        certificate_ids = fields.one2many('budget.certificate','obra_id','Certificados Presupuestarios'),
+        pago_ids = fields.one2many('account.move','obra_id','Pagos Realizados'),
+    )
+    _defaults = dict(
+        state = 'Borrador',
+    )
+ObraObra()

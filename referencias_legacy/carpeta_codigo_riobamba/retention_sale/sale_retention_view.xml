@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="view_acc_auth_form2" model="ir.ui.view">
+      <field name="name">view.acc.auth.form2</field>
+      <field name="model">account.authorisation</field>
+      <field name="inherit_id" ref="retention.view_account_auth_form"/>
+      <field name="arch" type="xml">
+	<field name="partner_id" position="after">
+	  <field name="shop_id" widget="selection" attrs="{'invisible': [('in_type','!=','interno')]}"/>
+	  <newline/>
+	</field>
+      </field>
+    </record>
+  </data>
+</openerp>

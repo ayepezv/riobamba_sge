@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style type="text/css">
+    .line {
+    border-bottom:1pt solid black;
+    }
+  </style>
+</head>
+<body>
+%for o in objects:
+<table width="100%" style="border:thin solid;">
+  <thead>
+    <h3 colspan="2" style="text-align:center">COMPROMISO PRESUPUESTARIO No. ${ o.number }</h3>
+    <tr>
+      <th style="text-align:right">Fecha de Emisión:</th>
+      <td style="text-align:left">${ formatLang(o.date_confirmed, date=True) }</td>
+    </tr>
+    <tr>
+      <th style="text-align:right">Proveedor:</th>
+      <td style="text-align:left">${o.partner_id.ced_ruc}, ${ o.partner_id.name }</td>
+    </tr>
+    <tr>
+      <th></th>
+    </tr>
+      <tr>
+      </tr>
+      <tr>
+      </tr>
+      <tr>
+      </tr>
+      <tr>
+      </tr>                
+  </thead>
+  <tbody>
+    <table width="100%">
+      <tr>
+        <b>DETALLE</b>
+      </tr>
+      <tr>
+	<td>${ o.notes }</td>
+        <td>${ o.notes }</td>
+      </tr>
+    </table>
+    <table width="100%" style="border:thin solid;">
+      <tr>
+        <tr>
+          <th width="35%">PROYECTO</th>
+          <th width="50%">PARTIDA PRESUPUESTARIA</th>
+          <th width="15%">MONTO</th>
+        </tr>
+      </tr>
+      %for line in o.line_ids:
+      <tbody>
+        <tr>
+          <td align="left">${line.project_id.name }</td>
+          <td align="left">${line.budget_id.code } ${ line.budget_id.name }</td>
+          <td style="text-align:right">$ ${ line.amount_certified }</td>
+        </tr>
+      </tbody>
+      %endfor
+      <tfoot>
+        <tr>
+	  <td></td>
+          <td style="text-align:right;"><strong>TOTAL:</strong></td>
+          <td style="text-align:right;"><strong>${o.amount_certified}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </tbody>
+  <tfoot>
+    <br>
+    <br>
+    <br>
+    <br>
+    <table width="100%">
+      <tr>
+        <th>AUTORIZADO</th>
+        <th>VALIDADO</th>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td align="center">${ o.department_id.manager_id.complete_name }</td>
+        <td align="center">DIRECTOR FINANCIERO</td>
+      </tr>
+    </table>
+  </tfoot>
+</table>  
+%endfor
+</body>
+</html>

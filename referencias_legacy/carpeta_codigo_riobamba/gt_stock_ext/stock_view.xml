@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+
+  <report auto="False" id="saldo_inventario" model="saldo.inventario"
+          name="saldo_inventario" rml="gt_stock_ext/report/saldo_inventario.mako"
+          usage="default" string="Saldo Inventario" header="True" report_type="webkit"/>
+
+  <report auto="False" id="saldo_inventario_detalle" model="saldo.inventario"
+          name="saldo_inventario_detalle" rml="gt_stock_ext/report/saldo_inventario_detalle.mako"
+          usage="default" string="Saldo Inventario Detalle" header="True" report_type="webkit"/>
+
+  <report auto="False" id="objeto_receptor_rp" model="objeto.receptor.rp"
+          name="objeto_receptor" rml="gt_stock_ext/report/objeto_receptor_rp.mako"
+          usage="default" string="Objeto receptor" header="True" report_type="webkit"/>
+<!-- REPORTE SaLDOS INV y CORRIENTE -->
+    <record model="ir.ui.view" id="view_saldo_inventario_form">
+      <field name="name">Saldo Inventario</field>    
+      <field name="model">saldo.inventario</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Saldo Inventario">
+          <group  colspan="4">
+	    <field name="date" colspan="2" required="1"/>
+	    </group>
+	    <group  colspan="4" col='3'>
+	      <button name="computeSaldoInventario" string="Generar" icon="gtk-execute" type="object" colspan="1"/>
+	      <button name="printSaldoInventario" string="Imprimir" icon="gtk-print" type="object" colspan="1"/>
+	      <button name="printSaldoInventarioDetalle" string="Imprimir Detalle Existencias" icon="gtk-print" type="object" colspan="1"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Detalle Corriente">
+		<field name="linec_ids" readonly="1" nolabel="1">
+		  <tree>
+		    <field name="category_id"/>
+		    <field name="total" sum="TOTAL"/>
+		  </tree>
+		  <form>
+		    <field name="line_ids">
+		      <tree>
+			<field name='name'/>
+			<field name='saldo'/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+	      </page>
+	      <page string="Detalle Inversion">
+		<field name="linei_ids" readonly="1" nolabel="1">
+		  <tree>
+		    <field name="category_id"/>
+		    <field name="total" sum="TOTAL"/>
+		  </tree>
+		  <form>
+		    <field name="line_ids">
+		      <tree>
+			<field name='name'/>
+			<field name='saldo'/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+	      </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_saldo_inventario">
+	  <field name="name">Saldos Inventario</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">saldo.inventario</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	    id="report_saldo_inventario"
+	    sequence="0"
+	    parent="stock.menu_traceability"
+	    action="action_saldo_inventario"/>
+<!--reporte receptor -->
+    <record model="ir.ui.view" id="view_objeto_receptor_rp_form">
+      <field name="name">Objeto receptor</field>    
+      <field name="model">objeto.receptor.rp</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Objeto Receptor">
+          <group  colspan="4">
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	    <field name="receptor_id" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="loadReceptorMove" string="Cargar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="printPickingReceptor" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook>
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel='1'>
+		<tree>
+		  <field name="date"/>
+		  <field name="product_id"/>
+		  <field name="documento"/>
+		  <field name="solicitant_id"/>
+		  <field name="qty" sum="Total"/>
+		  <field name="pu"/>
+		  <field name="total" sum="Total"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_receptor_rp">
+      <field name="name">Objeto receptor</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">objeto.receptor.rp</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem
+	id="report_receptor_rp"
+	sequence="15"
+	parent="stock.menu_traceability"
+	action="action_receptor_rp"/>
+    <!-- -->
+<record id="view_picking_objeto_form" model="ir.ui.view">
+  <field name="name">stock.objeto.form</field>
+  <field name="model">stock.objeto</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Objeto Receptor">
+      <field name="name"/>
+    </form>
+  </field>
+</record>
+
+<record id="view_stock_objeto_tree" model="ir.ui.view">
+  <field name="name">stock.objeto.tree</field>
+  <field name="model">stock.objeto</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Objeto Receptor">
+      <field name="name"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_stock_objeto_form" model="ir.actions.act_window">
+  <field name="name">Objeto Receptor</field>
+  <field name="res_model">picking.objeto</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_stock_objeto_form" id="menu_stock_objeto_form" 
+		  parent="stock.menu_warehouse_config"/>
+	
+
+<!-- Objeto receptor -->
+<record id="stock_picking_receptor" model="ir.ui.view">
+  <field name="name">stock.picking.receptor</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="gt_stock.view_picking_in_form_modified2"/>
+  <field name="arch" type="xml">
+    <field name="receptor_id" position="after">
+      <field name="objeto_id" colspan="4"/>
+    </field>
+    <xpath expr="/form/notebook/page[@string='Observaciones']" position="after">
+      <page string="Cuentas">
+	<field name="categ_aux" nolabel="1"/>
+      </page>
+    </xpath>
+  </field>
+</record>
+
+<record id="stock_picking_out_receptor" model="ir.ui.view">
+  <field name="name">stock.picking.out.receptor</field>
+  <field name="model">stock.picking</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="gt_stock.view_picking_out_form_modified2"/>
+  <field name="arch" type="xml">
+    <field name="receptor_id" position="after">
+      <field name="objeto_id" colspan="4"/>
+    </field>
+    <xpath expr="//page[@string='Observaciones']" position="after">
+      <page string="Cuentas">
+	<field name="categ_aux" nolabel="1"/>
+      </page>
+    </xpath>
+  </field>
+</record>
+
+
+</data>
+</openerp>

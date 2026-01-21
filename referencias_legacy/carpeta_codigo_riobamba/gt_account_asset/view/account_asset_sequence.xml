@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate='1'>
+        <record id="seq_type_account_asset" model="ir.sequence.type">
+            <field name="name">Activos</field>
+            <field name="code">account.asset</field>
+        </record>
+        <record id="seq_account_asset" model="ir.sequence">
+            <field name="name">Activos</field>
+            <field name="code">account.asset</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record>
+        <record id="seq_type_account_asset_no_depreciate" model="ir.sequence.type">
+            <field name="name">Activos no depreciables</field>
+            <field name="code">account.asset.no.depreciate</field>
+        </record>
+        <record id="seq_account_asset_no_depreciate" model="ir.sequence">
+            <field name="name">Activos no depreciables</field>
+            <field name="code">account.asset.no.depreciate</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record>
+           
+		<record id="seq_code_transfer_asset" model="ir.sequence.type">
+            <field name="name">Trasnferencia</field>
+            <field name="code">account.asset.transfer</field>
+        </record>
+        <record id="seq_transfer_asset" model="ir.sequence">
+            <field name="name">Transferencia</field>
+            <field name="code">account.asset.transfer</field>
+            <field name="prefix"></field>
+            <field name="padding">4</field>
+        </record>    
+        <!--Sequence para tipo-->   
+        <record id="seq_type_tipo" model="ir.sequence.type">
+            <field name="name">Tipo</field>
+            <field name="code">gt.account.asset.tipo</field>
+        </record>
+        <record id="seq_tipo" model="ir.sequence">
+            <field name="name">Tipo</field>
+            <field name="code">gt.account.asset.tipo</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record>   
+        <!--Sequence para tipo propiedades-->   
+        <record id="seq_type_tipo_property" model="ir.sequence.type">
+            <field name="name">Tipo Propiedades de bien</field>
+            <field name="code">gt.account.asset.tipo.property</field>
+        </record>
+        <record id="seq_tipo_property" model="ir.sequence">
+            <field name="name">Tipo Propiedades de bien</field>
+            <field name="code">gt.account.asset.tipo.property</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record> 
+        <!--Sequence para subcategoria-->   
+        <record id="seq_type_account_asset_sub_category" model="ir.sequence.type">
+            <field name="name">Subtipo de bien</field>
+            <field name="code">account.asset.subtipo</field>
+        </record>
+        <record id="seq_account_asset_sub_category" model="ir.sequence">
+            <field name="name">Subtipo de bien</field>
+            <field name="code">account.asset.subtipo</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record>   
+         <!--Sequence para clase de activo-->   
+        <record id="seq_type_account_asset_class" model="ir.sequence.type">
+            <field name="name">Clase de Bien</field>
+            <field name="code">gt.account.asset.class</field>
+        </record>
+        <record id="seq_account_asset_class" model="ir.sequence">
+            <field name="name">Clase de Bien</field>
+            <field name="code">gt.account.asset.class</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record>
+		<record id="seq_type_gt_account_asset_transaction" model="ir.sequence.type">
+            <field name="name">Tipo de Transacción</field>
+            <field name="code">gt.account.asset.transaction</field>
+        </record>
+        <record id="seq_gt_account_asset_transaction" model="ir.sequence">
+            <field name="name">Tipo de Transacción</field>
+            <field name="code">gt.account.asset.transaction</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+        </record>
+        <record id="seq_type_gt_account_asset_income" model="ir.sequence.type">
+            <field name="name">Tipo de Bien a Ingresar</field>
+            <field name="code">gt.account.asset.income</field>
+        </record>
+        <record id="seq_gt_account_asset_income" model="ir.sequence">
+            <field name="name">Tipo de Bien a Ingresar</field>
+            <field name="code">gt.account.asset.income</field>
+            <field name="prefix"></field>
+            <field name="padding">9</field>
+        </record>
+        <record id="seq_type_gt_registro_ingreso" model="ir.sequence.type">
+            <field name="name">Registro de ingreso</field>
+            <field name="code">gt.registro.ingreso</field>
+        </record>
+        <record id="seq_gt_registro_ingreso" model="ir.sequence">
+            <field name="name">Registro de ingreso</field>
+            <field name="code">gt.registro.ingreso</field>
+            <field name="prefix"></field>
+            <field name="padding">9</field>
+        </record>
+        <record id="seq_type_gt_registro_baja" model="ir.sequence.type">
+            <field name="name">Registro de baja</field>
+            <field name="code">gt.registro.baja</field>
+        </record>
+        <record id="seq_gt_registro_baja" model="ir.sequence">
+            <field name="name">Registro de baja</field>
+            <field name="code">gt.registro.baja</field>
+            <field name="prefix"></field>
+            <field name="padding">9</field>
+        </record>
+        <record id="seq_type_gt_registro_transferencia" model="ir.sequence.type">
+            <field name="name">Registro de transferencia</field>
+            <field name="code">gt.registro.transferencia</field>
+        </record>
+        <record id="seq_gt_registro_transferencia" model="ir.sequence">
+            <field name="name">Registro de transferencia</field>
+            <field name="code">gt.registro.transferencia</field>
+            <field name="prefix"></field>
+            <field name="padding">9</field>
+        </record>
+        <record id="seq_type_gt_registro_modif" model="ir.sequence.type">
+            <field name="name">Registro de actualizacion</field>
+            <field name="code">gt.registro.actualizacion</field>
+        </record>
+        <record id="seq_gt_registro_modif" model="ir.sequence">
+            <field name="name">Registro de actualizacion</field>
+            <field name="code">gt.registro.actualizacion</field>
+            <field name="prefix"></field>
+            <field name="padding">12</field>
+        </record>
+        <record id="seq_type_gt_tipo_acta" model="ir.sequence.type">
+            <field name="name">Tipo de acta</field>
+            <field name="code">gt.account.asset.tipo.acta</field>
+        </record>
+        <record id="seq_gt_tipo_acta" model="ir.sequence">
+            <field name="name">Tipo de acta</field>
+            <field name="code">gt.account.asset.tipo.acta</field>
+            <field name="prefix"></field>
+            <field name="padding">3</field>
+        </record>   
+        <record id="seq_type_gt_acta" model="ir.sequence.type">
+            <field name="name">Actas</field>
+            <field name="code">gt.account.asset.acta</field>
+        </record>
+        <record id="seq_gt_acta" model="ir.sequence">
+            <field name="name">Actas</field>
+            <field name="code">gt.account.asset.acta</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+        </record>
+        <record id="seq_type_gt_duplica" model="ir.sequence.type">
+            <field name="name">Duplicar activos</field>
+            <field name="code">gt.account.asset.duplicar</field>
+        </record>
+        <record id="seq_gt_duplica" model="ir.sequence">
+            <field name="name">Duplicar activos</field>
+            <field name="code">gt.account.asset.duplicar</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+        </record>   
+            <record id="seq_type_gt_baja_masiva" model="ir.sequence.type">
+            <field name="name">Baja Masiva</field>
+            <field name="code">gt.account.asset.baja.masiva</field>
+        </record>
+        <record id="seq_gt_baja_masiva" model="ir.sequence">
+            <field name="name">Baja Masiva</field>
+            <field name="code">gt.account.asset.baja.masiva</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+        </record>               
+		<record id="seq_type_gt_tipo_categoria" model="ir.sequence.type">
+            <field name="name">Tipo de categoría</field>
+            <field name="code">gt.account.asset.type.category</field>
+        </record>
+        <record id="seq_gt_tipo_categoria" model="ir.sequence">
+            <field name="name">Tipo de categoría</field>
+            <field name="code">gt.account.asset.type.category</field>
+            <field name="prefix"></field>
+            <field name="padding">3</field>
+        </record>     
+        <record id="seq_type_gt_categoria_act" model="ir.sequence.type">
+            <field name="name">Categoría</field>
+            <field name="code">account.asset.category</field>
+        </record>
+        <record id="seq_gt_categoria_act" model="ir.sequence">
+            <field name="name">Categoría</field>
+            <field name="code">account.asset.category</field>
+            <field name="prefix"></field>
+            <field name="padding">3</field>
+        </record>    
+        
+    </data>
+</openerp>
+

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <!-- DIVIDE CUENTA -->
+
+        <record id="view_divide_cuenta_wizard" model="ir.ui.view">
+            <field name="name">Dividir cuenta</field>
+            <field name="model">divide.cuenta</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Cargar">
+                <field name="move_id" colspan="4" readonly="1"/>
+		<field name="move_line_id" colspan="4" domain="[('move_id','=',move_id)]"/>
+                <newline/>
+		<field name="line_ids">
+		  <tree editable='bottom'>
+		    <field name='account_id' domain="[('type','!=','view')]"/>
+		    <field name='monto' sum="TOTAL"/>
+		  </tree>
+		</field>
+                <group col="2" colspan="4">
+                  <button name="divideCuenta" string="Dividir"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Dividir cuenta"
+		    res_model="divide.cuenta"
+		    src_model="account.move"
+		    view_mode="form"
+		    target="new"
+		    key2="client_action_multi"
+		    id="act_divide_cuenta"/>
+
+    <!--LOAD GESTION -->
+
+        <record id="view_load_gestion_wizard" model="ir.ui.view">
+            <field name="name">Gastos Gestion</field>
+            <field name="model">load.gestion</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Cargar">
+                <field name="acc_g1" colspan="4"/>
+		<field name="acc_g2" colspan="4"/>
+		<field name="amount" colspan="2"/>
+                <newline/>
+                <separator colspan="4"/>
+                <group col="2" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" />
+                  <button name="loadGestion" string="Generar"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Gastos Gestion"
+            res_model="load.gestion"
+            src_model="account.move"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_load_gestion"/>
+
+      <record id="view_otros_ingresos_wizard" model="ir.ui.view">
+        <field name="name">Otros Ingresos</field>
+        <field name="model">otros.ingresos</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cargar">
+	    <field name="bank_id" colspan="4" domain="[('type','=','bank')]"/>
+	    <field name="budget_id" colspan="4" domain="['|',('internal_type','=','ingreso'),('tipo','=','i')]"/>
+	    <field name="monto" colspan="2"/>
+            <newline/>
+            <separator colspan="4"/>
+            <group col="2" colspan="4">
+              <button icon='gtk-cancel' special="cancel"
+                      string="Cancelar" />
+              <button name="loadOingresos" string="Generar"
+                      colspan="1" type="object" icon="gtk-ok" />
+            </group>
+          </form>
+        </field>
+      </record>
+      
+      <act_window name="Otros Ingresos"
+		  res_model="otros.ingresos"
+		  src_model="account.move"
+		  view_mode="form"
+		  target="new"
+		  key2="client_action_multi"
+		  id="act_load_partida"/>
+
+        <!--  Make Pay -->
+
+        <record id="view_make_pay_wizard" model="ir.ui.view">
+          <field name="name">Pagar</field>
+          <field name="model">make.pay</field>
+          <field name="type">form</field>
+          <field name="arch" type="xml">
+            <form string="Pagar">
+              <label string="Este asistente realiza el pago automatico del comprobante." colspan="4"/>
+	      <field name="move_id" colspan="4" invisible="1"/>
+              <field name="bank_id" colspan="4" domain="[('type','=','bank')]"/>
+              <!--field name="bank_id" colspan="4" domain="[('type','=','bank')]" on_change="onchange_bank_make(bank_id, move_id)"/-->
+	      <field name="other" colspan="4"/>
+	      <button name="load_cxp_make" string="Cargar Cuentas por Pagar"
+		      colspan="4" type="object" icon="gtk-ok" />
+	      <newline/>
+	      <group string="Detalle a pagar" colspan="4">
+		<field name="line_ids" nolabel="1">
+		  <tree editable="top">
+		    <field name="partner_id" readonly="1"/>
+		    <field name="account_id" readonly="1"/>
+		    <field name="account_id2"/>
+		    <field name="budget_id_cert" readonly="1"/>
+		    <field name="name" readonly="1"/>
+		    <!--field name="account_id2" domain="[('type','!=','view'),('code','like','212')]"/-->
+		    <field name='credit' readonly="1"/>
+		    <field name="judicial_decimo"/>
+		    <field name="monto"/>
+		    <field name="to_pay"/>
+		  </tree>
+		</field>
+		</group>
+                <separator colspan="4"/>
+                <group col="5" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" colspan="1"/>
+                  <button name="make_pay" string="Pagar"
+                          colspan="1" type="object" icon="gtk-ok" />
+		  <button name="verificar_monto" string="Ver total a pagar"
+			  colspan="1" type="object" icon="gtk-ok" />              
+		  <field name="total_pagar" colspan="2" readonly="1"/>
+		</group>
+            </form>
+            </field>
+        </record>
+
+        <act_window name="Pagar"
+            res_model="make.pay"
+            src_model="account.move"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_make_pay"/>
+
+    </data>
+</openerp>

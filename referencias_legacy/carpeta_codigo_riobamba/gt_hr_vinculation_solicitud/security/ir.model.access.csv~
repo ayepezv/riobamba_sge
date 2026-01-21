@@ -1,0 +1,8 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_vinculation","hr.vinculation","model_hr_vinculation","base.group_hr_manager",1,1,1,1
+"access_hr_sol_personal","hr.sol.personal","model_hr_sol_personal","base.group_hr_manager",1,1,1,1
+"access_applicant_vinculation","applicant.vinculation","model_applicant_vinculation","base.group_hr_manager",1,1,1,1
+"access_hr_sol_personal_doc","hr.sol.personal","model_hr_sol_personal","gt_document_manager.group_doc_user",1,1,1,1
+"access_hr_employee_sol_pers","hr.employee","model_hr_employee","gt_document_manager.group_doc_user",1,0,0,0
+"access_hr_department_sol_pers","hr.department","hr.model_hr_department","gt_document_manager.group_doc_user",1,0,0,0
+"access_hr_vinculation_dcusr","hr.vinculation","model_hr_vinculation","gt_document_manager.group_doc_user",1,1,1,0

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <report auto="False"
+            id="rol_decimo3"
+            model="hr.decimo.tercero"
+            name="rol_decimo_tercero"
+            file="gt_hr_decimo/report/rol_decimo4.mako"
+            string="Rol Decimo Tercero"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo4"
+            model="hr.decimo.cuarto"
+            name="rol_decimo_cuarto"
+            file="gt_hr_decimo/report/rol_decimo3.mako"
+            string="Rol Decimo Cuarto"
+            report_type="webkit"
+            webkit_header=""/>
+    
+  </data>
+</openerp>

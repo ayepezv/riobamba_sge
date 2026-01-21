@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+
+      <menuitem id="menu_hr_desvinculation" parent="menu_hr_desvinculation_root" name="Ingreso/Salida" sequence="9" groups="base.group_hr_manager"/>
+
+
+<!-- VINCULATION
+-->
+<record id="view_hr_vinculation" model="ir.ui.view">
+  <field name="name">Vinculación</field>
+  <field name="model">hr.vinculation</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Asistente para la vinculación de un empleado">
+      <label colspan="4" nolabel="1" string="Este wizard le permite a usted vincular a un empleado, debe existir ingresado un contrato y este asistente activará el contrato"/>
+      <group col="4" colspan="4">
+	<group colspan="4">
+	  <field name="employee_id"/>
+	  <field name="contract_id" colspan="2" required="1" domain="[('employee_id','=',employee_id),('active','=',False)]" 
+			 on_change="onchange_c(contract_id)"/>
+	  <field name="type_id" required="1" widget="selection"/>
+	  <field name="job_id" colspan="2" on_change="onchange_job(job_id,contract_id)"
+		 domain="[('state','=','recruit')]"/>
+	  <field name="date" required="1"/>
+	  <field name="date_end"/>
+	  <newline/>
+	  <field name="w_sugested" colspan="2" readonly="1"/>
+	  <field name="wage" colspan="2"/>
+	  <newline/>
+	</group>
+	<newline/>
+	<group col="3" colspan="1">
+	  <button icon="gtk-cancel" special="cancel"
+	          string="Salir" />
+	  <button name="vinculate" type="object" icon="gtk-execute"  string="Vincular" 
+		  confirm="Esta seguro que desea vincular al empleado con ese contrato??. \n
+			   Si la vinculación es confirmada será con el salario especificado."/>
+	</group>
+      </group>
+    </form>
+  </field>
+</record>
+
+
+<record id="action_vinculation" model="ir.actions.act_window">
+  <field name="name">Vincualción</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">hr.vinculation</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<menuitem id="menu_hr_vinculation1"
+	  icon="STOCK_EXECUTE"
+	  action="action_vinculation"
+	  parent="menu_hr_desvinculation"
+	  name="Vinculación"/>
+
+<!-- DESVINCULATION
+  -->
+
+<record id="view_hr_desvinculation" model="ir.ui.view">
+  <field name="name">Desvinculación</field>
+  <field name="model">hr.desvinculation</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Asistente para la desvinculación de un empleado">
+	  <label colspan="4" nolabel="1" string="Este wizard le permite a usted desvincular a un empleado"/>
+      <group col="4" colspan="4">
+		<group colspan="4">
+		  <field name="contract_id" colspan="2" domain="[('state','!=','draft'),('active','!=',False)]"/>
+		  <field name="date" colspan="2"/>
+		  <field name="out_type" required="1"/>
+		  <newline/>
+		  <field name="memo"/>
+		</group>
+		<newline/>
+		<group col="3" colspan="1">
+		  <button icon="gtk-cancel" special="cancel"
+	        	  string="Salir" />
+		  <button name="desvinculate" type="object" icon="gtk-execute"  string="Desvincular" 
+				  confirm="Esta seguro que desea desvincular al empleado con ese contrato??"/>
+		</group>
+	  </group>
+    </form>
+  </field>
+</record>
+
+
+<record id="action_hr_desvinculation" model="ir.actions.act_window">
+  <field name="name">Desvincualción</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">hr.desvinculation</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<menuitem id="menu_hr_desvinculation1"
+		  icon="STOCK_EXECUTE"
+		  action="action_hr_desvinculation"
+		  parent="menu_hr_desvinculation"
+		  name="Desvinculación"/>
+
+
+</data>
+</openerp>

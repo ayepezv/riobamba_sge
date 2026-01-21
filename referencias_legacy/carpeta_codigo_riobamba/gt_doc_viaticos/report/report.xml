@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="viatico_sol" model="viaticos.solicitud"
+            name="viatico_sol" rml="gt_doc_viaticos/report/solicitud.mako"
+            usage="default" string="Solicitud" header="True" report_type="webkit"/>
+
+    <report auto="False" id="viatico_inf" model="viaticos.solicitud"
+            name="viatico_inf" rml="gt_doc_viaticos/report/informe.mako"
+            usage="default" string="Informe" header="True" report_type="webkit"/>
+
+<!--report 
+   auto="True" 
+   id="salida_departamento"
+   model="salidas.aprobacion.jefe"
+   name="salidas_departamento"
+   rml="gt_doc_viaticos/report/salidas_departamento.rml" 
+   string="Listado de salidas" /-->
+
+<!--report 
+   auto="True" 
+   id="resumen_individual"
+   model="salidas.resumen.empleado"
+   name="resumen_individual"
+   rml="gt_doc_viaticos/report/resumen_individual.rml" 
+   string="Resumen de empleado" /-->
+
+	<!-- VIATICOS -->
+
+<!--report 
+   auto="True" 
+   id="viatico_solicitud"
+   model="viaticos.solicitud"
+   name="viatico_solicitud"
+   rml="gt_doc_viaticos/report/viatico_solicitud.rml"
+   groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria" 
+   string="Solicitud" /-->
+
+<!--report 
+   auto="True" 
+   id="viatico_informe"
+   model="viaticos.solicitud"
+   name="viatico_informe"
+   rml="gt_doc_viaticos/report/viatico_informe.rml" 
+   groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria" 
+   string="Informe" />
+
+<report 
+   auto="True" 
+   id="viatico_detalle"
+   model="viaticos.solicitud"
+   name="viatico_detalle"
+   rml="gt_doc_viaticos/report/viatico_detalle.rml" 
+   groups="base.group_hr_manager" 
+   string="Detalle de Gastos" />
+   
+<report 
+   auto="True" 
+   id="viaticos_departamento"
+   model="viaticos.solicitud"
+   name="viaticos_departamento"
+   rml="gt_doc_viaticos/report/viaticos_departamento.rml" 
+   groups="base.group_hr_manager,gt_doc_viaticos.group_via_prefecto" 
+   string="Aprobados por departamento" /-->
+   
+   <!-- SALIDAS AL CAMPO -->
+   
+<report 
+   auto="True" 
+   id="resumen_salidas"
+   model="salidas.solicitud"
+   name="resumen_salidas"
+   rml="gt_doc_viaticos/report/resumen_salidas.rml" 
+   groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria"
+   string="Informe de Salidas" />
+   
+<report 
+   auto="True" 
+   id="salidas_departamento"
+   model="salidas.solicitud"
+   name="salidas_departamento"
+   rml="gt_doc_viaticos/report/salidas_departamento.rml" 
+   groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria"
+   string="Aprobadas para pago" />
+   
+<report 
+   auto="True" 
+   id="salidas_pagadas"
+   model="salidas.solicitud"
+   name="salidas_pagadas"
+   rml="gt_doc_viaticos/report/salidas_pagadas.rml" 
+   groups="base.group_hr_manager" 
+   string="Pagados en rol" />
+
+  </data>
+</openerp>

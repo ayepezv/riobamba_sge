@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_comisaria" 
+			   
+			  name="Comisaria"
+/>
+
+      <!-- comisaria vistas
+		-->
+	<!-- formulario del ingreso de la multa
+		-->
+      <record model="ir.ui.view" id="view_multa_form">
+		<field name="name">multa.form</field>
+		<field name="model">multa</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		  <form string="Multa">
+			<group col="4" colspan="4">
+			  <field name="name" colspan="1" required="1"/>
+			  <newline/>
+			  <field name="ordenanza_id" required="1" colspan="3"/>
+			</group>
+		  </form>
+		</field>
+      </record>
+	<!-- formulario de vista de las multas listado
+		-->	  
+      <record id="view_multa_tree" model="ir.ui.view">
+		<field name="name">multa.tree</field>
+		<field name="model">multa</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+		  <tree string="Multas" >
+			<field name="name"/>
+			<field name="ordenanza_id"/>
+		  </tree>
+		</field>
+      </record>
+	<!-- formulario de vista para la busqueda de las multas
+		-->
+      <record id="view_multa_filter" model="ir.ui.view">
+	<field name="name">Multa Busqueda</field>
+	<field name="model">multa</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Multas">
+	    <field name="name"/>
+	    <field name="ordenanza_id"/>
+	    <newline />
+	  </search>
+	</field>
+      </record>
+	<!-- al hacer click se abre el formulario de ingreso de la multa
+		-->  
+      <record id="action_multa" model="ir.actions.act_window">
+		<field name="name">Multas</field>
+		<field name="res_model">multa</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+      </record>
+	<!-- el menu en la parte izquierda donde aparece la multa
+		-->   
+      <menuitem id="menu_comisaria_multa"
+				action="action_multa"
+				parent="menu_comisaria"
+				name="Multas" />
+
+
+    </data>
+</openerp>

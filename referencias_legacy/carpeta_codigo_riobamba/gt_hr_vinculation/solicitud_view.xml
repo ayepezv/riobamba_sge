@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+  
+  <menuitem id="menu_hr_solicitud_doc" parent="gt_document_manager.menu_document_manager" 
+			groups="gt_document_manager.group_doc_leader"
+			name="Requerimiento personal" sequence="6"/>
+
+  <record id="view_sol_personal_form" model="ir.ui.view">
+    <field name="name">view.sol.personal.form</field>
+    <field name="model">hr.sol.personal</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Solicitud">
+		<group colspan="4" col="6">
+			<field name="name" colspan="2"/>
+			<field name="date_create" readonly="1" colspan="2"/>
+			<field name="tramite_id" domain="['|',('state_open','ilike','-'+str(uid)+'-'),('state_sent','ilike','-'+str(uid)+'-')]" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+			<field name="solicitant_id" colspan="4"/>
+			<field name="department_id" readonly="1" colspan="3"/>
+			<field name="job_id" colspan="3" domain="[('department_id','=',department_id)]" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+			<field name="number" colspan="2" attrs="{'readonly': [('state', 'not in',('draft'))]}" required="1"/>
+			<field name="doc_solicitud" colspan="4" filename="name_doc_solicitud" required="1" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+			<field name="name_doc_solicitud" colspan="2" invisible="1" required="1" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		</group>
+		<notebook colspan="4">
+			<page string="Observaciones">
+				<field name="note" colspan="2" nolabel="1" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+			</page>
+		</notebook>
+		<group colspan="4" col="5">
+			<field name="state" widget="statusbar" statusbar_visible="solicitado,en_proceso" statusbar_colors='{"draft":"black","solicitado":"black","en_proceso":"blue","contratado":"green","anulado":"grey"}'/>
+			<button name="sol_in_progress" states="draft" string="Solicitar" type="object" icon="gtk-go-forward" confirm="Confirma que desea solicitar?"/>
+			<!--button name="%(action_cancel_process_sol)d" states="draft" string="Anular Solicitud" type="action" icon="gtk-cancel"/-->
+		</group>
+      </form>
+    </field>
+  </record>
+  
+  <record id="view_sol_personal_tree" model="ir.ui.view">
+    <field name="name">view.sol.personal.tree</field>
+    <field name="model">hr.sol.personal</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+      <tree string="Solicitud" colors="black:state == 'draft';blue:state in ('solicitado','en_proceso');green:state == 'contratado';grey:state == 'anulado'">
+        <field name="name" select="1"/>
+        <field name="date_create" select="1"/>
+        <field name="solicitant_id" select="1"/>
+        <field name="state" select="1"/>
+      </tree>
+    </field>
+  </record>  
+
+  <record model="ir.actions.act_window" id="action_solicitar_personal">
+	<field name="name">Solicitar</field>
+	<field name="type">ir.actions.act_window</field>
+	<field name="res_model">hr.sol.personal</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_hr_solicitud_doc_sol" parent="menu_hr_solicitud_doc" 
+			name="Solicitar" sequence="1" action="action_solicitar_personal"/>
+  
+
+</data>
+</openerp>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False"
+            id="concejo_ingresos"
+            model="concejo.ingresos"
+            name="concejo_ingresos"
+            file="budget_ext/report/concejo_ingresos.mako"
+            string="Cedula Ingresos"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="concejo_gastos"
+            model="concejo.gastos"
+            name="concejo_gastos"
+            file="budget_ext/report/concejo_gastos.mako"
+            string="Cedula Gastos"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_obra"
+            model="evaluacion.obra"
+            name="evaluacion_obra"
+            file="budget_ext/report/evaluacion_obra.mako"
+            string="Evaluacion Presupuestaria Obra"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_obra_comprometido"
+            model="evaluacion.obra.comprometido"
+            name="evaluacion_obra_comprometido"
+            file="budget_ext/report/evaluacion_obra_comprometido.mako"
+            string="Evaluacion Presupuestaria Obra Comprometido"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_ff"
+            model="evaluacion.ff"
+            name="evaluacion_ff"
+            file="budget_ext/report/evaluacion_ff.mako"
+            string="Evaluacion Presupuestaria Fuente Financiamiento"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_ff_comprometido"
+            model="evaluacion.ff.comprometido"
+            name="evaluacion_ff_comprometido"
+            file="budget_ext/report/evaluacion_ff_comprometido.mako"
+            string="Evaluacion Presupuestaria Fuente Financiamiento Comprometido"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+
+    <report auto="False" id="programa_unidad" model="programa.unidad"
+            name="programa.unidad" rml="budget_ext/report/programa_unidad.mako"
+            usage="default" string="Programa Unidad" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

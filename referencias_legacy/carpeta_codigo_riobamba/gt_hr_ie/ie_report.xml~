@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="stock.pickingrqm" model="stock.requisition"
+            name="stock.picking.rqm" rml="gt_stock/report/rqm_bodega.mako"
+            usage="default" string="Requerimiento Bodega" header="True" report_type="webkit"/>
+
+    <report auto="False" id="stock.pickinggobin" model="stock.picking"
+            name="stock.picking.in" rml="gt_stock/report/picking_in.mako"
+            usage="default" string="Ingreso" header="True" report_type="webkit"/>
+
+    <report auto="False" id="stock.pickinggobout" model="stock.picking"
+            name="stock.picking.out" rml="gt_stock/report/picking_out.mako"
+            usage="default" string="Egreso" header="True" report_type="webkit"/>
+    
+  </data>
+</openerp>

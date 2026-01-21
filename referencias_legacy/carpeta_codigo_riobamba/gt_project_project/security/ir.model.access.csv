@@ -1,0 +1,79 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_project_configuration_user,project.configuration,model_project_configuration,project.group_project_user,1,0,0,0
+access_project_configuration,project.configuration,model_project_configuration,gt_budget.group_budget_manager,1,0,0,0
+access_project_configuration_manager,project.configuration,model_project_configuration,project.group_project_manager,1,1,1,1
+access_project_axis_user,project.axis,model_project_axis,project.group_project_user,1,1,1,1
+access_project_axis_manager,project.axis,model_project_axis,project.group_project_manager,1,0,0,0
+access_budget_estrategy,budget.estrategy,model_budget_estrategy,project.group_project_user,1,1,1,1
+access_project_estrategy_user,project.estrategy,model_project_estrategy,project.group_project_user,1,1,1,1
+access_project_estrategy_manager,project.estrategy,model_project_estrategy,project.group_project_manager,1,0,0,0
+access_project_program_user,project.program,model_project_program,project.group_project_user,1,1,1,1
+access_project_program_manager,project.program,model_project_program,project.group_project_manager,1,0,0,0
+access_project_development_plan,project.development.plan,model_project_development_plan,project.group_project_user,1,1,1,1
+access_project_development_plan_manager,project.development.plan,model_project_development_plan,project.group_project_manager,1,0,0,0
+access_project_conditions,project.condition,model_project_condition,project.group_project_user,1,1,1,1
+access_project_conditions_manager,project.condition,model_project_condition,project.group_project_manager,1,0,0,0
+access_budget_item_buser,project.budget.plan,gt_budget.model_budget_item,gt_budget.group_budget_user,1,0,0,0
+access_budget_item_bmanager,project.budget.plan,gt_budget.model_budget_item,gt_budget.group_budget_manager,1,0,0,0
+access_budget_item_user,project.budget.plan,gt_budget.model_budget_item,project.group_project_user,1,1,1,1
+access_budget_item_manager,project.budget.plan,gt_budget.model_budget_item,project.group_project_manager,1,0,0,0
+access_project_kpi_expost,project.kpi.expost,model_project_kpi_expost,project.group_project_user,1,1,1,1
+access_project_kpi_expost_manager,project.kpi.expost,model_project_kpi_expost,project.group_project_manager,1,0,0,0
+access_project_record_state,project.record.state,model_project_record_state,project.group_project_user,1,0,0,0
+access_project_record_state_mng,project.record.state,model_project_record_state,project.group_project_manager,1,0,0,0
+access_budget_certificate,crossovered.budget.certificate,gt_budget.model_budget_certificate,project.group_project_user,1,1,1,0
+access_budget_certificate_line,crossovered.budget.certificate.line,gt_budget.model_budget_certificate_line,project.group_project_user,1,1,1,0
+access_budget_certificate_mng,crossovered.budget.certificate,gt_budget.model_budget_certificate,project.group_project_manager,1,1,1,0
+access_project_condition,project.condition,model_project_condition,project.group_project_user,1,1,1,1
+access_project_condition_mng,project.condition,model_project_condition,project.group_project_manager,1,1,1,0
+access_projec_dev_plan,project.development.plan,model_project_development_plan,project.group_project_user,1,1,1,
+access_projec_dev_plan_mng,project.development.plan,model_project_development_plan,project.group_project_manager,1,0,0,0
+access_project_kpi,project.kpi,model_project_kpi,project.group_project_user,1,0,0,0
+access_project_kpi_mng,project.kpi,model_project_kpi,project.group_project_manager,1,1,1,1
+access_project_type_user,project.type,model_project_type,project.group_project_user,1,0,0,0
+access_res_country_state_parish_user,res.country.state.parish,country_ec.model_res_country_state_parish,project.group_project_user,1,0,0,0
+access_res_country_state_parish_mng,res.country.state.parish,country_ec.model_res_country_state_parish,project.group_project_manager,1,0,0,0
+access_project_type_manager,project.type,model_project_type,project.group_project_manager,1,1,1,0
+access_project_kpi_type,project.kpi.type,model_project_kpi_type,project.group_project_user,1,0,0,0
+access_project_kpi_detail,project.kpi.detail,model_project_kpi_detail,project.group_project_user,1,1,1,1
+access_project_kpi_type,project.kpi.type,model_project_kpi_type,project.group_project_manager,1,1,1,1
+access_project_kpi_plan,project.kpi.plan,model_project_kpi_plan,project.group_project_manager,1,1,1,1
+access_project_kpi_plan_user,project.kpi.plan,model_project_kpi_plan,project.group_project_user,1,0,0,0
+access_project_property_mng,project.property,model_project_property,project.group_project_manager,1,1,1,1
+access_project_property,project.property,model_project_property,project.group_project_user,1,1,1,0
+access_project_property_key,project.property.key,model_project_property_key,project.group_project_user,1,0,0,0
+access_project_kpi_work_user,project.kpi.work,model_project_kpi_work,project.group_project_user,1,0,0,0
+access_project_kpi_work_manager,project.kpi.work,model_project_kpi_work,project.group_project_manager,1,1,1,1
+access_project_expense_plan,project.expense.plan,model_project_expense_plan,project.group_project_user,1,1,1,1
+access_project_expense_plan_manager,project.expense.plan,model_project_expense_plan,project.group_project_manager,1,1,1,1
+access_project_expost_plan,project.expost.plan,model_project_expost_plan,project.group_project_user,1,1,1,1
+access_project_kpi_plan,project.kpi.plan,model_project_kpi_plan,project.group_project_user,1,1,1,1
+access_project_record_state,project.record.state,model_project_record_state,project.group_project_user,1,1,1,0
+access_project_crossovered_certificate,crossovered.budget.certificate,gt_budget.model_budget_certificate,project.group_project_manager,1,1,1,0
+access_budget_budget_user,budget.budget,gt_budget.model_budget_budget,project.group_project_user,1,0,0,0
+access_gt_budget_post,account.budget.post,gt_budget.model_budget_post,project.group_project_user,1,0,0,0
+access_account_period,account.period,account.model_account_period,project.group_project_user,1,0,0,0
+access_res_country_state_canton,res.country.state.city,country_ec.model_res_country_state_city,project.group_project_user,1,0,0,0
+access_res_country_state_city,res.country.state.city,country_ec.model_res_country_state_city,project.group_project_user,1,0,0,0
+access_project_task_avance,project.task.avance,model_project_task_avance,project.group_project_user,1,1,1,1
+access_project_build_type,project.build.type,model_project_build_type,project.group_project_user,1,0,0,0
+access_project_build_program,project.build.program,model_project_build_program,project.group_project_user,1,0,0,0
+access_project_build_indole,project.build.indole,model_project_build_indole,project.group_project_user,1,0,0,0
+access_project_build_mode,project.build.mode,model_project_build_mode,project.group_project_user,1,0,0,0
+access_project_budget_transfer,project.budget.transfer,model_project_budget_transfer,project.group_project_manager,1,1,1,0
+access_account_fiscayear,account.fiscalyear,account.model_account_fiscalyear,project.group_project_user,1,0,0,0
+access_budget_item,budget.item,gt_budget.model_budget_item,project.group_project_user,1,1,1,0
+access_budget_item,budget.item,gt_budget.model_budget_item,project.group_project_manager,1,1,1,1
+access_tipo_politica,tipo.politica,model_tipo_politica,project.group_project_user,1,1,1,1
+access_budget_card emp,report.budget.card,model_report_budget_card,gt_budget.group_budget_manager,1,1,1,1
+access_nivel_budget emp,nivel.budget,model_nivel_budget,gt_budget.group_budget_manager,1,1,1,1
+access_budget_card conta,report.budget.card,model_report_budget_card,account.group_account_user,1,1,1,1
+access_budget_estrategy_acc,budget.estrategy,model_budget_estrategy,account.group_account_user,1,1,1,1
+access_budget_politica_anual conta,budget.politica.anual,model_budget_politica_anual,account.group_account_user,1,1,1,1
+access_budget_politica_anual proy,budget.politica.anual,model_budget_politica_anual,project.group_project_user,1,1,1,1
+access_ajeno_budget proy,ajeno.budget,model_ajeno_budget,project.group_project_user,1,1,1,1
+access_ajeno_budget_line proy,ajeno.budget.line,model_ajeno_budget_line,project.group_project_user,1,1,1,1
+access_budget_poa project,budget.poa,gt_budget.model_budget_poa,project.group_project_user,1,0,0,0
+access_budget_roof_line pr,budget.roof.line,gt_budget.model_budget_roof_line,project.group_project_user,1,0,0,0
+access_budget_budget pr,budget.budget,gt_budget.model_budget_budget,project.group_project_user,1,1,1,1
+access_budget_reform pr,budget.reform,gt_budget.model_budget_reform,project.group_project_user,1,0,0,0

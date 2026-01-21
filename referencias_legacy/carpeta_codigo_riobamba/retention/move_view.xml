@@ -1,0 +1,1058 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+    <delete id="account.menu_eaction_account_moves_sale" model="ir.ui.menu"/>
+    <delete id="account.menu_eaction_account_moves_purchase" model="ir.ui.menu"/>
+    <delete id="account.menu_action_account_moves_bank" model="ir.ui.menu"/>
+    <delete id="account_voucher.menu_encode_entries_by_voucher" model="ir.ui.menu"/>
+
+    <record model="ir.ui.view" id="acc_period_inherit">
+      <field name="name">account.period.inherit</field>
+      <field name="type">form</field>
+      <field name="model">account.period</field>
+      <field name="inherit_id" ref="account.view_account_period_form"/>
+      <field name="arch" type="xml">
+	<field name='special' position='after'>
+	  <separator orientation="vertical"/>
+	    <group string="Archivos cargados y validados en el MIN. Finanzas." colspan='4'>
+	      <field name="data_balance" readonly="1" colspan="4"/>
+	      <field name="data_cedulas" readonly="1" colspan="4"/>
+	      <field name="data_transferencias" readonly="1" colspan="4"/>
+	    </group>
+	</field>
+      </field>
+    </record>
+
+    <!-- Cuentas contables en prespuestos -->
+
+    
+
+    <!-- presupuesto en conta -->
+    <menuitem name="Documentos Presupuestarios" id="menu_presu_cc" sequence='5' 
+	      parent="account.menu_finance"/>
+    <record id="action_budget_certificate_cc_users" model="ir.actions.act_window">
+      <field name="name">Compromisos</field>
+      <field name="res_model">budget.certificate</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_budget_certificate_users_conta" action="action_budget_certificate_cc_users"
+	      parent="menu_presu_cc"/>
+    <!-- Vista tree de impuestos aplicados en retencion-->
+
+    <record id="taxes_sri_form" model="ir.ui.view">
+      <field name="name">Detalle Retenciones</field>
+      <field name="model">account.invoice.tax</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detalle">
+	  <field name='name' readonly='1'/>
+        </form>
+      </field>
+    </record>
+
+    <record id="taxes_sri_tree" model="ir.ui.view">
+      <field name="name">Detalle Retenciones</field>
+      <field name="model">account.invoice.tax</field>
+      <field name="type">tree</field>
+      <field name="inherit_id" ref="account.view_invoice_tax_tree"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='manual']" position="replace">
+	</xpath>
+	<xpath expr="//field[@name='name']" position="replace">
+	</xpath>
+	<xpath expr="//field[@name='account_id']" position="replace">
+	</xpath>
+	<xpath expr="//field[@name='base']" position="replace">
+	</xpath>
+	<xpath expr="//field[@name='amount']" position="replace">
+	</xpath>
+	<xpath expr="//field[@name='sequence']" position="replace">
+	  <field name='name'/>
+	  <field name='date'/>
+	  <field name='ruc' string="RUC"/>
+	  <field name='partner_id2' string="Proveedor"/>
+	  <field name="invoice_id"/>
+	  <field name='base_code_id'/>
+	  <field name='tax_code_id'/>
+	  <field name='base_amount' sum='TOTAL'/>
+	  <field name='percent'/>
+	  <field name='amount' sum="TOTAL"/>
+	</xpath>
+      </field>
+    </record>
+    
+    <record id="taxes_sri_search" model="ir.ui.view">
+      <field name="name">account.invoice.tax.search</field>
+      <field name="model">account.invoice.tax</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+	<search string="Buscar Detalle retenciones">
+	  <group>
+	    <field name='name'/>
+	    <field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	    <field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+	    <field name='cedula'/>
+	    <field name='partner_id'/>
+	    <field name='base_code_id'/>
+	    <field name='tax_code_id'/>
+	    <newline/>
+	    <field name='base_amount'/>
+	    <field name='percent'/>
+	    <field name='amount'/>
+	  </group>
+	  <newline/>
+	  <group expand="1" string="Agrupar...">
+            <filter string="Fecha/Periodo" name="by_date" icon="terp-accessories-archiver" 
+		    domain="[]"  context="{'group_by':'date'}"/>
+            <filter string="Retencion" name="by_product" icon="terp-accessories-archiver" 
+		    domain="[]"  context="{'group_by':'name'}"/>
+	    <filter string="Proveedor" name="by_prov" icon="terp-accessories-archiver" 
+		    domain="[]"  context="{'group_by':'partner_id'}"/>
+	    <filter string="Codigo" name="by_code" icon="terp-accessories-archiver" 
+		    domain="[]"  context="{'group_by':'base_code_id'}"/>
+            <filter string="Impuesto" name="by_imp" icon="terp-accessories-archiver" 
+		    domain="[]"  context="{'group_by':'tax_code_id'}"/>
+	  </group>
+	</search>
+      </field>
+    </record>
+
+    <record id="action_taxes_sri" model="ir.actions.act_window">
+      <field name="name">Detalle Retenciones</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">account.invoice.tax</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_taxes_sri" id="menu_taxes_sri" parent="menu_sri_reporting" sequence='0'/>    
+
+
+    <!--vista de tree de cuetas contables ocn la partida -->
+    <record id="view_account_account_modif_tree" model="ir.ui.view">
+      <field name="name">account.account.modif.tree</field>
+      <field name="model">account.account</field>
+      <field name="inherit_id" ref="account.view_account_list"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='company_currency_id']" position="replace">
+	</xpath>
+	<xpath expr="//field[@name='name']" position="after">
+	  <field name="budget_id"/>
+	  <field name="budget_haber_id"/>
+	  <field name="account_rec_id"/>
+	  <field name="account_pay_id"/>
+	  <field name="anterior_id"/>
+	</xpath>
+      </field>
+    </record>
+    <record id="view_account_account_modif_search" model="ir.ui.view">
+      <field name="name">account.account.modif.search</field>
+      <field name="model">account.account</field>
+      <field name="inherit_id" ref="account.view_account_search"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='name']" position="after">
+	  <newline/>
+	  <field name="budget_id"/>
+	  <field name="budget_haber_id"/>
+	  <field name="account_rec_id"/>
+	  <field name="account_pay_id"/>
+	</xpath>
+      </field>
+    </record>
+    <!-- Menu preasiento -->
+    <record id="view_pre_asiento_form" model="ir.ui.view">
+      <field name="name">pre.asiento.form</field>
+      <field name="model">pre.asiento</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Asiento Automatico">
+	  <group>
+	    <field name="name" colspan="4" on_change="onchange_cp(name)"/>
+	    <field name="journal_id" colspan="2"/>
+	    <button name="preDevengado" string="Pagar" type="object" icon="terp-camera_test"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" nolabel="1">
+		<tree editable="bottom">
+		  <field name="budget_id"/>
+		  <field name="account_id" domain="[('budget_id','=',budget_id)]"/>
+		  <field name="account2_id"/>
+		  <field name="monto"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	</form>
+      </field>
+    </record>
+    <record id="action_pre_asiento" model="ir.actions.act_window">
+      <field name="name">Asiento Automatico</field>
+      <field name="res_model">pre.asiento</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+    </record>
+    <!--menuitem
+        action="action_pre_asiento"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobante Automatico"
+        id="menu_action_pre_asiento"
+        parent="account.menu_finance_entries"
+        sequence="0"
+        /-->
+
+    <!-- Wizard reporte de mayor cuenta -->
+    
+
+    <!-- menu y vistas mejorads de asientos contables: asientos sin afectacion presupuestaria-->
+    <delete id="account.menu_action_move_journal_line_form" model="ir.ui.menu"/>
+
+    <delete id="account_voucher.menu_encode_entries_by_voucher" model="ir.ui.menu"/>
+    <record id="view_move_less_tree" model="ir.ui.view">
+      <field name="name">account.move.less.tree</field>
+      <field name="model">account.move</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree colors="blue:state == 'draft';black:state == 'posted'" string="Asientos">
+          <field name="name"/>
+	  <field name="partner_id"/>
+          <field name="narration"/>
+          <field name="date"/>
+          <field name="period_id"/>
+          <field name="journal_id"/>
+          <field name="amount" sum="Total Amount"/>
+          <field name="total_banco" sum="Total Banco"/>
+          <field name="state"/>
+          <field name="archivado"/>
+          <button name="button_validate" states="draft" string="Approve" type="object" icon="terp-camera_test"/>
+        </tree>
+      </field>
+    </record>
+    <record id="view_move_less_form" model="ir.ui.view">
+      <field name="name">account.move.less.form</field>
+      <field name="model">account.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Asientos">
+          <group colspan="4" col="6">
+            <field name="name" readonly="1"/>
+            <!--field name="ref"/>
+            <field name="to_check" groups="base.group_extended"/-->
+            <field name="journal_id"/>
+            <field name="period_id"/>
+            <field name="date"/>
+            <field name="type" invisible="1"/>
+            <field name="no_cp" invisible="1"/>
+            <field name="company_id" required="1" groups="base.group_multi_company"/>
+            <field name="partner_id" required="1" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+            <field name="pago_id" domain="[('partner_id','=',partner_id)]" 
+		   attrs="{'readonly': [('state', 'in',('posted','anulado'))]}" on_change="onchange_opago(pago_id)"/>
+            <field name="type2_id" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+            <field name="amount" invisible="1"/>
+          </group>
+          <notebook colspan="4">
+            <page string="Journal Items">
+              <field name="balance" invisible="1"/>
+              <field colspan="4" name="line_id" nolabel="1" height="250" widget="one2many_list" 
+                     on_change="onchange_line_id(line_id)"
+                     context="{'balance': balance , 'journal': journal_id }">
+                <form string="Journal Item">
+                  <group col="6" colspan="4">
+                    <field name="name"/>
+                    <field name="ref"/>
+                    <field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,date)"/>
+		    
+                    <field name="journal_id"/>
+                    <field name="period_id"/>
+                    <field name="company_id" required="1" groups="base.group_multi_company"/>
+                  </group>
+                  <notebook colspan="4">
+                    <page string="Information">
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Amount"/>
+                        <field name="account_id" domain="[('company_id', '=', parent.company_id), ('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]"/>
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="quantity"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Accounting Documents"/>
+                        <field name="invoice"/>
+                        <field name="move_id" required="False"/>
+                        <field name="statement_id"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Dates"/>
+                        <field name="date"/>
+                        <field name="date_maturity"/>
+                        <field name="date_created"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Taxes"/>
+                        <field name="tax_code_id"/>
+                        <field name="tax_amount"/>
+                        <field name="account_tax_id" domain="[('parent_id','=',False)]"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Currency"/>
+                        <field name="currency_id"/>
+                        <field name="amount_currency"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Reconciliation"/>
+                        <field name="reconcile_id"/>
+                        <field name="reconcile_partial_id"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="States"/>
+                        <field name="state"/>
+                        <field name="blocked"/>
+                      </group>
+		      
+                      <group col="2" colspan="2" groups="base.group_extended">
+                        <separator colspan="2" string="Analytic"/>
+                        <field name="analytic_account_id" domain="[('parent_id','!=',False)]" groups="analytic.group_analytic_accounting"/>
+                      </group>
+                      <separator string="Internal Note" colspan="4"/>
+                      <field name="narration" colspan="4" nolabel="1"/>
+                    </page>
+                    <page string="Analytic Lines" groups="analytic.group_analytic_accounting">
+                      <field colspan="4" name="analytic_lines" nolabel="1" context="{'default_general_account_id':account_id, 'default_name': name, 'default_date':date, 'amount': (debit or 0.0)-(credit or 0.0)}"/>
+                    </page>
+                  </notebook>
+                </form>
+                <tree colors="blue:state == 'draft';black:state == 'posted'" editable="top" string="Journal Items">
+                  <!--field name="ref"/>
+                  <field name="invoice"/-->
+                  <field name="account_id" domain="[('journal_id','=',parent.journal_id),('company_id', '=', parent.company_id)]"/>
+                  <!--field name="date_maturity"/-->
+                  <field name="debit" sum="Total Debit"/>
+                  <field name="credit" sum="Total Credit"/>
+		  <field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,parent.date,parent.journal_id)"/>
+                  <field name="name" string="Desc."/>
+		  <!--field name="budget_id" context="{'move': True}"/>
+		  <field name="budget_id" domain="[('certificate_id','=',parent.certificate_id),('budget_line_id.general_budget_id.account_ids','in',[account_id])]" context="{'move': True}"/>
+		  <field name="budget_accrued" string="PR. Devengado"/>
+		  <field name="budget_paid" string="PR. Pagado"/-->
+                  <field name="analytic_account_id" domain="[('parent_id','!=',False)]" groups="analytic.group_analytic_accounting"/>
+                  <!--field name="amount_currency" groups="base.group_extended"/>
+                  <field name="currency_id" groups="base.group_extended"/>
+                  <field name="tax_code_id"/>
+                  <field name="tax_amount"/-->
+                  <field name="state" invisible="1"/>
+                  <!--field name="reconcile_id"/>
+                  <field name="reconcile_partial_id" groups="base.group_extended"/-->
+                </tree>
+              </field>
+              <separator colspan="4" string="Internal Note"/>
+	      <!--field name='contabilizado_id' colspan="4"/-->
+              <field name="narration" colspan="4" nolabel="1" height="50" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+              <group col="6" colspan="4">
+                <field name="state" select="1"/>
+                <button name="button_cancel" states="posted,payprocess,pagado" 
+			string="Cancel" type="object" icon="gtk-cancel" groups="account.group_account_manager"/>
+                <button name="button_validate" states="draft" string="Post" type="object" icon="terp-camera_test"/>
+		<button name="buttonAnular" states="draft" string="Anular" type="object" icon="gtk-cancel" groups="account.group_account_manager"/>
+		<!-- <button name="button_imprimir" string="Imprimir" type="object" icon="gtk-print"/> -->
+		<button name="button_imprimir_detalle" string="Imprimir" type="object" icon="gtk-print"/>
+              </group>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+    
+    <record id="view_account_move_search_less" model="ir.ui.view">
+      <field name="name">account.move.less.select</field>
+      <field name="model">account.move</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Search Move">
+          <group>
+            <filter icon="terp-document-new" string="Unposted" domain="[('state','=','draft')]" help="Unposted Journal Entries"/>
+            <filter icon="terp-camera_test" string="Posted" domain="[('state','=','posted')]" help="Posted Journal Entries"/>
+            <separator orientation="vertical"/>
+            <field name="name"/>
+            <field name="ref"/>
+            <field name="partner_id"/>
+	    <field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	    <field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+          </group>
+          <newline/>
+          <group>
+            <field name="journal_id" widget="selection"/>
+            <field name="period_id"/>
+            <field name="narration"/>
+            <field name="archivado"/>
+          </group>
+          <newline/>
+          <group expand="0" string="Group By...">
+            <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Journal" icon="terp-folder-orange" domain="[]" context="{'group_by':'journal_id'}"/>
+            <filter string="States" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Period" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+            <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+    
+    
+    <record id="action_account_moves_less" model="ir.actions.act_window">
+      <field name="name">Comprobantes Contables</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="domain">[('afectacion','=',False)]</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_account_move_search_less"/>
+    </record>
+    
+    <record id="action_move_less_tree" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_less_tree"/>
+      <field name="act_window_id" ref="action_account_moves_less"/>
+    </record>
+    
+    <record id="action_move_less_form" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_move_less_form"/>
+      <field name="act_window_id" ref="action_account_moves_less"/>
+    </record>
+    
+    <menuitem
+        action="action_account_moves_less"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobantes Contables"
+        id="menu_action_account_moves_less"
+        parent="account.menu_finance_entries"
+        sequence="1"
+        />
+
+    <!-- menu y vistas mejorads de asientos contables: asientos sin afectacion presupuestaria-->
+
+    <record id="view_move_less_tree_afectacion" model="ir.ui.view">
+      <field name="name">account.move.less.afectacion.tree</field>
+      <field name="model">account.move</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree colors="blue:state == 'draft';black:state == 'posted'" string="Asientos">
+          <field name="name"/>
+	  <field name="partner_id"/>
+          <field name="ref"/>
+          <field name="date"/>
+          <field name="period_id"/>
+          <field name="certificate_id"/>
+          <field name="journal_id"/>
+          <field name="amount" sum="Total Amount"/>
+          <field name="total_banco" sum="Total Banco"/>
+          <field name="state"/>
+          <field name="archivado"/>
+          <button name="button_validate" states="draft" string="Approve" type="object" icon="terp-camera_test"/>
+        </tree>
+      </field>
+    </record>
+    <record id="view_move_less_form_afectacion" model="ir.ui.view">
+      <field name="name">account.move.less.form.afectacion</field>
+      <field name="model">account.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Asientos">
+          <group colspan="4" col="6">
+            <field name="name" readonly="1"/>
+            <!--field name="ref"/>
+            <field name="to_check" groups="base.group_extended"/-->
+            <field name="journal_id"/>
+            <field name="period_id"/>
+            <field name="date"/>
+            <field name="type" invisible="1"/>
+            <field name="no_cp" invisible="1"/>
+	    <field name="afectacion" invisible="1"/>
+            <field name="company_id" required="1" groups="base.group_multi_company"/>
+            <field name="partner_id" required="1" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+	    <!--field name="certificate_id" required="1" domain="[('state','=','commited')]" 
+		   attrs="{'readonly': [('state', 'in',('posted','anulado'))],'invisible':['|',('type','=','Impuestos'),('no_cp','=',True)]}" 
+		   on_change="onchange_cp(certificate_id)"/-->	    
+	    <field name="certificate_id" domain="[('partner_id','=',partner_id),('state','=','commited')]" 
+		   attrs="{'readonly': [('state', 'in',('posted','anulado'))],'invisible':['|',('type','=','Impuestos'),('no_cp','=',True)],
+			  'required':[('no_cp','=',False)],
+			  }" 
+		   on_change="onchange_cp(certificate_id,period_id,date,journal_id)"/>
+	    <field name="type2_id" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+	    <!--field name="budget_post_id"  domain="[('tipo','=','i'),('internal_type','!=','view')]" 
+		   attrs="{'readonly': [('state', 'in',('posted','anulado'))],'invisible':['|',('type','=','Impuestos'),('no_cp','=',True)],
+			  }" groups="base.group_erp_manager"/>
+	    <button name="button_addpost" states="draft" groups="base.group_erp_manager" string="Agregar Partida" type="object" icon="terp-camera_test"/>
+	    <button name="call_esigef_values" groups="base.group_erp_manager" string="Test" type="object" icon="terp-camera_test"/-->
+            <field name="amount" invisible="1"/>
+          </group>
+          <notebook colspan="4">
+            <page string="Journal Items">
+              <field name="balance" invisible="1"/>
+              <field colspan="4" name="line_id" nolabel="1" height="250" widget="one2many_list" 
+                     on_change="onchange_line_id(line_id)"
+                     context="{'balance': balance , 'journal': journal_id }">
+                <form string="Journal Item">
+                  <group col="6" colspan="4">
+                    <field name="name"/>
+                    <field name="ref"/>
+                    <!--field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,date)"/-->
+		    <field name="journal_id"/>
+                    <field name="period_id"/>
+                    <field name="company_id" required="1" groups="base.group_multi_company"/>
+                  </group>
+                  <notebook colspan="4">
+                    <page string="Information">
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Amount"/>
+                        <field name="account_id" domain="[('company_id', '=', parent.company_id), ('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]"/>
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="quantity"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Accounting Documents"/>
+                        <field name="invoice"/>
+                        <field name="move_id" required="False"/>
+                        <field name="statement_id"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Dates"/>
+                        <field name="date"/>
+                        <field name="date_maturity"/>
+                        <field name="date_created"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Taxes"/>
+                        <field name="tax_code_id"/>
+                        <field name="tax_amount"/>
+                        <field name="account_tax_id" domain="[('parent_id','=',False)]"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Currency"/>
+                        <field name="currency_id"/>
+                        <field name="amount_currency"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Reconciliation"/>
+                        <field name="reconcile_id"/>
+                        <field name="reconcile_partial_id"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="States"/>
+                        <field name="state"/>
+                        <field name="blocked"/>
+                      </group>
+		      
+                      <group col="2" colspan="2" groups="base.group_extended">
+                        <separator colspan="2" string="Analytic"/>
+                        <field name="analytic_account_id" domain="[('parent_id','!=',False)]" groups="analytic.group_analytic_accounting"/>
+                      </group>
+                      <separator string="Internal Note" colspan="4"/>
+                      <field name="narration" colspan="4" nolabel="1"/>
+                    </page>
+                    <page string="Analytic Lines" groups="analytic.group_analytic_accounting">
+                      <field colspan="4" name="analytic_lines" nolabel="1" context="{'default_general_account_id':account_id, 'default_name': name, 'default_date':date, 'amount': (debit or 0.0)-(credit or 0.0)}"/>
+                    </page>
+		    <page string="Pagos">
+		      <field name="pay_ids">
+			<tree>
+			  <field name="line_move_id"/>
+			  <field name="monto_pagado"/>
+			</tree>
+		      </field>
+		    </page>
+                  </notebook>
+                </form>
+                <tree colors="blue:state == 'draft';black:state == 'posted'" editable="top" string="Journal Items">
+                  <!--field name="ref"/>
+                  <field name="invoice"/-->
+                  <field name="account_id"  on_change="onchange_acc(account_id,parent.certificate_id)"
+			 domain="[('journal_id','=',parent.journal_id),('company_id', '=', parent.company_id)]"/>
+                  <!--field name="date_maturity"/-->
+                  <field name="debit" sum="Total Debit"/>
+                  <field name="credit" sum="Total Credit"/>
+		  <field name="budget_id_cert" context="{'move': True}" domain="[('certificate_id','=',parent.certificate_id)]"/>
+		  <!--field name="budget_id" domain="[('certificate_id','=',parent.certificate_id),('budget_line_id.general_budget_id.account_ids','in',[account_id])]" context="{'move': True}"/-->
+		  <field name="budget_accrued" string="PR. Devengado"/>
+		  <field name="budget_paid" string="PR. Pagado"/>
+                  <field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,parent.date,parent.journal_id)"/>
+                  <field name="name" string="Desc."/>
+                  <field name="analytic_account_id" domain="[('parent_id','!=',False)]" groups="analytic.group_analytic_accounting"/>
+                  <!--field name="amount_currency" groups="base.group_extended"/>
+                  <field name="currency_id" groups="base.group_extended"/>
+                  <field name="tax_code_id"/>
+                  <field name="tax_amount"/-->
+                  <field name="state" invisible="1"/>
+                  <!--field name="reconcile_id"/>
+                  <field name="reconcile_partial_id" groups="base.group_extended"/-->
+                </tree>
+              </field>
+              <separator colspan="4" string="Internal Note"/>
+	      <!--field name='contabilizado_id' colspan="4"/-->
+              <field name="narration" colspan="4" nolabel="1" height="50" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+              <group col="7" colspan="4">
+                <field name="state" select="1"/>
+                <button name="button_cancel" states="posted,payprocess,pagado"
+			string="Cancel" type="object" icon="gtk-cancel" groups="account.group_account_manager"/>
+                <button name="button_validate" states="draft" string="Post" type="object" icon="terp-camera_test"/>
+                <button name="buttonAnular" states="draft" string="Anular" type="object" icon="gtk-cancel" groups="account.group_account_manager"/>
+		<!--button name="button_imprimir" string="Imprimir" type="object" icon="gtk-print"/-->
+		<button name="button_imprimir_detalle" string="Imprimir" type="object" icon="gtk-print"/>
+		<!--button name="button_imprimir_detalle_ingreso" string="Imprimir Detallado" type="object" icon="gtk-print"/-->
+              </group>
+            </page>
+
+          </notebook>
+        </form>
+      </field>
+    </record>
+    
+    <record id="view_account_move_search_less_afectacion" model="ir.ui.view">
+      <field name="name">account.move.less.afectacion.select</field>
+      <field name="model">account.move</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Search Move">
+          <group>
+            <filter icon="terp-document-new" string="Unposted" domain="[('state','=','draft')]" help="Unposted Journal Entries"/>
+            <filter icon="terp-camera_test" string="Posted" domain="[('state','=','posted')]" help="Posted Journal Entries"/>
+            <separator orientation="vertical"/>
+            <field name="name"/>
+            <field name="ref"/>
+            <field name="partner_id"/>
+            <field name="certificate_id"/>
+	    <field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	    <field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+          </group>
+          <newline/>
+          <group>
+            <field name="journal_id" widget="selection"/>
+            <field name="period_id"/>
+	    <field name="narration"/>
+            <field name="archivado"/>
+          </group>
+          <newline/>
+          <group expand="0" string="Group By...">
+            <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Journal" icon="terp-folder-orange" domain="[]" context="{'group_by':'journal_id'}"/>
+            <filter string="States" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Period" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+            <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+    
+    
+    <record id="action_account_moves_less_afectacion" model="ir.actions.act_window">
+      <field name="name">Comprobante Contable Presupuestario</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('afectacion','=',True)]</field>
+      <field name="context">{'default_afectacion':True}</field>
+      <field name="search_view_id" ref="view_account_move_search_less_afectacion"/>
+    </record>
+    
+    <record id="action_move_less_tree_afectacion" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_less_tree_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion"/>
+    </record>
+    
+    <record id="action_move_less_form_afectacion" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_move_less_form_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion"/>
+    </record>
+    
+    <menuitem
+        action="action_account_moves_less_afectacion"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobante Contable Presupuestario"
+        id="menu_action_account_moves_prf"
+        parent="account.menu_finance_entries"
+        sequence="1"
+        />
+
+    <!-- Asientos contables migrados -->
+    <record id="view_move_less_form_afectacion_migrado" model="ir.ui.view">
+      <field name="name">account.move.less.form.afectacion.migrado</field>
+      <field name="model">account.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Asientos">
+          <group colspan="4" col="6">
+            <field name="name"/>
+            <!--field name="ref"/>
+            <field name="to_check" groups="base.group_extended"/-->
+            <field name="journal_id"/>
+            <field name="period_id"/>
+            <field name="date"/>
+            <field name="company_id" required="1" groups="base.group_multi_company"/>
+            <field name="partner_id" required="1" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+            <field name="amount" invisible="1"/>
+          </group>
+          <notebook colspan="4">
+            <page string="Journal Items">
+              <field name="balance" invisible="1"/>
+              <field colspan="4" name="line_id" nolabel="1" height="250" widget="one2many_list" 
+                     on_change="onchange_line_id(line_id)"
+                     context="{'balance': balance , 'journal': journal_id }">
+                <form string="Journal Item">
+                  <group col="6" colspan="4">
+                    <field name="name"/>
+                    <field name="ref"/>
+                    <!--field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,date)"/-->
+		    <field name="journal_id"/>
+                    <field name="period_id"/>
+                    <field name="company_id" required="1" groups="base.group_multi_company"/>
+                  </group>
+                  <notebook colspan="4">
+                    <page string="Information">
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Amount"/>
+                        <field name="account_id" domain="[('company_id', '=', parent.company_id), ('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]"/>
+                        <field name="debit"/>
+                        <field name="credit"/>
+                        <field name="quantity"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Accounting Documents"/>
+                        <field name="invoice"/>
+                        <field name="move_id" required="False"/>
+                        <field name="statement_id"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Dates"/>
+                        <field name="date"/>
+                        <field name="date_maturity"/>
+                        <field name="date_created"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Taxes"/>
+                        <field name="tax_code_id"/>
+                        <field name="tax_amount"/>
+                        <field name="account_tax_id" domain="[('parent_id','=',False)]"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Currency"/>
+                        <field name="currency_id"/>
+                        <field name="amount_currency"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="Reconciliation"/>
+                        <field name="reconcile_id"/>
+                        <field name="reconcile_partial_id"/>
+                      </group>
+		      
+                      <group col="2" colspan="2">
+                        <separator colspan="2" string="States"/>
+                        <field name="state"/>
+                        <field name="blocked"/>
+                      </group>
+		      
+                      <group col="2" colspan="2" groups="base.group_extended">
+                        <separator colspan="2" string="Analytic"/>
+                        <field name="analytic_account_id" domain="[('parent_id','!=',False)]" groups="analytic.group_analytic_accounting"/>
+                      </group>
+                      <separator string="Internal Note" colspan="4"/>
+                      <field name="narration" colspan="4" nolabel="1"/>
+                    </page>
+                    <page string="Analytic Lines" groups="analytic.group_analytic_accounting">
+                      <field colspan="4" name="analytic_lines" nolabel="1" context="{'default_general_account_id':account_id, 'default_name': name, 'default_date':date, 'amount': (debit or 0.0)-(credit or 0.0)}"/>
+                    </page>
+                  </notebook>
+                </form>
+                <tree colors="blue:state == 'draft';black:state == 'posted'" editable="top" string="Journal Items">
+                  <!--field name="ref"/>
+                  <field name="invoice"/-->
+                  <field name="account_id" domain="[('journal_id','=',parent.journal_id),('company_id', '=', parent.company_id)]"/>
+                  <!--field name="date_maturity"/-->
+                  <field name="debit" sum="Total Debit"/>
+                  <field name="credit" sum="Total Credit"/>
+		  <field name="budget_id_cert" context="{'move': True}" domain="[('certificate_id','=',parent.certificate_id)]"/>
+		  <!--field name="budget_id" domain="[('certificate_id','=',parent.certificate_id),('budget_line_id.general_budget_id.account_ids','in',[account_id])]" context="{'move': True}"/-->
+		  <field name="budget_accrued" string="PR. Devengado"/>
+		  <field name="budget_paid" string="PR. Pagado"/>
+                  <field name="partner_id" on_change="onchange_partner_id(False,partner_id,account_id,debit,credit,parent.date,parent.journal_id)"/>
+                  <field name="name" string="Desc."/>
+                  <field name="analytic_account_id" domain="[('parent_id','!=',False)]" groups="analytic.group_analytic_accounting"/>
+                  <!--field name="amount_currency" groups="base.group_extended"/>
+                  <field name="currency_id" groups="base.group_extended"/>
+                  <field name="tax_code_id"/>
+                  <field name="tax_amount"/-->
+                  <field name="state" invisible="1"/>
+                  <!--field name="reconcile_id"/>
+                  <field name="reconcile_partial_id" groups="base.group_extended"/-->
+                </tree>
+              </field>
+              <separator colspan="4" string="Internal Note"/>
+              <field name="narration" colspan="4" nolabel="1" height="50" attrs="{'readonly': [('state', 'in',('posted','anulado'))]}"/>
+              <group col="6" colspan="4">
+                <field name="state" select="1"/>
+                <button name="button_cancel" states="posted,payprocess,pagado" 
+			string="Cancel" type="object" icon="gtk-cancel" groups="account.group_account_manager"/>
+                <button name="button_validate" states="draft" string="Post" type="object" icon="terp-camera_test"/>
+                <button name="buttonAnular" states="draft" string="Anular" type="object" icon="gtk-cancel" groups="account.group_account_manager"/>
+		<!--<button name="button_imprimir" string="Imprimir" type="object" icon="gtk-print"/> -->
+		<button name="button_imprimir_detalle" string="Imprimir" type="object" icon="gtk-print"/>
+              </group>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_account_moves_less_afectacion_migrado" model="ir.actions.act_window">
+      <field name="name">Comprobantes Anterior</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('migrado','=',True)]</field>
+      <field name="search_view_id" ref="view_account_move_search_less_afectacion"/>
+    </record>
+    
+    <record id="action_move_less_tree_afectacion_migrado" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_less_tree_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion_migrado"/>
+    </record>
+    
+    <record id="action_move_less_form_afectacion_migrado" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_move_less_form_afectacion_migrado"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion_migrado"/>
+    </record>
+    
+    <menuitem
+        action="action_account_moves_less_afectacion_migrado"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobantes Migrados"
+        id="menu_action_account_moves_prf_migrado"
+        parent="account.menu_finance_entries"
+        sequence="8"
+        />
+
+
+    <!-- COMPROBANTES RECAUDACION -->
+    <record id="action_account_moves_less_afectacion_recaudacion" model="ir.actions.act_window">
+      <field name="name">Comprobantes Recaudacion</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('type','=','Recaudacion')]</field>
+      <field name="search_view_id" ref="view_account_move_search_less_afectacion"/>
+    </record>
+    
+    <record id="action_move_less_tree_afectacion_recaudacion" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_less_tree_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion_recaudacion"/>
+    </record>
+    
+    <record id="action_move_less_form_afectacion_recaudacion" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_move_less_form_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion_recaudacion"/>
+    </record>
+    
+    <menuitem
+        action="action_account_moves_less_afectacion_recaudacion"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobantes Recaudacion"
+        id="menu_action_account_moves_prf_recaudacion"
+        parent="account.menu_finance_entries"
+        sequence="9"
+        />
+
+<!-- COMPROBANTES DE ROLES-->
+
+    <record id="action_account_moves_less_afectacion_roles" model="ir.actions.act_window">
+      <field name="name">Comprobantes Roles</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('type','=','Nomina')]</field>
+      <field name="search_view_id" ref="view_account_move_search_less_afectacion"/>
+    </record>
+    
+    <record id="action_move_less_tree_afectacion_roles" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_less_tree_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion_roles"/>
+    </record>
+    
+    <record id="action_move_less_form_afectacion_roles" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_move_less_form_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion_roles"/>
+    </record>
+    
+    <menuitem
+        action="action_account_moves_less_afectacion_roles"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobantes Roles"
+        id="menu_action_account_moves_prf_rol"
+        parent="account.menu_finance_entries"
+        sequence="10"
+        />
+    <!-- -->
+
+
+    <record model="ir.ui.view" id="move_line_reposition_search_inherit">
+      <field name="name">move.line.reposition.list.select.inherit</field>
+      <field name="type">form</field>
+      <field name="model">account.move.line</field>
+      <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+      <field name="arch" type="xml">
+	<xpath expr="/search/group/field[@name='period_id']" position="after">
+	  <separator orientation="vertical"/>
+          <field name="budget_post"/>
+          <field name="budget_id"/>
+          <field name="budget_accrued"/>
+          <field name="budget_paid"/>
+          <field name="reposition"/>
+	</xpath>
+      </field>
+    </record>
+
+    <!--record model="ir.ui.view" id="move_line_budgetpost_tree_inherit">
+      <field name="name">move.line.budgetpost.tree.inherit</field>
+      <field name="model">account.move.line</field>
+      <field name="inherit_id" ref="account.view_move_line_tree"/>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='period_id']" position="after">
+          <field name="budget_post"/>
+          <field name="budget_id"/>
+	</xpath>
+      </field>
+    </record-->
+
+    
+    <record id="view_move_line_tree_detalle_partida" model="ir.ui.view">
+      <field name="name">account.move.line.tree.detalle.partida</field>
+      <field name="model">account.move.line</field>
+      <field name="type">tree</field>
+      <field eval="100" name="priority"/>
+      <field name="arch" type="xml">
+        <tree colors="red:state == 'draft';black:state == 'valid'" string="Journal Items" editable="top" on_write="on_create_write">
+	  <!--field name="journal_id"/-->
+          <field name="date" string="Fecha"/>
+          <field name="period_id"/>
+          <field name="move_id"/>
+          <field name="name"/>
+          <field name="partner_id" on_change="onchange_partner_id(move_id, partner_id, account_id, debit, credit, date, journal_id)"/>
+          <field name="account_id" domain="[('journal_id','=',journal_id), ('company_id', '=', company_id)]"/>
+	  <field name="debit" sum="Total debit"/>
+          <field name="credit" sum="Total credit"/>
+	  <field name="budget_id"/>
+	  <field name="budget_accrued"/>
+	  <field name="budget_paid"/>
+	  <field name="budget_certificate_id"/>
+          <!--field name="reconcile_partial_id" groups="base.group_extended"/>
+          <field name="reconcile_id"/-->
+          <field name="state"/>
+          <field name="company_id" invisible="True"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_account_move_line_filter_detalle_partidas" model="ir.ui.view">
+      <field name="name">Asientos contables</field>
+      <field name="model">account.move.line</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Search Journal Items">
+          <group>
+            <filter icon="terp-document-new" string="Unposted" domain="[('move_id.state','=','draft')]" help="Unposted Journal Items"/>
+            <filter name="posted" icon="terp-camera_test" string="Posted" domain="[('move_id.state','=','posted')]" help="Posted Journal Items"/>
+            <separator orientation="vertical"/>
+            <field name="move_id" string="Number (Move)"/>
+	    <field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	    <field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+            <field name="account_id"/>
+	    <field name="partner_id"/>
+	  </group>
+          <newline/>
+          <group>
+	    <field name="budget_id"/>
+	    <field name="budget_accrued"/>
+	    <field name="budget_paid"/>
+            <field name="name"/>
+            <field name="period_id" context="{'period_id':self}"/>
+          </group>
+          <newline/>
+          <group expand="1" string="Group By...">
+            <filter string="Comprobante" icon="terp-partner" domain="[]" context="{'group_by':'move_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Referencia" icon="terp-partner" domain="[]" context="{'group_by':'name'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+            <separator orientation="vertical"/>
+            <!--filter string="Journal" icon="terp-folder-orange" domain="[]" context="{'group_by':'journal_id'}"/-->
+            <filter string="Account"  icon="terp-folder-green" context="{'group_by':'account_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Period" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+	    <separator orientation="vertical"/>
+	    <filter string="Partida" icon="terp-go-month" domain="[]" context="{'group_by':'budget_id'}"/>
+	    <separator orientation="vertical"/>
+	    <filter string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+          </group>
+          <newline/>
+        </search>
+      </field>
+    </record>
+
+    <record model='ir.actions.act_window' id='view_account_move_line_detalle_partida_action'>
+      <field name="name">Detalle asientos</field>
+      <field name="res_model">account.move.line</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_id" ref="view_move_line_tree_detalle_partida"/>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_account_move_line_filter_detalle_partidas"/>
+      <field name="context">{'view_mode':'budget'}</field>
+    </record>
+    
+    <record id="action_account_move_line_tree_detalle" model="ir.actions.act_window.view">
+      <field eval="1" name="sequence"/>
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_line_tree_detalle_partida"/>
+      <field name="act_window_id" ref="view_account_move_line_detalle_partida_action"/>
+    </record>
+
+    <menuitem action="view_account_move_line_detalle_partida_action" name="Detalle asientos por partida" 
+	      id="move_line_detalle_partida" parent="account.menu_finance_entries" sequence="70"/>
+
+  </data>
+</openerp>

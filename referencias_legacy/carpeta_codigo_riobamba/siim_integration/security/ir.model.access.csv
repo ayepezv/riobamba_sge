@@ -1,0 +1,33 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_recaudacion,account.recaudacion,model_account_recaudacion,account.group_account_manager,1,1,1,1
+access_recaudacion_detalle,recaudacion.detalle,model_recaudacion_detalle,account.group_account_manager,1,1,1,1
+access_recaudacion_line,recaudacion.line,model_recaudacion_line,account.group_account_manager,1,1,1,1
+access_account_recaudacion_pago,account.recaudacion.pago,model_account_recaudacion_pago,account.group_account_manager,1,1,1,1
+access_recaudacion_line_line,recaudacion.line.line,model_recaudacion_line_line,account.group_account_manager,1,1,1,1
+access_recaudacion_detalle,recaudacion.detalle,model_recaudacion_detalle,account.group_account_manager,1,1,1,1
+access_cobro_tercero,cobro.tercero,model_cobro_tercero,account.group_account_manager,1,1,1,1
+access_cobro_tercero_line,cobro.tercero.line,model_cobro_tercero_line,account.group_account_manager,1,1,1,1
+access_devolucion,devolucion,model_devolucion,account.group_account_manager,1,1,1,1
+access_devolucion_line,devolucion.line,model_devolucion_line,account.group_account_manager,1,1,1,1
+access_emision,emision,model_emision,account.group_account_manager,1,1,1,1
+access_emision_line,emision.line,model_emision_line,account.group_account_manager,1,1,1,1
+access_baja,baja,model_baja,account.group_account_manager,1,1,1,1
+access_baja_line,baja.line,model_baja_line,account.group_account_manager,1,1,1,1
+access_account_recaudacion_rubro,recaudacion.rubro,model_recaudacion_rubro,account.group_account_manager,1,1,1,1
+access_siim_modulo,siim.modulo,model_siim_modulo,account.group_account_manager,1,0,0,0
+access_descuento_cobro,descuento.cobro,model_descuento_cobro,account.group_account_manager,1,1,1,1
+access_descuento_cobro_line,descuento.cobro.line,model_descuento_cobro_line,account.group_account_manager,1,1,1,1
+access_recaudacion_tercero,recaudacion.tercero,model_recaudacion_tercero,account.group_account_manager,1,1,1,1
+access_otros_recaudacion,otros.recaudacion,model_otros_recaudacion,account.group_account_manager,1,1,1,1
+access_budget_post_acc,budget.post,gt_budget.model_budget_post,account.group_account_manager,1,1,1,0
+access_otros_recaudacion,otros.recaudacion,model_otros_recaudacion,account.group_account_manager,1,1,1,1
+access_extra_recaudacion,extra.recaudacion,model_extra_recaudacion,account.group_account_manager,1,1,1,1
+access_extra_recaudacion_line,extra.recaudacion.line,model_extra_recaudacion_line,account.group_account_manager,1,1,1,1
+access_extra_deposito,extra.deposito,model_extra_deposito,account.group_account_manager,1,1,1,1
+access_account_recaudacion bt,account.recaudacion,model_account_recaudacion,gt_budget.group_budget_manager,1,0,0,0
+access_account_recaudacion_line bt,recaudacion.line,model_recaudacion_line,gt_budget.group_budget_manager,1,0,0,0
+access_account_recaudacion_pago bt,account.recaudacion.pago,model_account_recaudacion_pago,gt_budget.group_budget_manager,1,0,0,0
+access_cuenta_anterior bt,cuenta.anterior,retention.model_cuenta_anterior,gt_budget.group_budget_manager,1,0,0,0
+access_recaudacion_tercero bt,recaudacion.tercero,model_recaudacion_tercero,gt_budget.group_budget_manager,1,0,0,0
+access_account_recaudacion_line_line bt,recaudacion.line.line,model_recaudacion_line_line,gt_budget.group_budget_manager,1,0,0,0
+access_recaudacion_detalle bt,recaudacion.detalle,model_recaudacion_detalle,gt_budget.group_budget_manager,1,0,0,0

@@ -1,0 +1,149 @@
+/* Compact Admin Table */
+.inline-group .tabular td.original p {
+    top: 5px;
+}
+
+.inline-group .tabular tr.has_original td {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.inline-group .tabular td {
+    padding: 2px 4px !important;
+    /* Force tight padding */
+    vertical-align: middle;
+}
+
+/* Compact Buttons */
+.viewlink,
+.editlink,
+.deletelink,
+.addlink,
+.changelink {
+    transform: scale(0.75) !important;
+    /* Force Shrink by 25% */
+    margin: 0 1px;
+}
+
+/* Force Detalle to wrap and limit height */
+/* Force Detalle to wrap */
+.field-detalle textarea {
+    height: auto !important;
+    min-height: 3em !important;
+    white-space: normal !important;
+    font-size: 12px !important;
+    width: 200px !important;
+    padding: 2px;
+}
+
+/* Reduce column widths generally */
+.field-cpc input {
+    width: 80px !important;
+}
+
+.field-cantidad input {
+    width: 40px !important;
+}
+
+.field-costo_unitario input {
+    width: 70px !important;
+}
+
+.field-tipo_compra select {
+    width: 80px !important;
+}
+
+/* Ensure checkboxes are aligned */
+.field-c1 input,
+.field-c2 input,
+.field-c3 input {
+    margin-top: 0;
+    vertical-align: middle;
+}
+
+/* Validation Button Styling */
+.validate-pac-btn {
+    background: #10B981;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-right: 15px;
+    font-size: 14px;
+}
+
+.validate-pac-btn:hover {
+    background: #059669;
+}
+
+/* MODAL STYLES */
+.budget-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.budget-modal-content {
+    background: white;
+    width: 80%;
+    height: 80%;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.budget-modal-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.budget-modal-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Error Link Style */
+.filter-partida-error {
+    color: #b91c1c;
+    text-decoration: underline;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.filter-partida-error:hover {
+    color: #7f1d1d;
+}
+
+/* Force Stacked Layout (Disable Tabs) for PAC Change Form */
+/* Jazzmin usually uses .nav-tabs and .tab-content */
+body.model-pac .nav-tabs {
+    display: none !important;
+}
+
+body.model-pac .tab-content>.tab-pane {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    margin-bottom: 20px;
+}

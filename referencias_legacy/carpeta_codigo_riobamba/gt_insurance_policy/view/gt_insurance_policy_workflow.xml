@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    	<!--Polizas/-->
+    	<record id="wkf_insurance_policy" model="workflow">
+            <field name="name">Poliza workflow</field>
+            <field name="osv">gt.insurance.policy</field>
+            <field name="on_create">True</field>
+        </record>
+        <record id="act_draft" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_insurance_policy"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">action_draft()</field>
+        </record>                
+  		<record id="act_open" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_insurance_policy"/>
+            <field name="name">open</field>
+            <field name="kind">function</field>
+            <field name="action">action_draft_open()</field>
+        </record>
+		<record id="act_close" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_insurance_policy"/>
+            <field name="name">close</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_close()</field>
+        </record>
+        <record id="act_cancel" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_insurance_policy"/>
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_cancel()</field>
+        </record>        
+        <!--Transicioness-->
+        <record id="trans_draft_open" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_open"/>
+            <field name="signal">wkf_draft_open</field>
+        </record>
+        <record id="trans_open_close" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_close"/>
+            <field name="signal">wkf_open_close</field>
+        </record>
+        <record id="trans_open_cancel" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_cancel"/>
+            <field name="signal">wkf_open_cancel</field>
+        </record>  
+        <record id="trans_cancel_draft" model="workflow.transition">
+            <field name="act_from" ref="act_cancel"/>
+            <field name="act_to" ref="act_draft"/>
+            <field name="signal">wkf_cancel_draft</field>
+        </record>  
+    </data>
+</openerp>

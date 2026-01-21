@@ -1,0 +1,59 @@
+{% load admin_list %}
+{% load i18n %}
+
+<div class="row">
+    <div class="col-sm-12 col-md-5">
+        <div class="dataTables_info" role="status" aria-live="polite">
+            <p class="text-muted">
+                {% if cl.result_count %}
+                Mostrando <b>{{ cl.result_count }}</b>
+                {% if cl.result_count == 1 %}resultado{% else %}resultados{% endif %}
+                {% if cl.result_count != cl.full_result_count %}
+                (de un total de {{ cl.full_result_count }})
+                {% endif %}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <div class="col-sm-12 col-md-7">
+        <div class="dataTables_paginate paging_simple_numbers">
+            <ul class="pagination pagination-sm m-0 float-right">
+                <!-- DEGUB: page_num={{ cl.page_num }} num_pages={{ cl.paginator.num_pages }} query_string="{{ cl.get_query_string }}" -->
+                {% if cl.paginator.has_previous %}
+                <li class='page-item'>
+                    <a class='page-link'
+                        href='{% if cl.get_query_string %}{{ cl.get_query_string }}&{% else %}?{% endif %}p=0'>&laquo;</a>
+                </li>
+                <li class='page-item'>
+                    <a class='page-link'
+                        href='{% if cl.get_query_string %}{{ cl.get_query_string }}&{% else %}?{% endif %}p={{ cl.page_num|add:"-1" }}'>&lsaquo;</a>
+                </li>
+                {% else %}
+                <li class='page-item disabled'><span class='page-link'>&laquo;</span></li>
+                <li class='page-item disabled'><span class='page-link'>&lsaquo;</span></li>
+                {% endif %}
+
+                <li class='page-item active'>
+                    <span class='page-link'>
+                        Página {{ cl.page_num|add:"1" }} de {{ cl.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if cl.paginator.has_next %}
+                <li class='page-item'>
+                    <a class='page-link'
+                        href='{% if cl.get_query_string %}{{ cl.get_query_string }}&{% else %}?{% endif %}p={{ cl.page_num|add:"1" }}'>&rsaquo;</a>
+                </li>
+                <li class='page-item'>
+                    <a class='page-link'
+                        href='{% if cl.get_query_string %}{{ cl.get_query_string }}&{% else %}?{% endif %}p={{ cl.paginator.num_pages|add:"-1" }}'>&raquo;</a>
+                </li>
+                {% else %}
+                <li class='page-item disabled'><span class='page-link'>&rsaquo;</span></li>
+                <li class='page-item disabled'><span class='page-link'>&raquo;</span></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+	  <report auto="False" 
+              id="cedula_auxiliar" 
+              model="cedula.auxiliar"
+              name="cedulauxiliar" 
+              file="gt_gob_report/report/cedula_auxiliar.mako"
+              string="Cedula Auxiliar" 
+              header="True" report_type="webkit"
+	      menu="False"/>
+
+	  <report auto="False" 
+              id="gob_situacion_auxiliar" 
+              model="situacion.auxiliar"
+              name="situacion_auxiliar" 
+              file="gt_gob_report/report/situacion_auxiliar.mako"
+              string="Situacion Financiera Auxiliar" 
+              header="True" report_type="webkit"
+	      menu="False"/>
+
+	  <report auto="False" 
+              id="gob_balance_comprobacion" 
+              model="account.account"
+              name="BalanceComprobacion" 
+              file="gt_gob_report/report/report_balance_comprobacion.mako"
+              string="Balance de comprobacion" 
+              header="True" report_type="webkit"
+	      menu="False"/>
+
+	  <report auto="False" 
+              id="gob_estado_resultados" 
+              model="account.account"
+              name="EstadoResultados" 
+              file="gt_gob_report/report/report_estado_resultados.mako"
+              string="Estado Resultados" 
+              header="True" report_type="webkit" menu="False"/>
+
+	  <report auto="False" 
+              id="gob_estado_resultados_auxiliar" 
+              model="account.account"
+              name="EstadoResultadosAuxiliar" 
+              file="gt_gob_report/report/report_estado_resultados_auxiliar.mako"
+              string="Estado Resultados" 
+              header="True" report_type="webkit" menu="False"/>
+
+	  <report auto="False" 
+              id="gob_estado_situacion" 
+              model="account.account"
+              name="EstadoSituacion" 
+              file="gt_gob_report/report/report_estado_situacion.mako"
+              string="Estado Situacion" 
+              header="True" report_type="webkit" menu="False"/>
+
+	  <report auto="False" 
+		  id="gob_estado_situacion_aux" 
+		  model="account.account"
+		  name="EstadoSituacionAux" 
+		  file="gt_gob_report/report/report_estado_situacion_aux.mako"
+		  string="Estado Situacion" 
+		  header="True" report_type="webkit" menu="False"/>
+
+	  <report auto="False" 
+              id="gob_estado_situacion_auxiliar" 
+              model="account.account"
+              name="EstadoSituacionAuxiliar" 
+              file="gt_gob_report/report/report_estado_situacion_auxiliar.mako"
+              string="Estado Situacion Auxiliar" 
+              header="True" report_type="webkit" menu="False"/>
+
+      <report auto="False" 
+              id="gob_flujo_efectivo" 
+              model="account.account"
+              name="FlujoEfectivo" 
+              file="gt_gob_report/report/report_flujo_efectivo.mako"
+              string="Flujo Efectivo" 
+              header="True" report_type="webkit" menu="False"/>
+
+      <report auto="False" 
+              id="gob_flujo_efectivo_auxiliar" 
+              model="account.account"
+              name="FlujoEfectivoAuxiliar" 
+              file="gt_gob_report/report/report_flujo_efectivo_auxiliar.mako"
+              string="Flujo Efectivo" 
+              header="True" report_type="webkit" menu="False"/>
+
+      <report auto="False" 
+              id="gob_superavit" 
+              model="account.account"
+              name="Superavit" 
+              file="gt_gob_report/report/report_superavit.mako"
+              string="Superavit - Financiamiento del Deficit" 
+              header="True" report_type="webkit" menu="False"/>
+
+    </data>
+</openerp>

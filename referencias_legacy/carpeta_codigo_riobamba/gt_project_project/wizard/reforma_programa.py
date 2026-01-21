@@ -1,0 +1,113 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+from time import strftime
+import netsvc
+
+class reformProgramaLine(osv.TransientModel):
+   _name = 'reform.programa.line'
+   _columns = dict(
+      p_id = fields.many2one('reform.programa','Reforma'),
+      program_id = fields.many2one('project.program','Programa'),
+      budget_id = fields.many2one('budget.item','Partida'),
+      post_id = fields.many2one('budget.post','Partida Catalogo'),
+      inicial = fields.float('Asignacion Inicial'),
+      reform = fields.float('Reformas'),
+      total = fields.float('Total'),
+   )
+reformProgramaLine()
+
+class reformPrograma(osv.TransientModel):
+   _name = 'reform.programa'
+   _columns = dict(
+      rf = fields.selection([('ingreso','INGRESOS'),('gasto','EGRESOS')],'TIPO'),
+      tipo = fields.selection([('Programa','Programa'),('Reforma','Reforma')],'Opciones'),
+      reforma_ids = fields.many2many('mass.reform','r_m_id','r_id','m_id','Reformas'),
+      reforma_ing_ids = fields.many2many('mass.reform.ingreso','r_mi_id','r_id','mi_id','Reformas Ingreso'),
+      fy_id = fields.many2one('account.fiscalyear','Periodo'),
+      date_start = fields.date('Fecha Desde'),
+      date = fields.date('Fecha Corte'),
+      program_ids = fields.many2many('project.program','r_p_id','r_id','p_id','Programas'),
+      line_ids = fields.one2many('reform.programa.line','p_id','Detalle'),
+   )
+
+   def printReformaPrograma(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'reform.programa'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'reforma_programa',
+            'model': 'reform.programa',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+   def computeReformReport(self, cr, uid, ids,context=None):
+      reform_line = self.pool.get('budget.reform')
+      reform_program_line = self.pool.get('reform.programa.line')
+      item_obj = self.pool.get('budget.item')
+      partida = {}
+      for this in self.browse(cr, uid, ids):
+         lines_antes = reform_program_line.search(cr, uid, [('p_id','=',this.id)])
+         if lines_antes:
+            reform_program_line.unlink(cr, uid, lines_antes)
+         date = this.date
+         date_start = this.date_start
+         if this.tipo=='Programa':
+            if this.program_ids:
+               aux_program_ids = []
+               for programa in this.program_ids:
+                  aux_program_ids.append(programa.id)
+               line_ids = reform_line.search(cr, uid, [('program_id','in',aux_program_ids),('type_budget','=',this.rf),
+                                                       ('date_done','>=',date_start),('date_done','<=',date)])
+            else:
+               line_ids = reform_line.search(cr, uid, [('date_done','>=',date_start),('date_done','<=',date),('type_budget','=',this.rf)])
+            for line_id in line_ids:
+               linea = reform_line.browse(cr, uid, line_id)
+               if not linea.budget_id.id in partida:
+                  partida[linea.budget_id.id]=0
+               if linea.type_transaction=='ampliacion':
+                  partida[linea.budget_id.id]+=linea.amount
+               else:
+                  partida[linea.budget_id.id]-=linea.amount
+            for partida_det in partida:
+               item = item_obj.browse(cr, uid, partida_det)
+               aux_total = item.planned_amount + partida[partida_det]
+               reform_program_line.create(cr, uid, {
+                  'p_id':this.id,
+                  'program_id':item.program_id.id,
+                  'budget_id':item.id,
+                  'post_id':item.budget_post_id.id,
+                  'inicial':item.planned_amount,
+                  'reform':partida[partida_det],
+                  'total':aux_total,
+               })
+         else:
+            for reform_egreso in this.reforma_ids:
+               for linea_disminucion in reforma_egreso.line_ids:
+                  print "disminucion egrso"
+               for linea_aumento in reforma_egreso.line_ids2:
+                  print "ameto egreso"
+            for reform_ingreso in this.reforma_ing_ids:
+               for linea_disminucion_ing in reforma_ingreso.line_ids:
+                  print "disminucion ingrso"
+               for linea_aumento in this.reforma_ingreso.line_ids2:
+                  print "aumenbto ingreso"
+      return True
+   
+
+   _defaults = dict(
+      tipo = 'Programa',
+      rf = 'gasto',
+   )
+   
+reformPrograma()

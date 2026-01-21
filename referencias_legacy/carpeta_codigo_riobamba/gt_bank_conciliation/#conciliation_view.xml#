@@ -1,0 +1,432 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      
+      <!-- quitado menu de bancos: Extracto bancario, registradores de efectivo, journal items -->
+      <delete id="account.journal_cash_move_lines" model="ir.ui.menu"/>
+      <delete id="account.menu_bank_statement_tree" model="ir.ui.menu"/>
+      <delete id="account.menu_action_account_moves_bank" model="ir.ui.menu"/>
+
+      <delete id="account.menu_manual_reconcile" model="ir.ui.menu"/>
+      <delete id="account.menu_automatic_reconcile" model="ir.ui.menu"/>
+      <delete id="account.periodical_processing_reconciliation" model="ir.ui.menu"/>
+      
+      <delete id="account.menu_menu_Bank_process" model="ir.ui.menu"/>
+      <delete id="account.menu_account_pp_statements" model="ir.ui.menu"/>
+      <delete id="base.menu_action_currency_form" model="ir.ui.menu"/>
+      <delete id="account.menu_email_templates" model="ir.ui.menu"/>
+      <delete id="account.menu_action_payment_term_form" model="ir.ui.menu"/>
+      <delete id="account.menu_action_model_form" model="ir.ui.menu"/>
+      <delete id="account.menu_configuration_misc" model="ir.ui.menu"/>
+
+    <record id="wizard_conciliar_a_form" model="ir.ui.view">
+      <field name="name">Conciliar</field>
+      <field name="model">wizard.conciliar.a</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Conciliacion">
+	  <group string="Referencia BCE">
+	    <field name="tipo_id" required="1"/>
+	    <field name="ref" required="1"/>
+	    <field name="hoja" required="1"/>
+	    <field name="date_conciliado" required="1"/>
+	    <field name="date_transferido" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_conciliar_a" string="Conciliar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_conciliar_a" model="ir.actions.act_window">
+      <field name="name">Conciliar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.conciliar.a</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+      <!-- Conciliacion Check -->
+    <record id="wizard_conciliar_form" model="ir.ui.view">
+      <field name="name">Conciliar</field>
+      <field name="model">wizard.conciliar</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Conciliacion">
+	  <group string="Referencia BCE">
+	    <field name="tipo_id" required="1"/>
+	    <field name="ref" required="1"/>
+	    <field name="hoja" required="1"/>
+	    <field name="date_conciliado" required="1"/>
+	    <field name="date_transferido" required="1"/>
+	    <field name="num_transferencia"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_conciliar" string="Conciliar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_conciliar" model="ir.actions.act_window">
+      <field name="name">Conciliar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.conciliar</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+      <record model="ir.ui.view" id="view_bank_conciliation_form">
+	<field name="name">Resumen Conciliacion Documentos Bancarios</field>
+	<field name="model">bank.conciliation.mark</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">         
+          <form string="Marcaje Documentos Bancarios">
+            <group  colspan="4">
+	      <field name="period_id" colspan="2"/>
+	      <field name="name" colspan="2"/>
+            </group>
+	    <group  colspan="4" col="8">
+	      <!--field name="account_id" colspan="2"/-->
+	      <field name="total_movimientos" colspan="2" readonly="1"/>
+	      <field name="total_conciliados" colspan="2" readonly="1"/>
+	      <field name="total_sinconciliar" colspan="2" readonly="1"/>
+	      <field name="saldo_por_conciliar" colspan="2"/>
+	    </group>
+	    <group colspan="4" col="8">
+	      <field name="inicial_estado_cuenta" colspan="2" required="1"/>
+	      <field name="final_estado_cuenta" colspan="2" required="1"/>
+	      <field name="monto_conciliado_debitos" colspan="2"/>
+	      <field name="monto_conciliado_creditos" colspan="2"/>
+	    </group>
+	    <group colspan="4" col="6">
+	      <field name="saldo_inicial_sistema" colspan="3" readonly="1"/>
+	      <field name="saldo_final_sistema" colspan="3" readonly="1"/>
+	      <field name="total_debitos" colspan="3" readonly="1"/>
+	      <field name="total_creditos" colspan="3" readonly="1"/>
+	    </group>
+	    <group  colspan="4">
+	      <button string="Conciliados" colspan="1" name="bank_concilied" type="object" icon="gtk-ok" />
+	      <button string="Sin Conciliar" colspan="1" name="bank_unconcilied" type="object" icon="gtk-cancel" />			
+	      <button string="Todos" colspan="1" name="bank_all" type="object" icon="gtk-execute" />			
+	      <button string="Totalizar" colspan="1" name="bankTotal" type="object" icon="gtk-execute" />			
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<field name="line_ids" colspan="4" nolabel="1" readonly="1">
+		  <tree editable="bottom">
+		    <button name="%(action_conciliar)d" string="Conciliar" icon="gtk-execute" type="action" colspan="2"/>
+		    <field name="concilied_ok" readonly="1"/>
+		    <field name="date_concilied" readonly="1"/>
+		    <field name="date_transfer" readonly="1"/>
+		    <field name="tipo_conciliacion" readonly="1"/>
+		    <field name="num_concilied" readonly="1"/>
+		    <field name="hoja" readonly="1"/>
+		    <field name="num_comp" string="Numero Comprobante" readonly="1"/>
+		    <field name="name" string="Referencia" readonly="1"/>
+		    <field name="date" string="Fecha" readonly="1"/>
+		    <field name="partner2_id" string="Beneficiario" readonly="1"/>
+		    <field name="debit" readonly="1" sum="TOTAL" string="CREDITOS"/>
+		    <field name="credit" readonly="1" sum="TOTAL" string="DEBITOS"/>
+		  </tree>
+		</field>
+	      </page>
+	       <page string="Detalle Anterior">
+		 <field name="line_antes_ids" colspan="4" nolabel="1" readonly="1">
+		   <tree editable="bottom">
+		     <button name="%(action_conciliar_a)d" string="Conciliar" icon="gtk-execute" type="action" colspan="2"/>
+		     <field name="concilied_ok" readonly="1"/>
+		     <field name="name"/>
+		     <field name="partner_id" string="Beneficiario" readonly="1"/>
+		     <field name="tipo_conciliacion" readonly="1"/>
+		     <field name="num_concilied" readonly="1"/>
+		     <field name="hoja" readonly="1"/>
+		     <field name="comprobante" string="Numero Comprobante" readonly="1"/>
+		     <field name="date" string="Fecha" readonly="1"/>
+		     <field name="date_concilied" readonly="1"/>
+		     <field name="date_transfer" readonly="1"/>
+		     <field name="amount" readonly="1" sum="TOTAL"/>
+		  </tree>
+		</field>
+	      </page>
+	      <page string="Debitos/Creditos No Contabilizados">
+		<field name='no_ids' nolabel="1">
+		  <tree editable='bottom'>
+		    <field name='date' required="1"/>
+		    <field name='tipo' required="1"/>
+		    <field name='descripcion' required="1"/>
+		    <field name='ref' required="1"/>
+		    <field name='monto' required="1"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	    <group>
+	      <field name='state' readonly="1" widget="statusbar"/>
+	      <button name="cerrar_conciliar" string="Cerrar" icon="gtk-execute" type="object" colspan="2"/>
+	    </group>
+          </form>
+	</field>
+      </record>
+
+    <record id="view_bank_conciliation_tree" model="ir.ui.view">
+      <field name="name">bank.conciliation.tree</field>
+      <field name="model">bank.conciliation.mark</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Conciliaciones">
+	    <field name="period_id"/>
+            <field name="name"/>
+            <field name="account_id"/>
+            <field name="state"/>
+        </tree>
+      </field>
+    </record>
+    <record id="view_bank_conciliation_filter" model="ir.ui.view">
+      <field name="name">bank.conciliation.mark.select</field>
+      <field name="model">bank.conciliation.mark</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar">
+          <group>
+	    <field name="period_id"/>
+            <field name="name"/>
+            <field name="account_id"/>
+          </group>
+          <newline/>
+        </search>
+      </field>
+    </record>          
+      <record model="ir.actions.act_window" id="action_bank_conciliation_mark">
+	<field name="name">Resumen Conciliacion Documentos</field>
+	<field name="type">ir.actions.act_window</field>
+	<field name="res_model">bank.conciliation.mark</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+
+
+<!-- Lineas anterior -->
+    <record id="view_bank_conciliation_mark_tree" model="ir.ui.view">
+      <field name="name">mark.line.tree</field>
+      <field name="model">mark.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Conciliaciones">
+	  <button name="%(action_conciliar_a)d" string="Conciliar" icon="gtk-execute" type="action" colspan="2"/>
+          <field name="partner_id"/>
+          <field name="name"/>
+          <field name="amount"/>
+	  <field name="tipo_conciliacion"/>
+          <field name="num_concilied"/>
+          <field name="num_referencia"/>
+          <field name="concilied_ok"/>
+          <field name="comprobante"/>
+          <field name="date"/>
+          <field name="date_concilied"/>
+        </tree>
+      </field>
+    </record>
+    <record id="view_bank_conciliation_mark_filter" model="ir.ui.view">
+      <field name="name">mark.line.select</field>
+      <field name="model">mark.line</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar">
+	  <group expand="1" string="Agrupar por...">
+            <filter string="Fecha" domain="[]" context="{'group_by':'date_transfer'}"/>
+            <separator orientation="vertical"/>
+          </group>
+          <group>
+            <field name="partner_id"/>
+	    <field name="tipo_conciliacion"/>
+            <field name="num_concilied"/>
+            <field name="num_referencia"/>
+	    <field name="amount"/>
+            <field name="concilied_ok"/>
+            <field name="comprobante"/>
+            <field name="date"/>
+            <field name="date_concilied"/>
+          </group>
+          <newline/>
+        </search>
+      </field>
+    </record>          
+      <record model="ir.actions.act_window" id="action_bank_conciliation_mark_anterior">
+	<field name="name">Documentos Anterior</field>
+	<field name="type">ir.actions.act_window</field>
+	<field name="res_model">mark.line</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+<!-- -->
+      
+      <menuitem name="Conciliacion Bancaria" id="menu_bank_conciliation" sequence='30' 
+		parent="account.menu_finance_bank_and_cash"/>
+      <menuitem name="Detalle Anterior" id="menu_bank_conciliation_mark_anterior" parent="menu_bank_conciliation" sequence='2' 
+		action="action_bank_conciliation_mark_anterior"/>      
+      <menuitem name="Resumen Conciliacion" id="menu_bank_conciliation_mark" parent="menu_bank_conciliation" sequence='1' 
+		action="action_bank_conciliation_mark"/>       
+
+      <!-- -->
+
+    <record id="view_move_line_tree_detalle_concilia" model="ir.ui.view">
+      <field name="name">account.move.line.tree.detalle.partida</field>
+      <field name="model">account.move.line</field>
+      <field name="type">tree</field>
+      <field eval="100" name="priority"/>
+      <field name="arch" type="xml">
+        <tree colors="red:state == 'draft';black:state == 'valid'" string="Journal Items" editable="top" on_write="on_create_write">
+	  <button name="%(action_conciliar)d" string="Conciliar" icon="gtk-execute" type="action" colspan="2"/>
+	  <button name="noConciliar" string="Quitar Conciliacion" type="object" icon="gtk-cancel" confirm="Esta seguro que desea quitar la conciliacion"/>
+	  <field name="concilied_ok"/>
+	  <field name="num_referencia"/>
+	  <field name="spi_numero"/>
+          <field name="date" string="Fecha"/>
+          <field name="date_transfer"/>
+          <field name="move_id"/>
+          <field name="name"/>
+          <field name="partner_id" on_change="onchange_partner_id(move_id, partner_id, account_id, debit, credit, date, journal_id)"/>
+          <field name="account_id" domain="[('journal_id','=',journal_id), ('company_id', '=', company_id)]"/>
+	  <field name="debit" sum="Total debit"/>
+          <field name="credit" sum="Total credit"/>
+          <field name="tipo_conciliacion"/>
+          <field name="state" invisible="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_account_move_line_filter_detalle_concilia" model="ir.ui.view">
+      <field name="name">Detalle</field>
+      <field name="model">account.move.line</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Search Journal Items">
+          <group>
+            <filter icon="terp-document-new" string="Unposted" domain="[('move_id.state','=','draft')]" help="Unposted Journal Items"/>
+            <filter name="posted" icon="terp-camera_test" string="Posted" domain="[('move_id.state','=','posted')]" help="Posted Journal Items"/>
+            <separator orientation="vertical"/>
+            <field name="move_id" string="Number (Move)"/>
+	    <field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	    <field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+            <field name="account_id"/>
+	  </group>
+          <newline/>
+          <group>
+	    <field name="spi_numero"/>
+	    <field name="name" string="Descripcion"/>
+	    <field name="partner_id" string='Beneficiario/Proveedor'/>
+	    <field name="concilied_ok"/>
+	    <field name="num_referencia"/>
+	    <field name="date_transfer"/>
+	    <field name="tipo_conciliacion"/>
+          </group>
+          <newline/>
+          <group expand="0" string="Group By...">
+            <filter string="Partner" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Account"  icon="terp-folder-green" context="{'group_by':'account_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Period" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+	    <separator orientation="vertical"/>
+	    <filter string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+          </group>
+          <newline/>
+        </search>
+      </field>
+    </record>
+
+    <record model='ir.actions.act_window' id='view_account_move_line_detalle_partida_concilia'>
+      <field name="name">Conciliar</field>
+      <field name="res_model">account.move.line</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_id" ref="view_move_line_tree_detalle_concilia"/>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_account_move_line_filter_detalle_concilia"/>
+      <field name="context">{'view_mode':'concilia'}</field>
+    </record>
+    
+    <record id="action_account_move_line_tree_detalle_concilia" model="ir.actions.act_window.view">
+      <field eval="1" name="sequence"/>
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_line_tree_detalle_concilia"/>
+      <field name="act_window_id" ref="view_account_move_line_detalle_partida_concilia"/>
+    </record>
+
+    <menuitem action="view_account_move_line_detalle_partida_concilia" name="Conciliar" 
+	      id="move_line_detalle_concilia" parent="menu_bank_conciliation" sequence="71"/>
+      <!-- -->
+
+    <record model="ir.ui.view" id="view_report_mayor_cuentac_form">
+      <field name="name">Conciliacion Bancaria</field>    
+      <field name="model">mayor.cuentac</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Conciliacion Bancaria">
+          <group  colspan="4">
+	    <field name="fiscalyear_id" on_change="onchange_fiscalyearc(fiscalyear_id)" colspan="2"/>
+	    <field name="bank_resumen" colspan="2" required="1" widget="selection" on_change="onchange_conciliacion(bank_resumen)"/>
+	    <newline/>
+	    <field name="name" colspan="4" required="1" on_change="onchange_mayor_accc(name)"/>
+	    <field name="name_to" colspan="4" required="1"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	    <!--field name="partner_id" colspan="4"/-->
+	    <field name="concilied_ok" colspan="2" required="1"/>
+	  </group> 
+	  <field name="datas_fname" colspan="2" invisible="1"/>
+	  <field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	  <group  colspan="4" col='6'>
+	    <button name="loadMayorC" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_mayor_ctac" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	    <button name="exportaExcelC" string="Exportar Excel" icon="gtk-execute" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="account_id"/>
+		  <field name="saldo_anterior"/>
+		  <field name="debe"/>
+		  <field name="haber"/>
+		  <field name="saldo_final"/>
+		  <field name="line_line_ids" readonly="1" nolabel="1">
+		    <tree>
+		      <field name="name"/>
+		      <field name="date"/>
+		      <field name="debit" sum="TOTAL DEBE"/>
+		      <field name="credit" sum="TOTAL HABER"/>
+		      <field name="saldo" sum="TOTAL SALDO"/>
+		    </tree>
+		  </field>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_mayorctac">
+	  <field name="name">Reporte Conciliacion Bancaria</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">mayor.cuentac</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_mayor_ctac"
+	   sequence="100"
+	   parent="menu_bank_conciliation"
+	   action="action_report_mayorctac"/>
+
+    </data>      
+</openerp>

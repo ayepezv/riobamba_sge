@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <record id="view_rpt_cert" model="ir.ui.view">
+      <field name="name">Cert Line</field>
+      <field name="model">rpt.cert</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detale">
+	  <group colspan="4" col="5">
+	    <field name="certificate_id" colspan="2" domain="[('state','=','commited')]"/>
+	    <button icon="gtk-execute" name="computeCertLine" string="Generar" type="object"/>	    
+	    <button icon="gtk-execute" name="exporta_excel_cert" string="Exporta Excel" type="object" colspan="1"/>
+	  </group>
+	  <group colspan="4">
+	    <field name='fecha_desde' required="1"/>
+	    <field name='fecha_hasta' required="1"/>
+   	  </group>
+	  <group>
+	    <field name="datas_fname" colspan="4" invisible="1"/>
+	    <field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+	  </group>
+	  <group colspan="4">
+   	  </group>
+	  <notebook>
+	    <page>
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		  <field name="certificate_id"/>
+		  <field name="partner_id"/>
+		  <field name="date"/>
+		  <field name="comprometido" sum="TOTAL"/>
+		  <field name="pagado" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="certificate_id"/>
+		  <field name="line_ids" colspan="4"  nolabel="1">
+		    <tree>
+		      <field name="program_id"/>
+		    </tree>
+		    <form>
+		      <field name="program_id"/>
+		      <field name="line_ids" colspan="4" nolabel="1">
+			<tree>
+			  <field name="budget_id"/>
+			  <field name="financiera"/>
+			  <field name="comprometido" sum="TOTAL"/>
+			  <field name="pagado" sum="TOTAL"/>
+			</tree>
+		      </field>
+		    </form>
+		  </field>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+	  <newline/>
+        </form>
+      </field>
+    </record>
+    
+    <record id="action_rpt_cert" model="ir.actions.act_window">
+      <field name="name">Certificada detalle</field>
+      <field name="res_model">rpt.cert</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="target">new</field>
+      <field name="view_mode">form</field>
+    </record>
+      
+      <menuitem id="menu_rpt_cert"
+		icon="STOCK_EXECUTE"
+		action="action_rpt_cert"
+		parent="gt_budget.menu_budget_queries_base"
+		name="Rpt Cert Line"
+		sequence="16"/>
+
+      <menuitem id="menu_rpt_cert_cc"
+		icon="STOCK_EXECUTE"
+		action="action_rpt_cert"
+		parent="retention.menu_presu_cc"
+		name="Rpt Cert Line"
+		sequence="16"/>
+
+    <!-- PRESP.CONCEJO -->
+    <record id="view_budget_concejo" model="ir.ui.view">
+      <field name="name">Presupuesto Aprobado Concejo</field>
+      <field name="model">budget.concejo</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detale">
+	  <group colspan="4">
+	    <field name="state" colspan="2" widget="statusbar"/>
+	  </group>
+	  <group colspan="4">
+	    <button icon="gtk-execute" name="clonaConcejo" string="Clonar Presupuesto Concejo" type="object" states='Borrador'/>	    
+	    <button icon="gtk-ok" name="apruebaConcejo" string="Aprobar Presupuesto Concejo" type="object" states='Borrador'/>	    
+	  </group>
+	  <group colspan="4">
+	    <newline/>
+	    <field name="name" widget="selection" colspan="2" required="1" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	    <field name="year_id" colspan="2" required="1" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	  </group>
+	  <newline/>
+	  <notebook colspan="4">
+	    <page string="Detalle Partidas Ingreso">
+	      <field name="line_ids2" nolabel="1" attrs="{'readonly': [('state', '!=','Borrador')]}">
+		<tree>
+		<field name="program_id"/>
+		<field name="name"/>
+		<field name="budget_id"/>
+		<field name="inicial" sum="TOTAL"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string="Detalle Partidas Gasto">
+	      <field name="line_ids" nolabel="1" attrs="{'readonly': [('state', '!=','Borrador')]}">
+		<tree>
+		<field name="program_id"/>
+		<field name="name"/>
+		<field name="inicial" sum="TOTAL"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+      </record>
+
+      <record id="view_budget_concejo_tree" model="ir.ui.view">
+	<field name="name">view.budget.concejo.tree</field>
+	<field name="model">budget.concejo</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Presupuesto Aprobado Concejo">
+	    <field name="name" select="1"/>
+	    <field name="year_id" select="1"/>
+	    <field name="state" select="1"/>
+	  </tree>
+	</field>
+      </record>
+      
+
+      <record id="action_budget_concejo" model="ir.actions.act_window">
+        <field name="name">Presupuesto Aprobado Concejo</field>
+        <field name="res_model">budget.concejo</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem id="menu_budget_concejo_root"
+		icon="STOCK_EXECUTE"
+		parent="gt_budget.menu_budget_queries_base"
+		name="Presupuesto Concejo"
+		sequence="16"/>
+
+      <menuitem id="menu_budget_concejo"
+		icon="STOCK_EXECUTE"
+		action="action_budget_concejo"
+		parent="menu_budget_concejo_root"
+		name="Presupuesto Aprobado Concejo"
+		sequence="1"/>
+      
+      <!-- cedula concejo -->
+      
+    <record id="view_concejo_ingresos" model="ir.ui.view">
+      <field name="name">Cedula Ingresos</field>
+      <field name="model">concejo.ingresos</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Cedula Concejo Ingresos">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="budget_id" required="1" colspan="2" widget="selection"/>
+	    </group>
+	    <newline/>
+	    <!--group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evop" string="Exporta Excel" type="object" colspan="1"/>
+	    </group-->
+	    <group col="3" colspan="1">
+	      <button name="printConcejoIngresos" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_concejo_ingresos" model="ir.actions.act_window">
+        <field name="name">Cedula Ingresos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">concejo.ingresos</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_concejo_ingresos"
+		icon="STOCK_EXECUTE"
+		sequence="2"
+		groups="gt_budget.group_budget_user"
+		action="action_concejo_ingresos"
+		parent="menu_budget_concejo_root"
+		name="Cedula Ingresos"/>
+
+
+      
+    <record id="view_concejo_gastos" model="ir.ui.view">
+      <field name="name">Cedula Gastos</field>
+      <field name="model">concejo.gastos</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Cedula Concejo Gastos">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="budget_id" required="1" colspan="2" widget="selection"/>
+	      <field name="program_id" required="1" colspan="2" widget="selection"/>
+	    </group>
+	    <newline/>
+	    <!--group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evop" string="Exporta Excel" type="object" colspan="1"/>
+	    </group-->
+	    <group col="3" colspan="1">
+	      <button name="printConcejoGastos" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_concejo_gastos" model="ir.actions.act_window">
+        <field name="name">Cedula Gastos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">concejo.gastos</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_concejo_gastos"
+		icon="STOCK_EXECUTE"
+		sequence="3"
+		groups="gt_budget.group_budget_user"
+		action="action_concejo_gastos"
+		parent="menu_budget_concejo_root"
+		name="Cedula Gastos"/>
+
+    <!-- -->
+
+    <menuitem id="menu_evaluacion_budget_obra_parent"
+	      icon="STOCK_EXECUTE"
+	      sequence="5"
+	      groups="gt_budget.group_budget_user"
+	      parent="gt_budget.menu_evaluacion_budget"
+	      name="Obra"/>
+    
+    <record id="view_evaluacion_budget_obra" model="ir.ui.view">
+      <field name="name">Ev. Obra</field>
+      <field name="model">evaluacion.obra</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Obra">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="program_id" colspan="2" required="1"/>
+	      <field name="obra" colspan="2"/>
+	      <field name="obra_mayor" colspan="2"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evop" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionObra" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_obra" model="ir.actions.act_window">
+        <field name="name">Pagado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.obra</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_evaluacion_budget_obra"
+		icon="STOCK_EXECUTE"
+		sequence="5"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_obra"
+		parent="menu_evaluacion_budget_obra_parent"
+		name="Pagado"/>
+
+    <record id="view_evaluacion_budget_obra_comprometido" model="ir.ui.view">
+      <field name="name">Ev. Obra Comprometido</field>
+      <field name="model">evaluacion.obra.comprometido</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Obra Comprometido">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="program_id" colspan="2" required="1"/>
+	      <field name="obra" colspan="2"/>
+	      <field name="obra_mayor" colspan="2"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+<newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evoc" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionObraComprometido" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_obra_comprometido" model="ir.actions.act_window">
+        <field name="name">Comprometido</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.obra.comprometido</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_evaluacion_budget_obra_comprometido"
+		icon="STOCK_EXECUTE"
+		sequence="4"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_obra_comprometido"
+		parent="menu_evaluacion_budget_obra_parent"
+		name="Comprometido"/>
+
+      <!-- EVALUACION FUENTE FINANCIAMIENTO-->
+    <menuitem id="menu_evaluacion_budget_ff_parent"
+	      icon="STOCK_EXECUTE"
+	      sequence="6"
+	      groups="gt_budget.group_budget_user"
+	      parent="gt_budget.menu_evaluacion_budget"
+	      name="Fuente Financiamiento"/>
+
+    <record id="view_evaluacion_budget_ff" model="ir.ui.view">
+      <field name="name">Ev. Fuente Financiamiento</field>
+      <field name="model">evaluacion.ff</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Fuente Financiamiento">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="program_id" colspan="2" required="1"/>
+	      <field name="obra" colspan="2"/>
+	      <field name="department_id" colspan="2"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evff" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionFf" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_ff" model="ir.actions.act_window">
+        <field name="name">Pagado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.ff</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_evaluacion_budget_ff"
+		icon="STOCK_EXECUTE"
+		sequence="5"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_ff"
+		parent="menu_evaluacion_budget_ff_parent"
+		name="Pagado"/>
+
+    <record id="view_evaluacion_budget_ff_comprometido" model="ir.ui.view">
+      <field name="name">Ev. Fuente Financiamiento Comprometido</field>
+      <field name="model">evaluacion.ff.comprometido</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Fuente Financiamiento Comprometido">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="program_id" colspan="2" required="1"/>
+	      <field name="obra" colspan="2"/>
+	      <field name="department_id" colspan="2"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evfc" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionFfComprometido" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_ff_comprometido" model="ir.actions.act_window">
+        <field name="name">Comprometido</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.ff.comprometido</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_evaluacion_budget_ff_comprometido"
+		icon="STOCK_EXECUTE"
+		sequence="4"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_ff_comprometido"
+		parent="menu_evaluacion_budget_ff_parent"
+		name="Comprometido"/>
+
+    <!-- Cuenta financia planificacion -->
+
+    <!--record id="view_budget_project_financia" model="ir.ui.view">
+      <field name="name">Presupuesto Programa</field>
+      <field name="model">project.project</field>
+      <field name="inherit_id" ref="gt_budget.view_budget_project"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='budget_post_id']" position="after">
+	  <field name='type_budget' invisible="1"/>
+	  <field name="financiera_id" attrs="{'invisible': [('type_budget','=','gasto')]}"/>
+	</xpath>
+      </field>
+    </record-->    
+
+    <!-- -->
+    <record id="view_certificate_financia" model="ir.ui.view">
+      <field name="name">Documento Presupuestario</field>
+      <field name="model">budget.certificate</field>
+      <field name="inherit_id" ref="gt_budget.view_budget_certificate_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='tipo_invoice']" position="before">
+	  <field name="financia_id" required="1"/>
+	</xpath>
+	<xpath expr="/form/notebook/page/group/field[@name='line_ids']/form/field[@name='tipo_invoice']" position="before">
+	  <field name="financia_id" required="1"/>
+	</xpath>
+      </field>
+    </record>
+
+    <!-- Limite programa -->
+    <record id="view_budget_programa_unidad_form" model="ir.ui.view">
+      <field name="name">view.budget.programa.unidad.form</field>
+      <field name="model">programa.unidad</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Presupuesto Programa por Unidad">
+	  <field name="poa_id" required="1"/>
+	  <field name="program_id" required="1"/>
+          <field name="total_poa"/>
+          <field name="total"/>
+	  <notebook colspan="4">
+	    <page string="Detalle por Unidad">
+	      <field name="line_ids"  nolabel="1">
+		<tree string="Detalle" editable="top">
+		  <field name="department_id" required="1"/>
+		  <field name="percent" sum="TOTAL" required="1"/>
+		  <field name="amount" sum="TOTAL"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_budget_programa_unidad_tree" model="ir.ui.view">
+      <field name="name">view.budget.programa.unidad.tree</field>
+      <field name="model">programa.unidad</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Presupuesto Programa Unidad">
+	  <field name="poa_id" select="1"/>
+	  <field name="program_id" select="1"/>
+	  <field name="total" select="1"/>
+	</tree>
+      </field>
+    </record>
+    
+    <record id="action_budget_programa_unidad" model="ir.actions.act_window">
+      <field name="name">Presupuesto Programa Unidad</field>
+      <field name="res_model">programa.unidad</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_budget_programa_unidad" action="action_budget_programa_unidad" parent="gt_budget.menu_budget_budget_parent" sequence="15"/>
+
+    <!-- Partida financia -->
+
+    <record id="view_partida_financia_head_form" model="ir.ui.view">
+      <field name="name">view.partida.financia.head.form</field>
+      <field name="model">partida.financia.head</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Partida cuenta financiera">
+	  <group colspan="4" col='4'>
+	    <field name="name" required="1" colspan="2"/>
+	    <button icon="gtk-execute" name="actualizaFinancia" string="Actualizar" type="object" colspan="1" confirm="Si usted ejecuta esta accion se elimina lo que estuvo ya cargado y se tren nuevamente las partidas del presupuesto de ingresos"/>
+	    <!--button icon="gtk-execute" name="clonaFinanciaHead" string="Clonar Anio Anterior" type="object" colspan="1"/-->
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name='line_ids' nolabel='1'>
+		<tree>
+		  <!--field name='project_id' required="1" domain="[('poa_id','=',parent.name.id)]"/-->
+		  <field name='item_id' required="1"/>
+		  <field name='financiera_id' required="1"/>
+		  <!--field name='budget_id' readonly="1"/-->
+		  <field name='name' readonly="1" invisible="1"/>
+		  <field name='is_reform'/>
+		  <field name='is_recauda'/>
+		  <field name='monto' required="1"/>
+		  <field name='reforma'/>
+		  <field name='codificado'/>
+		  <!--field name='recaudado' required="1"/>
+		  <field name='porcentaje' required="1"/-->
+		</tree>
+		<form>
+		  <field name='item_id' required="1"/>
+		  <field name='financiera_id' required="1"/>
+		  <field name='name' readonly="1" invisible="1"/>
+		  <field name='monto' required="1" sum="TOTAL"/>
+		  <field name='is_reform'/>
+		  <field name='is_recauda'/>
+		  <field name='reforma' sum="TOTAL"/>
+		  <field name='codificado' sum="TOTAL"/>
+		  <!--field name='recaudado' required="1"/>
+		  <field name='porcentaje' required="1"/-->
+		  <notebook colspan="4">
+		    <page string="Detalle Reformas">
+		      <field name="reforma_ids" nolabel="1">
+			<tree editable="top">
+			  <field name="fecha" required="1"/>
+			  <field name="monto" required="1" sum='TOTAL'/>
+			</tree>
+		      </field>
+		    </page>
+		  </notebook>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_partida_financia_head_tree" model="ir.ui.view">
+      <field name="name">view.partida.financia.head.tree</field>
+      <field name="model">partida.financia.head</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Cuenta Financiera Partida">
+	  <field name="name" select="1"/>
+	</tree>
+      </field>
+    </record>
+
+    <record id="view_partida_financia_filter" model="ir.ui.view">
+      <field name="name">partida.financia.head.select</field>
+      <field name="model">partida.financia.head</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar">
+ 	  <field name="name"/>
+        </search>
+      </field>
+    </record> 
+    
+    <record id="action_partida_financia_head" model="ir.actions.act_window">
+      <field name="name">Cuenta Financiera Partida</field>
+      <field name="res_model">partida.financia.head</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_partida_financia" action="action_partida_financia_head" parent="gt_budget.menu_budget_configuration" sequence="16"/>
+    
+    <!-- PAC -->
+
+    <menuitem id="menu_budget_pac1" parent="gt_budget.menu_main_budget_gob" name="PAC"/>
+
+    <menuitem id="menu_product_budget_pac" parent="menu_budget_pac1" 
+	      action="gt_pac.action_purchase_pac_pac" sequence="1" string="PAC Compras"/>
+    
+    <record id="view_budget_pac_form" model="ir.ui.view">
+      <field name="name">PAC Presupuestos</field>
+      <field name="model">budget.pac</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="PAC">
+	  <group colspan="4" col="5">
+	    <field name="state" readonly="1" widget="statusbar"/>
+	    <button name="loadPac" states="Borrador" 
+		    string="Cargar PAC" type="object" icon="gtk-execute"/>
+	    <button name="apruebaPac" states="Borrador" 
+		    string="Aprobar PAC" type="object" icon="gtk-ok"/>
+	    <button name="computePac" states="Aprobado" 
+		    string="Recalcula PAC" type="object" icon="gtk-execute"/>
+	    <!--button name="pacBorrador" states="Anulado,Aprobado" type="object" string="Regresar a borrador" 
+		    icon="gtk-execute"/>
+	    <button name="pacAnulado" states="Borrador" string="Anular" type="object" icon="gtk-cancel"/>
+	    <button name="pacAprobado" states="Borrador" 
+		    string="Aprobar" type="object" icon="gtk-jump-to"/-->
+	  </group>
+	  <group colspan="4" col="4">
+	    <field name="datas_fname" colspan="3" invisible="1"/>
+	    <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	    <button name="exporta_excel_pac" colspan="1" states="Aprobado" string="Exporta Excel" type="object" icon="gtk-execute"/>
+	  </group>
+	  <group colspan="4" col="6">
+            <field name="poa_id" required="1" colspan="2"/>
+            <field name="date_from" required="1" colspan="2"/>
+            <field name="date_to" required="1" colspan="2"/>
+	  </group>
+	  <notebook>
+	    <page string="Detalle Publicado">
+	      <field name="line_ids" nolabel="1">
+		<tree editable="top">
+		  <field name="name" on_change="onchange_pac(name)"/>
+		  <field name="catalogo" required="1"/>
+		  <field name="tipo_pac" required="1"/>
+		  <field name="cantidad" required="1"/>
+		  <field name="uom" required="1"/>
+		  <field name="is_publicado" required="1"/>
+		  <field name="publicado" readonly="1" sum="TOTAL"/>
+		  <field name="reforma" readonly="1" sum="TOTAL"/>
+		  <field name="final" readonly="1" sum="TOTAL"/>
+		</tree>
+	      </field>	      
+	    </page>
+	    <page string="Detalle No Publicado">
+	      <field name="line2_ids" nolabel="1">
+		<tree editable="top">
+		  <field name="name" on_change="onchange_pac(name)"/>
+		  <field name="catalogo" required="1"/>
+		  <field name="tipo_pac" required="1"/>
+		  <field name="cantidad" required="1"/>
+		  <field name="uom" required="1"/>
+		  <field name="is_publicado" required="1"/>
+		  <field name="publicado" readonly="1" sum="TOTAL"/>
+		  <field name="reforma" readonly="1" sum="TOTAL"/>
+		  <field name="final" readonly="1" sum="TOTAL"/>
+		</tree>
+	      </field>	      
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_budget_pac_tree" model="ir.ui.view">
+      <field name="name">view.budget.pac.tree</field>
+      <field name="model">budget.pac</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="PAC Presupuestos">
+          <field name="poa_id" select="1"/>
+          <field name="state" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_budget_pac1" model="ir.actions.act_window">
+      <field name="name">PAC Presupuestos</field>
+      <field name="res_model">budget.pac</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_budget_pac_pac" parent="menu_budget_pac1" 
+	      action="action_budget_pac1" sequence="1"/>
+
+    <!-- -->
+
+    </data>
+</openerp>

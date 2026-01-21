@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <report auto="False"
+            id="evaluacion_obra"
+            model="evaluacion.obra"
+            name="evaluacion_obra"
+            file="budget_ext/report/evaluacion_obra.mako"
+            string="Evaluacion Presupuestaria Obra"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+  </data>
+</openerp>

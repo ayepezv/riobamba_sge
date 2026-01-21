@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_pago","hr.varios","model_hr_varios","base.group_hr_manager",1,1,1,1
+"access_hr_pago_line","hr.varios.line","model_hr_varios_line","base.group_hr_manager",1,1,1,1
+"access_hr_account_period","account.period","account.model_account_period","base.group_hr_manager",1,1,1,1

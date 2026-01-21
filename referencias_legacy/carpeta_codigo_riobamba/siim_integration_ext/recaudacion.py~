@@ -1,0 +1,1508 @@
+
+##############################################################################
+#    Autores
+#    Mario Chogllo
+#    Diego Abad A
+##############################################################################
+from XLSWriter import XLSWriter
+import base64
+import xlrd
+from tools import ustr
+import time
+from osv import osv, fields
+import decimal_precision as dp
+
+DP = dp.get_precision('Budget')
+
+#BAJAS 
+class bajaLine(osv.Model):
+    _name = 'baja.line'
+    _columns = dict(
+        b_id = fields.many2one('baja','Baja'),
+        budget_id = fields.many2one('budget.item','Partida/Rubro'),
+        anios = fields.integer('Lineas Otros Anios'),
+        amount = fields.float('Valor'),
+    )
+bajaLine()
+
+class baja(osv.Model):
+    _name = 'baja'
+    _columns = dict(
+        name = fields.char('Descripcion',size=256),
+        date = fields.date('Fecha de baja'),
+        baja_line = fields.one2many('baja.line','b_id','Detalle'),
+        move_id = fields.many2one('account.move','Asiento'),
+    )
+
+    def generarBaja(self, cr, uid, ids, context=None):
+        certificate_line_obj = self.pool.get('budget.certificate.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        baja_obj = self.pool.get('baja')
+        project_obj = self.pool.get('project.project')
+        journal_obj = self.pool.get('account.journal')
+        for this in self.browse(cr, uid, ids):
+            journal_ids = journal_obj.search(cr, uid, [('name','=','INGRESOS')],limit=1)
+            if not journal_ids:
+                raise osv.except_osv('Erro configuracion','No esta creada un diario de ingresos.')
+            journal_id = journal_ids[0]
+            state_aux = 'draft'
+            company_aux = 1
+            currency_aux = 2
+            name_aux = 'Baja'
+            date_aux = this.date
+            if this.move_id:
+                if this.move_id.state=='draft' and this.move_id.name=='/':
+                    move_obj.unlink(cr, uid, [this.move_id.id],1)
+                    move_id = move_obj.create(cr, uid, {
+                        'ref': this.name,
+                        'narration':this.name,
+                        'journal_id': journal_id,
+                        'date': this.date,
+                        'state':'draft',
+                        'afectacion':True,
+                        'partner_id':1,
+                        'no_cp':True,
+                        'type':'Baja',
+                    })
+                else:
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+                    move_id = this.move_id.id
+            else:
+                move_id = move_obj.create(cr, uid, {
+                    'ref': this.name,
+                    'narration':this.name,
+                    'journal_id': journal_id,
+                    'date': this.date,
+                    'state':'draft',
+                    'afectacion':True,
+                    'partner_id':1,
+                    'no_cp':True,
+                    'type':'Baja',
+                })
+            baja_obj.write(cr, uid, this.id, {
+                'move_id':move_id,
+            })
+            move = move_obj.browse(cr, uid, move_id)
+            aux_total = 0
+            for line in this.baja_line:
+                project_ids = project_obj.search(cr, uid, [('type_budget','=','ingreso')],limit=1)
+                project = project_obj.browse(cr, uid, project_ids[0])
+                certificate_id = certificate_line_obj.create(cr, uid, {
+                    'project_id':project.id,
+                    'task_id':project.tasks[0].id,
+                    'budget_id':line.budget_id.id,
+                })
+                certificate = certificate_line_obj.browse(cr, uid, certificate_id)
+                b_id = certificate.budget_id.id
+                p_id = certificate.budget_post.id
+                account_ids = account_obj.search(cr, uid, [('budget_id','=',line.budget_id.budget_post_id.id)])
+                account = account_obj.browse(cr, uid, account_ids[0])
+                cxp = account.account_rec_id.id
+                monto = (line.amount)*(-1)
+                monto_aux = line.amount
+                #entrada cxc debe
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_id,b_id,p_id,name_aux,False))
+                #linea  entrada cta patrimonial 621
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,budget_accrued,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,account.id,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_id,b_id,p_id,False,name_aux,False))
+                #lineas de los anios anteriores
+                #aqui tiene q ir con el budget de anios anterioreres
+                item_obj = self.pool.get('budget.item')
+                post_obj = self.pool.get('budget.post')
+                post_ids = post_obj.search(cr, uid, [('code','=','380101')],limit=1)
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',post_ids[0])],limit=1)
+                if item_ids:
+                    certificate_ids = certificate_line_obj.search(cr, uid, [('budget_id','=',item_ids[0])])
+                    if certificate_ids:
+                       certificate_id = certificate_ids[0]
+                    else:
+                        print "No cert line de aniosa ante"
+                for k in range(line.anios):
+                    cr.execute('''
+                    INSERT INTO account_move_line (
+                    move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,budget_accrued,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto_aux,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_id,b_id,p_id,False,name_aux,False))
+                #baja
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,budget_accrued,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,account.id,monto_aux,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_id,b_id,p_id,False,name_aux,False))
+        return True
+
+baja()
+##EMISIONES 
+class emisionLine(osv.Model):
+    _name = 'emision.line'
+    _columns = dict(
+        e_id = fields.many2one('emision','Emision'),
+        budget_id = fields.many2one('budget.item','Partida/Rubro'),
+        monto = fields.float('Valor'),
+    )
+emisionLine()
+class emision(osv.Model):
+    _name = 'emision'
+    _columns = dict(
+        name = fields.char('Descripcion',size=128),
+        date = fields.date('Fecha'),
+        move_id = fields.many2one('account.move','Asiento Emision'),
+        line_ids = fields.one2many('emision.line','e_id','Detalle Emision'),
+    )
+
+    def generarEmision(self, cr, uid, ids, context=None):
+        certificate_line_obj = self.pool.get('budget.certificate.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        emision_obj = self.pool.get('emision')
+        project_obj = self.pool.get('project.project')
+        journal_obj = self.pool.get('account.journal')
+        for this in self.browse(cr, uid, ids):
+            journal_ids = journal_obj.search(cr, uid, [('name','=','INGRESOS')],limit=1)
+            if not journal_ids:
+                raise osv.except_osv('Erro configuracion','No esta creado un diario de ingresos.')
+            journal_id = journal_ids[0]
+            state_aux = 'draft'
+            company_aux = 1
+            currency_aux = 2
+            name_aux = 'Emision'
+            date_aux = this.date
+            if this.move_id:
+                if this.move_id.state=='draft' and this.move_id.name=='/':
+                    move_obj.unlink(cr, uid, [this.move_id.id],1)
+                    move_id = move_obj.create(cr, uid, {
+                        'ref': this.name,
+                        'narration':this.name,
+                        'journal_id': journal_id,
+                        'date': this.date,
+                        'state':'draft',
+                        'afectacion':True,
+                        'partner_id':1,
+                        'no_cp':True,
+                        'type':'Recaudacion',
+                    })
+                else:
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+                    move_id = this.move_id.id
+            else:
+                move_id = move_obj.create(cr, uid, {
+                    'ref': this.name,
+                    'narration':this.name,
+                    'journal_id': journal_id,
+                    'date': this.date,
+                    'state':'draft',
+                    'afectacion':True,
+                    'partner_id':1,
+                    'no_cp':True,
+                    'type':'Recaudacion',
+                })
+            emision_obj.write(cr, uid, this.id, {
+                'move_id':move_id,
+            })
+            move = move_obj.browse(cr, uid, move_id)
+            aux_total = 0
+            for line in this.line_ids:
+                project_ids = project_obj.search(cr, uid, [('type_budget','=','ingreso')],limit=1)
+                project = project_obj.browse(cr, uid, project_ids[0])
+                certificate_id = certificate_line_obj.create(cr, uid, {
+                    'project_id':project.id,
+                    'task_id':project.tasks[0].id,
+                    'budget_id':line.budget_id.id,
+                })
+                certificate = certificate_line_obj.browse(cr, uid, certificate_id)
+                b_id = certificate.budget_id.id
+                p_id = certificate.budget_post.id
+                account_ids = account_obj.search(cr, uid, [('budget_id','=',line.budget_id.budget_post_id.id)])
+                account = account_obj.browse(cr, uid, account_ids[0])
+                cxp = account.account_rec_id.id
+                monto = line.monto
+                #entrada cxc debe
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,name,migrado,budget_accrued) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_id,b_id,p_id,name_aux,False,True))
+                #linea  entrada cta patrimonial 621
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,budget_accrued,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,account.id,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_id,b_id,p_id,False,name_aux,False))
+        return True
+
+emision()
+##
+
+
+class devolucionLine(osv.Model):
+    _name = 'devolucion.line'
+    _columns = dict(
+        c_id = fields.many2one('devolucion','Devolucion'),
+        budget_id = fields.many2one('budget.post','Partida'),
+        monto = fields.float('Valor'),
+    )
+devolucionLine()
+
+class devolucion(osv.Model):
+    _name = 'devolucion'
+    _columns = dict(
+        desc = fields.char('Concepto',size=256,required=True),
+        name = fields.many2one('account.journal','Banco',required=True),
+        date = fields.date('Fecha'),
+        line_ids = fields.one2many('devolucion.line','c_id','Detalle'),
+        move_id = fields.many2one('account.move','Asiento'),
+    )
+
+    def devolverEfectivo(self, cr, uid, ids, context=None):
+        certificate_line_obj = self.pool.get('budget.certificate.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        tercero_obj = self.pool.get('devolucion')
+        for this in self.browse(cr, uid, ids):
+            state_aux = 'draft'
+            company_aux = 1
+            currency_aux = 2
+            name_aux = 'Devolucion'
+            date_aux = this.date
+            if this.move_id:
+                if this.move_id.state=='draft' and this.move_id.name=='/':
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+                    move_obj.unlink(cr, uid, [this.move_id.id],aux=1)
+                    period_ids = period_obj.find(cr, uid, this.date)
+                    if period_ids:
+                        period_id = period_ids[0]
+                        move_id = move_obj.create(cr, uid, {
+                            'ref': this.name,
+                            'narration':aux_narration,
+                            'journal_id': this.journal_id.id,
+                            'date': this.date,
+                            'state':'draft',
+                            'afectacion':True,
+                            'partner_id':1,
+                            'period_id': period_id,
+                            'type':'Recaudacion',
+                        })
+                elif this.move_id.state=='anulado':
+                    period_ids = period_obj.find(cr, uid, this.date)
+                    if period_ids:
+                        period_id = period_ids[0]
+                        move_id = move_obj.create(cr, uid, {
+                            'ref': this.name,
+                            'narration':aux_narration,
+                            'journal_id': this.journal_id.id,
+                            'date': this.date,
+                            'state':'draft',
+                            'afectacion':True,
+                            'partner_id':1,
+                            'period_id': period_id,
+                            'type':'Recaudacion',
+                        })
+                elif this.move_id.state=='posted':
+                    move_id = this.move_id.id
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+                move_obj.unlink(cr, uid, [this.move_id.id],1)
+                move_id = this.move_id.id
+            else:
+                move_id = move_obj.create(cr, uid, {
+                    'ref': this.desc,
+                    'narration':this.desc,
+                    'journal_id': this.name.id,
+                    'date': this.date,
+                    'state':'draft',
+                    'afectacion':True,
+                    'partner_id':1,
+                    'type':'Recaudacion',
+                    'no_cp':True,
+                })
+            move = move_obj.browse(cr, uid, move_id)
+            aux_total = 0
+            for line in this.line_ids:
+                aux_total -= line.monto
+                certificate_ids = certificate_line_obj.search(cr, uid, [('budget_post','=',line.budget_id.id)],limit=1)
+                if certificate_ids:
+                    certificate = certificate_line_obj.browse(cr, uid, certificate_ids[0])
+                    b_id = certificate.budget_id.id
+                    p_id = certificate.budget_post.id
+                account_ids = account_obj.search(cr, uid, [('budget_id','=',line.budget_id.id)])
+                if account_ids:
+                    account = account_obj.browse(cr, uid, account_ids[0])
+                    account_id = account.id
+                else:
+                    raise osv.except_osv('Error de configuracion', 'La partida % seleccionada no tiene cuenta asociada' %(line.budget_id.code))
+                monto = (line.monto)*(-1)
+                if account.account_rec_id:
+                    cxp = account.account_rec_id.id
+                else:
+                    #es de la 38 devolver directo la linea
+                    tabla_obj = self.pool.get('cuenta.anterior')
+                    tabla_ids = tabla_obj.search(cr, uid, [])
+                    if not tabla_ids:
+                        raise osv.except_osv('Error de configuracion', 'No tiene configurada tabla de cuentas y partida de anios anteriores')
+                    tabla = tabla_obj.browse(cr, uid, tabla_ids[0])
+                    cxp = tabla.account_id.id
+                    cr.execute('''
+                    INSERT INTO account_move_line (
+                    move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_ids[0],b_id,p_id,name_aux,False)) 
+                    cr.execute('''
+                    INSERT INTO account_move_line (
+                    move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,name,budget_accrued,budget_paid,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_ids[0],b_id,p_id,name_aux,True,True,False)) 
+                    continue
+                #entrada cxc debe
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_ids[0],b_id,p_id,name_aux,False))
+                #linea  entrada cxc haber
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,budget_accrued,name,migrado) VALUES (%s,%s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_ids[0],b_id,p_id,True,name_aux,False))
+                #linea  entrada cta patrimonial 621
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_id_cert,budget_id,budget_post,budget_paid,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,account.id,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,certificate_ids[0],b_id,p_id,True,name_aux,False))
+            cr.execute('''
+            INSERT INTO account_move_line (
+            move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s)''',(move_id,move.journal_id.default_debit_account_id.id,aux_total,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,False))
+        self.write(cr, uid, ids[0],{'move_id':move_id})
+        return True    
+
+    _defaults = dict(
+        date = time.strftime('%Y-%m-%d'),
+    )
+
+devolucion()
+
+#cobros de terceros
+class cobroTercerosLine(osv.Model):
+    _name = 'cobro.tercero.line'
+    _columns = dict(
+        c_id = fields.many2one('cobro.tercero','Cobro'),
+        budget_id = fields.many2one('budget.post','Partida'),
+        monto = fields.float('Valor'),
+    )
+cobroTercerosLine()
+
+class cobroTerceros(osv.Model):
+    _name = 'cobro.tercero'
+    _columns = dict(
+        desc = fields.char('Concepto',size=256,required=True),
+        name = fields.many2one('account.journal','Banco',required=True),
+        date = fields.date('Fecha'),
+        line_ids = fields.one2many('cobro.tercero.line','c_id','Detalle'),
+        move_id = fields.many2one('account.move','Asiento'),
+    )
+
+    def cobrarTercero(self, cr, uid, ids, context=None):
+        certificate_line_obj = self.pool.get('budget.certificate.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        tercero_obj = self.pool.get('cobro.tercero')
+        project_obj = self.pool.get('project.project')
+        item_obj = self.pool.get('budget.item')
+        journal_obj = self.pool.get('account.journal')
+        for this in self.browse(cr, uid, ids):
+            state_aux = 'draft'
+            company_aux = 1
+            currency_aux = 2
+            name_aux = 'Cobro'
+            date_aux = this.date
+            #sacar diario de ingreso
+            journal_ids = journal_obj.search(cr, uid, [('name','=','INGRESOS')],limit=1)
+            if not journal_ids:
+                raise osv.except_osv('Error de configuracion', 'No existe diario de INGRESOS por favor cree uno')
+            if this.move_id:
+                if this.move_id.state=='draft' and this.move_id.name=='/':
+                    move_obj.unlink(cr, uid, [this.move_id.id],1)
+                    move_id = move_obj.create(cr, uid, {
+                        'ref': this.desc,
+                        'narration':this.desc,
+                        'journal_id': journal_ids[0],
+                        'date': this.date,
+                        'state':'draft',
+                        'afectacion':True,
+                        'no_cp':True,
+                        'partner_id':1,
+                        'type':'Recaudacion',
+                    })
+                else:
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+                    move_id = this.move_id.id
+            else:
+                move_id = move_obj.create(cr, uid, {
+                    'ref': this.desc,
+                    'narration':this.desc,
+                    'journal_id': journal_ids[0],
+                    'date': this.date,
+                    'state':'draft',
+                    'afectacion':True,
+                    'no_cp':True,
+                    'partner_id':1,
+                    'type':'Recaudacion',
+                })
+            tercero_obj.write(cr, uid, this.id, {
+                'move_id':move_id,
+            })
+            move = move_obj.browse(cr, uid, move_id)
+            aux_total = 0
+            for line in this.line_ids:
+                aux_total += line.monto
+                project_ids = project_obj.search(cr, uid, [('type_budget','=','ingreso')],limit=1)
+                project = project_obj.browse(cr, uid, project_ids[0])
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',line.budget_id.id)],limit=1)
+                if not item_ids:
+                    raise osv.except_osv(('Error Configuracion !'),
+                                         ("No existe la partida '%s'") % (line.budget_id.code)) 
+                certificate_id = certificate_line_obj.create(cr, uid, {
+                    'project_id':project.id,
+                    'task_id':project.tasks[0].id,
+                    'budget_id':item_ids[0],
+                })
+                certificate = certificate_line_obj.browse(cr, uid, certificate_id)
+                b_id = certificate.budget_id.id
+                p_id = certificate.budget_post.id
+                account_ids = account_obj.search(cr, uid, [('budget_id','=',line.budget_id.id)])
+                if not account_ids:
+                    raise osv.except_osv(('Error de configuracion !'),
+                                         ("No existe cuenta contable asociada a la partida '%s'")%(line.budget_id.code))
+                for account_id in account_ids:
+                    account = account_obj.browse(cr, uid, account_id)
+                    if account.account_rec_id:
+                        break
+#                    account = account_obj.browse(cr, uid, account_ids[0])
+                aux_mseg_nocxp = account.code + ' - ' + account.name
+                if not account.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion !'),
+                                         ("No existe cuenta por cobrar asociada a la cuenta '%s'")%(aux_mseg_nocxp))
+                cxp = account.account_rec_id.id
+                monto = line.monto
+                if not this.name.default_debit_account_id.id:
+                    raise osv.except_osv(('Error de configuracion !'),
+                                        ("El banco seleccionado no tiene configurada la cuenta contable"))
+                banco_account_id = this.name.default_debit_account_id.id
+                #entrada cxc debe
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,name,migrado,budget_accrued,budget_id_cert,budget_id,budget_post) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,False,True,certificate_id,b_id,p_id))
+                #linea  entrada cxc haber
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,name,migrado,budget_paid,budget_id_cert,budget_id,budget_post) VALUES (%s,%s, %s, %s,%s,%s,%s, %s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,False,True,certificate_id,b_id,p_id))
+                #linea  entrada cta patrimonial 621
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,budget_accrued,budget_paid,name,migrado,budget_id_cert,budget_id,budget_post) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,account.id,monto,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,False,False,name_aux,False,certificate_id,b_id,p_id))
+            cr.execute('''
+            INSERT INTO account_move_line (
+            move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,name,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s)''',(move_id,banco_account_id,aux_total,move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,False))
+        return True    
+
+    _defaults = dict(
+        date = time.strftime('%Y-%m-%d'),
+    )
+
+cobroTerceros()
+
+###########################
+
+class siimModulo(osv.Model):
+    _name = 'siim.modulo'
+    _columns = dict(
+        id_ext = fields.integer('ID SIIM',required=True),
+        name = fields.char('Nombre',size=128,required=True),
+    )
+siimModulo()
+
+class recaudacionRubro(osv.Model):
+    _name = 'recaudacion.rubro'
+    _description = "Rubros Recaudacion"
+
+    def onchange_partida_rubro(self, cr, uid, ids,budget_id):
+        result = {}
+        if not budget_id:
+            return {'value': result}
+        account_obj = self.pool.get('account.account')
+        account_ids = account_obj.search(cr, uid, [('budget_id','=',budget_id)])
+        if account_ids:
+            result['account_id'] = account_ids[0]
+        return {'value': result}
+
+    _columns = dict(
+        id_ext = fields.integer('ID SIIM'),
+        name = fields.char('Rubro Descripcion',size=128,required=True),
+        partida_id = fields.many2one('budget.post','Partida'),
+        account_id = fields.many2one('account.account','Cuenta contable'),
+        modulo_id = fields.many2one('siim.modulo','Modulo',required=True),
+        codigo_partida = fields.related('partida_id', 'code', type='char',size=32,
+                                        string='Codigo Partida',readonly=True,store=True),
+        codigo_cuenta = fields.related('account_id', 'code', type='char',size=32,
+                                       string='Codigo Cuenta',readonly=True,store=True),
+        iva = fields.integer('IVA'),
+        estado = fields.integer('Estado'),
+        calculable = fields.integer('Calculable'),
+        valor = fields.float('Valor'),
+        tipo = fields.integer('Tipo'),
+        es_iva = fields.integer('Es iva'),
+        es_debito = fields.integer('Es debito'),
+    )
+
+    def write_ss(self, cr, uid, ids,vals, context=None):
+        import psycopg2
+        account_obj = self.pool.get('account.account')
+        parameter_obj = self.pool.get('ir.config_parameter')
+        usuario_ids = parameter_obj.search(cr, uid, [('key','=','usrsiim')],limit=1)
+        usuario = parameter_obj.browse(cr, uid, usuario_ids[0]).value
+        clave_ids = parameter_obj.search(cr, uid, [('key','=','passsiim')],limit=1)
+        clave = parameter_obj.browse(cr, uid, clave_ids[0]).value
+        base_ids = parameter_obj.search(cr, uid, [('key','=','basesiim')],limit=1)
+        base = parameter_obj.browse(cr, uid, base_ids[0]).value
+        server_ids = parameter_obj.search(cr, uid, [('key','=','serverip')],limit=1)
+        server = parameter_obj.browse(cr, uid, server_ids[0]).value
+        puerto=5432
+        dbconn_siim = psycopg2.connect(dbname=base, host=server, port=5432, user=usuario, password=clave)
+        cursor = dbconn_siim.cursor()
+        for this in self.browse(cr, uid, ids):
+            aux_id_ext = this.id_ext
+        if vals.has_key('name'):
+            aux = """UPDATE rubro SET "descripcion"=%s WHERE ("id"=%s)""" % (vals['name'],aux_id_ext)
+        if vals.has_key('account_id'):
+            import pdb
+            pdb.set_trace()
+            account = account_obj.browse(cr, uid, vals['account_id'])
+#            aux = """
+#            UPDATE rubro SET "partidaContable"=%s,"partidaContableAnterior"=%s WHERE id=%d
+#            """ % (account.code,account.code,aux_id_ext)
+            aux = """
+            UPDATE rubro SET tipo=1 WHERE id=%d
+            """ % (aux_id_ext)
+        cursor.execute(aux)        
+        return super(recaudacionRubro, self).write(cr, uid, ids, vals, context)
+
+    def create_ss(self, cr, uid, vals, context=None):
+        import psycopg2
+        modulo_obj = self.pool.get('siim.modulo')
+        rubro_obj = self.pool.get('recaudacion.rubro')
+        account_obj = self.pool.get('account.account')
+        budget_obj = self.pool.get('budget.post')
+        rubro_ids = rubro_obj.search(cr, uid, [])
+        next_id = str(len(rubro_ids) + 9001)
+        vals['id_ext'] = next_id
+        id_creado = super(recaudacionRubro, self).create(cr, uid, vals, context)
+        account_code = budget_code = '0'
+        if vals.has_key('account_id'):
+            account = account_obj.browse(cr, uid, vals['account_id'])
+            account_code = account.code 
+        if vals.has_key('budget_id'):
+            budget = budget_obj.browse(cr, uid, vals['budget_id'])
+            budget_code = budget.code
+        modulo = modulo_obj.browse(cr, uid, vals['modulo_id'])
+        aux_modulo_id = modulo.id_ext
+        user_aux = '1'
+        date = time.strftime('%Y-%m-%d')
+        parameter_obj = self.pool.get('ir.config_parameter')
+        usuario_ids = parameter_obj.search(cr, uid, [('key','=','usrsiim')],limit=1)
+        usuario = parameter_obj.browse(cr, uid, usuario_ids[0]).value
+        clave_ids = parameter_obj.search(cr, uid, [('key','=','passsiim')],limit=1)
+        clave = parameter_obj.browse(cr, uid, clave_ids[0]).value
+        base_ids = parameter_obj.search(cr, uid, [('key','=','basesiim')],limit=1)
+        base = parameter_obj.browse(cr, uid, base_ids[0]).value
+        server_ids = parameter_obj.search(cr, uid, [('key','=','serverip')],limit=1)
+        server = parameter_obj.browse(cr, uid, server_ids[0]).value
+        puerto=5432
+        dbconn_siim = psycopg2.connect(dbname=base, host=server, port=5432, user=usuario, password=clave)
+        cursor = dbconn_siim.cursor()
+        aux_name = "'"+vals['name']+"'"
+        aux_date = "'"+date+"'"
+        aux = '''insert into "rubro" ("id", "descripcion", "estado", "calculable", "valor", "iva", "tipo", "usuarioCrecion", "fechaCreacion", "id_modulo", "enlazadoContabilidad", "enlazadoContabilidadAnterior", "partidaContable", "partidaContableAnterior", "es_iva", "es_debito") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''' % (next_id,aux_name,vals['estado'],vals['calculable'],vals['valor'],vals['iva'],vals['tipo'],user_aux,aux_date,aux_modulo_id,account_code,account_code,budget_code,budget_code,vals['es_iva'],vals['es_debito'])
+        print "SQL ", aux
+#        aux = """insert into rubro ("id", "descripcion", "estado", "calculable", "valor", "iva", "tipo", "usuarioCrecion", "fechaCreacion", "id_modulo", "enlazadoContabilidad", "enlazadoContabilidadAnterior", "partidaContable", "partidaContableAnterior", "es_iva", "es_debito", "id_ext") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""" % (next_id,vals['name'],vals['estado'],vals['calculable'],vals['valor'],vals['iva'],vals['tipo'],user_aux,date,aux_modulo_id,account_code,account_code,budget_code,budget_code,vals['es_iva'],vals['es_debito'],str(id_creado))
+        cursor.execute(aux)       
+        cursor.close()
+        dbconn_siim.close 
+        return id_creado
+
+recaudacionRubro()    
+
+##########################3
+class recaudoLine(osv.Model):
+    _name = 'recaudo.line'
+    _columns = dict(
+        name = fields.char('Descripcion',size=128,required=True),
+        anio = fields.char('Anio',size=4),
+        valor = fields.float('Monto'),
+        pago = fields.char('Forma Pago',size=10),
+    )
+recaudoLine()
+class accountRecaudacionLine(osv.Model):
+    _name = 'account.recaudacion.line'
+    
+    _columns = dict(
+        rec_id = fields.many2one('account.recaudacion','Recaudacion'),
+        partida_id = fields.char('Partida',size=10),
+        account_id = fields.char('Cuenta Contable',size=20),
+        desc = fields.char('Descripcion',size=64),
+        anterior_value = fields.float('Anterior'),
+        actual_value = fields.float('Actual'),
+        descuento = fields.float('Descuento'),
+        recargo = fields.float('Recargo'),
+        valor = fields.float('Valor Total'),
+        )
+accountRecaudacionLine()
+##USADOS LOS OTROS NO
+class accountRecaudacionPago(osv.Model):
+    _name = 'account.recaudacion.pago'
+    _description = 'Detalle forma de pago recaudacion'
+    _columns = dict(
+        rec_id = fields.many2one('account.recaudacion','Recaudacion'),
+        journal_id = fields.many2one('account.journal','Forma Pago',required=True),
+        monto = fields.float('Monto'),
+    )
+accountRecaudacionPago()
+class recaudacionLineLine(osv.Model):
+    _name = 'recaudacion.line.line'
+    _order = 'anio asc'
+    _columns = dict(
+        line_id = fields.many2one('recaudacion.line','Linea Detalle',ondelete='cascade'),
+        parent_id = fields.related('line_id','rec_id', type='many2one', relation='account.recaudacion', string='cabecera', readonly=True),
+	modulo = fields.char('Modulo',size=256),
+        modulo_ids = fields.char('Modulos ids',size=256),
+        anio = fields.char('Anio',size=4),
+        valor = fields.float('Valor'),
+    )
+recaudacionLineLine()
+class recaudacionLine(osv.Model):
+    _name = 'recaudacion.line'
+    _order = 'is_venta desc, partida_id asc'
+    
+    def _compute_anterior(self, cr, uid, ids, fields, args, context=None):
+        result = {}
+        for obj in self.browse(cr, uid, ids, context):
+            tot_line = 0
+            for line in obj.line_ids:
+                tot_line+=line.valor
+            result[obj.id] = tot_line
+        return result
+
+    def _compute_total(self, cr, uid, ids, fields, args, context=None):
+        result = {}
+        for obj in self.browse(cr, uid, ids, context):
+            result[obj.id] = obj.actual_value + obj.anterior_value
+            
+        return result
+
+    def _compute_venta(self, cr, uid, ids, fields, args, context=None):
+        result = {}
+        partida_obj = self.pool.get('budget.post')
+        for obj in self.browse(cr, uid, ids, context):
+            partida_p = obj.partida_id
+            partida_aux = partida_p.replace(".",'')
+            if len(partida_aux)>6:
+                partida = partida_aux[0:6]
+            else:
+                partida = partida_aux
+            partida_ids = partida_obj.search(cr, uid, [('code','=',partida)],limit=1)
+            partida_browse = partida_obj.browse(cr, uid, partida_ids[0])
+            result[obj.id] = partida_browse.venta
+        return result
+
+    _columns = dict(
+        date_emi = fields.date('Fecha Emision'),
+        line_ids = fields.one2many('recaudacion.line.line','line_id','Linea'),
+        rec_id = fields.many2one('account.recaudacion','Recaudacion',ondelete='cascade'),
+        rec_id_2 = fields.many2one('account.recaudacion','Recaudacion',ondelete='cascade'),
+        partida_id = fields.char('Partida',size=10),
+        account_id = fields.char('Cuenta Contable',size=20),
+        desc = fields.char('Descripcion',size=128),
+        dia_value = fields.float('Dia'),
+#        anterior_value = fields.float('Anio Anterior'), #debe ser funcion
+        anterior_value = fields.function(_compute_anterior, method=True, store=False, string='Anio Anterior', digits_compute=DP),
+        actual_value = fields.float('Anio Actual'),
+        #valor = fields.float('Valor Total'),
+        valor = fields.function(_compute_total, method=True, store=False, string='Valor', digits_compute=DP),
+        modulo = fields.char('Modulo',size=32),
+        modulo_id = fields.integer('ID Modulo'),
+        is_anterior = fields.boolean('Es Anterior'),
+        is_venta = fields.function(_compute_venta, method=True, store=True, string='Es venta', type='boolean'),
+        )
+recaudacionLine()
+
+class recaudacionLineAnio(osv.Model):
+    _name = 'recaudacion.line.anio'
+    _columns = dict(
+        date_emi = fields.date('Fecha Emision'),
+        rec_id = fields.many2one('account.recaudacion','Recaudacion',ondelete='cascade'),
+        partida_id = fields.char('Partida',size=10),
+        account_id = fields.char('Cuenta Contable',size=20),
+        desc = fields.char('Descripcion',size=128),
+        anterior_value = fields.float('Anterior'),
+        actual_value = fields.float('Actual'),
+        valor = fields.float('Valor Total'),
+        )
+recaudacionLineAnio()
+
+class recaudacionDetalle(osv.Model):
+    _name = 'recaudacion.detalle'
+    _order = 'modulo asc,date_emi desc'
+
+    def _calc_partida(self, cr, uid, ids, fields, arg, context=None):
+        result = {}
+        partida_obj = self.pool.get('budget.post')
+        for obj in self.browse(cr, uid, ids, context=context):
+            code_aux = obj.partida_id
+            code_dos = code_aux.replace('.','')
+            partida_aux_ids = partida_obj.search(cr, uid, [('code','=', code_dos[0:6])])
+            if partida_aux_ids:
+                result[obj.id] = partida_aux_ids[0]
+            else:
+                if len(code_dos) > 6:
+                    sql_update = "UPDATE recaudacion_detalle set partida_id='00.00.00' where id=%s"%(obj.id)
+                    cr.execute(sql_update)
+                    partida_aux_ids = partida_obj.search(cr, uid, [('code','=', '000000')])
+                    if partida_aux_ids:
+                        result[obj.id] = partida_aux_ids[0]
+                else:
+                    raise osv.except_osv(('Error Configuracion !'),
+                                         ("No existe la partida '%s'") % (ustr(code_aux))) 
+                    
+        return result
+    
+    _columns = dict(
+        name = fields.char('Rubro',size=128),
+        anio = fields.char('Anio',size=4),
+        date_emi = fields.date('Fecha Emision'),
+        date = fields.date('Fecha Cobro'),
+        monto = fields.float('Valor'),
+        rec_id = fields.many2one('account.recaudacion','Rec',ondelete='cascade'),
+        partida_id = fields.char('Partida',size=30),#para que tome las cuentas contables tipo empalme
+        partida_id2 = fields.function(_calc_partida, type='many2one', relation="budget.post", store=True),
+        account_id = fields.char('Cuenta contable',size=20),
+        modulo = fields.char('Modulo',size=32),
+        modulo_id = fields.integer('ID Modulo'),
+    )
+recaudacionDetalle()    
+class accountRecaudacion(osv.Model):
+    _name = 'account.recaudacion'
+    _order = 'date desc'
+
+    def unlink(self, cr, uid, ids, context=None):
+        move_obj = self.pool.get('account.move')
+        for obj in self.browse(cr, uid, ids, context):
+            if obj.state in ['Contabilizado']:
+                raise osv.except_osv('Aviso','No se permite borrar recaudacines ya contabilizadas.')
+            if obj.move_id:
+                move_obj.unlink(cr, uid, [obj.move_id.id],1)
+        res = super(accountRecaudacion, self).unlink(cr, uid, ids, context)
+        return res
+
+    def exportRecaudoAnterior(self, cr, uid, ids, context=None):
+        detalle_obj = self.pool.get('recaudacion.detalle')
+        line_line_obj = self.pool.get('recaudacion.line.line')
+        budget_obj = self.pool.get('budget.post')
+        anios = []
+        writer = XLSWriter()
+        writer.append(["RUBRO","TOTAL", "ACTUAL","ANTERIOR","ANIO","VALOR"])
+        for this in self.browse(cr, uid, ids):
+            for line in this.recaudacion_ids:
+                if line.anterior_value > 0:
+                    p_aux = line.partida_id
+                    p2_aux = p_aux.replace(".",'')
+                    partida_aux = p2_aux[0:6]
+                    partida_ids = budget_obj.search(cr, uid, [('code','=',partida_aux)],limit=1)
+                    if partida_ids:
+                        partida = budget_obj.browse(cr, uid, partida_ids[0])
+                        if not partida.venta:
+                            modulo = line.modulo
+                            rubro = line.desc
+                            anterior = line.anterior_value
+                            writer.append([modulo,rubro,anterior])
+                            for line_line in line.line_ids:
+                                rubro_1 = line.modulo
+                                anio = line_line.anio
+                                valor = line_line.valor
+                                writer.append([rubro_1,anio,valor])
+            n_archivo = ("RECAUDACION ANTERIOR" + ".xls").replace('/','')
+            writer.save("RECAUDACION ANTERIOR.xls")
+            out = open("RECAUDACION ANTERIOR.xls","rb").read().encode("base64")
+            self.write(cr, uid, ids, {'archivoxls': out, 'file_namexls': n_archivo,})
+        return True
+
+    def resumen_recaudado(self, cr, uid, ids, context=None):
+        line_obj = self.pool.get('recaudacion.line')
+        line_line_obj = self.pool.get('recaudacion.line.line')
+        detalle_obj = self.pool.get('recaudacion.detalle')
+        parent_obj = self.pool.get('account.recaudacion')
+        budget_post = self.pool.get('budget.post')
+        budget_item_obj = self.pool.get('budget.item')
+        account_obj = self.pool.get('account.account')
+        poa_obj = self.pool.get('budget.poa')
+        #primero ejecuto query positivo anio actual para generar las lineas
+        for this in self.browse(cr, uid, ids):
+            poa_ids = poa_obj.search(cr, uid, [('date_start','<=',this.date),('date_end','>=',this.date)])
+            sql_positivo = """
+            select substring(partida_id,0,9) as partida_id,budget_post.name,account_id,anio,modulo,modulo_id,partida_id2,sum(monto) as total
+            from recaudacion_detalle,budget_post 
+            where budget_post.id=recaudacion_detalle.partida_id2
+            and date='%s' and monto>0 and anio>='%s' group by partida_id,partida_id2,budget_post.name,account_id,modulo,modulo_id,anio order by modulo, total desc
+            """ %(this.date,'2015')
+            cr.execute(sql_positivo)
+            data = cr.fetchall()
+            for line_new in data:
+                #busco linea con partida_id, cuenta_id
+                aux_rec = budget_post.read(cr, uid, line_new[6],['aux_recaudacion'])
+                if aux_rec['aux_recaudacion'] == True:
+                    #busco por partida y cuenta
+                    line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('account_id','=',line_new[2]),('partida_id','=',line_new[0])])
+                    account_id_aux = line_new[2]
+                else:
+                    line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('partida_id','=',line_new[0])])
+                    account_id_aux = line_new[2]
+                if line_ids:
+                    #suma a la linea y agrega el modulo
+                    line_data = line_obj.read(cr, uid, line_ids[0], ['modulo','actual_value'])
+#                    ids_modulo = line_data['modulo_ids']
+#                    ids_mod_vector = ids_mudulo.split(',')
+#                    if line_new[4] not in ids_mod_vector:
+                    if line_new[4] not in line_data['modulo']:
+                        new_module_string = line_data['modulo'] + ' -- '+ line_new[4]
+ #                       new_module_ids_string = line_data['modulo_ids'] + ','+ line_new[5]
+                    else:
+                        new_module_string = line_data['modulo']
+ #                       new_module_ids_string = line_data['modulo_ids']
+                    new_actual_value = line_data['actual_value'] + line_new[7]
+                    line_obj.write(cr, uid, line_ids[0], {'actual_value': new_actual_value, 'modulo': new_module_string})
+                else:
+                    #busco budget_item
+                    budget_item_ids = budget_item_obj.search(cr, uid, [('poa_id','=',poa_ids[0]),('budget_post_id.code','=',line_new[0])])
+                    if budget_item_ids:
+                        desc_aux = line_new[1] 
+                    else:
+                        desc_aux = line_new[1]
+                    line_obj.create(cr, uid, {
+                        'rec_id': this.id,
+                        'partida_id': line_new[0],
+                        #FIX, ver de donde sacar el account_id
+                        'account_id': account_id_aux,
+                        'desc': desc_aux + ' - ' + line_new[0] + ' - ' + line_new[2],
+                        'actual_value': line_new[7],
+                        'modulo': line_new[4],
+                        'modulo_id': line_new[5],
+                        
+                    })
+
+                        
+                        #segundo ejecuto query positivo anio anteriores para generar detalle de lineas
+            sql_positivo2 = """
+            select substring(partida_id,0,9) as partida_id,budget_post.name,account_id,anio,modulo,partida_id2,sum(monto) as total
+            from recaudacion_detalle,budget_post 
+            where budget_post.id=recaudacion_detalle.partida_id2
+            and date='%s' and monto>0 and anio<'%s' group by partida_id,partida_id2,budget_post.name,account_id,modulo,anio order by modulo, total desc
+            """ %(this.date,'2015')
+            cr.execute(sql_positivo2)
+            data = cr.fetchall()
+            for line_line in data:
+                #busco line_line con misma partida, creo detalle con anio
+#                post_ids = budget_post.search(cr, uid, [('code','=',line_line[0].replace('.',''))])
+                aux_rec = budget_post.read(cr, uid, line_line[5],['aux_recaudacion'])
+                if aux_rec['aux_recaudacion'] == True:
+                    #busco por partida y cuenta
+                    line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('is_venta','=',False),('modulo','like',line_line[4])])
+                    account_id_aux = line_line[2]
+                else:
+                    line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('is_venta','=',False),('partida_id','=',line_line[0])])
+                    account_id_aux = line_line[2]
+                    
+                if not line_ids:
+                #crea line_line
+                    #busco budget_item
+                    budget_item_ids = budget_item_obj.search(cr, uid, [('poa_id','=',poa_ids[0]),('budget_post_id.code','=',line_line[0].replace('.',''))])
+                    #preguntar si no esto un raise
+                    if not budget_item_ids:
+                        print "Agregado Mario esto no hay en empalme", line_line[0]
+                    budget_aux = budget_item_obj.browse(cr, uid, budget_item_ids[0])
+                    if budget_item_ids:
+                        desc_aux = line_line[1] 
+                    else:
+                        desc_aux = line_line[4]
+
+                    if budget_aux.budget_post_id.venta == False:
+                        line_id = line_obj.create(cr, uid,{
+                            'rec_id': this.id,
+                            'partida_id': line_line[0],
+                            #FIX, revisar de donde sacar la cuenta
+                            'account_id': account_id_aux,
+                            'desc': desc_aux + ' - ' + line_line[0] + ' - ' + line_line[2],
+                            'actual_value': 0,
+                            'modulo': line_line[4],
+                            'modulo_id': line_line[5],
+                        })
+                    else:
+                        #esa partida es venta no deberia tener anios anteriores
+                        #busco si hay una linea de anio actual con esa partida
+                        line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('partida_id','=',line_line[0])])
+                        if line_ids:
+                            #sumo en la linea actual
+                            line_data = line_obj.read(cr, uid, line_ids[0], ['id','actual_value'])
+                            line_obj.write(cr, uid, [line_ids[0]],{'actual_value': line_data['actual_value']+line_line[6]})
+                        else:
+                            #no existe una linea con esa partida, entonces creo una linea con esa partida
+                            line_obj.create(cr, uid, {
+                                'rec_id': this.id,
+                                'partida_id': line_line[0],
+                                #FIX, ver de donde sacar el account_id
+                                'account_id': line_line[2],
+                                'desc': line_line[0] + ' - ' + line_line[1],
+                                'actual_value': line_line[6],
+                                'modulo': line_line[4],
+                                'modulo_id': line_line[5],
+                            })
+                        #line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('is_venta','=',False)])
+                        continue
+                else:
+                    line_id = line_ids[0]
+                #busco linea hija por anio                
+                line_line_ids = line_line_obj.search(cr, uid, [('line_id','=',line_id),('anio','=',line_line[3])])
+                if line_line_ids:
+                    line_line_data = line_line_obj.read(cr, uid, line_line_ids[0], ['valor'])
+                    new_line_line_valor = line_line_data['valor'] + line_line[6]
+                    line_line_obj.write(cr, uid, line_line_ids[0],{'valor': new_line_line_valor})
+                else:
+                #crea la linea hija
+                    line_line_obj.create(cr, uid, {
+                        'line_id': line_id,
+                        'anio': line_line[3],
+                        'valor': line_line[6],
+                    })
+            #luego ejecuto query negativo para restar de las lineas con monto mayor con el mismo modulo
+            
+            sql_negativo = """
+            select substring(partida_id,0,9) as partida_id,partida_id2,anio,modulo,modulo_id,monto
+                from recaudacion_detalle
+                where date='%s' and monto<0 order by monto
+            """ %(this.date)
+            cr.execute(sql_negativo)
+            data = cr.fetchall()
+            for line_negative in data:
+                aux_rec = budget_post.read(cr, uid, line_negative[1],['aux_recaudacion'])
+                if aux_rec['aux_recaudacion'] == True:
+                    if line_negative[2]>='2015':
+                        #busco linea de recaudacion con mismo modulo y valor mayor al monto
+                        data2_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('actual_value','>=',line_negative[5]*-1)], order='actual_value desc', limit=1)
+                        actual_value = line_obj.read(cr, uid, data2_ids[0], ['actual_value'])
+                        line_id = data2_ids[0]
+                        #resto en el actual value del recaudacion_line
+                        line_obj.write(cr, uid, [line_id],{'actual_value':actual_value['actual_value']+line_negative[5]})
+                    else:
+                        
+                        #busco linea de recaudacion con mismo modulo y anio y valor mayor al monto
+                        line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('modulo','like',line_negative[3]),('is_venta','=',False)])
+                        line_line_ids = line_line_obj.search(cr, uid, [('line_id','in', line_ids),('anio','=',line_negative[2]),('valor','>=',line_negative[5]*-1)])
+                        if line_line_ids:
+                            line_line_read = line_line_obj.read(cr, uid, line_line_ids[0],['valor'])
+                            line_line_obj.write(cr, uid, [line_line_ids[0]],{'valor': line_line_read['valor']+line_negative[5]})
+                        else:
+                            data2_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('actual_value','>=',line_negative[5]*-1)], order='actual_value desc', limit=1)
+                            actual_value = line_obj.read(cr, uid, data2_ids[0], ['actual_value'])
+                            line_id = data2_ids[0]
+                            #resto en el actual value del recaudacion_line
+                            line_obj.write(cr, uid, [line_id],{'actual_value':actual_value['actual_value']+line_negative[5]})
+                else:
+                    #busco linea de recaudacion con misma partida e igual anio
+                    if line_negative[2]>='2015':
+                        #busco linea de recaudacion con misma partida y resto del valor actual
+                        data2_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('partida_id','=',line_negative[0])], order='actual_value desc', limit=1)
+                        actual_value = line_obj.read(cr, uid, data2_ids[0], ['actual_value'])
+                        line_id = data2_ids[0]
+                        #resto en el actual value del recaudacion_line
+                        line_obj.write(cr, uid, [line_id],{'actual_value':actual_value['actual_value']+line_negative[5]})
+                    else:
+                        #busco linea de recaudacion con mismo modulo y anio y valor mayor al monto
+                        line_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('is_venta','=',False),('modulo','like',line_negative[3])])
+                        line_line_ids = line_line_obj.search(cr, uid, [('line_id','in', line_ids),('valor','>=',line_negative[5]*-1),('anio','=',line_negative[2])])
+                        if line_line_ids:
+                            line_line_read = line_line_obj.read(cr, uid, line_line_ids[0],['valor'])
+                            line_line_obj.write(cr, uid, [line_line_ids[0]],{'valor': line_line_read['valor']+line_negative[5]})
+                        else:
+                            data2_ids = line_obj.search(cr, uid, [('rec_id','=',this.id),('actual_value','>=',line_negative[5]*-1)], order='actual_value desc', limit=1)
+                            actual_value = line_obj.read(cr, uid, data2_ids[0], ['actual_value'])
+                            line_id = data2_ids[0]
+                            #resto en el actual value del recaudacion_line
+                            line_obj.write(cr, uid, [line_id],{'actual_value':actual_value['actual_value']+line_negative[5]})
+                    
+        return True
+
+    def cargar_recaudado_xls(self, cr, uid, ids, context=None):
+        data = self.read(cr, uid, ids)[0]
+        detalle_obj = self.pool.get('recaudacion.detalle')
+        if context is None:
+            context = {}
+        for this in self.browse(cr, uid, ids):
+            id_this = this.id
+            if data['archivo']:
+                arch = data['archivo']
+                arch_xls = base64.b64decode(arch)
+                book = xlrd.open_workbook(file_contents=arch_xls)
+                sh = book.sheet_by_name(book.sheet_names()[0])
+                context={}
+                data_rubro = {}
+                if data['tipo']=='otros':
+                    for r in range(sh.nrows)[1:]:  
+                        rubro = ustr(sh.cell(r,0).value)
+                        anio = ustr(sh.cell(r,1).value)
+                        date = ustr(sh.cell(r,2).value)
+                        monto = ustr(sh.cell(r,3).value)
+                        detalle_obj.create(cr, uid, {
+                            'name':rubro,
+                            'anio':anio,
+                     #       'date':date,
+                            'monto':monto,
+                            'rec_id':id_this,
+                        })
+                else:
+                    for r in range(sh.nrows)[1:]:
+                        rubro = ustr(sh.cell(r,0).value) + ' - ' + ustr(sh.cell(r,1).value)
+                        anio = ustr(sh.cell(r,2).value)
+                        monto = ustr(sh.cell(r,8).value)
+                        detalle_obj.create(cr, uid, {
+                            'name':rubro,
+                            'anio':anio,
+                            #       'date':date,
+                            'monto':monto,
+                            'rec_id':id_this,
+                        })
+        return True
+
+    def cargar_recaudado(self, cr, uid, ids, context=None):
+        import psycopg2
+        parent_obj = self.pool.get('account.recaudacion')
+        recaudacion_line_obj = self.pool.get('recaudacion.line')
+        line_line_obj = self.pool.get('recaudacion.line.line')
+        detalle_obj = self.pool.get('recaudacion.detalle')
+        parameter_obj = self.pool.get('ir.config_parameter')
+        budget_obj = self.pool.get('budget.post')
+        account_obj = self.pool.get('account.account')
+        journal_obj = self.pool.get('account.journal')
+        pago_obj = self.pool.get('account.recaudacion.pago')
+        cert_obj = self.pool.get('budget.certificate')
+        for this in self.browse(cr, uid, ids):
+            #valida cert de ingreso
+            cert_ids = cert_obj.search(cr, uid, [('ref_doc','=','Ingresos')])
+            if not cert_ids:
+                raise osv.except_osv('Configuracion Incompleto', 'No ha creado presupuesto de ingreso.')
+            ##
+            for line_anterior in this.recaudacion_ids:
+                recaudacion_line_obj.unlink(cr, uid, line_anterior.id)
+            for line_pago in this.formapago_ids:
+                pago_obj.unlink(cr, uid, line_pago.id)
+            line_line_ids = line_line_obj.search(cr, uid, [('parent_id','=',this.id)])
+            line_line_obj.unlink(cr, uid, line_line_ids)
+            detalle_ids = detalle_obj.search(cr, uid, [('rec_id','=',this.id)])
+            detalle_obj.unlink(cr, uid, detalle_ids)
+            id_recaudacion = this.id
+            #ejecutar el sql para que traiga los datos
+            usuario_ids = parameter_obj.search(cr, uid, [('key','=','usrsiim')],limit=1)
+            usuario = parameter_obj.browse(cr, uid, usuario_ids[0]).value
+            clave_ids = parameter_obj.search(cr, uid, [('key','=','passsiim')],limit=1)
+            clave = parameter_obj.browse(cr, uid, clave_ids[0]).value
+            base_ids = parameter_obj.search(cr, uid, [('key','=','basesiim')],limit=1)
+            base = parameter_obj.browse(cr, uid, base_ids[0]).value
+            server_ids = parameter_obj.search(cr, uid, [('key','=','serverip')],limit=1)
+            server = parameter_obj.browse(cr, uid, server_ids[0]).value
+            puerto=5432
+            dbconn_siim = psycopg2.connect(dbname=base, host=server, port=5432, user=usuario, password=clave)
+            cursor = dbconn_siim.cursor()
+            str_date_ini = "'" + this.date + "'"
+            str_date_end = "'" + this.date_end + "'"
+            datas = []
+            data_desc = {}
+            monto_ant = monto_act = monto = 0 
+            #cargar todo lo recaudado
+            aux = '''select * from recaudacion_linea where "fechaCobro"=%s''' % (str_date_ini)
+            cursor.execute(aux)
+            for row in cursor.fetchall():
+                aux_acc = ustr(row[6])
+                if len(aux_acc)>2:
+                    account_id = aux_acc 
+                else:
+                    if float(row[5])>0:
+                        aux_pp = ustr(row[7])
+                        partida_aux_1 = aux_pp.replace(".",'')
+                        partida_aux = partida_aux_1[0:6]
+                        partida_ids = budget_obj.search(cr, uid, [('code','=',partida_aux)])
+                        if partida_ids:
+                            account_ids = account_obj.search(cr, uid, [('budget_id','=',partida_ids[0])],limit=1)
+                            if account_ids:
+                                account = account_obj.browse(cr, uid, account_ids[0])
+                                account_id = account.code
+                            else:
+                                account_id = ustr(row[6])
+                        else:
+                            #aumentado mario
+                            account_id=aux_acc
+                            #account_id = ustr(row[6])
+                    #aumentado mario
+                    else:
+                         account_id=aux_acc
+                part = ustr(row[7])
+                if account_id == '2120112':
+                    part = '00.00.00'
+                if float(row[5])>0:
+                    detalle_obj.create(cr, uid, {
+                        'name':ustr(row[1]),
+                        'anio':ustr(row[2]),
+                        'date_emi':str(row[3]),
+                        'date':this.date,
+                        'monto':row[5],
+                        'partida_id':part,
+                        'account_id':account_id,
+                        'rec_id':id_recaudacion,
+                        'modulo':ustr(row[10]),
+                        'modulo_id': row[11],
+                    })
+                else:
+                    detalle_obj.create(cr, uid, {
+                        'name':ustr(row[1]),
+                        'anio':ustr(row[2]),
+                        'date_emi':str(row[3]),
+                        'date':this.date,
+                        'monto':row[5],
+                        'partida_id':part,
+                      #  'account_id':account_id,
+                        'rec_id':id_recaudacion,
+                        'modulo':ustr(row[10]),
+                        'modulo_id': row[11],                        
+                    })
+            aux = "Recaudacion - " + str(this.date)
+            self.write(cr, uid, ids, {
+                    'name':aux,
+                    })
+            aux = '''select aux."formaPago",sum(aux."Total Recaudado") "Total Recaudado" from (select case dp."formaPago" when 1 then 'Contado' when 2 then 'Cheque' when 3 then 'Nota Credito' when 4 then 'SPI - Transferencia' when 5 then 'Tarjeta Credito' else 'Otros' end as "formaPago", SUM(dp.valor) "Total Recaudado" from detalle_pago dp where dp.estado=1 and dp."fechaCreacion"  between %s and %s group by "formaPago" union (select 'Contado' as "formaPago",sum(fd."valorUnitario"*fd.cantidad) "Total Recaudado" from factura f, factura_detalle fd where f."fechaCobro" between %s and %s and  fd.id_factura=f.id and id_modulo=38 and f.estado=1 and pagado=1)) aux group by aux."formaPago"''' % (str_date_ini,str_date_ini,str_date_ini,str_date_ini)
+            cursor.execute(aux)
+            for row in cursor.fetchall():
+                if row[0]=='Contado':
+                    journal_ids = journal_obj.search(cr, uid, [('name','=','EFECTIVO')],limit=1)
+                elif row[0]=='Cheque':
+                    journal_ids = journal_obj.search(cr, uid, [('name','=','CHEQUE')],limit=1)
+                elif row[0]=='Tarjeta Credito':
+                    journal_ids = journal_obj.search(cr, uid, [('name','=','TARJETA CREDITO')],limit=1)
+                elif row[0]=='Nota Credito':
+                    journal_ids = journal_obj.search(cr, uid, [('name','=','NOTA DE CREDITO')],limit=1)
+                if not journal_ids:
+                    raise osv.except_osv(('Error Configuracion !'),
+                                         ("No existe diario para la forma de pago '%s'") % (ustr(row[0]))) 
+                line_pago_id = pago_obj.create(cr, uid, {
+                    'rec_id':this.id,
+                    'journal_id':journal_ids[0],
+                    'monto':row[1],
+                })
+            cursor.close()
+            dbconn_siim.close
+            parent_obj.resumen_recaudado(cr, uid, ids)
+        return True
+
+    def irAsientoRec(self, cr, uid, ids, context=None):
+        move = self.pool.get('accout.move')
+        for this in self.browse(cr, uid, ids):
+            mod_obj = self.pool.get('ir.model.data')
+            act_obj = self.pool.get('ir.actions.act_window')
+            result = mod_obj.get_object_reference(cr, uid, 'retention', 'action_account_moves_less_afectacion')
+            id_view = result and result[1] or False
+            result = act_obj.read(cr, uid, [id_view], context=context)[0]
+        return result
+
+    def contabilizar_recaudado(self, cr, uid, ids, context=None):
+        '''SE VERIFICA LA PARTIDA PRESUPUESTARIA SI ES VENTA(TRUE) TIENE EL DOBLE MOVIMIENTO DE CUENTAS
+        CASO CONTRARIO SOLO LA CTA POR COBRAR POR QUE ES EMISIONES Y SI ES ANIO ANTERIOR VA EL MOVIMIENTO CON ANIOS ANTERIORES
+        '''
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        account_obj = self.pool.get('account.account')
+        certificate_line_obj = self.pool.get('budget.certificate.line')
+        partida_obj = self.pool.get('budget.post')
+        rec_line = self.pool.get('recaudacion.line')
+        parent_obj = self.pool.get('account.recaudacion')
+        period_obj = self.pool.get('account.period')
+        certificate_obj = self.pool.get('budget.certificate')
+        for this in self.browse(cr, uid, ids):
+            aux_narration = "ASIENTO CONTABLE DE RECAUDACION MUNICIPAL: " + this.name
+            state_aux = 'draft'
+            company_aux = 1
+            currency_aux = 2
+            date_aux = this.date
+            name_aux = 'RECAUDACION'
+            certificate_ids = certificate_obj.search(cr, uid, [('name','=','ING001')],limit=1)
+            if not certificate_ids:
+                raise osv.except_osv('Error de configuracion', 'No existe certificado de ingresos')
+            if this.move_id:
+                if this.move_id.state=='draft' and this.move_id.name=='/':
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+                    move_obj.unlink(cr, uid, [this.move_id.id],aux=1)
+                    period_ids = period_obj.find(cr, uid, this.date)
+                    if period_ids:
+                        period_id = period_ids[0]
+                        move_id = move_obj.create(cr, uid, {
+                            'certificate_id':certificate_ids[0],
+                            'ref': this.name,
+                            'narration':aux_narration,
+                            'journal_id': this.journal_id.id,
+                            'date': this.date,
+                            'state':'draft',
+                            'afectacion':True,
+                            'partner_id':1,
+                            'period_id': period_id,
+                            'type':'Recaudacion',
+                        })
+                elif this.move_id.state=='anulado':
+                    period_ids = period_obj.find(cr, uid, this.date)
+                    if period_ids:
+                        period_id = period_ids[0]
+                        move_id = move_obj.create(cr, uid, {
+                            'certificate_id':certificate_ids[0],
+                            'ref': this.name,
+                            'narration':aux_narration,
+                            'journal_id': this.journal_id.id,
+                            'date': this.date,
+                            'state':'draft',
+                            'afectacion':True,
+                            'partner_id':1,
+                            'period_id': period_id,
+                            'type':'Recaudacion',
+                        })
+                elif this.move_id.state=='posted':
+                    move_obj.write(cr, uid, [this.move_id.id],{
+                        'state':'draft',
+                    })
+                    move_id = this.move_id.id
+                    cr.execute("delete from account_move_line where move_id=%s"%(this.move_id.id))
+            else:
+                period_ids = period_obj.find(cr, uid, this.date)
+                if period_ids:
+                    period_id = period_ids[0]
+                    move_id = move_obj.create(cr, uid, {
+                        'certificate_id':certificate_ids[0],
+                        'ref': this.name,
+                        'narration':aux_narration,
+                        'journal_id': this.journal_id.id,
+                        'date': this.date,
+                        'state':'draft',
+                        'afectacion':True,
+                        'partner_id':1,
+                        'period_id': period_id,
+                        'type':'Recaudacion',
+                    })
+                else:
+                    raise osv.except_osv(('Error de Configuracion !'),
+                                         ("No se a configurado un periodo para la fecha '%s'") % (this.date))
+            move = move_obj.browse(cr, uid, move_id)
+            j = k = l = 0
+            aux_anterior = 0
+            restadas = []
+            for line in this.recaudacion_ids:
+                aux_sin_partida = 0
+                #verificar si es del mismo dia la emision pasa con todo el movimiento else solo contra la cta por cobrar
+                #si es del mismo dia
+                rubro_name = line.desc
+                partida_p = line.partida_id
+                #por el momento quitar el punto
+                partida_aux1 = partida_p.replace(".",'')
+                mm = ''
+                if int(partida_aux1[0:2])>0:
+                    #primero los que tienen afectacion a partidas
+                    if len(partida_aux1)>6:
+                        partida_aux = partida_aux1[0:6]
+                    else:
+                        partida_aux = partida_aux1
+                    partida_ids = partida_obj.search(cr, uid, [('code','=',partida_aux)],limit=1)
+                    if partida_ids:
+                        partida = partida_obj.browse(cr, uid, partida_ids[0])
+                        #modificado para que tome la patromonial
+                        account_ids = account_obj.search(cr, uid, [('budget_id','=',partida_ids[0])])
+                        if not account_ids:
+                              raise osv.except_osv(('Error de Configuracion !'),
+                                                   ("No se a configurado cuenta contable para la partida '%s'") % (partida_aux))
+                        if len(account_ids)>1:
+                            for acc_id in account_ids:
+                                account = account_obj.browse(cr, uid, acc_id)
+                                if account.account_rec_id:
+                                    continue
+                            if not account:
+                                raise osv.except_osv(('Error de Configuracion !'),
+                                                     ("No se a configurado cuenta contable por pagar para la partida '%s'") % (partida_aux))
+                        else:
+                            #si la cta de line es la account_ids toma la cxp de la cta patrimonial, else toma la cta de la linea
+                            account = account_obj.browse(cr, uid, account_ids[0])
+                        if (line.account_id == account.code) and account.account_rec_id:
+                            cxp = account.account_rec_id.id
+                        elif not line.account_id:
+                            cxp = account.account_rec_id.id
+                        else:
+#                            account_ids = account_obj.search(cr, uid, [('code','=',line.account_id)],limit=1)
+#                            if not account_ids:
+#                                print "No cueta", line.account_id
+#                            account = account_obj.browse(cr, uid, account_ids[0])
+                            cxp = account.account_rec_id.id
+                        certificate_ids = certificate_line_obj.search(cr, uid, [('budget_post','=',partida_aux)],limit=1)
+                        if not certificate_ids:
+                            raise osv.except_osv(('Error de Configuracion !'),
+                                                 ("No se a planificado monto para la partida '%s'") % (partida_aux))
+                        if certificate_ids:
+                            certificate = certificate_line_obj.browse(cr, uid, certificate_ids[0])
+                            b_id = certificate.budget_id.id
+                            p_id = certificate.budget_post.id
+                    else:
+                        raise osv.except_osv(('Error de Configuracion !'),
+                                             ("No hay partida para '%s'") % (partida_aux))
+                        #account_ids = account_obj.search(cr, uid, [('code','=',line.account_id)],limit=1)
+#                    account = account_obj.browse(cr, uid, account_ids[0])
+#                    cxp = account.account_rec_id.id
+                    #tomar en cuenta los descuentos para quitar al valor
+                    #busco con la misma partida y si es menos le resto
+                    venta_valor = 0
+                    if partida.venta: #preguntar si es venta haga esto con el total, aqui se devenga y paga el mismo valor
+                        venta_valor = line.dia_value + line.actual_value + line.anterior_value
+                        if not account.account_rec_id:
+                            raise osv.except_osv(('Error de Configuracion !'),
+                                                 ("No existe cuenta por cobrar asociada a la cuenta '%s'") % (account.code)) 
+                        cxp = account.account_rec_id.id
+                        #linea  entrada cta patrimonial 621
+                        cr.execute('''
+                        INSERT INTO account_move_line (
+                        move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,name,budget_id_cert,budget_id,budget_post,budget_accrued,budget_paid,seq,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,account.id,round(venta_valor,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,certificate_ids[0],b_id,p_id,True,True,1,False))
+                        #entrada cxc debe
+                        cr.execute('''
+                        INSERT INTO account_move_line (
+                        move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,name,budget_id_cert,budget_id,budget_post,budget_accrued,budget_paid,seq,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,round(venta_valor,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,certificate_ids[0],b_id,p_id,False,False,1,False))
+                        #linea  entrada cxc haber
+                        cr.execute('''
+                        INSERT INTO account_move_line (
+                        move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,name,budget_id_cert,budget_id,budget_post,budget_accrued,budget_paid,seq,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,round(venta_valor,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,certificate_ids[0],b_id,p_id,False,False,1,False))
+                    else: #no es venta solo contra la cxc
+                        #aqui debe ir la cxp pero basado en la partida
+                        rec_line.write(cr, uid,line.id,{'is_anterior':True})
+                        aux_anterior += line.anterior_value
+                        if not cxp:
+                            cxp = account.id
+                        aux_noVenta = 0 
+                        aux_noVenta = line.dia_value + line.actual_value
+                        if aux_noVenta>0:
+                            cr.execute('''
+                            INSERT INTO account_move_line (
+                            move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,name,budget_id_cert,budget_id,budget_post,budget_paid,seq,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,cxp,round(aux_noVenta,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,certificate_ids[0],b_id,p_id,True,3,False))
+                else:
+                    #tambien sin partida hay de actaul y anterior, tomar line.valor
+                    #buscar la cuenta directo y colocar
+                    aux_sin_partida = line.dia_value + line.actual_value + line.anterior_value
+                    rec_line.write(cr, uid,line.id,{'is_anterior':True})
+                    #solo si 
+                    #aux_anterior += line.anterior_value
+                    if aux_sin_partida:
+                        account_ids = account_obj.search(cr, uid, [('code','=',line.account_id)],limit=1)
+                        if not account_ids:
+                            account_ids = account_obj.search(cr, uid, [('code','=','2120111')],limit=1)
+                            if not account_ids:
+                                raise osv.except_osv(('Error de Configuracion !'),
+                                                     ("No existe cuenta contable '%s'") % (line.account_id))
+                        account = account_obj.browse(cr, uid, account_ids[0])
+                        cr.execute('''
+                        INSERT INTO account_move_line (
+                        move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,name,seq,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s)''',(move_id,account.id,round(aux_sin_partida,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,name_aux,3,False))
+            #lineas de la recaudacion
+            for dinero_line in this.formapago_ids:
+                journal = dinero_line.journal_id
+                if not journal.default_debit_account_id.id:
+                      raise osv.except_osv(('Error de Configuracion !'),
+                                           ("No hay cuenta para forma de pago '%s'") % (journal.name))
+                cr.execute('''
+                INSERT INTO account_move_line (
+                move_id,account_id,debit,journal_id,period_id,state,company_id,currency_id,date,name,seq,migrado) VALUES (%s,%s, %s, %s, %s, %s, %s,%s,%s,%s,%s,%s)''',(move_id,journal.default_debit_account_id.id,round(dinero_line.monto,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,journal.name,2,False))
+            #asiento simultaneo
+            certificate_ids = certificate_line_obj.search(cr, uid, [('budget_id','=',this.partida_anterior.id)],limit=1)
+            if not certificate_ids:
+                raise osv.except_osv(('Error de Configuracion !'),
+                                     ("No se a planificado monto para la partida '%s'") % (this.partida_anterior.budget_post_id.code))
+            certificate = certificate_line_obj.browse(cr, uid, certificate_ids[0])
+            b_id = certificate.budget_id.id
+            p_id = certificate.budget_post.id
+            cr.execute('''
+            INSERT INTO account_move_line (
+            move_id,account_id,credit,journal_id,period_id,state,company_id,currency_id,date,name,budget_id_cert,budget_id,budget_post,budget_accrued,budget_paid,seq,migrado) VALUES (%s,%s,%s ,%s,%s, %s, %s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',(move_id,this.acc_ant_id.id,round(aux_anterior,2),move.journal_id.id,move.period_id.id,state_aux,company_aux,currency_aux,date_aux,'Anterior',certificate_ids[0],b_id,p_id,True,True,3,False))
+        self.write(cr, uid, ids, {
+            'move_id':move_id,
+                })
+        parent_obj.exportRecaudoAnterior(cr, uid, ids)
+        return True
+
+    def _get_journal(self, cr, uid, ids, context=None):
+        journal_obj = self.pool.get('account.journal')
+        journal_ids = journal_obj.search(cr, uid, [('name','=','INGRESOS')],limit=1)
+        if not journal_ids:
+            return 1
+#            raise osv.except_osv('Error de configuracion', 'No existe diario de RECAUDACION por favor cree uno')
+        return journal_ids[0]
+
+    def _get_partida(self, cr, uid, ids, context=None):
+        tabla_obj = self.pool.get('cuenta.anterior')
+        tabla_ids = tabla_obj.search(cr, uid, [])
+        if not tabla_ids:
+            raise osv.except_osv('Error de configuracion', 'No tiene configurada tabla de cuentas y partida de anios anteriores')
+        tabla = tabla_obj.browse(cr, uid, tabla_ids[0])
+        return tabla.budget_id.id
+
+    def _get_acc_anterior(self, cr, uid, ids, context=None):
+        tabla_obj = self.pool.get('cuenta.anterior')
+        tabla_ids = tabla_obj.search(cr, uid, [])
+        if not tabla_ids:
+            raise osv.except_osv('Error de configuracion', 'No tiene configurada tabla de cuentas y partida de anios anteriores')
+        tabla = tabla_obj.browse(cr, uid, tabla_ids[0])
+        return tabla.account_id.id
+
+
+    def _compute_totales(self, cr, uid, ids, fields, args, context=None):
+        result = {}
+        for obj in self.browse(cr, uid, ids, context):
+            val_resumen = 0
+            val_detalle = 0
+            val_dinero = 0
+            for line_resumen in obj.recaudacion_ids:
+                val_resumen+=line_resumen.valor
+            for line_detalle in obj.line_det_ids:
+                val_detalle+=line_detalle.monto                
+            for line_dinero in obj.formapago_ids:
+                val_dinero+=line_dinero.monto
+            result[obj.id] = {
+                'valor_detalle': val_detalle,
+                'valor_resumen': val_resumen,
+                'valor_dinero': val_dinero,
+            }
+        return result
+    
+    _columns = dict(
+        recaudacion_ids_depurado = fields.one2many('recaudacion.line','rec_id_2','Detalle Resumen Recaudado Depurado'),
+        line_det_ids = fields.one2many('recaudacion.detalle','rec_id','Detalle'),
+        tipo = fields.selection([('mejora','mejora'),('otros','otros')],'Tipo'),
+        archivo = fields.binary('Archivo'),
+        partida_anterior = fields.many2one('budget.item','Partida de cuentas por cobrar anterior'),
+        simultaneo_id = fields.many2one('account.move','Asiento Simultaneo'),
+        acc_ant_id = fields.many2one('account.account','Cuenta Anio Anterior'),
+        name = fields.char('Codigo Documento',size=50),
+        date = fields.date('Fecha',required=True),
+        date_end = fields.date('Fecha Hasta',required=True),
+        recaudacion_ids = fields.one2many('recaudacion.line','rec_id','Detalle Resumen Recaudado'),
+        recaudacion_ids_2 = fields.one2many('recaudacion.line.anio','rec_id','Detalle Resumen Recaudado Anio'),
+#        recaudacion_ids = fields.one2many('account.recaudacion.line','rec_id','Detalle Recaudado'),
+        move_id = fields.many2one('account.move','Asiento Contable'),
+        move_ids = fields.related('move_id','line_id', type='one2many', relation='account.move.line', string='Detalle asiento', readonly=True),
+        journal_id = fields.many2one('account.journal','Diario',required=True),
+        state = fields.selection([('Borrador','Borrador'),('Contabilizado','Contabilizado')],'Estado'),
+        formapago_ids = fields.one2many('account.recaudacion.pago','rec_id','Forma de pago'),
+        archivoxls = fields.binary('Archivo Anios Anteriores xls',readonly=True),
+        file_namexls = fields.char('N. archivo xls', size=32),
+        valor_detalle = fields.function(_compute_totales, method=True, multi='Rec', store=False, string='Valor detalle', digits_compute=DP),
+        valor_resumen = fields.function(_compute_totales, method=True, multi='Rec', store=False, string='Valor resumen', digits_compute=DP),
+        valor_dinero = fields.function(_compute_totales, method=True, multi='Rec', store=False, string='Valor dinero', digits_compute=DP),
+        )
+    _defaults = dict(
+        date = time.strftime('%Y-%m-%d'),
+        date_end = time.strftime('%Y-%m-%d'),
+        state = 'Borrador',
+        journal_id = _get_journal,
+        partida_anterior = _get_partida,
+        acc_ant_id = _get_acc_anterior,
+    )
+    _sql_constraints = [
+        ('date', 'unique (date)', 'Debe existir un refgistro por fecha!')
+        ]
+accountRecaudacion()

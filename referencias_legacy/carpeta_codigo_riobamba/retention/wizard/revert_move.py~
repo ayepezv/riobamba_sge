@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import fields, osv
+
+class revertMove(osv.TransientModel):
+    _name = 'revert.move'
+    _columns = dict(
+        year_id = fields.many2one('account.fiscalyear','Anio'),
+        move_id = fields.many2one('account.move','Comprobante a reversar'),
+    )
+    
+    def revert_move(self, cr, uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        for this in self.browse(cr, uid, ids):
+            print "hace"
+        return True
+
+revertMove()

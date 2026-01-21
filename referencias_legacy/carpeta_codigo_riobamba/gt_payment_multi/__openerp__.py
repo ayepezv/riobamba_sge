@@ -1,0 +1,44 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Account Module - Ecuador
+#    Copyright (C) 2013 GnuThink Software All Rights Reserved
+#    info@gnuthink.com
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+{
+    'name' : 'Multi Payment GT',
+    'version' : '3',
+    "category": 'Generic Modules/Accounting',    
+    'depends' : ['gt_payment_request','retention'],
+    'author' : 'Gnuthink Software Cia. Ltda.',
+    'description': '''
+    Formulario para realizar pagos multiples tanto de cliente
+    como de proveedor
+    ''',
+    'website': 'http://www.gnuthink.com',
+    'update_xml': [
+        'spi_sequence.xml',
+        "security/ir.model.access.csv",
+        'spi_view.xml',
+        'statement_view.xml',
+#        'wizard/wizard_spi_view.xml',
+        ],
+    'installable': True,
+    'active': False,
+}

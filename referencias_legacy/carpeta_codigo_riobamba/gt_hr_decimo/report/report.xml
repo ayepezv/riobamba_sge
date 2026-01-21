@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <report auto="False"
+            id="rol_decimo3"
+            model="hr.decimo.tercero"
+            name="rol_decimo_tercero"
+            file="gt_hr_decimo/report/rol_decimo3.mako"
+            string="Rol Decimo Tercero"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo3det"
+            model="hr.decimo.tercero"
+            name="rol_decimo_tercerodet"
+            file="gt_hr_decimo/report/rol_decimo3det.mako"
+            string="Rol Decimo Tercero Detalle"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo4det"
+            model="hr.decimo.cuarto"
+            name="rol_decimo_cuartodet"
+            file="gt_hr_decimo/report/rol_decimo4det.mako"
+            string="Rol Decimo Cuarto Detalle"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo4"
+            model="hr.decimo.cuarto"
+            name="rol_decimo_cuarto"
+            file="gt_hr_decimo/report/rol_decimo4.mako"
+            string="Rol Decimo Cuarto"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo4_ret"
+            model="hr.decimo.cuarto"
+            name="rol_decimo_cuarto_ret"
+            file="gt_hr_decimo/report/rol_decimo4_ret.mako"
+            string="Rol Ret. Judicial"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo4_rets"
+            model="hr.decimo.cuarto"
+            name="rol_decimo_cuarto_rets"
+            file="gt_hr_decimo/report/rol_decimo4_rets.mako"
+            string="Rol Ret. Judicial SUPA"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo3_ret"
+            model="hr.decimo.tercero"
+            name="rol_decimo_tercero_ret"
+            file="gt_hr_decimo/report/rol_decimo3_ret.mako"
+            string="Rol Ret. Judicial"
+            report_type="webkit"
+            webkit_header=""/>
+
+    <report auto="False"
+            id="rol_decimo3_rets"
+            model="hr.decimo.tercero"
+            name="rol_decimo_tercero_rets"
+            file="gt_hr_decimo/report/rol_decimo3_rets.mako"
+            string="Rol Ret. Judicial SUPA"
+            report_type="webkit"
+            webkit_header=""/>
+    
+  </data>
+</openerp>

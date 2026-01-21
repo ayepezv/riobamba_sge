@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- ASISTENTE(WIZARD)  ROLES DE LOS EMPLEADOS -->
+
+       <record id="view_roles_empleado" model="ir.ui.view">
+	 <field name="name">Roles Empleado</field>
+	 <field name="model">roles.empleado</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Roles Empleado">
+             <group col="4" colspan="4">
+               <field name="empleado_id" readonly="1" colspan="2"  string="Empleado:"/> 
+               <field name="periodo_id" colspan="2" string="Periodo:"/>
+	     </group>  
+	     <newline/>
+	     <field name='line_ids' readonly="1" colspan="4" nolabel="1">
+	       <tree>
+                 <field name='periodo'/>
+                 <field name='name'/>
+                 <field name='remuneracion_unificada'/>
+                 <field name='total_otros_ingresos'/>
+                 <field name='total_egresos'/>
+		 <field name='total'/>
+		 <button name="print_rol" type="object" icon="gtk-print" string="Imprimir"/>
+	       </tree>
+	     </field>
+	     <newline/>
+             <newline/>
+	     <group col="2" colspan="4">
+	       <button icon="gtk-cancel" special="cancel" string="Salir" />
+               <button name="mostrar_roles" type="object" icon="gtk-execute"  string="Generar"/>
+	       <!--button name="print_roles" type="object" icon="gtk-print" string="Imprimir"/-->
+	     </group>
+           </form>
+        </field>
+      </record>
+
+
+      <record id="action_roles_empleado" model="ir.actions.act_window">
+        <field name="name">Roles del Empleado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">roles.empleado</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+  
+
+      <menuitem id="menu_empleados_docs" name="Empleados" parent="gt_document_manager.menu_document_manager"/>
+      
+      <menuitem id="menu_roles_empleados" icon="STOCK_EXECUTE" action="action_roles_empleado"
+		parent="menu_empleados_docs" name="Roles"/>
+
+      <!-- en permisos alone -->
+      <!--menuitem id="menu_empleados_docs_perm" name="Empleados" parent="gt_hr_holidays.menu_parent_perm_document_alone"/>
+      <menuitem id="menu_roles_empleados_perm" icon="STOCK_EXECUTE" action="action_roles_empleado"
+		parent="menu_empleados_docs_perm" name="Roles"/-->
+    </data>
+</openerp>

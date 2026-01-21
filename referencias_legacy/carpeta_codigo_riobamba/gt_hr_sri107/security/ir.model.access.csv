@@ -1,0 +1,16 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_rubro","hr.rubro","model_hr_rubro","base.group_hr_manager",1,1,1,1
+"access_hr_rubro_usr","hr.rubro","model_hr_rubro","base.group_hr_user",1,1,1,1
+"access_hr_rubro_acc","hr.rubro","model_hr_rubro","account.group_account_manager",1,1,1,1
+"access_hr_rubro_usr_acc","hr.rubro","model_hr_rubro","account.group_account_manager",1,1,1,1
+"access_empresa_107_acc","empresa.107","model_empresa_107","account.group_account_manager",1,1,1,1
+"access_empresa_107_acc_usr","empresa.107","model_empresa_107","account.group_account_user",1,1,1,1
+"access_sri_107_acc","sri.107","model_sri_107","account.group_account_manager",1,1,1,1
+"access_sri_107_acc_usr","sri.107","model_sri_107","account.group_account_user",1,1,1,1
+"access_hr_work_period_acc","hr.work.period","gt_hr_base.model_hr_work_period","account.group_account_manager",1,1,1,1
+"access_hr_work_period_usr","hr.work.period","gt_hr_base.model_hr_work_period","account.group_account_user",1,1,1,1
+"access_hr_anual_projection acc","hr.anual.projection","gt_hr_base.model_hr_anual_projection","account.group_account_user",1,1,1,1
+"access_hr_anual_rent_tax acc","hr.anual.rent.tax","gt_hr_base.model_hr_anual_rent_tax","account.group_account_user",1,1,1,1
+"access_hr_rent_tax acc","hr.rent.tax","gt_hr_base.model_hr_rent_tax","account.group_account_user",1,1,1,1
+"access_hr_base_retention acc","hr.base.retention","gt_hr_base.model_hr_base_retention","account.group_account_user",1,1,1,1
+"access_hr_base_retention_line acc","hr.base.retention.line","gt_hr_base.model_hr_base_retention_line","account.group_account_user",1,1,1,1

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- ASISTENTE(WIZARD)  REPORTES COMBUSTIBLES -->
+
+       <record id="view_reporte_varios_combustibles" model="ir.ui.view">
+	 <field name="name">Reportes Varios Combustible</field>
+	 <field name="model">reporte.varios.combustible</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Reportes Varios">
+            <group col="4" colspan="4">
+             <field name="variosr_id" required="1"  />	     
+	     <field name="opc" required="1"/>
+	     <newline/>
+	     <field name="date_start" attrs="{'invisible':[('opc', '!=',True)]}"/>
+	     <field name="date_stop" attrs="{'required': [('opc', '=',True)],'invisible':[('opc', '!=',True)]}"/>
+	   </group>  
+             <newline/>
+	     <group col="2" colspan="4">
+	       <button icon="gtk-cancel" special="cancel" string="Salir" />
+	       <button name="print_mecanica_varios_combustible" type="object" icon="gtk-execute"  string="Imprimir"/>
+	     </group>
+
+
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_mecanica_varios_reporte_combustibles" model="ir.actions.act_window">
+        <field name="name">Reporte Varios Combustibles</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">reporte.varios.combustible</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+  
+       <!-- <menuitem id="menu_reporte_mecanica" parent="menu_mecanica" name="Reportes" /> -->
+    
+      <menuitem id="menu_reporte_mecanica_varios_combustibles" action="action_mecanica_varios_reporte_combustibles" 
+                parent="menu_reporte_mecanica" name="Varios Combustibles" />
+    </data>
+</openerp>

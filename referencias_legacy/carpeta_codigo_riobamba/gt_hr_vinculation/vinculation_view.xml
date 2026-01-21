@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+  
+     # ------------------------------------------------------
+    # Applicant with contract information
+    # ------------------------------------------------------
+
+	<record model="ir.ui.view" id="view_applicant_contract">
+	  <field name="name">hr.applicant.contract.form</field>
+	  <field name="model">hr.applicant</field>
+	  <field name="type">form</field>
+	  <field name="inherit_id" ref="hr_recruitment.crm_case_form_view_job"/>
+	  <field name="arch" type="xml">
+		<field name="name" position="replace">
+		  <field name="employee_first_lastname" colspan="2"/>
+		  <field name="employee_second_lastname" colspan="2"/>
+		</field>
+		<field name="partner_name" position="replace">
+		  <field name="employee_first_name" colspan="2"/>
+		  <field name="employee_second_name" colspan="2"/>
+		  <newline/>
+		  <field name="id_type"/>
+		  <field name="id_number"/>
+		  <field name="fec_nac" required="1"/>
+		</field>
+		<field name="partner_phone" position="replace"><field name="partner_phone" required="1"/></field>
+		<field name="job_id" position="replace"><field name="aplication_date"/></field>
+		<xpath expr="//button[@name='action_makeMeeting']" position="replace"></xpath>
+		<xpath expr="//separator[@string='Contact']" position="before">
+		  <separator colspan="3" string="Información Básica"/>
+		  <field name="gender" required="1" colspan="3"/>
+		  <field name="marital_id" required="1" colspan="3"/>
+		  <field name="blood_type" required="1" colspan="3"/>
+		  <field name="discapacitado" colspan="3"/>
+		  <field name="tipo_discapacidad" attrs="{'invisible': [('discapacitado', '!=',True)]}" colspan="3"/>
+		</xpath>
+		<xpath expr="//separator[@string='Contract Data']" position="before">
+		  <separator colspan="3" string="Información Ubicación"/>
+		  <field name="country_id" colspan="3" required="1"/>
+		  <field name="state_id" colspan="3" required="1"/>
+		  <field name="canton_id" colspan="3" required="1"/>
+		  <field name="city" colspan="3" required="1"/>
+		</xpath>
+		<field name="email_from" position="before"><field name="address" required="1"  colspan="3"/></field>
+		<xpath expr="/form/notebook/page[@string='Communication &amp; History']" position="before">
+		  <page string="Experiencia Laboral">
+			<field name="last_work" nolabel="1">
+			 <tree editable="top">
+			   <field name="name"/>
+			   <field name="cargo_id"/>
+			   <field name="date_start"/>
+			   <field name="date_end"/>
+			   <field name="partner_type"/>
+			 </tree>
+			</field>
+		  </page>
+			<page string="Educación y Capacitación">
+			  <notebook>
+				<page string="Educación">
+				  <field name="academic_ids" nolabel="1" colspan="4"/>
+				</page>
+				<page string="Cursos">
+				  <field name="course_ids" nolabel="1" colspan="4"/>
+				</page>
+				<!--page string="Experiencia">
+				<field name="experience_ids" nolabel="1" colspan="4"/>
+				</page-->
+			  </notebook>
+			</page>
+			<page string="Referencias Personales">
+			  <field name="ref_ids" nolabel="1">
+				<tree editable="top">
+				  <field name="name"/>
+				  <field name="lugar_trabajo"/>
+				  <field name="telf1"/>
+				  <field name="telf2"/>
+				</tree>
+			  </field>
+			</page>
+		</xpath>
+		<xpath expr="/form/group/group/button[@name='stage_previous']" position="replace"></xpath>
+		<xpath expr="/form/group/group/button[@name='stage_next']" position="replace"></xpath>
+		<!--xpath expr="/form/group/button[@name='action_print_survey']" position="replace"></xpath>
+		<xpath expr="/form/group/button[@string='Answer']" position="replace"></xpath-->
+		<xpath expr="/form/notebook/page/group/button[@name='case_cancel']" position="replace"></xpath>
+		<xpath expr="/form/notebook/page/group/button[@name='case_open']" position="replace"></xpath>
+		<xpath expr="/form/notebook/page/group/button[@name='case_pending']" position="replace"></xpath>
+		<xpath expr="/form/notebook/page/group/button[@name='case_reset']" position="replace"></xpath>
+		<xpath expr="/form/notebook/page/group/button[@string='Hire']" position="replace"></xpath>
+		<xpath expr="/form/notebook/page/group/button[@string='Create Partner']" position="replace"></xpath>
+		<xpath expr="//separator[@string='Status']" position="replace"></xpath>
+		<xpath expr="//separator[@string='Qualification']" position="replace"></xpath>
+		<field name="type_id" position="replace"></field>
+		<field name="priority" position="replace"></field>
+		<!--field name="reference" position="replace"></field-->
+		<xpath expr="//separator[@string='Dates']" position="replace"></xpath>
+		<field name="create_date" position="replace"></field>
+		<field name="write_date" position="replace"></field>
+		<field name="date_closed" position="replace"></field>
+		<field name="date_open" position="replace"></field>
+		<field name="department_id" position="replace"></field>
+		<field name="stage_id" position="replace"></field>
+		<field name="state" position="replace"></field>
+		<field name="reference" position="replace"></field>
+		<field name="user_id" position="replace"></field>
+		<field name="partner_address_id" position="replace"></field>
+		<field name="partner_id" position="replace"></field>
+		<field name="date_action" position="replace"></field>
+		<field name="title_action" position="replace"></field>
+		<field name="source_id" position="replace"></field>
+	  </field>
+	</record>
+
+    <act_window
+       domain="[('applicant_id', '=', active_id)]"
+       id="act_contract_applicant"
+       name="Contrato"
+       res_model="hr.contract"
+       src_model="hr.applicant"/>
+
+    <act_window
+       domain="[('applicant_id', '=', active_id)]"
+       id="act_employee_applicant"
+       name="Empleado"
+       res_model="hr.employee"
+       src_model="hr.applicant"/>
+
+    <act_window
+       domain="[('applicant_id', '=', active_id)]"
+       id="act_vinculation_applicant"
+       name="Vinculacion"
+       res_model="hr.vinculation"
+       src_model="hr.applicant"/>
+<!--
+VINCULATION
+-->
+
+<record model="ir.ui.view" id="view_vinculation_form">
+  <field name="name">hr.vinculation.form</field>
+  <field name="model">hr.vinculation</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Proceso de Contratación de Personal">
+      <group colspan="4" col="6">
+		<field name="name" colspan="2"/>
+		<field name="date_create" colspan="2" readonly="1"/>
+		<field name="solicitant_id" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('start'))]}"/>
+		<field name="create_id" colspan="4" readonly="1"/>
+		<field name="department_id" colspan="3" attrs="{'readonly': [('state', 'not in',('start'))]}"/>
+		<field name="job_id" colspan="3" attrs="{'readonly': [('state', 'not in',('start'))]}" domain="[('department_id','=',department_id)]"/>
+		<newline/>
+		<field name="number" colspan="2" attrs="{'readonly':[('state','!=','start')]}"/>
+		<field name="date" colspan="2" readonly="1"/>
+	  </group>
+	  <notebook colspan="6">
+		<page string="Candidatos">
+		  <field name="candidatos_ids" nolabel="1" colspan="4" attrs="{'readonly': [('state', 'not in',('start','autorizado'))]}">
+			<tree editable="bottom">
+			  <field name="applicant_id" required="1"/>
+			  <field name="value"/>
+			  <field name="select"/>
+			</tree>
+		  </field>
+		</page>
+		<page string="Inf. Relacionada">
+		  <group string="Documentos">
+		    <field name="name_doc_verificacion" invisible="1" attrs="{'required': [('state', '=','start')]}"/>
+		    <field name="doc_verificacion" colspan="3" filename="name_doc_verificacion" attrs="{'required': [('state', '=','start')],'readonly': [('state', '!=','start')]}"/>
+		    <field name="name_doc_aut_seleccion" invisible="1" attrs="{'required': [('state', '=','verificado')]}"/>
+		    <field name="doc_aut_seleccion" colspan="3" filename="name_doc_aut_seleccion" attrs="{'required': [('state', '=','verificado')],'readonly': [('state', '!=','verificado')]}"/>
+		    <field name="name_doc_seleccion" invisible="1" attrs="{'required': [('state', '=','autorizado')]}"/>
+		    <field name="doc_seleccion" colspan="3" filename="name_doc_seleccion" attrs="{'required': [('state', '=','autorizado')],'readonly': [('state', '!=','autorizado')]}"/>
+		    <field name="name_doc_contratacion" invisible="1" attrs="{'required': [('state', '=','seleccionado')]}"/>
+		    <field name="doc_contratacion" colspan="3" filename="name_doc_contratacion" attrs="{'required': [('state', '=','seleccionado')],'readonly': [('state', '!=','seleccionado')]}"/>
+		    <field name="name_doc_contrato" invisible="1" attrs="{'required': [('state', '=','autorizadoc')]}"/>
+		    <field name="doc_contrato" colspan="3" filename="name_doc_contrato" attrs="{'required': [('state', '=','autorizadoc')],'readonly': [('state', '!=','autorizadoc')]}"/>
+		  </group>
+		  <group colspan="4" string="Información del contrato" attrs="{'invisible':[('state','not in',('autorizadoc','contratado'))]}">
+		    <field name="type_id" colspan="2" attrs="{'required':[('state','=','autorizadoc')],'invisible':[('state','not in',('autorizadoc','contratado'))],'readonly':[('state','!=','autorizadoc')]}"/>
+		    <field name="subtype_id" colspan="2" domain="[('type_id','=',type_id)]" attrs="{'required':[('state','=','autorizadoc')],'invisible':[('state','not in',('autorizadoc','contratado'))],'readonly':[('state','!=','autorizadoc')]}"/>
+		    <field name="wage" colspan="2" attrs="{'required':[('state','=','autorizadoc')],'invisible':[('state','not in',('autorizadoc','contratado'))],'readonly':[('state','!=','autorizadoc')]}"/>
+		    <field name="work_id" colspan="2" attrs="{'required':[('state','=','autorizadoc')],'invisible':[('state','not in',('autorizadoc','contratado'))],'readonly':[('state','!=','autorizadoc')]}"/>
+		  </group>
+		</page>
+	  </notebook>
+	  <group colspan="4" col="9">
+		<field name="state" widget="statusbar" statusbar_colors='{"start":"blue","verificado":"blue","autorizado":"blue","seleccionado":"blue","autorizadoc":"blue","contratado":"green","anulado":"grey"}'/>
+		<button name="vinc_verificar" states="start" string="Verificar" 
+				type="object" icon="terp-check" 
+				confirm="Confirmar verificado?"/>
+		<button name="vinc_autorizar" states="verificado" string="Autorizar" type="object"
+				icon="terp-check" 
+				confirm="Confirmar que desea autorizar?"/>
+		<button name="vinc_seleccionar" states="autorizado" string="Seleccionar" type="object"
+				icon="terp-check" 
+				confirm="Confirmar desea seleccionar?"/>
+		<button name="vinc_autorizar_contratar" states="seleccionado" 
+				string="Seleccionar" type="object"
+				icon="terp-check" 
+				confirm="Confirmar desea autorizar la contratacion?"/>
+		<button name="vinc_contratar" states="autorizadoc" 
+				string="Contratar" type="object"
+				icon="terp-check" 
+				confirm="Confirmar desea contratar?"/>
+		<button name="vinc_anular" states="start,verificado,autorizado,seleccionado,aurotizadoc" string="Anular" type="object" 
+				icon="gtk-cancel" 
+				confirm="Confirmar que desea anular?"/>
+	  </group>
+	</form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_vinculation_tree">
+  <field name="name">vinculation.view.tree</field>
+  <field name="model">hr.vinculation</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Proceso Contratación de Personal" colors="black:state == 'start';blue:state in ('verificado','autorizado','seleccionado','autorizadoc');green:state == 'contratado';grey:state == 'anulado'">
+      <field name="name"/>
+      <field name="department_id"/>
+      <field name="job_id"/>
+      <field name="date_create"/>
+      <field name="date"/>
+      <field name="state"/>
+    </tree>
+  </field>
+</record>
+
+<record id="view_vinculation_filter" model="ir.ui.view">
+  <field name="name">vinculation.list.select</field>
+  <field name="model">hr.vinculation</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Proceso Contratación de Personal">
+      <group col='10' colspan='4'>
+        <field name="name" select="1"/>
+	<field name="department_id"/>
+	<field name="job_id" select="1"/>
+      </group>
+      <newline/>
+      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+        <filter string="Departamento" icon="terp-partner" domain="[]" context="{'group_by':'department_id'}"/>
+        <!--separator orientation="vertical"/-->
+        <filter string="Puesto de trabajo" icon="terp-partner" domain="[]" context="{'group_by':'job_id'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record id="action_vinculation_aa" model="ir.actions.act_window">
+  <field name="name">Procesos Contratación de Personal</field>
+  <field name="res_model">hr.vinculation</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem id="menu_vinculation_aa"
+		  action="action_vinculation_aa"
+		  parent="base.menu_crm_case_job_req_main"
+		  name="Procesos Contratación de Personal"
+		  groups="base.group_hr_manager"/>
+
+<!--
+Menu candidatos
+-->
+<record id="view_crm_case_jobs_filter_gpa" model="ir.ui.view">
+  <field name="name">Buscar Candidatos</field>
+  <field name="model">hr.applicant</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Search Jobs">
+      <field name="name" filter_domain="['|','|',('name','ilike',self),('partner_name','ilike',self),('email_from','ilike',self)]" string="Candidato"/>
+      <field name="job_id" widget="selection"/>
+      <newline/>
+      <group expand="1" string="Group By...">
+        <filter string="Job" icon="terp-gtk-select-all" domain="[]" context="{'group_by':'job_id'}"/>
+        <separator orientation="vertical"/>
+        <separator orientation="vertical"/>
+        <filter string="Creation Date" icon="terp-go-month" domain="[]" context="{'group_by':'create_date'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="crm_case_categ0_act_job_gpa">
+  <field name="name">Candidatos</field>
+  <field name="res_model">hr.applicant</field>
+  <field name="view_mode">tree,form,graph,calendar</field>
+  <field name="view_id" eval="False"/>
+  <field name="search_view_id" ref="view_crm_case_jobs_filter_gpa"/>
+</record>
+
+
+<record model="ir.ui.view" id="crm_case_tree_view_job_gpa">
+  <field name="name">Candidatos</field>
+  <field name="model">hr.applicant</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Candidatos">
+      <field name="create_date"/>
+      <field name="name" string="Subject"/>
+	  <field name="id_number"/>
+      <field name="gender"/>
+      <!--field name="marrital_id"/-->
+      <field name="blood_type"/>
+      <field name="email_from"/>
+      <field name="partner_phone"/>
+      <field name="job_id"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.actions.act_window.view" id="action_hr_sec_tree_view_act_job_gpa">
+  <field name="sequence" eval="0"/>
+  <field name="view_mode">tree</field>
+  <field name="view_id" ref="crm_case_tree_view_job_gpa"/>
+  <field name="act_window_id" ref="crm_case_categ0_act_job_gpa"/>
+</record>
+
+
+<menuitem
+   name="Candidatos"
+   parent="base.menu_crm_case_job_req_main"
+   id="hr_recruitment.menu_crm_case_categ0_act_job" action="crm_case_categ0_act_job_gpa" sequence="1"/>
+
+<!-- delete menus -->
+
+<delete id="hr_recruitment.menu_hr_recruitment_stage" model="ir.ui.menu"/>
+<delete id="hr_recruitment.menu_hr_recruitment_degree" model="ir.ui.menu"/>
+<delete id="hr_recruitment.menu_hr_recruitment_source" model="ir.ui.menu"/>
+<delete id="hr_recruitment.menu_hr_recruitment_recruitment" model="ir.ui.menu"/>
+
+
+</data>
+</openerp>

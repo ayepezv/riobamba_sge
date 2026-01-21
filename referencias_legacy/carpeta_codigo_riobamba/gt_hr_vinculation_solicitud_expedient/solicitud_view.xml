@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+
+    <record model="ir.ui.view" id="view_sol_personal_expedient_form">
+        <field name="name">sol.personal.expedient.form</field>
+        <field name="type">form</field>
+        <field name="model">hr.sol.personal</field>
+        <field name="inherit_id" ref="gt_hr_vinculation_solicitud.view_sol_personal_form"/>
+        <field name="arch" type="xml">
+          <field name="date_create" position="after">
+			<field name="tramite_id" 
+				   domain="['|',('state_open','ilike','-'+str(uid)+'-'),('state_sent','ilike','-'+str(uid)+'-')]" 
+				   attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		  </field>
+        </field>
+    </record>
+  
+</data>
+</openerp>

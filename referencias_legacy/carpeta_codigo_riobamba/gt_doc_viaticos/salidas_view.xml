@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+		<!--menuitem id="menu_salidas" parent="menu_main_viaticos" name="Gastos de Alimentación"/-->
+		
+        <!--
+        ===============================
+        Solicitud para salidas al campo
+        ===============================
+        -->
+        
+        <record id="view_salidas_solicitud_form_usuario" model="ir.ui.view">
+            <field name="name">salidas.solicitud.form</field>
+            <field name="model">salidas.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Registro de Salidas">
+                	<group colspan="4" col="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="aprobado1,aprobado2,aprobado3,done" statusbar_colors='{"draft":"black","aprobado1":"blue","aprobado2":"blue","aprobado3":"blue","done":"green","pagado":"green","descartado":"grey"}'/>
+                		<separator colspan="4"/>
+                    	<notebook colspan="4">
+	                    	<page string="Informe de Salida">
+		                    	<group string="Detalle del Funcionario" colspan="4" col="8">
+		                    		<field name="name" colspan="2" readonly="1"/>
+			                    	<field name="fecha_solicitud" colspan="2" readonly="1"/>
+		                    		<field name="department_id" colspan="4" readonly="1" widget="selection"/>
+		                    		<newline/>
+		                    		<field name="employee_id" colspan="4" required="1" on_change="buscar_departamento(employee_id)" attrs="{'readonly':[('state','!=','draft')]}" domain="[('user_id.id','=',uid)]"/>
+		                    		<field name="job_id" colspan="4" readonly="1" widget="selection"/>
+		                    	</group>
+		                    	<group string="Detalle del Destino" colspan="4" col="4">
+		                    		<field name="ciudad_id" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}" domain="[('zona_viaticos_id','!=',False),('zona_viaticos_id.salidas','=',True)]"/>
+		                    		<field name="parroquia_id" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}" domain="[('canton_id','=',ciudad_id)]"/>
+		                    		<newline/>
+		                    		<field name="fecha_salida" colspan="2" required="1" on_change="calcular_tiempo(fecha_salida, fecha_retorno)" attrs="{'readonly':[('state','!=','draft')]}"/>
+			                		<field name="fecha_retorno" colspan="2" required="1" on_change="calcular_tiempo(fecha_salida, fecha_retorno)" attrs="{'readonly':[('state','!=','draft')]}"/>
+			                		<field name="tiempo" colspan="2" on_change="calcular_tiempo(fecha_salida, fecha_retorno)" readonly="1"/>
+			                		<field name="vehiculo" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+		                    	</group>
+		                    	<group colspan="4" string="Actividades">
+		                    		<field name="actividades" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}" required="1"/>
+		                    	</group>
+		                    	<group string="Talento Humano" colspan="4" groups="base.group_hr_manager" col="4">
+		                    		<field name="valor" colspan="2" readonly="1"/>
+		                    		<field name="period_id" colspan="2" attrs="{'readonly':[('state','!=','aprobado3')],'required':[('state','=','aprobado3',)]}" groups="base.group_hr_manager"/>
+		                    		<button colspan="2" name="aprobar3_realizado" string="Aprobación TTHH" type="object" states="aprobado3" icon="gtk-apply"  groups="base.group_hr_manager" confirm="CON ESTA ACCION EL REGISTRO ES APROBADO POR TALENTO HUMANO, CONFIRMA QUE DESEA CONTINUAR?"/>
+									<button colspan="2" name="descartar" string="Rechazar" type="object" states="aprobado3" icon="gtk-close" groups="base.group_hr_manager" confirm="ESTA ACCION DESCARTA EL PROCESO DE SALIDA AL CAMPO, CONFIRMA QUE DESEA CONTINUAR?"/>
+		                    	</group>
+		                    	<group colspan="4" col="8">
+		                    		<button name="draft_aprobar1" type="object" string="Enviar Informe" colspan="2" states="draft" icon="gtk-apply" confirm="ESTA ACCION SE ENVIA EL INFORME, CONFIRMA QUE DESEA CONTINUAR?"/>
+		                    		<button name="descartar" type="object" string="Rechazar" colspan="2" states="draft" icon="gtk-close" confirm="ESTA ACCION DESCARTA EL PROCESO DE SALIDA AL CAMPO, CONFIRMA QUE DESEA CONTINUAR?"/>
+		                    	</group>
+			                </page>
+		                	<page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string="Historial de acciones en la Salida">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string="Historial de acciones en la salida">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_salidas_solicitud_form_secretaria" model="ir.ui.view">
+            <field name="name">salidas.solicitud.form</field>
+            <field name="model">salidas.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            	<form string="Registro de Salidas">
+                	<group colspan="4" col="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="aprobado1,aprobado2,aprobado3,done" statusbar_colors='{"draft":"black","aprobado1":"blue","aprobado2":"blue","aprobado3":"blue","done":"green","pagado":"green","descartado":"grey"}'/>
+                		<separator colspan="4"/>
+                    	<notebook colspan="4">
+	                    	<page string="Informe de Salida">
+		                    	<group string="Detalle del Funcionario" colspan="4" col="8">
+		                    		<field name="name" colspan="2" readonly="1"/>
+			                    	<field name="fecha_solicitud" colspan="2" readonly="1"/>
+		                    		<field name="department_id" colspan="4" readonly="1" widget="selection"/>
+		                    		<newline/>
+		                    		<field name="employee_id" colspan="4" required="1" on_change="buscar_departamento(employee_id)" attrs="{'readonly':[('state','!=','draft')]}" domain="[('department_id','=',department_id)]"/>
+		                    		<field name="job_id" colspan="4" readonly="1" widget="selection"/>
+		                    	</group>
+		                    	<group string="Detalle del Destino" colspan="4" col="4">
+		                    		<field name="ciudad_id" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}" domain="[('zona_viaticos_id','!=',False),('zona_viaticos_id.salidas','=',True)]"/>
+		                    		<field name="parroquia_id" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}" domain="[('canton_id','=',ciudad_id)]"/>
+		                    		<newline/>
+		                    		<field name="fecha_salida" colspan="2" required="1" on_change="calcular_tiempo(fecha_salida, fecha_retorno)" attrs="{'readonly':[('state','!=','draft')]}"/>
+			                		<field name="fecha_retorno" colspan="2" required="1" on_change="calcular_tiempo(fecha_salida, fecha_retorno)" attrs="{'readonly':[('state','!=','draft')]}"/>
+			                		<field name="tiempo" colspan="2" on_change="calcular_tiempo(fecha_salida, fecha_retorno)" readonly="1"/>
+			                		<field name="vehiculo" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+		                    	</group>
+		                    	<group colspan="4" string="Actividades">
+		                    		<field name="actividades" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}" required="1"/>
+		                    	</group>
+		                    	<group string="Talento Humano" colspan="4" groups="base.group_hr_manager" col="4">
+		                    		<field name="valor" colspan="2" readonly="1"/>
+		                    		<field name="period_id" colspan="2" attrs="{'readonly':[('state','!=','aprobado3')],'required':[('state','=','aprobado3',)]}" groups="base.group_hr_manager"/>
+		                    		<button colspan="2" name="aprobar3_realizado" string="Aprobación TTHH" type="object" states="aprobado3" icon="gtk-apply"  groups="base.group_hr_manager" confirm="CON ESTA ACCION EL REGISTRO ES APROBADO POR TALENTO HUMANO, CONFIRMA QUE DESEA CONTINUAR?"/>
+									<button colspan="2" name="descartar" string="Rechazar" type="object" states="aprobado3" icon="gtk-close" groups="base.group_hr_manager" confirm="ESTA ACCION DESCARTA EL PROCESO DE SALIDA AL CAMPO, CONFIRMA QUE DESEA CONTINUAR?"/>
+		                    	</group>
+		                    	<group colspan="4" col="8">
+		                    		<button name="draft_aprobar1" type="object" string="Enviar Informe" colspan="2" states="draft" icon="gtk-apply" confirm="ESTA ACCION SE ENVIA EL INFORME, CONFIRMA QUE DESEA CONTINUAR?"/>
+		                    		<button name="descartar" type="object" string="Rechazar" colspan="2" states="draft" icon="gtk-close" confirm="ESTA ACCION DESCARTA EL PROCESO DE SALIDA AL CAMPO, CONFIRMA QUE DESEA CONTINUAR?"/>
+		                    	</group>
+			                </page>
+		                	<page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string="Historial de acciones en la Salida">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string="Historial de acciones en la salida">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_salidas_solicitud_tree" model="ir.ui.view">
+            <field name="name">salidas.solicitud.tree</field>
+            <field name="model">salidas.solicitud</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Solicitud para Salidas al Campo" colors="black:state == 'draft';blue:state in ('aprobado1','aprobado2','aprobado3');green:state in ('done','pagado');grey:state == 'descartado'">
+                	<field name="name"/>
+                	<field name="employee_id"/>
+                	<field name="department_id"/>
+                	<field name="ciudad_id"/>
+                	<field name="parroquia_id"/>
+                	<field name="fecha_salida"/>
+                	<field name="fecha_retorno"/>
+                	<field name="vehiculo"/>
+                	<field name="valor"/>
+                	<field name="period_id"/>
+                	<field name="state"/>
+                	<separator orientation="vertical"/>
+                	<!--button string="Enviar Informe" name="draft_aprobar1" states="draft" type="object" icon="gtk-apply" confirm="CON ESTA ACCION SE ENVIA EL INFORME DE SALIDA, CONFIRMA QUE DESEA CONTINUAR?"/-->
+					<button string="Aprobación Jefe Superior" name="aprobar1_aprobar2" states="aprobado1" type="object" icon="gtk-apply" groups="gt_doc_viaticos.group_via_jefe" confirm="CON ESTA ACCION EL JEFE SUPERIOR APRUEBA EL REGISTRO DE SALIDA, CONFIRMA QUE DESEA CONTINUAR?"/>
+					<button string="Aprobación Coordinador" name="aprobar2_aprobar3" states="aprobado2" type="object" icon="gtk-apply"  groups="gt_doc_viaticos.group_via_coordinador" confirm="CON ESTA ACCION EL COORDINADOR APRUEBA EL REGISTRO DE SALIDA, CONFIRMA QUE DESEA CONTINUAR?"/>
+					<!--button string="Aprobación TTHH" name="aprobar3_realizado" states="aprobado3" type="object" icon="gtk-apply"  groups="base.group_hr_manager" confirm="CON ESTA ACCION EL REGISTRO ES APROBADO POR TALENTO HUMANO, CONFIRMA QUE DESEA CONTINUAR?"/-->
+					<button name="descartar" type="object" string="Rechazar" states="aprobado1" icon="gtk-close" confirm="ESTA ACCION DESCARTA EL PROCESO DE SALIDA AL CAMPO, CONFIRMA QUE DESEA CONTINUAR?" groups="gt_doc_viaticos.group_via_jefe"/>
+					<button name="descartar" type="object" string="Rechazar" states="aprobado2" icon="gtk-close" confirm="ESTA ACCION DESCARTA EL PROCESO DE SALIDA AL CAMPO, CONFIRMA QUE DESEA CONTINUAR?" groups="gt_doc_viaticos.group_via_coordinador"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_salidas_solicitud_search" model="ir.ui.view">
+            <field name="name">salidas.solicitud.search</field>
+            <field name="model">salidas.solicitud</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Solicitud para Salidas al Campo">
+                	<group col='4' colspan='4'>
+                		<filter icon="gtk-edit" name="state_draft" string="Borrador" domain="[('state','=','draft')]"/>
+                		<filter icon="gtk-file" name="state_aprobado1" string="Informes Ingresados" domain="[('state','=','aprobado1')]"/>
+                		<filter icon="gtk-file" name="state_aprobado2" string="Aprobado Jefe Superior" domain="[('state','=','aprobado2')]"/>
+                		<filter icon="gtk-file" name="state_aprobado3" string="Aprobado Coordinador General" domain="[('state','=','aprobado3')]"/>
+                		<filter icon="gtk-file" name="state_done" string="Aprobado TTHH" domain="[('state','=','done')]"/>
+                		<filter icon="gtk-close" name="state_descartado" string="Rechazados" domain="[('state','=','descartado')]"/>
+                		<newline/>
+                		<!--separator orientation="vertical"/-->
+                		<field name="name" string="Numero de orden"/>
+                		<field name="employee_id" string="Empleado"/>
+                		<field name="department_id" string="Departamento"/>
+                		<field name="ciudad_id" string="Cantón"/>
+                		<field name="parroquia_id" string="Parroquia"/>
+                		<field name="vehiculo" string="Vehículo"/>
+                		<field name="state" string="Estado"/>
+                		<newline/>
+                		<field name="fecha_salida" string="Salida desde" filter_domain="[('fecha_salida','&gt;=',self)]"/>
+                        <field name="fecha_retorno" string="Llegada hasta" filter_domain="[('fecha_retorno','&lt;=',self)]"/>
+                        <separator orientation="vertical"/>
+                        <field name="period_id" string="Mes de pago"/>
+                	</group>
+                	<newline/>
+					<group expand="1" string="Agrupar por..." colspan="4" col="10">
+						<filter name="group_employee_id" string="Empleado" icon="terp-personal" context="{'group_by':'employee_id'}"/>
+						<filter name="group_department_id" string="Departamento" icon="terp-partner" context="{'group_by':'department_id'}"/>
+						<filter name="group_ciudad_id" string="Destino" icon="gtk-home" context="{'group_by':'ciudad_id'}"/>
+						<filter name="group_vehiculo" string="Vehiculo" icon="gtk-home" context="{'group_by':'vehiculo'}"/>
+						<filter name="group_period_id" string="Mes de pago" icon="gtk-file" context="{'group_by':'period_id'}"/>
+						<filter name="group_state" string="Estado" icon="terp-stock_symbol-selection" context="{'group_by':'state'}"/>
+                	</group>
+                </search>
+            </field>
+        </record>
+        
+        <record id="view_salidas_solicitud_calendar" model="ir.ui.view">
+            <field name="name">Registo de Salidas</field>
+            <field name="model">salidas.solicitud</field>
+            <field name="type">calendar</field>
+            <field name="arch" type="xml">
+                <calendar string="Salidas al campo" color="employee_id" date_start="fecha_salida" date_stop="fecha_retorno">
+                    <field name="employee_id"/>
+                    <field name="fecha_salida"/>
+                    <field name="fecha_retorno"/>
+                </calendar>
+            </field>
+        </record>
+        
+        <record id="action_salidas_solicitud" model="ir.actions.act_window">
+			<field name="name">Salidas al campo</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">salidas.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="domain">[('employee_id.user_id.id','=',uid)]</field>
+			<field name="view_mode">tree,form,calendar</field>
+		</record>
+		
+		<record id="view_salidas_solicitud_usuario_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_salidas_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud"/>
+	    </record>
+		
+		<record id="view_salidas_solicitud_usuario_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_salidas_solicitud_form_usuario"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud"/>
+	    </record>
+		
+		<record id="action_salidas_solicitud_secretaria" model="ir.actions.act_window">
+			<field name="name">Salidas al campo</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">salidas.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,calendar</field>
+		</record>
+		
+		<record id="view_salidas_solicitud_secretaria_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_salidas_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_secretaria"/>
+	    </record>
+		
+		<record id="view_salidas_solicitud_secretaria_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_salidas_solicitud_form_secretaria"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_secretaria"/>
+	    </record>
+		
+		<record id="action_salidas_solicitud_jefe" model="ir.actions.act_window">
+			<field name="name">Salidas al campo</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">salidas.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,calendar</field>
+			<field name="domain">[('state','=','aprobado1')]</field>
+			<!--field name="context">{'search_default_state_draft':1, 'search_default_group_employee_id':1, 'search_default_group_state':1}</field-->
+			<field name="context">{'search_default_group_employee_id':1}</field>
+		</record>
+		
+		<record id="view_salidas_solicitud_jefe_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_salidas_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_jefe"/>
+	    </record>
+		
+		<record id="view_salidas_solicitud_jefe_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_salidas_solicitud_form_usuario"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_jefe"/>
+	    </record>
+		
+		<record id="action_salidas_solicitud_coordinador" model="ir.actions.act_window">
+			<field name="name">Salidas al campo</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">salidas.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,calendar</field>
+			<field name="domain">[('state','=','aprobado2')]</field>
+			<field name="context">{'search_default_group_employee_id':1}</field>
+		</record>
+		
+		<record id="view_salidas_solicitud_coordinador_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_salidas_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_coordinador"/>
+	    </record>
+		
+		<record id="view_salidas_solicitud_coordinador_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_salidas_solicitud_form_usuario"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_coordinador"/>
+	    </record>
+		
+		<record id="action_salidas_solicitud_rrhh" model="ir.actions.act_window">
+			<field name="name">Salidas al campo</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">salidas.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form,calendar</field>
+			<!--field name="domain">[('state','=','draft')]</field-->
+			<field name="context">{'search_default_state_aprobado3':1, 'search_default_group_employee_id':1}</field>
+		</record>
+		
+		<record id="view_salidas_solicitud_rrhh_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_salidas_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_rrhh"/>
+	    </record>
+		
+		<record id="view_salidas_solicitud_rrhh_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_salidas_solicitud_form_usuario"/>
+	        <field name="act_window_id" ref="action_salidas_solicitud_rrhh"/>
+	    </record>
+		
+		<!--menuitem id="menu_salidas_solicitud" parent="menu_salidas" name="Salidas al Campo" action="action_salidas_solicitud" groups="gt_doc_viaticos.group_via_usuario" sequence="1"/>
+		<menuitem id="menu_salidas_solicitud_secretaria" parent="menu_salidas" name="Salidas por Departamento" action="action_salidas_solicitud_secretaria" groups="gt_doc_viaticos.group_via_secretaria" sequence="2"/>
+		<menuitem id="menu_salidas_solicitud_jefe" parent="menu_salidas" name="Aprobaciones Jefe Superior" action="action_salidas_solicitud_jefe" groups="gt_doc_viaticos.group_via_jefe" sequence="3"/>
+		<menuitem id="menu_salidas_solicitud_coordinador" parent="menu_salidas" name="Aprobaciones Coordinador" action="action_salidas_solicitud_coordinador" groups="gt_doc_viaticos.group_via_coordinador" sequence="4"/>
+		<menuitem id="menu_salidas_solicitud_rrhh" parent="menu_salidas" name="Aprobacion de Informes" action="action_salidas_solicitud_rrhh" groups="base.group_hr_manager" sequence="6"/-->
+		<!--menuitem id="menu_salidas_revisado_rrhh" parent="menu_salidas" name="Revision de Informes" action="action_salidas_revisado_rrhh" groups="base.group_hr_manager" sequence="5"/-->
+		
+		<!--
+		==================================
+        Configuracion de salidas al campo
+        ==================================
+        -->
+        
+        <record id="view_salidas_configuration_form" model="ir.ui.view">
+            <field name="name">salidas.configuration.form</field>
+            <field name="model">salidas.configuration</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Configuración de Salidas al campo">
+                	<group colspan="4">
+                    	<field name="name" colspan="4" required="1"/>
+                    	<newline/>
+                    	<group colspan="4" col="6">
+	                    	<field name="period_id" colspan="2" required="1"/>
+	                    	<field name="valor" colspan="2" required="1"/>
+	                    	<field name="cantidad_horas" colspan="2" required="1" widget="float_time"/>
+                    	</group>
+                    	<group colspan="4">
+                    		<field name="cargos_ids" nolabel="1" widget="many2many">
+                    			<tree string="Cargos">
+                    				<field name="name"/>
+                    				<field name="department_id"/>
+                    			</tree>
+                    		</field>
+                    	</group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_salidas_configuration_tree" model="ir.ui.view">
+            <field name="name">salidas.configuration.tree</field>
+            <field name="model">salidas.configuration</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Configuración de salidas al campo">
+                	<field name="name" select="1"/>
+                	<field name="period_id" select="1"/>
+                	<field name="valor" select="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_salidas_configuration" model="ir.actions.act_window">
+			<field name="name">Configuración de salidas al campo</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">salidas.configuration</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+		<!--menuitem id="menu_salidas_configuration" parent="menu_configuracion_viaticos" name="Salidas al campo" action="action_salidas_configuration" groups="gt_doc_viaticos.group_via_administrador" sequence="50"/-->
+		
+	
+	</data>
+</openerp>

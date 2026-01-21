@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+   <record model="ir.ui.view" id="view_validate_move_form">
+      <field name="name">Validacion Asientos</field>    
+      <field name="model">validate.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Validar Asientos">
+          <group  colspan="4">
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group> 
+	  <group  colspan="4">
+	    <button name="validate_move" string="Validar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_validacion" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle Errores">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		  <field name="name" readonly="1"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_validate_move">
+      <field name="name">Validar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">validate.move</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <!--menuitem
+	id="validate_move_menu"
+	sequence="0"
+	parent="account.menu_finance_entries"
+	action="action_validate_move"/-->
+
+    
+    </data>
+</openerp>

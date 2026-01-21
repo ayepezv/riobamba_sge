@@ -1,0 +1,1359 @@
+<openerp>
+<data>
+	
+	
+<!--menuitem name="Gestion de Tramites" id="menu_doc_expedient_configuration" parent="gt_doc_contract.menu_document_manager_configuration" sequence="10"/-->
+
+<menuitem name="Tramitología" id="menu_doc_expedient_configuration" groups="gt_document_manager.group_doc_manager"
+		  parent="gt_document_manager.menu_document_manager_configuration" sequence="10"/>
+
+	
+
+	
+	
+	
+	<!-- VISTA FORM, TREE, SEARCH DOC_EXPEDIENT_EXPEDIENT-->
+	<record model="ir.ui.view" id="view_doc_expedient_form">
+        <field name="name">DOC_EXPEDIENT_FORM</field>
+        <field name="model">doc_expedient.expedient</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Tramites">
+                <group colspan="4" col="6">
+                	<group string="Estado" colspan="4" col="2">
+                		<field name="state" widget="statusbar" readonly="1" statusbar_visible="draft,created,cancelled,removed" statusbar_colors='{"draft":"black", "created":"blue", "cancelled":"grey", "removed":"black"}' select="1"/>
+                	</group>
+                	<group string="Num. Trámite" colspan="2" col="2">
+                		<field name="code" colspan="2" nolabel="1" readonly="1"/>
+                	</group>
+                	<newline/>
+                	<group string="Información General" colspan="6" col="6">
+                		<!--group colspan="4" col="4"-->
+	                		<field name="user_id" colspan="6" widget="selection" readonly="True" attrs="{'invisible':[('state','in',['created','cancelled','removed'])]}"/>
+		                    <field name="user_name" colspan="6" readonly="True" attrs="{'invisible':[('state','=','draft')]}"/>
+	                    <!--/group>
+	                    <field name="code" colspan="2"/>
+	                    <newline/-->
+	                    <field name="ubication" colspan="2" attrs="{'readonly':['|',('state','!=','draft'),('code_assigned','=',True)]}"/>
+	                    <field name="creation_date" colspan="2" readonly="1"/>
+	                    <field name="name" colspan="6" attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    <field name="task_state" invisible="1"/>
+	                    <field name="base_state" invisible="1"/>
+	                    <field name="justification" attrs="{'invisible':[('state','!=','cancelled')]}" colspan="6"/>
+	                    <field name="owner" invisible="1"/>
+	                    <field name="code_assigned" invisible="1"/>
+	                    <field name="ref_chk" invisible="1"/>
+	                    <field name="ref_db" invisible="1"/>
+	                    <field name="chk_removed" invisible="1"/> 
+                	</group>
+                </group>
+                <notebook colspan="4">
+                <page string="Resumen">
+                    <field name="resumen" nolabel="1" colspan="6" attrs="{'readonly':[('state','!=','draft')]}"/>
+                </page>
+                <page string="Tareas" attrs="{'invisible':[('state','=','removed')]}">
+                	<button name="search_task_expedient" type="object" string="GESTIONAR MIS TAREAS" colspan="6" icon="gtk-execute"
+                		attrs="{'invisible':[('state','in',['draft','cancelled'])]}"/>
+                	<field name="tasks" nolabel="1" colspan="6"
+                		attrs="{'readonly':[('state','!=','draft')]}">
+                		<!--tree string="Tarea" colors="red:state == 'progress';blue:state =='done';grey:state == 'cancelled'">
+                			<field name="task_sequence" attrs="{'invisible':[('state','=','draft')]}" string="Núm."/>
+                			<field name="date_task"/>
+			                <field name="action_id" invisible="1"/>
+			                <field name="other_action" invisible="1"/>
+			                <field name="expedient_name" invisible="1"/>
+			                <field name="expedient_state" invisible="1"/>
+			                <field name="desc_task"/>
+			                <field name="expedient_id" invisible="1"/>
+			                <field name="user_id"/>
+			                <field name="user_login"/>
+			                <field name="assigned_user_id"/>
+			                <field name="assigned_user_login"/>
+			                <field name="priority"/>
+			                <field name="documents" invisible="1"/>
+			                <field name="documents_ref" invisible="1"/>
+                			<field name="state"/>
+                			<field name="included" invisible="0"/>
+			                <button name="do_open_docs" string="Documentos Adjuntos" help="La tarea tiene documentos adjuntos"
+			                	type="object" icon="terp-folder-yellow" attrs="{'invisible':[('documents','=',False),('documents_ref','=',False)]}"/>
+			                <button name="task_urgent" string="Prioridad Urgente" help="La prioridad de la tarea es Urgente"
+                				type="object" icon="star-on" attrs="{'invisible':[('priority','in',['normal','medium'])]}"/>
+                			<button name="task_medium" string="Prioridad Media" help="La prioridad de la tarea es Media"
+                				type="object" icon="terp-rating-rated" attrs="{'invisible':[('priority','in',['normal','urgent'])]}"/>
+                			<button name="task_normal" string="Prioridad Normal" help="La prioridad de la tarea es Normal"
+                				type="object" icon="star-off" attrs="{'invisible':[('priority','in',['medium','urgent'])]}"/>
+                		</tree>
+                		<form string="Tareas">
+                			<group colspan="6" col="6">
+		                		<group string="Estado" colspan="4" col="4">
+		                		    <field name="state" widget="statusbar" statusbar_visible="draft,progress,done,cancelled" statusbar_colors='{"draft":"black", "progress":"red", "done":"blue", "cancelled":"grey"}' select="1"/>
+		                		</group>
+		                		<group string="Trámite" colspan="2" col="2">
+		                		    <field name="expedient_id" readonly="True" colspan="4" nolabel="1"/>
+		                		</group>
+			                	<group string="Detalle" colspan="6" col="8">
+			                		<field name="user_id" readonly="1" colspan="6"/>
+			                		<field name="date_task" colspan="2" readonly="1"/>
+			                		<field name="action_id" colspan="6" attrs="{'required':[('other_action_chk','!=',1)],'readonly':['|',('other_action_chk','!=',0),('state','!=','draft')]}" widget="selection" on_change="onchange_action(action_id)"/>
+			                		<field name="need_reply" readonly="1" colspan="2"/>
+				                    <field name="other_action" colspan="6" attrs="{'required':[('other_action_chk','!=',0)],'readonly':['|',('other_action_chk','!=',1),('state','!=','draft')]}"/>
+	        	                    <field name="other_action_chk" colspan="2" on_change="onchange_other_action()" attrs="{'readonly':[('state','!=','draft')]}"/>
+				                    <field name="type_action" invisible="1"/>
+									<field name="desc_task" invisible="1"/>
+				                    <field name="assigned_user_id" colspan="8" attrs="{'readonly':[('state','!=','draft')]}"/>
+				                    <field name="assigned_user_department" colspan="6" readonly="1"/>	            
+				                    <field name="assigned_user_login" colspan="2" readonly="1"/>
+				                    <field name="priority" attrs="{'readonly':[('state','!=','draft')]}" colspan="4"/>
+				                    <field name="sugerence" attrs="{'required':[('priority','=','urgent')],'readonly':[('state','!=','draft')]}" colspan="4"/>
+				                    <field name="user_id" invisible="1"/>
+				                    <field name="task_sequence" invisible="1"/>
+				                    <field name="expedient_state" invisible="1"/>
+				                    <field name="task_ref_id" invisible="1"/>
+				                    <field name="parent_task" invisible="1"/>
+				                    <field name="cc" invisible="1"/>
+				                    <field name="owner_task" invisible="1"/>
+				                    <field name="owner_task_db" invisible="1"/>
+				                    <field name="assigned_task" invisible="1"/>
+				                    <field name="responded" invisible="1"/>
+				                    <field name="included" invisible="1"/>
+				                    <field name="justification" attrs="{'invisible':[('state','!=','cancelled')]}" colspan="8"/>
+				                    <notebook colspan="8">
+				                    <page string="Descripción">
+				                        <field name="description" nolabel="1" colspan="8"
+				                        	attrs="{'readonly':[('state','!=','draft')]}"/>
+				                    </page>
+				                    <page string="CC">
+						            	<field name="members" nolabel="1" colspan="8" widget="many2many" attrs="{'readonly':[('state','!=','draft')]}">
+										    <tree string="Usuarios">
+					                			<field name="login"/>
+					                			<field name="employee_id"/>
+					                			<field name="job_id"/>
+					                			<field name="context_department_id"/>
+					                		</tree>	            		
+						        		</field>    
+				                	</page>
+				                	<page string="Documentos" attrs="{'invisible':[('cc','!=',False)]}">
+						            	<field name="directory_id" invisible="1"/>
+						            	<field name="documents" nolabel="1" widget="one2many_list" colspan="8" context="{'default_parent_id': directory_id,'bin_size_datas':10485760,'bin_size':True}">
+									    	<tree string="Documentos">
+					                			<field name="name" string="Descripción"/>
+					                			<field name="type" string="Tipo" invisible="1"/>
+					                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+					                			<field name="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+					                			<field name="url" attrs="{'invisible':[('type','=','binary')]}"/>
+					                			<field name="create_uid" string="Subido por"/>
+					                			<field name="create_date" string="Fecha adjunto"/>		
+					                		</tree>
+					    					<form string="Documentos">
+					    						<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+					    						<field name="type" string="Tipo" invisible="1"/>
+					                			<field name="name" string="Descripción"/>
+					                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+					                			<field name="datas_fname" invisible="1"/>
+					                			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)" attrs="{'invisible':[('type','=','url')]}"/>
+					                			<field name="url" readonly="1" attrs="{'invisible':[('type','=','binary')]}" widget="url"/>
+					                		</form>	            		
+						        		</field>    
+				                	</page>
+				                	<page string="Documentos" attrs="{'invisible':[('cc','!=',True)]}">
+				                    	<field name="documents_ref" nolabel="1" colspan="8">
+				                    		<tree string="Documentos">
+				                    			<field name="name" string="Descripción"/>
+				                    			<field name="parent_id"/>
+				                    			<field name="datas_fname"/>
+				                    			<field name="create_uid" string="Subido por"/>
+				                			    <field name="create_date" string="Fecha adjunto"/>	
+				                    		</tree>
+				                    		<form string="Documentos">
+				                    			<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+				                    			<field name="type" string="Tipo" invisible="1"/>
+				                    			<field name="name" string="Descripción"/>
+				                    			<field name="parent_id" invisible="1"/>
+				                    			<field name="datas_fname" invisible="1"/>
+				                    			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)"     />
+				                    		</form>
+				                    	</field>	
+							        </page>
+				                	</notebook>
+			                	</group>
+			                </group>
+			                <group colspan="4" col="7">
+			               	    <button name="task_progress_done" type="object" string="CONOCIDO" icon="gtk-apply"
+			               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('included','==',True),('state','!=','progress')],
+			               	    	                                                    'readonly':[('assigned_task','=',False)]}"/>
+			               	    	                                                    
+			               	    <button name="%(action_doc_task_cancel)d" type="action" string="ANULAR TAREA" icon="gtk-cancel" colspan="1"
+			               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('assigned_task','=',False),('included','!=',True)],
+			               	    	                                                    'readonly':[('state','=','cancelled')]}"/>
+			               	    	                                                    
+			               	    <button name="%(action_doc_task_cancel)d" type="action" string="ANULAR TAREA" icon="gtk-cancel" colspan="1"
+			               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('owner_task','=',False),'|',('included','==',True),('state','=','cancelled')],
+			               	    	                                                    'readonly':[]}"/>
+			               	    	                                                    
+			               	    <button name="eliminar_tareas" type="object" string="ELIMINAR TAREA" icon="gtk-cancel" confirm="Esta seguro que desea eliminar esta tarea"
+			               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('state','!=','cancelled'),'|',('owner_task','=',False),('included','=',True)]}"/>
+			               	    	                                                    
+			               	    <button name="responder_tarea" type="object" string="RESPONDER" colspan="1" icon="terp-personal"
+			               	    	attrs="{'invisible':['|',('assigned_task','=',False),'|',('included','=',False),('state','=','cancelled')],
+			               	    	        'readonly':[('state','=','done')]}"/>
+			               	    		    	
+			               	    <button name="task_dissocier" type="object" string="DESVINCULAR DE TAREA A USUARIO ASIGNADO" colspan="1" icon="terp-personal-"
+			               	    				groups="gt_document_manager.group_doc_user" confirm="Esta seguro que desea desvincular al usuario del Tramite" 
+			               	    				attrs="{'invisible':['|',('state','!=','cancelled'),('owner_task','=',False)],'readonly':[('included','=',False)]}"/>   				
+					   		</group>                                    
+                		</form-->
+                	</field>	
+                </page>
+                <page string="Información Adicional" attrs="{'invisible':['|',('ubication','!=','external'),('state','=','removed')]}">
+                	<group colspan="6" col="6">
+                		<separator string="Ubicación" colspan="6"/>
+                		<field name="canton" attrs="{'required':[('ubication','=','external')],
+                			                         'readonly':[('state','!=','draft')]}"
+                			                         on_change="onchange_parish(parroquia,canton)"/>
+                		<field name="parroquia" attrs="{'required':[('ubication','=','external')],
+                			                            'readonly':[('state','!=','draft')]}"
+                			                            on_change="onchange_canton(parroquia)"/>
+                		<field name="locality" attrs="{'readonly':[('state','!=','draft')]}"/>
+                	</group>
+                	<group colspan="6" col="6">
+                		<separator string="Datos Generales" colspan="6"/>
+                		<field name="institution" colspan="6" attrs="{'required':[('ubication','=','external')],
+                			                                          'readonly':[('state','!=','draft')]}"/>
+                		<field name="name_person" colspan="6" attrs="{'required':[('ubication','=','external')],
+                			                                          'readonly':[('state','!=','draft')]}"/>
+                		<field name="direccion" attrs="{'readonly':[('state','!=','draft')],'required':[('ubication','=','external')],}"/>
+                		<field name="telefono" attrs="{'readonly':[('state','!=','draft')],'required':[('ubication','=','external')],}"/>
+                		<newline/>
+                		<field name="number_office" attrs="{'readonly':[('state','!=','draft')]}"/>
+                		<field name="date_entry" attrs="{'readonly':[('state','!=','draft')]}"/>
+                	</group>		
+                </page>
+                <page string="Referencias" attrs="{'invisible':[('state','=','removed')]}">
+                		<field name="references" nolabel="1" widget="many2many_list" mode="tree" 
+                		attrs="{'readonly':['|',('state','in',['cancelled','done']),('owner','=',False)]}" context="{'form_view_ref': 'gt_doc_expedient.view_doc_expedient_form_referencias', 'tree_view_ref': 'gt_doc_expedient.view_doc_expedient_tree_referencias'}">
+                		<tree string="Referencias con Tramites">
+                			<field name="code"/>
+                			<field name="name"/>
+                		</tree>
+                		<form>
+                			<field name="code"/>
+                			<field name="name"/>
+                		</form>	
+                	</field>
+                </page>
+                <page string="Documentos" attrs="{'invisible':['|',('state','=','draft'),('state','=','removed')]}">
+                	<field name="directory_id" invisible="1"/>
+                	<field name="documents" nolabel="1" widget="one2many_list" context="{'default_parent_id': directory_id,'bin_size_datas':10485760,'bin_size':True}">
+                		<tree string="Documentos">
+                			<field name="name" string="Descripción"/>
+                			<field name="type" string="Tipo" invisible="1"/>
+                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+                			<field name="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+                			<field name="url" attrs="{'invisible':[('type','=','binary')]}"/>
+                			<field name="create_uid" string="Subido por"/>
+                			<field name="create_date" string="Fecha adjunto"/>		
+                		</tree>
+    					<form string="Documentos">
+    						<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+    						<field name="type" string="Tipo" invisible="1"/>
+                			<field name="name" string="Descripción"/>
+                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+                			<field name="datas_fname" invisible="1"/>
+                			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)" attrs="{'invisible':[('type','=','url')]}"/>
+                			<field name="url" readonly="1" attrs="{'invisible':[('type','=','binary')]}" widget="url"/>
+                		</form>
+            		</field>    
+                </page>
+                </notebook>
+                <group colspan="4" col="6">
+               	    <button name="wkf_draft_created" string="INICIAR TRAMITE" colspan="1" icon="gtk-media-play" 
+               	    	attrs="{'invisible':[('state','in',['created','cancelled','removed'])]}" confirm="Esta seguro que desea iniciar el Tramite"/>
+               	    	
+               	    <button name="%(action_doc_expedient_cancel)d" type="action" string="ANULAR TRAMITE" icon="gtk-cancel" colspan="1"
+               	    	attrs="{'readonly':[('state','in',['cancelled','removed'])],
+               	    	        'invisible':[('owner','=',False)]}"/>
+               	    	        
+               	    <button name="removed_expedient" type="object" string="DESCARTAR TRAMITE" icon="gtk-go-down" confirm="Esta seguro que desea descartar el Tramite"
+               	    	attrs="{'invisible':['|',('owner','=',False),('state','in',['draft','created','removed'])]}"/>
+               	    	
+               	    <button name="%(action_doc_expedient_draft)d" icon="gtk-indent" type="action" string="PASAR A BORRADOR" 
+               	    	groups="gt_document_manager.group_doc_removed" attrs="{'invisible':[('state','!=','removed')]}"/>
+			    </group>
+           </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_doc_expedient_tree_referencias">
+        <field name="name">VIEW DOC_EXPEDIENT TREE</field>
+        <field name="model">doc_expedient.expedient</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="99"/>
+        <field name="arch" type="xml">
+            <tree string="Trámites">
+                <field name="code" readonly="1"/>
+                <field name="name" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_doc_expedient_form_referencias">
+        <field name="name">VIEW DOC_EXPEDIENT FORM</field>
+        <field name="model">doc_expedient.expedient</field>
+        <field name="type">form</field>
+        <field name="priority" eval="99"/>
+        <field name="arch" type="xml">
+            <form string="Trámites">
+                <field name="code" colspan="2" readonly="1"/>
+                <field name="name" colspan="4" readonly="1"/>
+            </form>
+        </field>
+    </record>
+  
+    <record model="ir.ui.view" id="view_doc_expedient_tree">
+        <field name="name">VIEW DOC_EXPEDIENT TREE</field>
+        <field name="model">doc_expedient.expedient</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree colors="blue:base_state == 'sent'; red:base_state == 'open'; black:state == 'removed'; grey:state == 'cancelled'" string="Tramites">
+                <field name="code"/>
+                <field name="creation_date"/>
+                <field name="name"/>
+                <field name="resumen"/>
+                <field name="user_id" invisible='1'/>
+                <field name="user_name"/>
+                <field name="task_state" string="Mensaje de Tarea"/>
+                <field name="base_state" invisible="1"/>
+                <field name="ubication" invisible="1"/>
+                <field name="state"/>
+                <field name="ref_chk" invisible="1"/>
+                <field name="ref_db" invisible="1"/>
+                <field name="state_draft" invisible="1"/>
+                <field name="state_open" invisible="1"/>
+                <field name="state_sent" invisible="1"/>
+                <field name="state_cancelled" invisible="1"/>
+                <field name="state_removed" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_doc_expedient_search" model="ir.ui.view">
+    <field name="name">doc.expedient.search.form</field>
+    <field name="model">doc_expedient.expedient</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+       <search string="Expedient">
+            <group> 
+                <separator orientation="vertical"/>
+                <field name="code"/>
+                <field name="name" colspan="4" width="250" height="250" nolabel="1"/>
+                <field name="resumen"/>
+                <field name="parroquia"/>
+                <field name="institution"/>
+                <field name="name_person"/>
+                <field name="number_office"/>
+            </group>
+            <newline/>
+            <group expand="0" string="Agrupar por...">
+                <filter string="Responsable" name="group_user_id" icon="terp-personal" domain="[]"  context="{'group_by':'user_id'}"/>
+                <separator orientation="vertical"/>
+                <filter string="Ubicación" name="group_ubication" icon="STOCK_HOME" domain="[]"  context="{'group_by':'ubication'}"/>
+                <separator orientation="vertical"/>
+                <filter string="Estado" name="group_state" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                <separator orientation="vertical"/>
+                <filter string="Fecha de Creación" icon="terp-go-month" domain="[]" context="{'group_by':'creation_date'}"/>
+            </group>
+        </search>
+    </field>
+	</record>
+	
+    <!--ACTION PARA CONSULTA DE TRÁMITES PENDIENTES-->
+    <record model="ir.actions.act_window" id="action_doc_expedient_form_open">
+        <field name="name">Trámites Pendientes</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="help">Tramites</field>
+        <field name="limit">80</field>
+        <field name="domain">[('state_open','ilike','-'+str(uid)+'-')]</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+    </record>
+    <record id="view_doc_expedient_expedient_open_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_open"/>
+    </record>
+    <record id="view_doc_expedient_expedient_open_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_open"/>
+    </record>
+
+    <!--ACTION PARA CONSULTA DE TRÁMITES REALIZADOS-->
+    <record model="ir.actions.act_window" id="action_doc_expedient_form_sent1">
+        <field name="name">Trámites Realizados</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="help">Tramites</field>
+        <field name="limit">80</field>
+        <field name="domain">[('state_sent','ilike','-'+str(uid)+'-')]</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+    </record>
+    <record id="view_doc_expedient_expedient_sent_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_sent1"/>
+    </record>
+    <record id="view_doc_expedient_expedient_sent_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_sent1"/>
+    </record>
+
+    <!--ACTION PARA CONSULTA DE TRÁMITES EN BORRADOR-->
+    <record model="ir.actions.act_window" id="action_doc_expedient_form_draft">
+        <field name="name">Trámites en Borrador</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="help">Tramites</field>
+        <field name="limit">80</field>
+        <field name="domain">[('state_draft','ilike','-'+str(uid)+'-')]</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+    </record>
+    <record id="view_doc_expedient_expedient_draft_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_draft"/>
+    </record>
+    <record id="view_doc_expedient_expedient_draft_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_draft"/>
+    </record>
+    
+    <!--ACTION PARA CONSULTA DE TRÁMITES ANULADOS-->
+    <record model="ir.actions.act_window" id="action_doc_expedient_form_cancelled">
+        <field name="name">Trámites Anulados</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="help">Tramites</field>
+        <field name="limit">80</field>
+        <!--field name="domain">[('base_state','=','cancelled')]</field-->
+        <field name="domain">[('state_cancelled','ilike','-'+str(uid)+'-')]</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+    </record>
+    <record id="view_doc_expedient_expedient_cancelled_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_cancelled"/>
+    </record>
+    <record id="view_doc_expedient_expedient_cancelled_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_cancelled"/>
+    </record>
+
+    <!--ACTION PARA CONSULTA DE TRÁMITES DESCARTADOS-->
+    <record model="ir.actions.act_window" id="action_doc_expedient_form_removed">
+        <field name="name">Tramites Descartados</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="help">Trámites Eliminados</field>
+        <field name="domain">[('state','=','removed')]</field>
+    </record>
+    <record id="view_doc_expedient_expedient_removed_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_removed"/>
+    </record>
+    <record id="view_doc_expedient_expedient_removed_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_form_removed"/>
+    </record>
+    
+    <!-- VISTA DOC_EXPEDIENT_EXPEDIENT TREE FORM PARA CONSULTAS DE TRÁMITES-->
+    <record model="ir.ui.view" id="view_doc_expedient_expedient_consult_form">
+        <field name="name">DOC_EXPEDIENT_FORM</field>
+        <field name="model">doc_expedient.expedient</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Trámite">
+                <group colspan="4" col="6">
+                	<group string="Estado" colspan="4" col="2">
+                		<field name="state" widget="statusbar" readonly="1" statusbar_visible="draft,created,cancelled,removed" statusbar_colors='{"draft":"black", "created":"blue", "cancelled":"grey", "removed":"black"}' select="1"/>
+                	</group>
+                	<group string="Num. Trámite" colspan="2" col="2">
+                		<field name="code" colspan="2" nolabel="1" readonly="1"/>
+                	</group>
+                	<newline/>
+                	<group string="Información General" colspan="6" col="6">
+	                		<field name="user_id" colspan="6" widget="selection" readonly="True" attrs="{'invisible':[('state','in',['created','cancelled','removed'])]}"/>
+		                    <field name="user_name" colspan="6" readonly="True" attrs="{'invisible':[('state','=','draft')]}"/>
+	                    <field name="ubication" colspan="2" attrs="{'readonly':['|',('state','!=','draft'),('code_assigned','=',True)]}"/>
+	                    <field name="creation_date" colspan="2" readonly="1"/>
+	                    <field name="name" colspan="6" readonly="1"/>
+	                    <field name="task_state" invisible="1"/>
+	                    <field name="base_state" invisible="1"/>
+	                    <field name="justification" attrs="{'invisible':[('state','!=','cancelled')]}" colspan="6"/>
+	                    <field name="owner" invisible="1"/>
+	                    <field name="code_assigned" invisible="1"/>
+	                    <field name="ref_chk" invisible="1"/>
+	                    <field name="ref_db" invisible="1"/>
+	                    <field name="chk_removed" invisible="1"/>
+                	</group>
+                </group>
+                <notebook colspan="4">
+                <page string="Resumen">
+                    <field name="resumen" nolabel="1" colspan="6" readonly="True"/>
+                </page>
+                <page string="Tareas" attrs="{'invisible':[('state','=','removed')]}">
+                	<button name="search_task_expedient" invisible="1" type="object" string="GESTIONAR MIS TAREAS" colspan="6" icon="gtk-execute"
+                		attrs="{'invisible':[('state','in',['draft','cancelled'])]}"/>
+                	<field name="tasks" nolabel="1" colspan="6" readonly="True">
+                		<!--tree string="Tarea" colors="red:state == 'progress';blue:state =='done';grey:state == 'cancelled'">
+                			<field name="task_sequence" attrs="{'invisible':[('state','=','draft')]}" string="Núm."/>
+                			<field name="date_task"/>
+			                <field name="action_id" invisible="1"/>
+			                <field name="other_action" invisible="1"/>
+			                <field name="expedient_name" invisible="1"/>
+			                <field name="expedient_state" invisible="1"/>
+			                <field name="desc_task"/>
+			                <field name="expedient_id" invisible="1"/>
+			                <field name="user_id"/>
+			                <field name="user_login"/>
+			                <field name="assigned_user_id"/>
+			                <field name="assigned_user_login"/>
+			                <field name="priority"/>
+			                <field name="documents" invisible="1"/>
+			                <field name="documents_ref" invisible="1"/>
+                			<field name="state"/>
+                			<field name="included" invisible="0"/>
+			                <button name="do_open_docs" string="Documentos Adjuntos" help="La tarea tiene documentos adjuntos"
+			                	type="object" icon="terp-folder-yellow" attrs="{'invisible':[('documents','=',False),('documents_ref','=',False)]}"/>
+			                <button name="task_urgent" string="Prioridad Urgente" help="La prioridad de la tarea es Urgente"
+                				type="object" icon="star-on" attrs="{'invisible':[('priority','in',['normal','medium'])]}"/>
+                			<button name="task_medium" string="Prioridad Media" help="La prioridad de la tarea es Media"
+                				type="object" icon="terp-rating-rated" attrs="{'invisible':[('priority','in',['normal','urgent'])]}"/>
+                			<button name="task_normal" string="Prioridad Normal" help="La prioridad de la tarea es Normal"
+                				type="object" icon="star-off" attrs="{'invisible':[('priority','in',['medium','urgent'])]}"/>
+                		</tree>
+                		<form string="Tareas">
+                			<group colspan="6" col="6">
+		                		<group string="Estado" colspan="4" col="4">
+		                		    <field name="state" widget="statusbar" statusbar_visible="draft,progress,done,cancelled" statusbar_colors='{"draft":"black", "progress":"red", "done":"blue", "cancelled":"grey"}' select="1"/>
+		                		</group>
+		                		<group string="Trámite" colspan="2" col="2">
+		                		    <field name="expedient_id" readonly="True" colspan="4" nolabel="1"/>
+		                		</group>
+			                	<group string="Detalle" colspan="6" col="8">
+			                		<field name="user_id" readonly="1" colspan="6"/>
+			                		<field name="date_task"  colspan="2" readonly="1"/>
+			                		<field name="action_id" colspan="6" attrs="{'required':[('other_action_chk','!=',1)],'readonly':['|',('other_action_chk','!=',0),('state','!=','draft')]}" widget="selection" on_change="onchange_action(action_id)"/>
+			                		<field name="need_reply" readonly="1" colspan="2"/>
+				                    <field name="other_action" colspan="6" attrs="{'required':[('other_action_chk','!=',0)],'readonly':['|',('other_action_chk','!=',1),('state','!=','draft')]}"/>
+	        	                    <field name="other_action_chk" colspan="2" on_change="onchange_other_action()" attrs="{'readonly':[('state','!=','draft')]}"/>
+				                    <field name="type_action" invisible="1"/>
+									<field name="desc_task" invisible="1"/>
+				                    <field name="assigned_user_id" colspan="8" attrs="{'readonly':[('state','!=','draft')]}"/>
+				                    <field name="assigned_user_department" colspan="6" readonly="1"/>	            
+				                    <field name="assigned_user_login" colspan="2" readonly="1"/>
+				                    <field name="priority" attrs="{'readonly':[('state','!=','draft')]}" colspan="4"/>
+				                    <field name="sugerence" attrs="{'required':[('priority','=','urgent')],'readonly':[('state','!=','draft')]}" colspan="4"/>
+				                    <field name="user_id" invisible="1"/>
+				                    <field name="task_sequence" invisible="1"/>
+				                    <field name="expedient_state" invisible="1"/>
+				                    <field name="task_ref_id" invisible="1"/>
+				                    <field name="parent_task" invisible="1"/>
+				                    <field name="cc" invisible="1"/>
+				                    <field name="owner_task" invisible="1"/>
+				                    <field name="owner_task_db" invisible="1"/>
+				                    <field name="assigned_task" invisible="1"/>
+				                    <field name="responded" invisible="1"/>
+				                    <field name="included" invisible="1"/>
+				                    <field name="justification" attrs="{'invisible':[('state','!=','cancelled')]}" colspan="8"/>
+				                    <notebook colspan="8">
+				                    <page string="Descripción">
+				                        <field name="description" nolabel="1" colspan="8"
+				                        	attrs="{'readonly':[('state','!=','draft')]}"/>
+				                    </page>
+				                    <page string="CC">
+						            	<field name="members" nolabel="1" widget="many2many" colspan="8" attrs="{'readonly':[('state','!=','draft')]}">
+									    	<tree string="Usuarios">
+					                			<field name="login"/>
+					                			<field name="employee_id"/>
+					                			<field name="job_id"/>
+					                			<field name="context_department_id"/>
+					                		</tree>            		
+						        		</field>    
+				                	</page>
+				                	<page string="Documentos" attrs="{'invisible':[('cc','!=',False)]}">
+						            	<field name="directory_id" invisible="1"/>
+						            	<field name="documents" nolabel="1" widget="one2many_list" colspan="8" context="{'default_parent_id': directory_id,'bin_size_datas':10485760,'bin_size':True}">
+									    	<tree string="Documentos">
+					                			<field name="name" string="Descripción"/>
+					                			<field name="type" string="Tipo" invisible="1"/>
+					                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+					                			<field name="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+					                			<field name="url" attrs="{'invisible':[('type','=','binary')]}"/>
+					                			<field name="create_uid" string="Subido por"/>
+					                			<field name="create_date" string="Fecha adjunto"/>		
+					                		</tree>
+					    					<form string="Documentos">
+					    						<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+					    						<field name="type" string="Tipo" invisible="1"/>
+					                			<field name="name" string="Descripción"/>
+					                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+					                			<field name="datas_fname" invisible="1"/>
+					                			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)" attrs="{'invisible':[('type','=','url')]}"/>
+					                			<field name="url" readonly="1" attrs="{'invisible':[('type','=','binary')]}" widget="url"/>
+					                		</form>
+						        		</field>    
+				                	</page>
+				                	<page string="Documentos" attrs="{'invisible':[('cc','!=',True)]}">
+				                    	<field name="documents_ref" nolabel="1" colspan="8">
+				                    		<tree string="Documentos">
+				                    			<field name="name" string="Descripción"/>
+				                    			<field name="parent_id"/>
+				                    			<field name="datas_fname"/>
+				                    			<field name="create_uid" string="Subido por"/>
+				                			    <field name="create_date" string="Fecha adjunto"/>	
+				                    		</tree>
+				                    		<form string="Documentos">
+				                    			<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+				                    			<field name="type" string="Tipo" invisible="1"/>
+				                    			<field name="name" string="Descripción"/>
+				                    			<field name="parent_id" invisible="1"/>
+				                    			<field name="datas_fname" invisible="1"/>
+				                    			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)"     />
+				                    		</form>
+				                    	</field>	
+							        </page>
+				                	</notebook>
+			                	</group>
+			                </group>
+			                <group colspan="4" col="7">   				
+					   		</group>                                    
+                		</form-->
+                	</field>	
+                </page>
+                <page string="Información Adicional" attrs="{'invisible':['|',('ubication','!=','external'),('state','=','removed')]}">
+                	<group colspan="6" col="6">
+                		<separator string="Ubicación" colspan="6"/>
+                		<field name="canton" readonly="True"/>
+                		<field name="parroquia" readonly="True"/>
+                		<field name="locality" readonly="True"/>
+                	</group>
+                	<group colspan="6" col="6">
+                		<separator string="Datos Generales" colspan="6"/>
+                		<field name="institution" readonly="True"/>
+                		<field name="name_person" readonly="True"/>
+                		<field name="direccion" readonly="True"/>
+                		<field name="telefono" readonly="True"/>
+                		<newline/>
+                		<field name="number_office" readonly="True"/>
+                		<field name="date_entry" readonly="True"/>
+                	</group>		
+                </page>
+                <page string="Referencias" attrs="{'invisible':[('state','=','removed')]}">
+                		<field name="references" readonly="1" nolabel="1" widget="one2many_list" mode="tree">
+                		<tree string="Referencias con Tramites">
+                			<field name="code"/>
+                			<field name="name"/>
+                		</tree>
+                		<form>
+                			<field name="code"/>
+                			<field name="name"/>
+                		</form>	
+                	</field>
+                </page>
+                <page string="Documentos" attrs="{'invisible':['|',('state','=','draft'),('state','=','removed')]}">
+                	<field name="directory_id" invisible="1"/>
+                	<field name="documents" nolabel="1" widget="one2many_list" context="{'default_parent_id': directory_id,'bin_size_datas':10485760,'bin_size':True}">
+                		<tree string="Documentos">
+                			<field name="name" string="Descripción"/>
+                			<field name="type" string="Tipo" invisible="1"/>
+                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+                			<field name="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+                			<field name="url" attrs="{'invisible':[('type','=','binary')]}"/>
+                			<field name="create_uid" string="Subido por"/>
+                			<field name="create_date" string="Fecha adjunto"/>		
+                		</tree>
+    					<form string="Documentos">
+    						<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+    						<field name="type" string="Tipo" invisible="1"/>
+                			<field name="name" string="Descripción"/>
+                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+                			<field name="datas_fname" invisible="1"/>
+                			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)" attrs="{'invisible':[('type','=','url')]}"/>
+                			<field name="url" readonly="1" attrs="{'invisible':[('type','=','binary')]}" widget="url"/>
+                		</form>
+            		</field>    
+                </page>
+                </notebook>
+           </form>
+        </field>
+    </record>		
+
+    <record model="ir.ui.view" id="view_doc_expedient_expedient_consult_tree">
+        <field name="name">VIEW DOC_EXPEDIENT TREE</field>
+        <field name="model">doc_expedient.expedient</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="creation_date"/>
+                <field name="name" readonly="True"/>
+                <field name="resumen" readonly="True"/>
+                <field name="user_id" widget="selection" readonly="1" invisible="1"/>
+                <field name="user_name" readonly="1"/>
+                <field name="base_state" invisible="1"/>
+                <field name="ubication" invisible="1"/>
+                <field name="state"/>
+                <field name="ref_chk" invisible="1"/>
+                <field name="ref_db" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_expedient_expedient_form_consult">
+        <field name="name">Todos los Trámites</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'consult':True}</field>
+        <field name="help">Consulta de Trámites</field>
+        <field name="view_id" ref="view_doc_expedient_expedient_consult_tree"/>
+    </record>
+    <record id="view_consult_doc_expedient_expedient_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_expedient_consult_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_expedient_form_consult"/>
+    </record>
+    <record id="view_consult_doc_expedient_expedient_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_expedient_consult_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_expedient_form_consult"/>
+    </record>
+    
+    
+    <record model="ir.actions.act_window" id="action_doc_expedient_form_ref">
+        <field name="name">Tramites</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.expedient</field>
+        <field name="view_type">form</field>
+        <field name="domain">['|',('user_id','=',uid),('tasks.assigned_user_id.id','=',uid)]</field>
+        <field name="help">Referencia de Tramites</field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_expedient_task_consult">
+        <field name="name">Tareas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.task</field>
+        <field name="view_type">form</field> 
+        <field name="help">Tareas del Tramite</field>
+    </record>
+
+	<menuitem name="Tramitología" id="menu_doc_expedient" parent="gt_document_manager.menu_document_manager" sequence="1"
+		groups="gt_document_manager.group_doc_user"/>
+		
+	<menuitem 
+		name="Consultas" 
+		id="menu_doc_expedient_consult" 
+		parent="menu_doc_expedient" 
+		sequence="10"
+		groups="gt_document_manager.group_doc_consult_all"/>
+			
+    <menuitem
+        name="Trámites"
+        action="action_doc_expedient_expedient_form_consult"
+        id="menu_doc_expedient_form_consult"
+        parent="menu_doc_expedient_consult"
+        sequence="1"/>
+        
+    <menuitem
+        name="Trámites Descartados"
+        action="action_doc_expedient_form_removed"
+        id="menu_doc_expedient_form_removed"
+        parent="menu_doc_expedient"
+        groups="gt_document_manager.group_doc_removed"
+        sequence="5"/>
+        	
+	<menuitem
+        name="Pendientes"
+        action="action_doc_expedient_form_open"
+        id="menu_doc_expedient_form_open"
+        parent="menu_doc_expedient"
+        sequence="1"/>
+        
+    <menuitem
+        name="Realizados"
+        action="action_doc_expedient_form_sent1"
+        id="menu_doc_expedient_form_sent"
+        parent="menu_doc_expedient"
+        sequence="2"/>
+        
+    <menuitem
+        name="Borradores"
+        action="action_doc_expedient_form_draft"
+        id="menu_doc_expedient_form_draft"
+        parent="menu_doc_expedient"
+        sequence="3"/>
+        
+   <menuitem
+        name="Anulados"
+        action="action_doc_expedient_form_cancelled"
+        id="menu_doc_expedient_form_cancelled"
+        parent="menu_doc_expedient"
+        sequence="4"/>
+        
+        
+    <record id="view_doc_expedient_resumed_tree" model="ir.ui.view">
+            <field name="name">doc_expedient.expedient.tree</field>
+            <field name="model">doc_expedient.expedient</field>
+            <field name="type">tree</field>
+            <field name="domain">[('state','=','created')]</field>
+            <field name="arch" type="xml">
+                <tree string="Expedientes Activos">
+                	<field name="name" readonly="1" select="1"/>
+                	<field name="code" readonly="1" select="1"/>
+                </tree>
+            </field>
+    </record>
+        
+	<record id="view_doc_expedient_resumed_form" model="ir.ui.view">
+	    <field name="name">doc_expedient.expedient.form</field>
+	    <field name="model">doc_expedient.expedient</field>
+	    <field name="type">form</field>
+	    <field name="domain">[('state','=','created')]</field>
+	    <field name="arch" type="xml">
+	        <form string="Expediente">
+	        	<group colspan="4" col="6">
+	            	<field name="name" readonly="1" colspan="4"/>
+	            	<field name="code" readonly="1" colspan="2"/>
+	        	</group>
+	        </form>
+	    </field>
+	</record>
+        
+                
+   <!--VIEW DOC_EXPEDIENT_TASK FORM TREE --> 
+	<record model="ir.ui.view" id="view_doc_expedient_task_form">
+        <field name="name">DOC_EXPEDIENT_TASK_FORM</field>
+        <field name="model">doc_expedient.task</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Tareas">
+                <group colspan="6" col="6">
+                	<group string="Estado" colspan="4" col="4">
+                		<field name="state" widget="statusbar" statusbar_visible="draft,progress,done,cancelled" statusbar_colors='{"draft":"black", "progress":"red", "done":"blue", "cancelled":"grey"}' select="1"/>
+                	</group>
+                	<group string="Trámite" colspan="2" col="2">
+                		<field name="expedient_id" readonly="True" colspan="4" nolabel="1"/>
+                	</group>
+                	<group string="Detalle" colspan="6" col="8">
+                		<field name="user_id" readonly="1" colspan="6"/>
+                		<field name="date_task" colspan="2" readonly="1"/>
+                		<field name="action_id" colspan="6" attrs="{'required':[('other_action_chk','!=',1)],'readonly':['|',('other_action_chk','!=',0),('state','!=','draft')]}" widget="selection" on_change="onchange_action(action_id)"/>
+                		<field name="need_reply" readonly="1" colspan="2"/>
+	                    <field name="other_action" colspan="6" attrs="{'required':[('other_action_chk','!=',0)],'readonly':['|',('other_action_chk','!=',1),('state','!=','draft')]}"/>
+	                    <field name="other_action_chk" colspan="2" on_change="onchange_other_action()" attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    <field name="type_action" invisible="1"/>
+						<field name="desc_task" invisible="1"/>
+	                    <field name="assigned_user_id" colspan="8" attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    <field name="assigned_user_department" colspan="6" readonly="1"/>	            
+	                    <field name="assigned_user_login" colspan="2" readonly="1"/>
+	                    <field name="priority" attrs="{'readonly':[('state','!=','draft')]}" colspan="4"/>
+	                    <field name="sugerence" attrs="{'required':[('priority','=','urgent')],'readonly':[('state','!=','draft')]}" colspan="4"/>
+	                    <field name="user_id" invisible="1"/>
+	                    <field name="task_sequence" invisible="1"/>
+	                    <field name="expedient_state" invisible="1"/>
+	                    <field name="task_ref_id" invisible="1"/>
+	                    <field name="parent_task" invisible="1"/>
+	                    <field name="cc" invisible="1"/>
+	                    <field name="owner_task" invisible="1"/>
+	                    <field name="owner_task_db" invisible="1"/>
+	                    <field name="assigned_task" invisible="1"/>
+	                    <field name="responded" invisible="1"/>
+	                    <field name="included" invisible="1"/>
+	                    <field name="justification" attrs="{'invisible':[('state','!=','cancelled')]}" colspan="8"/>
+	                	<notebook colspan="8">
+	                    <page string="Descripción">
+	                        <field name="description" nolabel="1" colspan="8"
+	                        	attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    </page>
+	                    <page string="CC">
+			            	<field name="members" nolabel="1" widget="many2many" colspan="8" attrs="{'readonly':[('state','!=','draft')]}">
+						    	<tree string="Usuarios">
+		                			<field name="login"/>
+		                			<field name="employee_id"/>
+		                			<field name="job_id"/>
+		                			<field name="context_department_id"/>
+		                		</tree>	            		
+			        		</field>    
+	                	</page>
+	                    <page string="Documentos" attrs="{'invisible':[('cc','!=',False)]}">
+			            	<field name="directory_id" invisible="1"/>
+			            	<field name="documents" nolabel="1" widget="one2many_list" colspan="8" context="{'default_parent_id': directory_id,'bin_size_datas':10485760,'bin_size':True}"
+			            		attrs="{'readonly':[('state','!=','draft')]}">
+							    <tree string="Documentos">
+		                			<field name="name" string="Descripción"/>
+		                			<field name="type" string="Tipo" invisible="1"/>
+		                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+		                			<field name="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+		                			<field name="url" attrs="{'invisible':[('type','=','binary')]}"/>
+		                			<field name="create_uid" string="Subido por"/>
+		                			<field name="create_date" string="Fecha adjunto"/>		
+		                		</tree>
+		    					<form string="Documentos">
+		    						<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+		    						<field name="type" string="Tipo" invisible="1"/>
+		                			<field name="name" string="Descripción"/>
+		                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+		                			<field name="datas_fname" invisible="1"/>
+		                			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)" attrs="{'invisible':[('type','=','url')]}"/>
+		                			<field name="url" readonly="1" attrs="{'invisible':[('type','=','binary')]}" widget="url"/>
+		                		</form>
+			        		</field>    
+	                	</page>
+	    				<page string="Documentos" attrs="{'invisible':[('cc','!=',True)]}">
+	                    	<field name="documents_ref" nolabel="1" colspan="8">
+	                    		<tree string="Documentos">
+	                    			<field name="name" string="Descripción"/>
+	                    			<field name="parent_id"/>
+	                    			<field name="datas_fname"/>
+	                    			<field name="create_uid" string="Subido por"/>
+	                			    <field name="create_date" string="Fecha adjunto"/>	
+	                    		</tree>
+	                    		<form string="Documentos">
+	                    			<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+	                    			<field name="type" string="Tipo" invisible="1"/>
+	                    			<field name="name" string="Descripción"/>
+	                    			<field name="parent_id" invisible="1"/>
+	                    			<field name="datas_fname" invisible="1"/>
+	                    			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)"     />    
+	                    		</form>
+	                    	</field>	
+				       </page>
+	                	</notebook>
+	                </group>
+                </group>
+                <group colspan="4" col="7">
+               	    <button name="wkf_draft_progress" string="ENVIAR"  colspan="1" icon="terp-mail-message-new"
+               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':[('state','!=','draft')]}"/>
+               	    	                                               
+               	    <button name="task_progress_done" type="object" string="CONOCIDO" icon="gtk-apply"
+               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('included','==',True),('state','!=','progress')],
+               	    	                                                    'readonly':[('assigned_task','=',False)]}"/>
+               	    	                                                    
+               	    <button name="%(action_doc_task_cancel)d" type="action" string="ANULAR TAREA" icon="gtk-cancel" colspan="1"
+               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('assigned_task','=',False),('included','!=',True)],
+               	    	                                                    'readonly':[('state','=','cancelled')]}"/>
+               	    	                                                    
+               	    <button name="%(action_doc_task_cancel)d" type="action" string="ANULAR TAREA" icon="gtk-cancel" colspan="1"
+               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('owner_task','=',False),'|',('included','==',True),('state','=','cancelled')],
+               	    	                                                    'readonly':[]}"/>
+               	    	                                                    
+               	    <button name="eliminar_tareas" type="object" string="ELIMINAR TAREA" icon="gtk-cancel" confirm="Esta seguro que desea eliminar esta tarea"
+               	    	groups="gt_document_manager.group_doc_user" attrs="{'invisible':['|',('state','!=','cancelled'),'|',('owner_task','=',False),('included','=',True)]}"/>
+               	    	                                                    
+               	    <button name="responder_tarea" type="object" string="RESPONDER" colspan="1" icon="terp-personal"
+               	    	attrs="{'invisible':['|',('assigned_task','=',False),'|',('included','=',False),('state','=','cancelled')],
+               	    	        'readonly':[('state','=','done')]}"/>
+               	    		
+               	    <button name="task_dissocier" type="object" string="DESVINCULAR DE TAREA A USUARIO ASIGNADO" colspan="1" icon="terp-personal-"
+               	    				groups="gt_document_manager.group_doc_user" confirm="Esta seguro que desea desvincular al usuario del Tramite" 
+               	    				attrs="{'invisible':['|',('state','!=','cancelled'),('owner_task','=',False)],'readonly':[('included','=',False)]}"/>   				
+		   		</group>                  
+           </form>
+        </field>
+    </record>		
+  
+    <record model="ir.ui.view" id="view_doc_expedient_task_tree">
+        <field name="name">VIEW DOC_EXPEDIENT_TASK TREE</field>
+        <field name="model">doc_expedient.task</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Tarea" colors="red:state == 'progress';blue:state =='done';grey:state == 'cancelled'">
+            	<field name="task_sequence" invisible="1"/>
+            	<field name="date_task"/>
+                <field name="action_id" invisible="1"/>
+                <field name="other_action" invisible="1"/>
+                <field name="expedient_name" invisible="1"/>
+                <field name="expedient_state" invisible="1"/>
+                <field name="desc_task"/>
+                <field name="expedient_id" invisible="0"/>
+                <field name="user_id"/>
+                <field name="user_login"/>
+                <field name="assigned_user_id"/>	            
+				<field name="assigned_user_login"/>
+                <field name="priority"/>
+                <field name="documents" invisible="1"/>
+                <field name="documents_ref" invisible="1"/>
+                <field name="state"/>
+                <field name="included" invisible="0"/>
+                <button name="do_open_docs" string="Documentos Adjuntos" help="La tarea tiene documentos adjuntos"
+                	type="object" icon="terp-folder-yellow" attrs="{'invisible':[('documents','=',False),('documents_ref','=',False)]}"/>
+                <button name="task_urgent" string="Prioridad Urgente" help="La prioridad de la tarea es Urgente"
+    				type="object" icon="star-on" attrs="{'invisible':[('priority','in',['normal','medium'])]}"/>
+    			<button name="task_medium" string="Prioridad Media" help="La prioridad de la tarea es Media"
+    				type="object" icon="terp-rating-rated" attrs="{'invisible':[('priority','in',['normal','urgent'])]}"/>
+    			<button name="task_normal" string="Prioridad Normal" help="La prioridad de la tarea es Normal"
+    				type="object" icon="star-off" attrs="{'invisible':[('priority','in',['medium','urgent'])]}"/>
+            </tree>
+        </field>
+    </record>
+       
+    <record id="view_doc_expedient_task_search" model="ir.ui.view">
+    <field name="name">doc.expedient.task.search.form</field>
+    <field name="model">doc_expedient.task</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+       <search string="Tareas">
+            <group>
+                <filter name="progress" string="Pendiente" domain="[('state','=','progress')]" help="Tareas Pendientes" icon="gtk-media-pause"/>
+                <filter name="done" string="Realizado" domain="[('state','=','done')]" help="Tareas Realizadas" icon="terp-camera_test"/>
+                <filter name="draft" string="Borrador" domain="[('state','=','draft'),('owner_task_db','=',True)]" help="Tareas en Borrador" icon="gtk-indent"/>
+                <filter name="cancelled" string="Anulado" domain="[('state','=','cancelled'),'|',('user_id','=',uid),('included','=',True)]" help="Tareas Canceladas" icon="terp-dialog-close"/>
+                <separator orientation="vertical"/>
+                <field name="action_id"/>
+                <field name="expedient_id"/>
+            </group>
+            <newline/>
+            <group expand="0" string="Group By...">
+                <filter string="Destinatario" name="group_assigned_user_id" icon="stock_person" context="{'group_by':'assigned_user_id'}"/>
+                <separator orientation="vertical"/> 
+                <filter string="Estado" name="group_state" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                <separator orientation="vertical"/>
+                <filter string="Tramite" name="group_expedient_id" icon="terp-folder-violet" domain="[]" context="{'group_by':'expedient_id'}"/>
+                <separator orientation="vertical"/>
+                <filter string="Prioridad" icon="terp-go-month" domain="[]" context="{'group_by':'priority'}"/>    
+            </group>
+        </search>
+    </field>
+	</record>
+	
+	 
+	<!--record model="ir.actions.act_window" id="action_doc_expedient_task_respond_form">
+        <field name="name">Responder a una tarea</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="context">{'task_id':active_id}</field>
+        <field name="view_id" ref="view_doc_expedient_task_form"/>
+        <field name="target">new</field>
+        <field name="help">Responder a una tarea</field>
+    </record>
+    <record id="view_doc_expedient_task_respond_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_task_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_task_respond_form"/>
+    </record-->
+    
+    <!--ACCION PARA RESPONDER A UNA TAREA DE UN TRÁMITE -->
+    <record id="action_doc_expedient_task_respond" model="ir.actions.act_window">
+        <field name="name">Respoder mis Tareas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.task</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    <record id="view_respond_doc_expedient_task_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_task_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_task_respond"/>
+    </record>
+    
+	<!--ACCION PARA GESTIONAR TAREAS DE UN TRÁMITE -->
+    <record model="ir.actions.act_window" id="action_doc_expedient_task_form1">
+        <field name="name">Gestionar mis Tareas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="domain">['|',('user_id.id','=',uid),('assigned_user_id.id','=',uid)]</field>
+        <field name="view_id" ref="view_doc_expedient_task_tree"/>
+        <field name="help">Tarea de un Tramite</field>
+    </record>
+    <record id="view_gestion_doc_expedient_task_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_task_tree"/>
+        <field name="act_window_id" ref="action_doc_expedient_task_form1"/>
+    </record>
+    <record id="view_gestion_doc_expedient_task_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_task_form"/>
+        <field name="act_window_id" ref="action_doc_expedient_task_form1"/>
+    </record>
+    
+    
+    <!--VIEW DOC_EXPEDIENT_TASK TREE FORM PARA CONSULTAS DE TAREAS DE LOS TRAMITES-->
+    <record model="ir.ui.view" id="view_doc_expedient_task_form_consult">
+        <field name="name">DOC_EXPEDIENT_TASK_CONSULT_FORM</field>
+        <field name="model">doc_expedient.task</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Tareas">
+                <group colspan="6" col="6">
+                	<group string="Estado" colspan="4" col="4">
+                		<field name="state" widget="statusbar" statusbar_visible="draft,progress,done,cancelled" statusbar_colors='{"draft":"black", "progress":"red", "done":"blue", "cancelled":"grey"}' select="1"/>
+                	</group>
+                	<group string="Trámite" colspan="2" col="2">
+                		<field name="expedient_id" readonly="True" colspan="4" nolabel="1"/>
+                	</group>
+                	<group string="Detalle" colspan="6" col="8">
+                		<field name="user_id" readonly="1" colspan="6"/>
+                		<field name="date_task" colspan="2" readonly="1"/>
+                		<field name="action_id" colspan="6" readonly="1" attrs="{'required':[('other_action_chk','!=',1)],'readonly':['|',('other_action_chk','!=',0),('state','!=','draft')]}" widget="selection" on_change="onchange_action(action_id)"/>
+                		<field name="need_reply" readonly="1" colspan="2"/>
+	                    <field name="other_action" readonly="1" colspan="6" attrs="{'required':[('other_action_chk','!=',0)],'readonly':['|',('other_action_chk','!=',1),('state','!=','draft')]}"/>
+	                    <field name="other_action_chk" readonly="1" colspan="2" on_change="onchange_other_action()" attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    <field name="type_action" invisible="1"/>
+						<field name="desc_task" invisible="1"/>
+	                    <field name="assigned_user_id" readonly="1" colspan="8" attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    <field name="assigned_user_department" colspan="6" readonly="1"/>	            
+	                    <field name="assigned_user_login" colspan="2" readonly="1"/>
+	                    <field name="priority" readonly="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="4"/>
+	                    <field name="sugerence" readonly="1" attrs="{'required':[('priority','=','urgent')],'readonly':[('state','!=','draft')]}" colspan="4"/>
+	                    <field name="user_id" invisible="1"/>
+	                    <field name="task_sequence" invisible="1"/>
+	                    <field name="expedient_state" invisible="1"/>
+	                    <field name="task_ref_id" invisible="1"/>
+	                    <field name="parent_task" invisible="1"/>
+	                    <field name="cc" invisible="1"/>
+	                    <field name="owner_task" invisible="1"/>
+	                    <field name="owner_task_db" invisible="1"/>
+	                    <field name="assigned_task" invisible="1"/>
+	                    <field name="responded" invisible="1"/>
+	                    <field name="included" invisible="1"/>
+	                    <field name="justification" readonly="1" attrs="{'invisible':[('state','!=','cancelled')]}" colspan="8"/>
+	                	<notebook colspan="8">
+	                    <page string="Descripción">
+	                        <field name="description" readonly="1" nolabel="1" colspan="8"
+	                        	attrs="{'readonly':[('state','!=','draft')]}"/>
+	                    </page>
+	                    <page string="CC">
+			            	<field name="members" readonly="1" colspan="8" nolabel="1" widget="many2many" attrs="{'readonly':[('state','!=','draft')]}">
+						    	<tree string="Usuarios">
+		                			<field name="login"/>
+		                			<field name="employee_id"/>
+		                			<field name="job_id"/>
+		                			<field name="context_department_id"/>
+		                		</tree>	            		
+			        		</field>    
+	                	</page>
+	                    <page string="Documentos" attrs="{'invisible':[('cc','!=',False)]}">
+			            	<field name="directory_id" invisible="1"/>
+			            	<field name="documents" readonly="1" nolabel="1" colspan="8" widget="one2many_list" context="{'default_parent_id': directory_id,'bin_size_datas':10485760,'bin_size':True}"
+			            		attrs="{'readonly':[('state','!=','draft')]}">
+							    <tree string="Documentos">
+		                			<field name="name" string="Descripción"/>
+		                			<field name="type" string="Tipo" invisible="1"/>
+		                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+		                			<field name="datas_fname" attrs="{'invisible':[('type','=','url')]}"/>
+		                			<field name="url" attrs="{'invisible':[('type','=','binary')]}"/>
+		                			<field name="create_uid" string="Subido por"/>
+		                			<field name="create_date" string="Fecha adjunto"/>		
+		                		</tree>
+		    					<form string="Documentos">
+		    						<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+		    						<field name="type" string="Tipo" invisible="1"/>
+		                			<field name="name" string="Descripción"/>
+		                			<field name="parent_id" domain="[('parent_id','=',parent.directory_id)]" invisible="1"/>
+		                			<field name="datas_fname" invisible="1"/>
+		                			<field name="datas" filename="datas_fname" widget="" required="1" on_change="onchange_datas(datas)" attrs="{'invisible':[('type','=','url')]}"/>
+		                			<field name="url" readonly="1" attrs="{'invisible':[('type','=','binary')]}" widget="url"/>
+		                		</form>
+			        		</field>    
+	                	</page>
+	    				<page string="Documentos" attrs="{'invisible':[('cc','!=',True)]}">
+	                    	<field name="documents_ref" nolabel="1" colspan="8">
+	                    		<tree string="Documentos">
+	                    			<field name="name" string="Descripción"/>
+	                    			<field name="parent_id"/>
+	                    			<field name="datas_fname"/>
+	                    			<field name="create_uid" string="Subido por"/>
+	                			    <field name="create_date" string="Fecha adjunto"/>	
+	                    		</tree>
+	                    		<form string="Documentos">
+	                    			<separator string="Capacidad máxima del archivo 10 MB" colspan="6"/>
+	                    			<field name="type" string="Tipo" invisible="1"/>
+	                    			<field name="name" string="Descripción"/>
+	                    			<field name="parent_id" invisible="1"/>
+	                    			<field name="datas_fname" invisible="1"/>
+	                    			<field name="datas" filename="datas_fname" required="1" on_change="onchange_datas(datas)"     />
+	                			     
+	                    		</form>
+	                    	</field>	
+				        </page>
+	                	</notebook>
+	                </group>
+                </group>                 
+           </form>
+        </field>
+    </record>
+    		
+
+    <record model="ir.ui.view" id="view_doc_expedient_task_tree_consult">
+        <field name="name">VIEW_DOC_EXPEDIENT_TASK_CONSULT_TREE</field>
+        <field name="model">doc_expedient.task</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree>
+            	<field name="task_sequence" invisible="1"/>
+            	<field name="date_task"/>
+                <field name="action_id" invisible="1"/>
+                <field name="other_action" invisible="1"/>
+                <!--field name="expedient_code"/-->
+                <field name="expedient_name" invisible="1"/>
+                <field name="expedient_state" invisible="1"/>
+                <field name="desc_task"/>
+                <field name="expedient_id" invisible="0"/>
+                <field name="user_id"/>
+                <field name="user_login"/>
+                <!--field name="department" invisible="1"/>
+                <field name="employee_id"/>                
+                <field name="job_id"/-->
+                <field name="assigned_user_id"/>
+                <field name="assigned_user_login"/>
+                <field name="priority"/>
+                <field name="documents" invisible="1"/>
+                <field name="documents_ref" invisible="1"/>
+                <field name="state"/>
+                <field name="included" invisible="0"/>
+                <button name="do_open_docs" string="Documentos Adjuntos" help="La tarea tiene documentos adjuntos"
+                	type="object" icon="terp-folder-yellow" attrs="{'invisible':[('documents','=',False),('documents_ref','=',False)]}"/>
+                <button name="task_urgent" string="Prioridad Urgente" help="La prioridad de la tarea es Urgente"
+    				type="object" icon="star-on" attrs="{'invisible':[('priority','in',['normal','medium'])]}"/>
+    			<button name="task_medium" string="Prioridad Media" help="La prioridad de la tarea es Media"
+    				type="object" icon="terp-rating-rated" attrs="{'invisible':[('priority','in',['normal','urgent'])]}"/>
+    			<button name="task_normal" string="Prioridad Normal" help="La prioridad de la tarea es Normal"
+    				type="object" icon="star-off" attrs="{'invisible':[('priority','in',['medium','urgent'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    
+    <!--ACCION PARA CONSULTAR TAREAS DE UN TRÁMITE -->
+    <record model="ir.actions.act_window" id="action_doc_expedient_task_consult_form">
+        <field name="name">Tareas por Trámite</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="view_doc_expedient_task_tree_consult"/>
+        <field name="context">{'search_default_progress':1,'search_default_group_assigned_user_id':1,'search_default_group_expedient_id':1,'consult':True}</field>
+    </record>
+    
+    <record id="view_consult_doc_expedient_task_tree" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_doc_expedient_task_tree_consult"/>
+        <field name="act_window_id" ref="action_doc_expedient_task_consult_form"/>
+    </record>
+
+    <record id="view_consult_doc_expedient_task_form" model="ir.actions.act_window.view">
+        <field eval="2" name="sequence"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_doc_expedient_task_form_consult"/>
+        <field name="act_window_id" ref="action_doc_expedient_task_consult_form"/>
+    </record>
+    
+    
+    <menuitem
+        name="Tareas por Trámite"
+        action="action_doc_expedient_task_consult_form"
+        id="menu_doc_expedient_task_consult"
+        parent="menu_doc_expedient_consult"
+        sequence="2"/>
+    
+	<menuitem 
+		name="Tareas" 
+		id="menu_doc_expedient_task" 
+		parent="gt_document_manager.menu_document_manager" 
+		sequence="5"/>
+                
+        
+    <!--EXPEDIENT_ACTION FORM TREE ACTION--> 
+	<record model="ir.ui.view" id="view_doc_expedient_action_form">
+        <field name="name">DOC_EXPEDIENT_ACTION FORM</field>
+        <field name="model">doc_expedient.action</field>
+        <field name="priority" eval="1"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Acciones para las Tareas">
+                <group colspan="6" col="6">
+                    <field name="name" select="1"/>
+                    <field name="type"/>
+                </group>
+                <!--button name="iniciar_tramites" string="Iniciar trámites" type="object" colspan="1"/>
+                <button name="calcular_estados" string="Calcular Estados" type="object" colspan="1"/>
+                <button name="crear_directorios" string="Crear Directorios" type="object" colspan="1"/>
+                <button name="renombrar_directorios" string="Renombrar Directorios" type="object" colspan="1"/>
+                <button name="calcular_secuencias" string="Calcular Secuencias" type="object" colspan="1"/-->
+                <separator string="Descripción" colspan="6"/>
+                <field name="desc" colspan="6" nolabel="1" widget="text_wiki"/>                              
+           </form>
+        </field>
+    </record>		
+  
+    <record model="ir.ui.view" id="view_doc_expedient_action_tree">
+        <field name="name">VIEW DOC_EXPEDIENT_ACTION TREE</field>
+        <field name="model">doc_expedient.action</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Acciones">
+                <field name="name"/>
+                <field name="type"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_doc_expedient_action_form">
+        <field name="name">Tipos de Tareas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">doc_expedient.action</field>
+        <field name="view_type">form</field>
+        <field name="help">Tipos de Tareas de un Trámite</field>
+    </record>
+    
+	<menuitem
+        name="Tipos de Tareas"
+        action="action_doc_expedient_action_form"
+        id="menu_doc_expedient_action_form"
+        parent="menu_doc_expedient_configuration"
+        sequence="1"/>
+             
+</data>
+</openerp>

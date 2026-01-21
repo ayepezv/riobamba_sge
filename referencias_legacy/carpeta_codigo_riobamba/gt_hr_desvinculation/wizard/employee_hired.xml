@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_hr_recruitment_hired_employee" model="ir.ui.view">
+            <field name="name">hr.recruitment.hired2employee.form</field>
+            <field name="model">hired.employee.ec</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Crea el emplaeado y el contrato">
+              <label string="Si acepta se creará el empleado y el contrato asociado al mismo" colspan="4" />
+              <separator string="" colspan="4"/>
+			  <field name="wage"/>
+			  <field name="type_id"/>
+			  <field name="date_start"/>
+              <newline />
+              <button special="cancel"  string="Cancelar" icon='gtk-cancel'/>
+              <button name="vinculate" string="Vincular" colspan="1" type="object" icon="terp-camera_test"/>
+            </form>
+            </field>
+        </record>
+
+        <record id="hr_recruitment.action_hr_recruitment_hired_employee" model="ir.actions.act_window">
+            <field name="name">Vincular Empleado</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hired.employee.ec</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>

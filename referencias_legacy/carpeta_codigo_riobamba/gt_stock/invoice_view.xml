@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- MENU INGRESOS BODEGA EN FINANCIERO
+-->
+
+<menuitem id="menu_account_supplier_product" name="Ingresos Bodega"
+          parent="account.menu_finance_payables"
+          action="action_picking_tree4_gpa" sequence="207"
+		  groups="account.group_account_user,account.group_account_manager"/>
+
+<!-- INVOICE LINE MODIFIED
+-->
+
+<!--record id="invoice_line_view_modified_gpa" model="ir.ui.view">
+  <field name="name">invoice.line.modified.gpa</field>
+  <field name="model">account.invoice.line</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="account.view_invoice_line_form"/>
+  <field name="arch" type="xml">
+	<field name="account_id" position="before">
+	  <field name="categ_id" string="Linea"/>
+	</field>
+  </field>
+</record-->
+
+
+
+    </data>
+</openerp>
+

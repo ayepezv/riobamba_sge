@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+   <menuitem id="menu_inf_funcionarios_docs" name="Inf. Funcionarios" parent="gt_document_manager.menu_document_manager"/>
+      
+   <menuitem id="menu_funcionarios_empleado" icon="STOCK_EXECUTE" action="hr.open_view_employee_list_my"
+	     parent="menu_inf_funcionarios_docs" name="Ficha Personal"/>
+
+   <menuitem id="menu_funcionarios_contrato" icon="STOCK_EXECUTE" action="hr_contract.action_hr_contract"
+	     parent="menu_inf_funcionarios_docs" name="Ficha Contrato"/>
+   
+    </data>
+</openerp>

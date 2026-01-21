@@ -1,0 +1,11 @@
+Leyendo lista de paquetes...
+Creando árbol de dependencias...
+Leyendo la información de estado...
+git ya está en su versión más reciente.
+Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
+  account-plugin-windows-live libhdb9-heimdal libkdc2-heimdal libntdb1
+  libupstart1 linux-headers-3.16.0-30 linux-headers-3.16.0-30-generic
+  linux-image-3.16.0-30-generic linux-image-extra-3.16.0-30-generic
+  python-ntdb
+Use 'apt-get autoremove' to remove them.
+0 actualizados, 0 se instalarán, 0 para eliminar y 402 no actualizados.

@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"manager_hr_liquidation_compute","hr_liquidation_compute_hr_manager","model_hr_liquidation_compute","base.group_hr_manager",1,1,1,0
+"manager_hr_liquidation_line","hr_liquidation_line_hr_manager","model_hr_liquidation_line","base.group_hr_manager",1,1,1,1
+"manager_motivo_salida","motivo_salida","model_motivo_salida","base.group_hr_manager",1,1,1,1

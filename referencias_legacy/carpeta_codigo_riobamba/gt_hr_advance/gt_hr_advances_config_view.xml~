@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+	  <record model="ir.ui.view" id="view_advance_config_form">
+		<field name="name">hr.advance.config.view.form</field>
+		<field name="model">hr.advance.config</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+  		  <form>
+			<field name="name"/>
+			<field name="max_month"/>
+			<field name="max_number"/>
+			<field name="journal_id"/>
+		  </form>
+		</field>
+	  </record>
+	  
+	  <record model="ir.ui.view" id="view_hr_advance_config_tree">
+		<field name="name">hr.advance.config.view.tree</field>
+		<field name="model">hr.advance.config</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+  		  <tree>
+			<field name="name"/>
+			<field name="max_month"/>
+			<field name="max_number"/>
+			<field name="journal_id"/>
+		  </tree>
+		</field>
+	  </record>
+	  
+	  
+	  <record model="ir.actions.act_window" id="hr_advance_config_action">
+		<field name="name">Tabla Anticipo</field>
+		<field name="res_model">hr.advance.config</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	  </record> 
+	  
+	  <menuitem name="Tabla Anticipo" 
+				id="menu_hr_advance_configure_" 
+				parent="menu_hr_advance_configure" 
+				action="hr_advance_config_action"/>
+	  
+	  <menuitem id="menu_hr_advance_configure" parent="hr.menu_hr_configuration" 
+				name="Anticipo"/>
+	  
+
+
+    </data>
+</openerp>

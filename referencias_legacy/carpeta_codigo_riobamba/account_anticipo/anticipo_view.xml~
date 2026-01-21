@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- WIZARD FROM OBJ
+-->
+    <record id="view_import_he_xls_wizard" model="ir.ui.view">
+      <field name="name">Importar Hoja</field>
+      <field name="model">he.import.sheet</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls) con la cantidad de horas al formulario de Horas Extra. El formato debe ser: Fecha - Nombre - cedula - horas 25 - horas 50 - horas 60 - horas 100"/>
+		<group colspan="4">
+		  <field name="period_id" domain="[('state','=','abierto')]"/>
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+	      <button name="import_sheet_" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+	<record id="action_hr_import_he" model="ir.actions.act_window">
+      <field name="name">Importar Hoja</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">he.import.sheet</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+      
+      <menuitem id="menu_hr_import_he"
+		icon="STOCK_EXECUTE"
+		action="action_hr_import_he"
+		parent="menu_he_root"
+		name="Importar Hoja"/>
+
+    <!--act_window
+       id="act_import_sheet"
+       name="Importar Hoja"
+       res_model="he.import.sheet"
+       view_mode="form"
+       target="new"
+       src_model="hr.he.register"/-->
+
+
+    </data>
+</openerp>

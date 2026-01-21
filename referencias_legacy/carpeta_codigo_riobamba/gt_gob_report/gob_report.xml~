@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" 
+                id="gob_flujo_efectivo" 
+                model="account.account"
+                name="flujo.efectivo" 
+                file="/gt_gob_report/report/report_flujo_efectivo.mako"
+                string="Flujo Efectivo" 
+                header="True" report_type="webkit" menu="False"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="stock_picking_partial_modified" model="ir.ui.view">
+        <field name="name">Partial Picking Modified</field>
+        <field name="model">stock.partial.picking</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="stock.stock_partial_picking_form"/>
+        <field name="arch" type="xml">
+		  <xpath expr="/form/separator[@string='Products']" position="replace">
+			<separator colspan="4" string="Esta seguro que desea realizar el movimiento??"/>
+		  </xpath>
+		  <xpath expr="//button[@string='_Validate']" position="replace">
+			<button name="do_partial" string="Validar" colspan="1" type="object" icon="gtk-go-forward" confirm="Esta seguro que desea validar, verifique el precio unitario en la linea del ingreso"/>
+		  </xpath>
+		  <xpath expr="/form/field[@name='move_ids']" position="replace">
+			<field name="move_ids" colspan="4" nolabel="1">
+			  <tree string="Productos" editable="bottom">
+                <field name="product_id" readonly="1"/>
+                <field name="quantity"/>
+				<field name="price_unit" readonly="1" invisible="1"/>
+                <field name="product_uom" readonly="1"/>
+                <field name="update_cost" invisible="1"/>
+                <field name="cost" invisible="1"/>
+                <field name="currency"  invisible="1"/>
+			  </tree>
+			</field>
+		  </xpath>
+        </field>
+      </record>
+	  
+
+    </data>
+</openerp>
+

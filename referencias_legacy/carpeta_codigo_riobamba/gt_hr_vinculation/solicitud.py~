@@ -1,0 +1,144 @@
+#-*- coding: utf-8 -*-
+##############################################################################
+#
+# Copyright (c) 2004 TINY SPRL. (http://tiny.be) All Rights Reserved.
+#                    Fabien Pinckaers <fp@tiny.Be>
+#
+# WARNING: This program as such is intended to be used by professional
+# programmers who take the whole responsability of assessing all potential
+# consequences resulting from its eventual inadequacies and bugs
+# End users who are looking for a ready-to-use solution with commercial
+# garantees and support are strongly adviced to contract a Free Software
+# Service Company
+#
+# This program is Free Software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+##############################################################################
+
+from osv import osv, fields
+from tools import ustr
+from gt_tool import tool
+from datetime import date, datetime, timedelta
+import time
+
+class hrSolicitudPersonal(osv.Model):
+    _name = 'hr.sol.personal'
+
+    def create(self, cr, uid, vals, context=None):
+        obj_sequence = self.pool.get('ir.sequence')
+        emp_obj = self.pool.get('hr.employee')
+        vals['sec'] = obj_sequence.get(cr, uid, 'hr.vinculation')
+        resumen = ""
+        if vals['name']:
+            resumen = vals['name']
+        emp_ids = emp_obj.search(cr, uid, [('user_id','=',uid)],limit=1)
+        if emp_ids:
+            solicitant_id = self.pool.get('hr.employee').browse(cr, uid, emp_ids[0])
+        else:
+            raise osv.except_osv(('Error Configuración'),('No existe un empleado asociado al usuario'))
+        if vals['tramite_id']:
+            task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                         'other_action' : str('Proceso de contratación') ,
+                                                                         'description': 'Servidor: ' + solicitant_id.complete_name,
+                                                                         'department': solicitant_id.department_id.id,
+                                                                         'employee_id' : solicitant_id.id,
+                                                                         'job_id': solicitant_id.job_id.id,
+                                                                         'user_id': uid,
+                                                                         'expedient_id':vals['tramite_id'],
+                                                                         'state': 'done',
+                                                                         }, context=context)
+        else:
+            expedient_id= self.pool.get('doc_expedient.expedient').create(cr, uid,{'name':  str('Proceso de contratación: ') + vals['name'],
+                                                                                   'state': 'draft',
+                                                                                   'ubication':'internal',
+                                                                                   'resumen': resumen}, context=context)
+            task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                         'other_action' : str('Proceso contratación') ,
+                                                                         'description': 'Servidor: ' + solicitant_id.complete_name,
+                                                                         'department': solicitant_id.department_id.id,
+                                                                         'employee_id' : solicitant_id.id,
+                                                                         'job_id': solicitant_id.job_id.id,
+                                                                         'user_id': uid,
+                                                                         'expedient_id':expedient_id,
+                                                                         'state': 'done',
+                                                                         }, context=context)
+            vals['tramite_id']=expedient_id
+            self.pool.get('doc_expedient.expedient').action_draft_created(cr, uid, [expedient_id],context)
+        self.pool.get('doc_expedient.task').write(cr, uid, [task_id], {'state':'done'})
+        return super(hrVinculation, self).create(cr, uid, vals, context=None)
+
+    def sol_in_progress(self, cr, uid, ids, context=None):
+        self.write(cr, uid, ids, {'state':'Solicitado'} ,context=context)
+        return True
+    
+    def sol_aprobado(self, cr, uid, ids, context=None):
+        vinc_obj = self.pool.get('hr.vinculation')
+        for this in self.browse(cr, uid, ids):
+            if not this.is_partida:
+                raise osv.except_osv(('Error'), ('No puede aprobar si no existe partida'))
+        #crear el documento ya de TTHH
+            vinc_obj.create(cr, uid, {
+                    'solicitant_id':this.solicitant_id.id,
+                    'sec':this.sec,
+                    'tramite_id':this.tramite_id.id,
+                    'name':this.name,
+                    'job_id':this.job_id.id,
+                    'department_id':this.department_id.id,
+                    'has_sol':True,
+                    })
+        self.write(cr, uid, ids, {'state':'Aprobado'} ,context=context)
+        return True
+
+    _columns = dict(
+        sec = fields.char('Referencia',size=32,readonly=True),
+        solicitant_id = fields.many2one('hr.employee','Responsable',readonly=True),
+        date_create = fields.datetime('Fecha hora creación'),
+        tramite_id = fields.many2one('doc_expedient.expedient','Trámite'),
+        department_id = fields.many2one('hr.department','Unidad Requiriente',required=True),
+        job_id = fields.many2one('hr.job','Puesto de trabajo',required=True),
+        name = fields.text('Descripcion',size=128,required=True),
+        state = fields.selection([('Borrador','Borrador'),('Solicitado','Solicitado'),('Anulado','Anulado'),('Verificado','Verificado')],
+                                 'Estado',readonly=True),
+        is_partida = fields.boolean('Existe partida??'),
+        )
+
+    def _get_employee(self, cr, uid, ids, context=None):
+        emp_obj = self.pool.get('hr.employee')
+        emp_ids = emp_obj.search(cr, uid, [('user_id','=',uid)],limit=1)
+        if emp_ids:
+            return emp_ids[0]
+        else:
+            raise osv.except_osv(('Error de usuario!'),('No existe empleado definido para el usuario responsable del proceso'))
+            return False
+
+    def _get_department(self, cr, uid, ids, context=None):
+        emp_obj = self.pool.get('hr.employee')
+        emp_ids = emp_obj.search(cr, uid, [('user_id','=',uid)],limit=1)
+        if emp_ids:
+            empleado = emp_obj.browse(cr, uid, emp_ids[0])
+            return empleado.department_id.id
+        else:
+            raise osv.except_osv(('Error de usuario!'),('No existe departamento definido para el usuario responsable del proceso'))
+            return False
+
+    _defaults = dict(
+        date_create = time.strftime('%Y-%m-%d'),
+        state = 'Borrador',
+        solicitant_id = _get_employee,
+        department_id = _get_department,
+        )
+
+hrSolicitudPersonal()
+

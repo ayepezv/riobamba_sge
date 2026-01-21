@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+<data>
+	
+	<menuitem id="menu_hr_encargo_root" 
+			  parent="hr.menu_hr_root" 
+			  name="Encargo o Subrogación"/>
+
+    # ------------------------------------------------------
+    # Encargo View
+    # ------------------------------------------------------
+	
+	<record model="ir.ui.view" id="view_hr_contract_encargo_form_inherit">
+	  <field name="name">hr.contract.inherit.encargo</field>
+	  <field name="model">hr.contract</field>
+	  <field name="type">form</field>
+	  <field name="inherit_id" ref="gt_hr_base.contract_gob_form_view"/>
+	  <field name="arch" type="xml">
+	    <xpath expr="/form/notebook/page[@string='Historial']" position="before">
+	      <page string="Encargo o Subrogación">
+		<field name="encargos_ids" nolabel="1" readonly="1">
+		  <tree editable="top">
+		    <!--field name="encargo_id" required="1"/-->
+		    <field name="type" readonly="1"/>
+		    <field name="job_id" readonly="1"/>
+		                <field name="wage" readonly="1"/>
+		                <field name="date_start" required="1"/>
+		                <field name="date_stop" required="1"/>
+		                <field name="state"/>
+		            </tree>
+		            <form>
+		            	<field name="job_id" readonly="1" colspan="2"/>
+		                <field name="wage" readonly="1"  colspan="2"/>
+		                <field name="date_start" required="1" colspan="2"/>
+		                <field name="date_stop" required="1" colspan="2"/>
+		                <field name="type" required="1" colspan="2"/>
+		                <field name="state" colspan="2"/>
+		            </form>
+		        </field>
+		    </page>
+		</xpath>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_hr_encargo_form">
+	  <field name="name">hr.contract.encargo</field>
+	  <field name="model">hr.contract.encargo</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Encargo o Subrogación">
+	      <field name="contract_id" required="1" colspan="2" attrs="{'readonly':[('state','!=','draft')]}" domain="[('activo','=',True)]"/>
+	      <field name="type" required="1" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+	      <newline/>
+	      <field name="categ_id" required="1" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+	      <field name="period_id" required="1" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+	      <newline/>
+	      <field name="job_id" colspan="2"  attrs="{'readonly':[('state','!=','draft')]}" on_change="onchange_trabajo(job_id)"/>
+	      <field name="wage" colspan="2"  attrs="{'readonly':[('state','!=','draft')]}"/>
+	      <field name="date_start" required="1" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+	      <field name="date_stop" colspan="2" required="1"/>
+	      <field name="monto" colspan="2"  attrs="{'readonly':[('state','!=','draft')]}"/>
+              <group colspan="4" col="8">
+		<field name="state" colspan="2" widget="statusbar"/>
+		<button name="calcula_subrogacion" colspan="2" type="object" string="Calcular" states="draft" icon="gtk-execute"/>
+		<button name="enviado_aprobado" colspan="2" type="object" string="Aprobado" states="draft" icon="gtk-apply" 
+			confirm="CONFIRMA QUE DESEA CONTINUAR?"/>
+		<button name="rechazar" colspan="2" type="object" string="Rechazar" states="aprobado" icon="gtk-cancel" 
+			confirm="CONFIRMA QUE DESEA CONTINUAR?"/>
+	      </group>
+              
+	    </form>
+	  </field>
+	</record>
+
+      <record id="view_encargo_filter" model="ir.ui.view">
+	<field name="name">Encargo/Subrogacion</field>
+	<field name="model">hr.contract.encargo</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Encargos/Subrogaciones">
+	    <field name="contract_id"/>
+	    <field name="period_id"/>
+	    <field name="monto"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_contract_id" string="Funcionario" icon="STOCK_INDENT" domain="[]" context="{'group_by':'contract_id'}"/>
+	      <filter name="group_period_id" string="Periodo" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>	
+	
+	<record model="ir.ui.view" id="view_hr_encargo_tree">
+	  <field name="name">hr.contract.encargo</field>
+	  <field name="model">hr.contract.encargo</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Encargo o Subrogación">
+	      <field name="contract_id"/>
+	      <field name="type"/>
+	      <field name="job_id"/>
+	      <field name="wage"/>
+              <field name="date_start"/>
+              <field name="date_stop"/>
+              <field name="state"/>
+	    </tree>
+	  </field>
+	</record>
+	
+	<record id="action_hr_encargo" model="ir.actions.act_window">
+		<field name="name">Encargo o Subrogación</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">hr.contract.encargo</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem id="menu_hr_encargo"
+		  action="action_hr_encargo"
+		  parent="menu_hr_encargo_root"
+		  name="Encargo o Subrogación"/>
+	
+	
+</data>
+</openerp>

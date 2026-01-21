@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <menuitem id="menu_config_builds" parent="project.menu_definitions" name="Parametros de Obra" sequence="80" groups="gt_project_project.group_project_all_config"/>
+
+    <record id="view_project_program_build_form" model="ir.ui.view">
+      <field name="name">Vista de Programas de Obra</field>
+      <field name="model">project.build.program</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Mantenimiento de Programas de Obra">
+          <field name="name"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_program_build_tree" model="ir.ui.view">
+      <field name="name">Vista de lista de tipos de programas de obras</field>
+      <field name="model">project.build.program</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Mantenimiento de Programas de Obra">
+          <field name="name" select="1"/>          
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_project_program_build" model="ir.actions.act_window">
+      <field name="name">Programas de Obra</field>
+      <field name="res_model">project.build.program</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_program_build" id="menu_project_program_build" parent="menu_config_builds" sequence="60"/>
+
+    <record id="view_project_build_type_form" model="ir.ui.view">
+      <field name="name">Vista de tipos de obra</field>
+      <field name="model">project.build.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tipos de Obra">
+          <field name="name"/>
+          <field name="program_id"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_type_tree" model="ir.ui.view">
+      <field name="name">Vista de Tipos de Obra</field>
+      <field name="model">project.build.type</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Tipos de Obra">
+          <field name="name"/>
+          <field name="program_id"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_project_build_type" model="ir.actions.act_window">
+      <field name="name">Tipos de Obra</field>
+      <field name="res_model">project.build.type</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_build_type" id="menu_project_build_type" parent="menu_config_builds" sequence="60"/>
+
+    <record id="view_project_build_indole" model="ir.ui.view">
+      <field name="name">Vista de formulario de indole de obra</field>
+      <field name="model">project.build.indole</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Indole de Obra">
+          <field name="name"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_build_indole" model="ir.ui.view">
+      <field name="name">Vista de lista de indole de proyecto</field>
+      <field name="model">project.build.indole</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Indole de Proyectos">
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_project_build_indole" model="ir.actions.act_window">
+      <field name="name">Indole de Obra</field>
+      <field name="res_model">project.build.indole</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_build_indole" id="menu_project_build_indole" parent="menu_config_builds" sequence="60"/>
+
+    <record id="view_project_build_mode" model="ir.ui.view">
+      <field name="name">modalidad de proyectos</field>
+      <field name="model">project.build.mode</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Modalidad">
+          <field name="name"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_build_mode" model="ir.ui.view">
+      <field name="name">modalidad de obra</field>
+      <field name="model">project.build.mode</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Modalidad">
+          <field name="name"/>          
+        </tree>
+      </field>
+    </record>
+
+    <record id="action_project_build_mode" model="ir.actions.act_window">
+      <field name="name">Modalidad</field>
+      <field name="res_model">project.build.mode</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem action="action_project_build_mode" id="menu_project_build_mode" parent="menu_config_builds" sequence="60"/>
+
+  </data>
+</openerp>

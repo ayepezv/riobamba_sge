@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style type="text/css">
+    .line {
+    border-bottom:1pt solid black;
+    }
+  </style>
+</head>
+<body>
+%for o in objects:
+<table width="100%" style="border:thin solid;">
+  <thead>
+    <h3 colspan="2" style="text-align:center">ACTA DE ENTREGA - RECEPCION</h3>
+  </thead>
+  <tbody>
+  <%import time%>
+  <p style="text-align:justify">En el canton de ${user.company_id.city or ''|entity}, Provincia de/del ${user.company_id.state_id.name or ''|entity}, el ${time.strftime('%Y-%m-%d') or ''|entity}, comparecen: por una parte el ${user.company_id.partner_id.name or ''|entity} representado por ${user.context_department_id.coordinador_id.complete_name or ''|entity}, en calidad de ${user.context_department_id.coordinador_id.job_id.name or ''|entity}, y por otra parte como proveedor, ${o.partner_id.name or ''|entity}, con la finalidad de suscribir la presente ACTA DE ENTEGA - RECEPCION de los siguientes bienes</p>
+    <table width="100%" style="border:thin solid;">
+      <tr>
+        <tr>
+	  <th width="5%">#</th>
+          <th width="60%">PRODUCTO</th>
+          <th width="40%">UNIDAD</th>
+          <th width="10%">CANTIDAD</th>
+          <th width="10%">PRECIO UNITARIO</th>
+        </tr>
+      </tr>
+      %for line in o.order_line:
+      <tbody>
+        <tr>
+          <td style="text-align:left;font-size:10px">${line.name or '' } ${line.desc or ""}</td>
+          <td style="text-align:center;font-size:10px">${ line.product_uom.name or line.uom_desc or ''}</td>
+          <td style="text-align:center;font-size:10px">${line.product_qty }</td>
+	  <td style="text-align:center;font-size:10px">${line.price_unit }</td>
+        </tr>
+      </tbody>
+      %endfor
+    </table>
+  </tbody>
+  <tfoot>
+    <br>
+    <br>
+    <br>
+    <br>
+    <table width="100%">
+      <tr>
+	<td width="50%" style="text-align:center;font-size:12px">_______________________________</td>
+	<td width="50%" style="text-align:center;font-size:12px">_______________________________</td>
+      </tr>
+      <tr>
+	<td width="50%" style="text-align:center;font-size:12px">${ o.user_id.employee_id.complete_name }</td>
+	<td width="50%" style="text-align:center;font-size:12px">${ o.partner_id.name }</td>
+      </tr>
+      <tr>
+	<th width="50%" style="text-align:center;font-size:12px">GUARDALMACEN</th>
+	<th width="50%" style="text-align:center;font-size:12px">PROVEEDOR</th>
+      </tr>
+      <tr>
+	<th width="50%" style="text-align:center;font-size:12px">Recibi Conforme</th>
+	<th width="50%" style="text-align:center;font-size:12px">Entregue Conforma</th>
+      </tr>
+    </table>
+    <br>
+    <br>
+  </tfoot>
+</table>  
+%endfor
+</body>
+</html>

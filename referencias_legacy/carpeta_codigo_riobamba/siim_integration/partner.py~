@@ -1,0 +1,17 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    Autor
+#    Mario Chogllo
+#
+##############################################################################
+
+from osv import osv, fields
+
+class partnerSiim(osv.Model):
+    _inherit = 'res.partner'
+    _columns = dict(
+        direccion = fields.char('Direccion',size=256),
+        telefono = fields.char('Telefono',size=10),
+        )
+partnerSiim()
+

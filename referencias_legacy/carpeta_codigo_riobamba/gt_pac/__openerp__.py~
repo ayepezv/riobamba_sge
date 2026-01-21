@@ -1,0 +1,27 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+{
+    "name" : "Government Procedures",
+    "version" : "0.1",
+    "author" : "Gnuthink Co. Ltd.",
+    "category" : "Generic Modules/Sales & Purchases",
+    "website" : "http://www.planerp.ec",
+    "description": """
+    Este modulo provee funcionalidad para manejar la gestion del PAC
+    PLan Anual de Compras planificado por unidad
+    """,
+    "depends" : ["gt_government_procedure"],
+    "init_xml" : [],
+    "update_xml" : [
+        "pac_view.xml",
+        "security/ir.model.access.csv",
+     ],
+    "active": False,
+    "installable": True,
+}

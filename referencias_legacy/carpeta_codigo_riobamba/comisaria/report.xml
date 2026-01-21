@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="notificacion" model="notificacion"
+            name="notificacion" rml="comisaria/report/notificacion.mako"
+            usage="default" string="Reporte de Notificaciones" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

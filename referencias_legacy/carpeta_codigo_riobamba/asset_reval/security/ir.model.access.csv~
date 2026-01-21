@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_ir_head","hr.ir.head","model_hr_ir_head","base.group_hr_manager",1,1,1,1
+"access_hr_ir_line","hr.ir.line","model_hr_ir_line","base.group_hr_manager",1,1,1,1
+"access_hr_ir_head_c","hr.ir.head","model_hr_ir_head","account.group_account_invoice",1,1,1,1
+"access_hr_ir_line_c","hr.ir.line","model_hr_ir_line","account.group_account_invoice",1,1,1,1

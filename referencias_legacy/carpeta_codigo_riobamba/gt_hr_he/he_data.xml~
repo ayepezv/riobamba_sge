@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="hr_rule_he25" model="hr.salary.rule">
+            <field name="name">Hora Suplementaria 25%</field>
+            <field name="sequence" eval="50"/>
+            <field name="code">HS25</field>
+            <field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="condition_select">python</field>
+            <field name="condition_python">if inputs.HS25:
+			  result=True
+else:
+			  result=False
+			</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.HS25.amount</field>
+        </record>
+
+        <record id="hr_rule_he50" model="hr.salary.rule">
+            <field name="name">Hora Suplementaria 50%</field>
+            <field name="sequence" eval="51"/>
+            <field name="code">HS50</field>
+            <field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="condition_select">python</field>
+            <field name="condition_python">if inputs.HS50:
+			  result=True
+else:
+			  result=False
+			</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.HS50.amount</field>
+        </record>
+
+        <record id="hr_rule_he60" model="hr.salary.rule">
+            <field name="name">Hora Extraordinaria 60%</field>
+            <field name="sequence" eval="52"/>
+            <field name="code">HExt60</field>
+            <field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="condition_select">python</field>
+            <field name="condition_python">if inputs.HExt60:
+			  result=True
+else:
+			  result=False
+			</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.HExt60.amount</field>
+        </record>
+
+        <record id="hr_rule_he100" model="hr.salary.rule">
+            <field name="name">Hora Extraordinaria 100%</field>
+            <field name="sequence" eval="53"/>
+            <field name="code">HExt100</field>
+            <field name="category_id" ref="hr_payroll.GROSS"/>
+			<field name="condition_select">python</field>
+            <field name="condition_python">if inputs.HExt100:
+			  result=True
+else:
+			  result=False
+			</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = inputs.HExt100.amount</field>
+        </record>
+
+
+     </data>
+</openerp>

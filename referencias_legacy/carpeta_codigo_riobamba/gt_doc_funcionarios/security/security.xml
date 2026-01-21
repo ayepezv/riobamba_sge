@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record id="group_administrativo_lectura" model="res.groups">
+      <field name="name">Contrato Lectura</field>
+    </record>
+
+
+</data>
+</openerp>

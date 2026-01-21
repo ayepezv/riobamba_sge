@@ -1,0 +1,1166 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Gestion de Obras - GobERP
+#    Copyright (C) 2013 Mario Chogllo
+#    mariofchogllo@gmail..com
+#    $Id$
+#
+##############################################################################
+from tools import ustr
+from osv import osv, fields
+import time
+
+class groupMove(osv.TransientModel):
+    _name = 'group.move'
+    _columns = dict(
+        partner_id = fields.many2one('res.partner','Proveedor/Beneficiario'),
+        certificate_id = fields.many2one('budget.certificate','Comprimiso'),
+        move_ids = fields.many2many('account.move','g_m_rel','g_id','m_id','Comprobantes a pagar'),
+    )
+    
+    def agrupaMoves(self, cr, uid, ids, context=None):
+        move_line_obj = self.pool.get('account.move.line')
+        move_obj = self.pool.get('account.move')
+        account_ids = []
+        move_ids = []
+        for this in self.browse(cr, uid, ids):
+            aux_desc = "PAGO " + this.partner_id.name
+            move_aux = move_obj.browse(cr, uid, this.move_ids[0].id)
+            move_id_creado = move_obj.create(cr, uid, {
+                'journal_id':move_aux.journal_id.id,
+                'period_id':move_aux.period_id.id,
+                'date':move_aux.certificate_id.date_commited,
+                'partner_id':move_aux.partner_id.id,
+                'certificate_id':move_aux.certificate_id.id,
+                'afectacion':True,
+            })
+            #unir agrupando por cuenta contable
+            for move_id in this.move_ids:
+                move_ids.append(move_id.id)
+                for line in move_id.line_id:
+                    if not line.account_id.id in account_ids:
+                        account_ids.append(line.account_id.id)
+            for account_id in account_ids:
+                lineas_ids = move_line_obj.search(cr, uid, [('account_id','=',account_id),('move_id','in',move_ids)])
+                if lineas_ids:
+                    linea_aux = move_line_obj.browse(cr, uid, lineas_ids[0])
+                    aux_debit = aux_credit = 0
+                    for linea_id in lineas_ids:
+                        linea = move_line_obj.browse(cr, uid, linea_id)
+                        if linea.debit>0:
+                            aux_debit += linea.debit
+                        elif linea.credit>0:
+                            aux_credit += linea.credit
+                if aux_debit>0:
+                    move_line_1 = move_line_obj.create(cr, uid, {
+                        'move_id':move_id_creado,
+                        'account_id':account_id,
+                        'parner_id':move_aux.partner_id.id,
+                        'debit':aux_debit,
+                        'budget_accrued':True,
+                        'date':move_aux.certificate_id.date_commited,
+                        'period_id':move_aux.period_id.id,
+                        'journal_id':move_aux.journal_id.id,
+                        'budget_id_cert':linea_aux.budget_id_cert.id,
+                    })
+                if aux_credit>0:
+                    move_line_2 = move_line_obj.create(cr, uid, {
+                        'move_id':move_id_creado,
+                        'account_id':account_id,
+                        'parner_id':move_aux.partner_id.id,
+                        'date':move_aux.certificate_id.date_commited,
+                        'credit':aux_credit,
+                        'journal_id':move_aux.journal_id.id,
+                        'period_id':move_aux.period_id.id,
+                        'budget_id_cert':linea_aux.budget_id_cert.id,
+                    })
+        return {'type': 'ir.actions.act_window_close'}
+
+groupMove()
+
+#=====================
+class voucherDevengado(osv.Model):
+    _name = 'voucher.devengado'
+    _columns = dict(
+        name = fields.many2one('account.move','Comprobante Contable'),
+        voucher_id = fields.many2one('account.voucher','Anticipo'),
+#        name = fields.char('Comprobante',size=32),
+        monto = fields.float('Monto'),
+        date = fields.date('Fecha'),
+        partner_id = fields.related('voucher_id','partner_id',type='many2one',relation='res.partner',string='Beneficiario'),
+    )
+voucherDevengado()
+
+class voucherAnticipo(osv.Model):
+    _inherit = 'account.voucher'
+
+    def _amount_all_anticipo(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        for anticipo in self.browse(cr, uid, ids, context=context):
+            res[anticipo.id] = {
+                'devengado': 0.0,
+                'saldo': 0.0,
+            }
+            aux = aux2 = 0
+            for line in anticipo.dev_ids:
+               aux += line.monto
+            aux2 = anticipo.amount - aux
+            res[anticipo.id]['devengado']=aux
+            res[anticipo.id]['saldo']=aux2
+        return res
+
+    _columns = dict(
+        tipo = fields.selection([('Obra','Obra'),('Bienes y Servicios','Bienes y Servicios'),('Viaticos','Viaticos'),('Salario','Salario')],'Tipo'),
+        dev_ids = fields.one2many('voucher.devengado','voucher_id','Detalle Devengado'),
+#        devengado = fields.float('Devengado'),
+#        saldo = fields.float('Saldo'),
+        devengado = fields.function(_amount_all_anticipo, string='Devengado/Liquidado', multi="antic",store=True),
+        saldo = fields.function(_amount_all_anticipo, string='Saldo', multi="antic",store=True),
+    )
+voucherAnticipo()
+
+#Retencion ordenanza e incumplimiento de contrato
+class makePayInc(osv.TransientModel):
+    _inherit = 'make.pay'
+    _columns = dict(
+        amount_ord = fields.float('Retencion Segun Ordenanza'),
+        amount_inc = fields.float('Retencion Incumplimiento Contrato'),
+        genera_cxc = fields.boolean('Generar cuenta cobrar iva a recuperar'),
+    )
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        pay_line_obj = self.pool.get('make.pay.line')
+        sri_obj = self.pool.get('pay.fondo.sri')
+        account_obj = self.pool.get('account.account')
+        line_ids = []
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        move = self.pool.get('account.move').browse(cr, uid, record_id, context=context)
+        if move.state=='posted':
+            raise osv.except_osv(('Error de usuario!'), ('No puede ejecutar esta accion en asientos contabilizados'))
+        for line in move.line_id:
+            if line.account_id.type=='payable':
+                if line.credit>0 and line.budget_paid==False:
+                    account_sri = ''
+                    if not line.budget_id_cert:
+                        raise osv.except_osv(('Error de usuario!'), ('Las cuentas por pagar deben tener la partida'))
+                    acc_aux = ''
+                    sri_ids = sri_obj.search(cr, uid,[('account_id','=',line.account_id.code)])
+                    if sri_ids:
+                        sri = sri_obj.browse(cr, uid, sri_ids[0])
+                        account_ids = account_obj.search(cr, uid, [('code','=',sri.account_id2)],limit=1)
+                        if account_ids:
+                            account_sri = account_ids[0]
+                    aux_desc = line.name
+                    if line.budget_id_cert.tipo_invoice:
+                        aux_desc = line.budget_id_cert.tipo_invoice
+                    if account_sri:
+                        pay_line_id = pay_line_obj.create(cr, uid, {
+                            'cert_id':line.budget_id_cert.id,
+                            'account_id':line.account_id.id,
+                            'account_id2':account_sri,
+                            'monto':line.credit,
+                            'desc':aux_desc,
+                        })
+                    else:
+                        pay_line_id = pay_line_obj.create(cr, uid, {
+                            'cert_id':line.budget_id_cert.id,
+                            'account_id':line.account_id.id,
+                            'monto':line.credit,
+                            'desc':aux_desc,
+                        })
+                    line_ids.append(pay_line_id)
+        res.update({'line_ids':line_ids,'genera_cxc':True})
+        return res
+
+    def make_pay(self, cr, uid, ids, context=None):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        cert_line = self.pool.get('budget.certificate.line')
+        parameter_obj = self.pool.get('ir.config_parameter')
+        item_obj = self.pool.get('budget.item')
+        account_obj = self.pool.get('account.account')
+        for this in self.browse(cr, uid, ids):
+            move_id = context and context.get('active_id', False) or False
+            move = move_obj.browse(cr, uid, move_id)
+            if move.state=='posted' and not this.other:
+                raise osv.except_osv(('Error de usuario!'), 
+                                     ('El asiento esta contabilizado y solo se puede hacer pago si usted marca que se genere otro comprobante'))
+            aux_narration = ""
+            if this.other:
+                aux_narration = "PAGO - " + move.narration
+                move_id = move_obj.create(cr, uid,{
+                    'journal_id':move.journal_id.id,
+                    'period_id':move.period_id.id,
+                    'date':move.date,
+                    'partner_id':move.partner_id.id,
+                    'certificate_id':move.certificate_id.id,
+                    'afectacion':True,
+                    'narration':aux_narration,
+                    'ref':aux_narration,
+                })
+            monto_banco = 0
+            aux_iva = 0
+            for line in move.line_id:
+                if 'IVA' in line.account_id.name and line.credit>0:
+                    aux_iva += line.credit
+            for line in this.line_ids:
+                #verificar el iva que esta por pagar
+                if line.to_pay:
+                    if line.monto>0:
+                        monto_banco += line.monto
+                        move_line_obj.create(cr, uid, {
+                            'account_id':line.account_id.id,
+                            'debit':line.monto,
+                            'budget_id_cert':line.cert_id.id,
+                            'budget_paid':True,
+                            'move_id':move_id,
+                           })
+                if line.account_id2:
+                    move_line_obj.create(cr, uid, {
+                        'account_id':line.account_id.id,
+                        'debit':line.monto,
+                        'move_id':move_id,
+                    })
+                    move_line_obj.create(cr, uid, {
+                        'account_id':line.account_id2.id,
+                        'credit':line.monto,
+                        'move_id':move_id,
+                    })
+            #cuenta por cobrar a gobierno central
+            if aux_iva>0 and this.genera_cxc:
+                aux_narration = "MINISTERIO DE ECONOMIA Y FINANZAS - REGISTRO DEL IVA A RECUPERAR SEGUN EL COMPROBANTE DE PAGO Nro. " + move.name + ' - ' + 'A FAVOR DE ' + move.partner_id.name
+                move_id2 = move_obj.create(cr, uid,{
+                    'journal_id':move.journal_id.id,
+                    'period_id':move.period_id.id,
+                    'date':move.date,
+                    'partner_id':move.partner_id.id,
+                    'afectacion':True,
+                    'type':'Recaudacion',
+                    'no_cp':True,
+                    'narration':aux_narration,
+                    'ref':aux_narration,
+                })
+                cxc_ids = parameter_obj.search(cr, uid, [('key','=','cxcgob')],limit=1)
+                if not cxc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('Configure el parametro de cuenta por cobrar a gobierno central'))
+                aux_cxc = parameter_obj.browse(cr, uid, cxc_ids[0]).value
+                account_cxc_ids = account_obj.search(cr, uid, [('code','=',aux_cxc)],limit=1)
+                if not account_cxc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta contable configurada en parametros para gobierno central'))
+                account_cxc = account_obj.browse(cr, uid, account_cxc_ids[0])
+                if not account_cxc.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta por cobrar de la cuenta gobierno central'))
+                cxp = account_cxc.account_rec_id.id
+                if not account_cxc.budget_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe partida asociada a la cuenta de gobierno central'))
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',account_cxc.budget_id.id),('date_start','<=',move.date),
+                                                     ('date_end','>=',move.date)],limit=1)
+                certificate_line_ids = cert_line.search(cr, uid, [('budget_post','=',account_cxc.budget_id.id),('budget_id','=',item_ids[0])])
+                if not certificate_line_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('La partida de gobierno central no tiene certificado'))
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id2,
+                    'account_id':account_cxc.id,
+                    'credit':aux_iva,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_accrued':True,
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id2,
+                    'account_id':cxp,
+                    'debit':aux_iva,
+                    'budget_id_cert':certificate_line_ids[0],
+                })
+            #banco
+            #descontar si es ordenanza o incumplimiento
+            if this.amount_ord>0:
+                #partida parametros ord
+                ord_ids = parameter_obj.search(cr, uid, [('key','=','ord')],limit=1)
+                if not ord_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('Configure el parametro de cuenta de ingreso por ordenanza'))
+                aux_ord = parameter_obj.browse(cr, uid, ord_ids[0]).value
+                account_ord_ids = account_obj.search(cr, uid, [('code','=',aux_ord)],limit=1)
+                if not account_ord_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta contable configurada en parametros'))
+                account_ord = account_obj.browse(cr, uid, account_ord_ids[0])
+                if not account_ord.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta por cobrar de la cuenta ordenanza configurada'))
+                cxp = account_ord.account_rec_id.id
+                if not account_ord.budget_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe partida asociada a la cuenta ordenanza configurada'))
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',account_ord.budget_id.id),('date_start','<=',move.date),
+                                                     ('date_end','>=',move.date)],limit=1)
+                certificate_line_ids = cert_line.search(cr, uid, [('budget_post','=',account_ord.budget_id.id),('budget_id','=',item_ids[0])])
+                if not certificate_line_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('La partida de ordenanza no tiene certificado'))
+                monto = this.amount_ord
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':account_ord.id,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_accrued':True,
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'debit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_paid':True,
+                })
+                monto_banco -= this.amount_ord
+            if this.amount_inc>0:
+                #partida paramentros inc
+                inc_ids = parameter_obj.search(cr, uid, [('key','=','inc')],limit=1)
+                if not inc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('Configure el parametro de cuenta de ingreso por incumplimiento'))
+                aux_inc = parameter_obj.browse(cr, uid, inc_ids[0]).value
+                account_inc_ids = account_obj.search(cr, uid, [('code','=',aux_ord)],limit=1)
+                if not account_inc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta contable configurada en parametros para incumplimiento'))
+                account_inc = account_obj.browse(cr, uid, account_inc_ids[0])
+                if not account_inc.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta por cobrar de la cuenta incumplimiento configurada'))
+                cxp = account_inc.account_rec_id.id
+                if not account_inc.budget_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe partida asociada a la cuenta incumplimiento configurada'))
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',account_inc.budget_id.id),('date_start','<=',move.date),('date_end','>=',move.date)],limit=1)
+                certificate_line_ids = cert_line.search(cr, uid, [('budget_post','=',account_inc.budget_id.id),('budget_id','=',item_ids[0])])
+                if not certificate_line_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('La partida de incumplimiento no tiene certificado'))
+                monto = this.amount_inc
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':account_inc.id,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_accrued':True,
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'debit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_paid':True,
+                })
+                monto_banco -= this.amount_inc
+            if not this.bank_id.default_debit_account_id:
+                raise osv.except_osv(('Error de configuracion!'), ('El banco no tiene asociada cuentas contables'))
+            move_line_obj.create(cr, uid, {
+                'account_id':this.bank_id.default_debit_account_id.id,
+                'credit':monto_banco,
+                'move_id':move_id,
+            })
+        return {'type':'ir.actions.act_window_close' }
+    
+    _defaults = dict(
+        genera_cxc = True,
+    )
+
+makePayInc()
+
+#gastpos gestion
+class loadGestion(osv.TransientModel):
+    _name = 'load.gestion'
+    
+    def loadGestion(self, cr, uid, ids, context=None):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        record_id = context and context.get('active_id', False) or False
+        move = self.pool.get('account.move').browse(cr, uid, record_id, context=context)
+        for this in self.browse(cr, uid, ids):
+            if this.amount>0:
+                p_id = move.partner_id.id
+                move_line_obj.create(cr, uid, {
+                        'account_id':this.acc_g1.id,
+                        'debit':this.amount,
+                        'move_id':move.id,
+                        'partner_id':p_id,
+                    })
+                move_line_obj.create(cr, uid, {
+                    'account_id':this.acc_g2.id,
+                    'credit':this.amount,
+                    'move_id':move.id,
+                    'partner_id':p_id,
+                })
+        return {'type':'ir.actions.act_window_close' }
+                
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        account_obj = self.pool.get('account.account')
+        parameter_obj = self.pool.get('ir.config_parameter')
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        move = self.pool.get('account.move').browse(cr, uid, record_id, context=context)
+        aux_gestion = 0
+        if move.state=='posted':
+            raise osv.except_osv(('Error de usuario!'), ('No puede ejecutar esta accion en asientos contabilizados'))
+        #el monto es el total del devengado
+        #recorrer el CP y si es inversion suma
+        if move.certificate_id:
+            for c_line in move.certificate_id.line_ids:
+                if c_line.budget_post.code[0:1]=='7':
+                    aux_gestion += c_line.amount_commited
+        acc_g1_ids = parameter_obj.search(cr, uid, [('key','=','acc_g1')],limit=1)
+        acc_g2_ids = parameter_obj.search(cr, uid, [('key','=','acc_g2')],limit=1)
+        if acc_g1_ids and acc_g2_ids:
+            aux_code_g1 = parameter_obj.browse(cr, uid, acc_g1_ids[0]).value
+            account_g1_ids = account_obj.search(cr, uid, [('code','=',aux_code_g1)],limit=1)
+            aux_code_g2 = parameter_obj.browse(cr, uid, acc_g2_ids[0]).value
+            account_g2_ids = account_obj.search(cr, uid, [('code','=',aux_code_g2)],limit=1)
+            res.update({
+                'acc_g1':account_g1_ids[0],
+                'acc_g2':account_g2_ids[0],
+                'amount':aux_gestion,
+            })
+        return res
+
+    _columns = dict(
+        acc_g1 = fields.many2one('account.account','Cta. Gastos Gestion'),
+        acc_g2 = fields.many2one('account.account','Contra Cta. Gastos Gestion'),
+        amount = fields.float('Monto'),
+    )
+loadGestion()
+##
+class loadAnticipoLine(osv.TransientModel):
+    _name = 'load.anticipo.line'
+    _columns = dict(
+        l_id = fields.many2one('load.anticipo','Pago'),
+        account_id = fields.many2one('account.account','Cuenta por pagar'),
+        account_id2 = fields.many2one('account.account','Cuenta por pagar tercero'),
+        monto = fields.float('Monto'),
+        to_pay = fields.boolean('Pagar'),
+        cert_id = fields.many2one('budget.certificate.line','Linea certificado'),
+    )
+
+    _defaults = dict(
+        to_pay = True,
+    )
+loadAnticipoLine()
+
+class loadAnticipo(osv.TransientModel):
+    _name = 'load.anticipo'
+
+    def devengaAnticipo(self, cr, uid, ids, context=None):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        dev_obj = self.pool.get('voucher.devengado')
+        post_obj = self.pool.get('budget.post')
+        item_obj = self.pool.get('budget.item')
+        account_obj = self.pool.get('account.account')
+        cert_line = self.pool.get('budget.certificate.line')
+        certificate_line_obj = self.pool.get('budget.certificate.line')
+        for this in self.browse(cr, uid, ids):
+            if not this.monto_devengar>0 or this.monto_devengar>this.anticipo_id.saldo:
+                raise osv.except_osv(('Error de usuario!'), ('Por favor verifique el monto a devengar y el saldo que tiene disponible'))
+            move_line_id = context and context.get('active_id', False) or False
+            move_line = move_line_obj.browse(cr, uid, move_line_id)
+            move = move_line.move_id
+            move_id = move.id
+            aux_iva = 0
+            for line in move.line_id:
+                if 'IVA' in line.account_id.name and line.credit>0:
+                    aux_iva += line.credit            
+            #el monto es el total del devengado
+            aux_gestion = 0 
+            if move.certificate_id:
+                for c_line in move.certificate_id.line_ids:
+                    if c_line.budget_post.code[0:1]=='7':
+                        aux_gestion += c_line.amount_commited
+            aux_narration = ""
+            monto_banco = 0
+            p_id = move.partner_id.id
+            for line in this.line_ids:
+                if line.to_pay:
+                    if line.monto>0:
+                        monto_banco += line.monto
+                        move_line_obj.create(cr, uid, {
+                            'account_id':line.account_id.id,
+                            'debit':line.monto,
+                            'budget_id_cert':line.cert_id.id,
+                            'budget_paid':True,
+                            'move_id':move_id,
+                            'partner_id':p_id,
+                           })
+                if line.account_id2:
+                    move_line_obj.create(cr, uid, {
+                        'account_id':line.account_id.id,
+                        'debit':line.monto,
+                        'move_id':move_id,
+                        'partner_id':p_id,
+                    })
+                    move_line_obj.create(cr, uid, {
+                        'account_id':line.account_id2.id,
+                        'credit':line.monto,
+                        'move_id':move_id,
+                        'partner_id':p_id,
+                    })  
+            #pasar anticipo
+            #buscar partida 380101
+            #if this.anio=='Anterior':
+            date_inicio = move.period_id.fiscalyear_id.date_start
+            if this.anticipo_id.date<date_inicio:
+                parameter_obj = self.pool.get('ir.config_parameter')
+                if this.tipo=='Obra':
+                    pxc_ids = parameter_obj.search(cr, uid, [('key','=','pxco')],limit=1)
+                else:
+                    pxc_ids = parameter_obj.search(cr, uid, [('key','=','pxcb')],limit=1)
+                if pxc_ids:
+                    code_post = parameter_obj.browse(cr, uid, pxc_ids[0]).value
+                    post_ids = post_obj.search(cr, uid, [('code','=',code_post)],limit=1)
+                    if post_ids:
+                        item_ids = item_obj.search(cr, uid, [('budget_post_id','=',post_ids[0]),
+                                                             ('year_id','=',this.certificate_line_id.budget_id.year_id.id)],limit=1)
+                        if item_ids:
+                            cert_line_ids = certificate_line_obj.search(cr, uid, [('budget_id','=',item_ids[0])])
+                move_line_obj.create(cr, uid, {
+                    'account_id':this.account_id2.id,
+                    'debit':this.monto_devengar,
+                    'budget_id_cert':cert_line_ids[0],
+                    'budget_paid':True,
+                    'move_id':move_id,
+                    'partner_id':p_id,
+                })
+                move_line_obj.create(cr, uid, {
+                    'account_id':this.account_id2.id,
+                    'credit':this.monto_devengar,
+                    'budget_id_cert':cert_line_ids[0],
+                    'budget_accrued':True,
+                    'move_id':move_id,
+                    'partner_id':p_id,
+                })
+                move_line_obj.create(cr, uid, {
+                    'account_id':this.account_id.id,
+                    'credit':this.monto_devengar,
+                    'budget_id_cert':cert_line_ids[0],
+                    'move_id':move_id,
+                    'partner_id':p_id,
+                })
+            else:
+                move_line_obj.create(cr, uid, {
+                    'account_id':this.account_id.id,
+                    'credit':this.monto_devengar,
+                    'move_id':move_id,
+                    'partner_id':p_id,
+                })
+            #gastos de gestion
+            if this.gestion:
+                if this.acc_g1 and this.acc_g2:
+                    move_line_obj.create(cr, uid, {
+                        'account_id':this.acc_g1.id,
+                        'debit':aux_gestion,
+                        'move_id':move_id,
+                        'partner_id':p_id,
+                    })
+                    move_line_obj.create(cr, uid, {
+                        'account_id':this.acc_g2.id,
+                        'credit':aux_gestion,
+                        'move_id':move_id,
+                        'partner_id':p_id,
+                    })
+            #descuentos de ordenanza
+            if this.amount_ord>0:
+                #partida parametros ord
+                ord_ids = parameter_obj.search(cr, uid, [('key','=','ord')],limit=1)
+                if not ord_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('Configure el parametro de cuenta de ingreso por ordenanza'))
+                aux_ord = parameter_obj.browse(cr, uid, ord_ids[0]).value
+                account_ord_ids = account_obj.search(cr, uid, [('code','=',aux_ord)],limit=1)
+                if not account_ord_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta contable configurada en parametros'))
+                account_ord = account_obj.browse(cr, uid, account_ord_ids[0])
+                if not account_ord.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta por cobrar de la cuenta ordenanza configurada'))
+                cxp = account_ord.account_rec_id.id
+                if not account_ord.budget_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe partida asociada a la cuenta ordenanza configurada'))
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',account_ord.budget_id.id),('date_start','<=',move.date),
+                                                     ('date_end','>=',move.date)],limit=1)
+                certificate_line_ids = cert_line.search(cr, uid, [('budget_post','=',account_ord.budget_id.id),('budget_id','=',item_ids[0])])
+                if not certificate_line_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('La partida de ordenanza no tiene certificado'))
+                monto = this.amount_ord
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':account_ord.id,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_accrued':True,
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'debit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_paid':True,
+                })
+                monto_banco -= this.amount_ord
+            if this.amount_inc>0:
+                #partida paramentros inc
+                inc_ids = parameter_obj.search(cr, uid, [('key','=','inc')],limit=1)
+                if not inc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('Configure el parametro de cuenta de ingreso por incumplimiento'))
+                aux_inc = parameter_obj.browse(cr, uid, inc_ids[0]).value
+                account_inc_ids = account_obj.search(cr, uid, [('code','=',aux_ord)],limit=1)
+                if not account_inc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta contable configurada en parametros para incumplimiento'))
+                account_inc = account_obj.browse(cr, uid, account_inc_ids[0])
+                if not account_inc.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta por cobrar de la cuenta incumplimiento configurada'))
+                cxp = account_inc.account_rec_id.id
+                if not account_inc.budget_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe partida asociada a la cuenta incumplimiento configurada'))
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',account_inc.budget_id.id),('date_start','<=',move.date),('date_end','>=',move.date)],limit=1)
+                certificate_line_ids = cert_line.search(cr, uid, [('budget_post','=',account_inc.budget_id.id),('budget_id','=',item_ids[0])])
+                if not certificate_line_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('La partida de incumplimiento no tiene certificado'))
+                monto = this.amount_inc
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':account_inc.id,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_accrued':True,
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'debit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id,
+                    'account_id':cxp,
+                    'credit':monto,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_paid':True,
+                })
+                monto_banco -= this.amount_inc
+            #iva a recuperar
+            if aux_iva>0 and this.genera_cxc:
+                aux_narration = "MINISTERIO DE ECONOMIA Y FINANZAS - REGISTRO DEL IVA A RECUPERAR SEGUN EL COMPROBANTE DE PAGO Nro. " + move.name + ' - ' + 'A FAVOR DE ' + move.partner_id.name
+                move_id2 = move_obj.create(cr, uid,{
+                    'journal_id':move.journal_id.id,
+                    'period_id':move.period_id.id,
+                    'date':move.date,
+                    'partner_id':move.partner_id.id,
+                    'afectacion':True,
+                    'type':'Recaudacion',
+                    'no_cp':True,
+                    'narration':aux_narration,
+                    'ref':aux_narration,
+                })
+                cxc_ids = parameter_obj.search(cr, uid, [('key','=','cxcgob')],limit=1)
+                if not cxc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('Configure el parametro de cuenta por cobrar a gobierno central'))
+                aux_cxc = parameter_obj.browse(cr, uid, cxc_ids[0]).value
+                account_cxc_ids = account_obj.search(cr, uid, [('code','=',aux_cxc)],limit=1)
+                if not account_cxc_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta contable configurada en parametros para gobierno central'))
+                account_cxc = account_obj.browse(cr, uid, account_cxc_ids[0])
+                if not account_cxc.account_rec_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe la cuenta por cobrar de la cuenta gobierno central'))
+                cxp = account_cxc.account_rec_id.id
+                if not account_cxc.budget_id:
+                    raise osv.except_osv(('Error de configuracion!'), ('No existe partida asociada a la cuenta de gobierno central'))
+                item_ids = item_obj.search(cr, uid, [('budget_post_id','=',account_cxc.budget_id.id),('date_start','<=',move.date),
+                                                     ('date_end','>=',move.date)],limit=1)
+                certificate_line_ids = cert_line.search(cr, uid, [('budget_post','=',account_cxc.budget_id.id),('budget_id','=',item_ids[0])])
+                if not certificate_line_ids:
+                    raise osv.except_osv(('Error de configuracion!'), ('La partida de gobierno central no tiene certificado'))
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id2,
+                    'account_id':account_cxc.id,
+                    'credit':aux_iva,
+                    'budget_id_cert':certificate_line_ids[0],
+                    'budget_accrued':True,
+                })
+                move_line_obj.create(cr, uid, {
+                    'move_id':move_id2,
+                    'account_id':cxp,
+                    'debit':aux_iva,
+                    'budget_id_cert':certificate_line_ids[0],
+                })            
+            #banco
+            monto_banco = monto_banco - this.monto_devengar
+            if not this.bank_id.default_debit_account_id:
+                raise osv.except_osv(('Error de configuracion!'), ('El banco no tiene asociada cuentas contables'))
+            move_line_obj.create(cr, uid, {
+                'account_id':this.bank_id.default_debit_account_id.id,
+                'credit':monto_banco,
+                'move_id':move_id,
+                'partner_id':p_id,
+            })
+            dev_obj.create(cr, uid, {
+                'voucher_id':this.anticipo_id.id,
+                'name':move_id,
+                'date':move.date,
+                'monto':this.monto_devengar,
+            })
+        return {'type':'ir.actions.act_window_close' }
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        pay_line_obj = self.pool.get('load.anticipo.line')
+        sri_obj = self.pool.get('pay.fondo.sri')
+        account_obj = self.pool.get('account.account')
+        line_ids = []
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        move_line = self.pool.get('account.move.line').browse(cr, uid, record_id, context=context)
+        move = move_line.move_id
+        for line in move.line_id:
+            if line.account_id.type=='payable':
+                if line.credit>0 and line.budget_paid==False:
+                    account_sri = ''
+                    if not line.budget_id_cert:
+                        raise osv.except_osv(('Error de usuario!'), ('Las cuentas por pagar deben tener la partida'))
+                    acc_aux = ''
+                    sri_ids = sri_obj.search(cr, uid,[('account_id','=',line.account_id.code)])
+                    if sri_ids:
+                        sri = sri_obj.browse(cr, uid, sri_ids[0])
+                        account_ids = account_obj.search(cr, uid, [('code','=',sri.account_id2)],limit=1)
+                        if account_ids:
+                            account_sri = account_ids[0]
+                    if account_sri:
+                        pay_line_id = pay_line_obj.create(cr, uid, {
+                            'cert_id':line.budget_id_cert.id,
+                            'account_id':line.account_id.id,
+                            'account_id2':account_sri,
+                            'monto':line.credit,
+                        })
+                    else:
+                        pay_line_id = pay_line_obj.create(cr, uid, {
+                            'cert_id':line.budget_id_cert.id,
+                            'account_id':line.account_id.id,
+                            'monto':line.credit,
+                        })
+                    line_ids.append(pay_line_id)
+        #carga banco automatico
+        parameter_obj = self.pool.get('ir.config_parameter')
+        bank_ids = parameter_obj.search(cr, uid, [('key','=','anticipo')],limit=1)
+        journal_pool = self.pool.get('account.journal')
+        if bank_ids:
+            bank_name = parameter_obj.browse(cr, uid, bank_ids[0]).value
+            j_ids = journal_pool.search(cr, uid, [('name','=',bank_name)],limit=1)
+        else:
+            j_ids = journal_pool.search(cr, uid, [('type', '=', 'bank')], limit=1)
+        ####
+        acc_g1_ids = parameter_obj.search(cr, uid, [('key','=','acc_g1')],limit=1)
+        acc_g2_ids = parameter_obj.search(cr, uid, [('key','=','acc_g2')],limit=1)
+        if acc_g1_ids and acc_g2_ids:
+            aux_code_g1 = parameter_obj.browse(cr, uid, acc_g1_ids[0]).value
+            account_g1_ids = account_obj.search(cr, uid, [('code','=',aux_code_g1)],limit=1)
+            aux_code_g2 = parameter_obj.browse(cr, uid, acc_g2_ids[0]).value
+            account_g2_ids = account_obj.search(cr, uid, [('code','=',aux_code_g2)],limit=1)
+            res.update({
+                'move_id':move.id,
+                'bank_id':j_ids[0],
+                'line_ids':line_ids,
+                'partner_id':move.partner_id.id,
+                'certificate_line_id':move_line.budget_id_cert.id,
+                'acc_g1':account_g1_ids[0],
+                'acc_g2':account_g2_ids[0],
+                'gestion':True,
+                'genera_cxc':True,
+            })
+        else:
+            res.update({
+                'move_id':move.id,
+                'bank_id':j_ids[0],
+                'line_ids':line_ids,
+                'partner_id':move.partner_id.id,
+                'certificate_line_id':move_line.budget_id_cert.id,
+                'genera_cxc':True,
+            })
+        return res
+
+    def onchange_ma(self, cr, uid, ids, anticipo_id, context={}):
+        return True
+        raise osv.except_osv('Error de usuario', 'No puede modificar este valor')
+
+    def onchange_sa(self, cr, uid, ids, anticipo_id, context={}):
+        return True
+        raise osv.except_osv('Error de usuario', 'No puede modificar este valor')
+
+    def onchange_loadanticipo(self, cr, uid, ids, anticipo_id,move_id, context={}):
+        move_obj = self.pool.get('account.move')
+        account_obj = self.pool.get('account.account')
+        ant_obj = self.pool.get('account.voucher')
+        load_obj = self.pool.get('load.anticipo')
+        parameter_obj = self.pool.get('ir.config_parameter')
+        ant = ant_obj.browse(cr, uid, anticipo_id)
+        move = move_obj.browse(cr, uid, move_id)
+        vals = {}
+        date_inicio = move.period_id.fiscalyear_id.date_start
+        if ant.tipo:
+            result = {'value':{'tipo':ant.tipo,
+                         }} 
+        if ant.date<date_inicio:
+            ##cuentas de anticipo
+            account_id2 = ant.line_dr_ids[0].account_id.id
+            acc11_ids = parameter_obj.search(cr, uid, [('key','=','cc11')],limit=1)
+            if acc11_ids:
+                code_aux = parameter_obj.browse(cr, uid, acc11_ids[0]).value
+                account_ids = account_obj.search(cr, uid, [('code','=',code_aux)],limit=1)
+                if account_ids:
+                    account_id2 = account_ids[0]
+            account_id = ant.line_dr_ids[0].account_id.id
+            acc124_ids = parameter_obj.search(cr, uid, [('key','=','cc124')],limit=1)
+            if acc124_ids:
+                code_aux = parameter_obj.browse(cr, uid, acc124_ids[0]).value
+                account_ids = account_obj.search(cr, uid, [('code','=',code_aux)],limit=1)
+                if account_ids:
+                    account_id = account_ids[0]
+            result = {'value':{'anio':'Anterior',
+                               'monto_anticipo':ant.amount,
+                               'saldo_anticipo':ant.saldo,
+                               'account_id2':account_id2,
+                               'account_id':account_id,
+                               'genera_cxc':True,
+                           }} 
+        else:
+            result = {'value':{'anio':'Actual',
+                               'monto_anticipo':ant.amount,
+                               'saldo_anticipo':ant.saldo,
+                               'account_id':ant.line_dr_ids[0].account_id.id,
+                               'account_id2':ant.line_dr_ids[0].account_id.id,
+                               'genera_cxc':True,
+                         }}
+        return result
+
+    _columns = dict(
+        acc_g1 = fields.many2one('account.account','Cta. Gastos Gestion'),
+        acc_g2 = fields.many2one('account.account','Contra Cta. Gastos Gestion'),
+        gestion = fields.boolean('Aplicar Gastos Gestion'),
+        tipo = fields.selection([('Obra','Obra'),('Bien o Servicio','Bien o Servicio')],'Tipo'),
+        certificate_line_id = fields.many2one('budget.certificate.line','Cert.  Line'),
+        account_id2 = fields.many2one('account.account','Cuenta por cobrar Anterior'),
+        account_id = fields.many2one('account.account','Cuenta por cobrar Anticipo'),
+        move_id = fields.many2one('account.move','Comprobante'),
+        bank_id = fields.many2one('account.journal','Banco'),
+        line_ids = fields.one2many('load.anticipo.line','l_id','Cuentas Por pagar'),
+        partner_id = fields.many2one('res.partner','Beneficiario'),
+        anticipo_id = fields.many2one('account.voucher','Anticipo'),
+        anio = fields.selection([('Actual','Actual'),('Anterior','Anterior')],'Anio Anticipo'),
+        monto_anticipo = fields.float('Monto Anticipo'),
+        saldo_anticipo = fields.float('Saldo Anticipo'),
+        monto_devengar = fields.float('Monto Devengar'),
+        amount_ord = fields.float('Retencion Segun Ordenanza'),
+        amount_inc = fields.float('Retencion Incumplimiento Contrato'),
+        genera_cxc = fields.boolean('Generar cuenta cobrar iva a recuperar'),
+    )
+    
+    _defaults = dict(
+        tipo = 'Obra',
+        gestion = True,
+    )
+
+loadAnticipo()
+#====================
+class ObraObraPago(osv.Model):
+    _name = 'obra.obra.pago'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra'),
+        name = fields.char('Descripcion',size=64,required=True),
+        date = fields.date('Fecha Pago'),
+        valor = fields.float('Monto'),
+    )
+ObraObraPago()
+
+class accountMoveObra(osv.Model):
+    _inherit = 'account.move'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra Relacionada'),
+    )
+accountMoveObra()
+
+class budgetCertificateObra(osv.Model):
+    _inherit = 'budget.certificate'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra Relacionada'),
+    )
+budgetCertificateObra()
+
+class garantia(osv.Model):
+    _description = 'Tipos de garantias'
+    _name='garantia.garantia'
+    _columns = dict(
+        name = fields.char('Nombre',size=32,required=1),
+        account_id = fields.many2one('account.account','Cuenta debe'),
+        account_id2 = fields.many2one('account.account','Cuenta Haber'),
+        porcentaje = fields.integer('Porcentaje'),
+    )
+garantia()
+
+class obraGarantiaRenovacion(osv.Model):
+    _name = 'obra.garantia.renovacion'
+    _columns = dict(
+        g_id = fields.many2one('obra.garantia','Garantia'),
+        date_start = fields.date('Desde'),
+        date_end = fields.date('Hasta'),
+    )
+obraGarantiaRenovacion()
+
+class obraGarantia(osv.Model):
+    _name = 'obra.garantia'
+    _columns = dict(
+        partner_id = fields.many2one('res.partner','Proveedor'),
+        desc = fields.text('Descripcion'),
+        numero = fields.char('Numero',size=32),
+        renovacion_ids = fields.one2many('obra.garantia.renovacion','g_id','Renovaciones'),
+        name = fields.many2one('garantia.garantia','Garantia',required=True),
+        aseguradora_id = fields.many2one('res.partner','Aseguradora'),
+        fecha_inicio = fields.date('Fecha Inicio'),
+        fecha_fin = fields.date('Fecha Fin'),
+        porcentaje = fields.integer('Porcentaje'),
+        monto = fields.float('Valor Garantia'),
+        obra_id = fields.many2one('obra.obra','Obra'),
+        state = fields.selection([('En Tramite','En Tramite'),('Activa','Activa'),('Ejecutada','Ejecutada'),('Finalizada','Finalizada')],'Estado'),
+    )
+
+    _defaults = dict(
+        state = 'En Tramite',
+    )
+obraGarantia()
+
+class wizardComprobanteGarantia(osv.TransientModel):
+    _name = 'wizard.comprobante.garantia'
+    _columns = dict(
+        date = fields.date('Fecha'),
+        account_id = fields.many2one('account.account','Cuenta 1'),
+        account_id2 = fields.many2one('account.account','Cuenta 2'),
+        monto = fields.float('Monto'),
+    )
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        obra = self.pool.get('obra.garantia').browse(cr, uid, record_id, context=context)
+        monto_aux = obra.monto
+        res.update({
+            'monto':monto_aux,
+            'account_id':obra.name.account_id.id,
+            'account_id2':obra.name.account_id2.id,
+        })
+        return res
+
+    def action_create_garantiaObra(self, cr, uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        obra_g = self.pool.get('obra.garantia')
+        journal_obj = self.pool.get('account.journal')
+        period_obj = self.pool.get('account.period')
+        garantia = obra_g.browse(cr, uid, context['active_id'])
+        partner_id = garantia.partner_id.id
+        journal_ids = journal_obj.search(cr, uid, [('name','=','EGRESOS')],limit=1)
+        if not journal_ids:
+            raise osv.except_osv('Error de configuracion', 'No existe diario de EGRESOS por favor cree uno')
+        this = self.browse(cr, uid, ids[0])
+        period_ids = period_obj.find(cr, uid, garantia.fecha_inicio)
+        if not period_ids:
+            raise osv.except_osv('Error de configuracion', 'No existe periodo contable definido para la fecha de garantia')
+        desc_aux = 'Registro Garantia: ' + ustr(garantia.desc) + 'Por: ' + str(garantia.monto)
+        move_id = move_obj.create(cr, uid, {
+            'journal_id':journal_ids[0],
+            'period_id':period_ids[0],
+            'date':garantia.fecha_inicio,
+            'partner_id':partner_id,
+            'type2_id':'Financiero',
+            'ref':desc_aux,
+            'narration':desc_aux,
+        })
+        move_line_obj.create(cr, uid, {
+            'move_id':move_id,
+            'partner_id':partner_id,
+            'name':'Garantia',
+            'debit':this.monto,
+            'account_id':this.account_id.id,
+        })
+        move_line_obj.create(cr, uid, {
+            'move_id':move_id,
+            'partner_id':partner_id,
+            'name':'Garantia',
+            'credit':this.monto,
+            'account_id':this.account_id2.id,
+        })
+        return {'type':'ir.actions.act_window_close' }
+
+wizardComprobanteGarantia()
+
+class obraAnticipo(osv.TransientModel):
+    _name = 'wizard.create.anticipo'
+    _columns = dict(
+        date = fields.date('Fecha'),
+        account_id = fields.many2one('account.account','Cuenta Anticipo'),
+        bank_id = fields.many2one('account.journal','Banco'),
+        monto = fields.float('Monto'),
+    )
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        obra = self.pool.get('obra.obra').browse(cr, uid, record_id, context=context)
+        monto_aux = (obra.monto * obra.porcentaje_anticipo)/100
+        res.update({'partner_id':obra.partner_id.id,
+                    'monto':monto_aux,
+                    'date':time.strftime('%Y-%m-%d'),
+                })
+        return res
+
+    def action_create_anticipoObra(self, cr, uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        obra_obj = self.pool.get('obra.obra')
+        journal_obj = self.pool.get('account.journal')
+        period_obj = self.pool.get('account.period')
+        voucher_obj = self.pool.get('account.voucher')
+        obra = obra_obj.browse(cr, uid, context['active_id'])
+        partner_id = obra.partner_id.id
+        journal_ids = journal_obj.search(cr, uid, [('name','=','EGRESOS')],limit=1)
+        if not journal_ids:
+            raise osv.except_osv('Error de configuracion', 'No existe diario de EGRESOS por favor cree uno')
+        this = self.browse(cr, uid, ids[0])
+        period_ids = period_obj.search(cr, uid, [('date_start','<=',this.date),('date_stop','>=',this.date)],limit=1)
+        if not period_ids:
+            raise osv.except_osv('Error de configuracion', 'No existe periodo contable definido para la fecha de anticipo')
+        desc_aux = 'Anticipo a ' + obra.partner_id.name + 'Por: ' + obra.name
+        #tambien crea el voucher
+        voucher_id = voucher_obj.create(cr, uid, {
+            'partner_id':partner_id,
+            'account_id':this.bank_id.default_debit_account_id.id,
+            'journal_id':this.bank_id.id,
+            'reference':obra.name,
+            'date':this.date,
+            'amount':this.monto,
+            'tipo':'Obra',
+            'narration':obra.name,
+            'state':'posted',
+            'internal_type':'AP',
+        })
+        move_id = move_obj.create(cr, uid, {
+            'journal_id':journal_ids[0],
+            'period_id':period_ids[0],
+            'date':this.date,
+            'partner_id':partner_id,
+            'type2_id':'Financiero',
+            'obra_id':obra.id,
+            'ref':desc_aux,
+            'narration':desc_aux,
+        })
+        move_line_obj.create(cr, uid, {
+            'move_id':move_id,
+            'partner_id':partner_id,
+            'name':'Banco',
+            'credit':this.monto,
+            'account_id':this.bank_id.default_debit_account_id.id,
+        })
+        move_line_obj.create(cr, uid, {
+            'move_id':move_id,
+            'partner_id':partner_id,
+            'name':'Anticipo',
+            'debit':this.monto,
+            'account_id':this.account_id.id,
+        })
+        return {'type':'ir.actions.act_window_close' }
+
+obraAnticipo()
+
+class relObra(osv.TransientModel):
+    _name = 'wizard.rel.obra'
+    _columns = dict(
+        partner_id = fields.many2one('res.partner','Proveedor'),
+        obra_id = fields.many2one('obra.obra','Obra'),
+    )
+
+    def action_relObra(self, cr,  uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move = invoice_obj.browse(cr, uid, context['active_id'])
+        wizard = self.browse(cr, uid, ids[0])
+        move_obj.write(cr, uid, move.id,{
+            'obra_id':wizard.obra_id.id,
+        })
+        return {'type':'ir.actions.act_window_close' }
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        move = self.pool.get('account.move').browse(cr, uid, record_id, context=context)
+        res.update({'partner_id':move.partner_id.id,
+                })
+        return res
+
+relObra()
+
+
+class ObraObra(osv.Model):
+    _description = 'Gestion De Obras y Contratos'
+    _name = 'obra.obra'
+    _columns = dict(
+        fiscalizador_id = fields.many2one('res.partner','Fiscalizador',required=True),
+        administrador_id = fields.many2one('res.partner','Administrador',required=True),
+        garantia_ids = fields.one2many('obra.garantia','obra_id','Garantias'),
+        state = fields.selection([('Borrador','Borrador'),('Ejecucion','Ejecucion'),('Finalizado','Finalizado')],'Estado',readonly=True),
+        name = fields.char('Nombre Obra/Contrato',size=128,required=True),
+        project_id = fields.many2one('project.project','Proyecto/Programa POA',required=True),
+        partner_id = fields.many2one('res.partner','Contratista',required=True),
+        porcentaje_anticipo = fields.integer('Porcentaje Anticipo'),
+        monto = fields.float('Monto Obra/Contrato'),
+        date_start = fields.date('Fecha Inicio'),
+        date_end = fields.date('Fecha Fin'),
+        pay_ids = fields.one2many('obra.obra.pago','obra_id','Terminos Pago'),
+        certificate_ids = fields.one2many('budget.certificate','obra_id','Certificados Presupuestarios'),
+        pago_ids = fields.one2many('account.move','obra_id','Pagos Realizados'),
+    )
+
+#    def crear_anticipoObra(self, cr, uid, ids, context=None):
+#        move_obj = self.pool.get('account.move')
+#        move_line_obj = self.pool.get('account.move.line')
+##        for this in self.browse(cr, uid, ids):
+            
+
+    def iniciar_obra(self, cr, uid, ids, context=None):
+        garantia_obj = self.pool.get('obra.garantia')
+        self.write(cr, uid, ids[0],{'state':'Ejecucion'})
+        for this in self.browse(cr, uid, ids):
+            if this.garantia_ids:
+                for garantia in this.garantia_ids:
+                    garantia_obj.write(cr, uid, garantia.id,{
+                        'state':'Activa',
+                    })
+        return True
+
+    _defaults = dict(
+        state = 'Borrador',
+    )
+ObraObra()

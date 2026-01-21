@@ -1,0 +1,419 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <!-- Events Organisation/CONFIGURATION/EVENTS -->
+        <record model="ir.ui.view" id="view_event_form">
+            <field name="name">Eventos Institucionales</field>
+            <field name="model">agenda.agenda</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">         
+                <form string="Agenda Insitucional">
+                	<group  colspan="2" col="2" string='Estado'>
+                		<field name="state" widget="statusbar" statusbar_colors='{"draft":"black","confirm":"blue","cancel":"gray"}'/>
+         			</group>
+                	<group  colspan="2" col="2">
+						<field name="user_id" readonly='1'/>	
+						<field name="date_create"/> 				
+			        </group>
+                    <group col="6" colspan="4" string='Inf. General'>                    
+                        <field colspan="4" name="name" string='Evento' attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}" />
+                        <field name="type" widget="selection" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}"/>  
+                        <newline/>
+                        <field name="date_begin" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}"/>                        
+                        <field name="date_end" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}"/>
+                        <field name="duration"/>
+                        <newline/>
+                        <field name="country_id" on_change="onchange_country(country_id)" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}" />
+                        <field name="id_country" invisible='1'/>
+                        <field name="state_id" attrs="{'readonly': ['|',('id_country', '=',False),('state', 'in',['confirm','cancel'])]}" domain="[('country_id','=',country_id)]"/>
+                        <field name="email" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}"/> 
+                        <newline/>
+						<field name="canton_id"   attrs="{'readonly': ['|',('id_country', '=',False),('state', 'in',['confirm','cancel'])]}" domain="[('state_id','=',state_id)]"/>						
+						<field name="parroquia_id" attrs="{'readonly': ['|',('id_country', '=',False),('state', 'in',['confirm','cancel'])]}" domain="[('canton_id','=',canton_id)]"/>
+						<newline/>
+                        <field colspan="4" name="place" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}"/>                                                                   
+                    </group>
+                    <notebook colspan="4">
+                    <page string="Descripción">                                                                                             
+                        <field name="note" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}" colspan="4" nolabel="1" required='1'/>                                                
+                    </page>                                           
+                    <page string="Asistentes">
+                    	<button name="list_empleados" type="object"  states="draft" string="Agregar Asistentes" icon="gtk-jump-to" />  
+			  			<field name="empleados_ids" mode="tree" nolabel="1" colspan="4" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}" required='1'>
+			  				<tree editable="bottom">	  	
+								<field name="employee_id" readonly='1'/>
+								<field name="department_id" readonly='1'/>
+                    			<field name="job_id" readonly='1'/>
+								<field name="email" readonly='1'/>
+								<field name="work_email" readonly='1'/>								
+								<field name="email_personal"/>
+							</tree>
+			  			</field>
+					</page>            
+                   	<page string="Adjuntos">        
+                    	<field name="documents_ids" attrs="{'readonly': [('state', 'in',['confirm','cancel'])]}" nolabel="1">                    											
+						<tree string="Documentos">
+				                <field name="name" string="Descripción"  />
+				                <field name="parent_id"  invisible="1"/>
+				                <field name="datas_fname" string='Nombre del archivo'/>
+				                <field name="create_uid" string="Subido por"/>
+				                <field name="create_date" string="Fecha adjunto"/>
+			            </tree>
+						<form>
+							<field name="document_id" invisible="1"/>
+			                <field name="name" string="Descripción"  />
+			                <field name="parent_id" invisible="1"/>		
+			                <newline/>	                
+			                <field name="datas" filename="datas_fname" string="Archivo" required='1' />
+            				<field name="datas_fname" select="1" invisible='1'/>		
+							<field name="is_old" invisible="1"/>	
+						</form>
+                    	</field>                                                                                                                                                           
+                    </page>
+                    <page string="Observaciones"  >                                                                                             
+                        <field name="observaciones" attrs="{'readonly': [('state', 'in',['cancel'])]}" colspan="4" nolabel="1" />                                                
+                    </page>                    
+                    </notebook>
+                    <group col="4" colspan="2" >
+                           <!--button string="Cancelar Evento" name="button_cancel" states="draft,confirm" type="object" icon="gtk-cancel" confirm="¿Está seguro que desea cancelar el Evento?" /-->
+                           <button string="Confirmar Evento" confirm="¿Está seguro que desea confirmar el Evento?" name="button_confirm" states="draft" type="object" icon="gtk-apply" />
+                           <button string="Suspender Evento" confirm="¿Está seguro que desea suspender el Evento?" name="do_cancel" states="confirm" type="object" icon="gtk-cancel" />
+                           <!--button string="Evento Realizado" name="button_done" states="confirm" confirm="¿Está seguro que desea Finalizar el Evento?" type="object" icon="gtk-jump-to"/-->
+                          
+                    </group>
+            </form>
+            </field>
+        </record>
+
+        <!-- Event tree view -->
+
+        <record model="ir.ui.view" id="view_event_tree">
+            <field name="name">event.event.tree</field>
+            <field name="model">agenda.agenda</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Events" colors="black:state=='draft';blue:state=='confirm';gray:state=='cancel'">
+                	<field name="date_create"/>
+                    <field name="name" string="Evento"/>                 
+                    <field name="type"/>
+                    <field name="date_begin"/>
+                    <field name="date_end"/>                  
+                    <field name="user_id"/>
+                    <field name="state"/>
+                    <button string="Confirmar Evento" help="Confirmar Evento" confirm="¿Está seguro que desea confirmar el Evento?" name="button_confirm" states="draft" type="object" icon="gtk-apply"/>
+                    <button string="Suspender Evento" confirm="¿Está seguro que desea suspender el Evento?" name="do_cancel" states="confirm" type="object" icon="gtk-cancel" />
+                    <!--button string="Cancelar Evento" help="Cancelar Evento" name="button_cancel" states="draft,confirm" type="object" icon="gtk-cancel" confirm="¿Está seguro que desea cancelar el Evento?"/-->
+                    <!--button string="Evento Realizado" help="Evento Realizado" name="button_done" states="confirm" confirm="¿Está seguro que desea Finalizar el Evento?" type="object" icon="gtk-jump-to"/-->
+                    
+                </tree>
+            </field>
+        </record>
+
+		<record model="ir.ui.view" id="view_employee_agenda_tree">
+            <field name="name">Lista Empleados</field>
+            <field name="model">hr.employee</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tipo del Evento">
+                    <field name="complete_name"/>
+                    <field name="department_id"/>
+                    <field name="job_id"/>
+                    <field name="email"/>
+                    <field name="work_email"/>                   
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_employee_agenda_search">
+            <field name="name">Buscar Empleados</field>
+            <field name="model">hr.employee</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Empleados">
+                    <group>
+                        <field name="employee_first_lastname"/>
+		  				<field name="employee_second_lastname"/>
+		  				<field name="employee_first_name"/>
+		  				<field name="employee_second_name"/>    
+		  				<field name="department_id" widget='selection'/>
+		  				<field name="job_id" widget='selection'/>		  				               
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">                        
+                        <filter string="Departamento" icon="terp-crm"  context="{'group_by':'department_id'}"/>
+                        <filter string="Cargo" icon="terp-stock_effects-object-colorize" context="{'group_by':'job_id'}"/>                        
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+      <!-- Events  Calendar  View -->
+
+        <record id="view_event_calendar" model="ir.ui.view">
+            <field name="name">event.event.calendar</field>
+            <field name="model">agenda.agenda</field>
+            <field name="type">calendar</field>
+            <field eval="2" name="priority"/>
+            <field name="arch" type="xml">
+                <calendar color="name" date_start="date_begin" date_stop="date_end" string="Organización de Eventos">
+                    <field name="name"/>
+                    <field name="note"/>
+                   
+                </calendar>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_event_search">
+            <field name="name">Eventos Institucionales</field>
+            <field name="model">agenda.agenda</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Eventos Institucionales">
+                    <group>
+                        <filter icon="gtk-convert" name='draft' string="Creados" domain="[('state','=','draft')]" help="Eventos Creados"/>
+                        <filter icon="gtk-apply" string="Confirmados" domain="[('state','=','confirm')]" help="Eventos Confirmados"/>                        
+                        <filter icon="gtk-cancel" string="Cancelados" domain="[('state','=','cancel')]" help="Eventos Cancelados"/>
+                        <separator orientation="vertical"/>
+                        <field name="name"/>
+                        <field name="state" invisible='1'/>
+                                                
+                        <field name="date_begin"/>   
+                        <field name="date_end"/>                     
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By...">                        
+                        <filter string="Tipo de Evento" icon="terp-crm"  context="{'group_by':'type'}"/>
+                        <filter string="Estado" icon="terp-stock_effects-object-colorize" context="{'group_by':'state'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Fecha Inicio" icon="terp-go-month"
+                            domain="[]" context="{'group_by':'date_begin'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    <!-- Events Organisation/CONFIGURATION/EVENTS  -->
+
+       <record model="ir.actions.act_window" id="action_event_user_view">
+           <field name="name">Eventos Institucionales</field>
+           <field name="type">ir.actions.act_window</field>
+           <field name="res_model">agenda.agenda</field>
+           <field name="view_type">form</field>
+           <field name="view_mode">tree,form</field>
+           <field name="context">{'search_default_draft':'1'}</field>
+           <field name="search_view_id" ref="view_event_search"/>
+           <field name="domain">[('user_id.id','=',uid)]</field>           
+       </record>
+       
+             
+        <record model="ir.actions.act_window" id="action_event_admin_view">
+           <field name="name">Eventos Institucionales</field>
+           <field name="type">ir.actions.act_window</field>
+           <field name="res_model">agenda.agenda</field>
+           <field name="view_type">form</field>
+           <field name="view_mode">calendar,tree,form</field>
+           <field name="context">{'search_default_draft':'1','user_loggin_agenda':uid}</field>
+           <field name="domain">[('state','in',['draft','confirm','cancel'])]</field>
+           <field name="search_view_id" ref="view_event_search"/>       
+       </record>
+              
+       
+    <!-- EVENTS/CONFIGURATION/TYPE OF EVENTS -->
+        <record model="ir.ui.view" id="view_event_type_form">
+            <field name="name">Tipo del Evento</field>
+            <field name="model">agenda.type</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tipo del Evento">
+                    <field name="name" select="1"/>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_event_type_tree">
+            <field name="name">Tipo del Evento</field>
+            <field name="model">agenda.type</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tipo del Evento">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_event_type">
+            <field name="name">Tipo de Eventos</field>
+            <field name="res_model">agenda.type</field>
+            <field name="view_type">form</field>
+        </record>
+        
+        
+          <!-- EVENTS/CONFIGURATION/TYPE OF EVENTS -->
+        <record model="ir.ui.view" id="view_event_mine_form">
+            <field name="name">Mis Eventos</field>
+            <field name="model">event.employee</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Eventos">
+                	<group  colspan="4" col="4" string='Estado'>
+                		<field name="state" string="Estado" widget="statusbar" statusbar_colors='{"draft":"black","confirm":"blue","cancel":"gray"}' readonly='1'/>
+         			 </group>
+         			 <newline/>
+         			 <group  colspan="2" col="8" string='Inf. General'>
+                	<field name="user_id" invisible='1'/>                 	
+                    <field name="event_id" readonly='1' context="{'user_loggin':user_id}"/>
+                    <newline/>
+                    <field name="date_begin" string="Fecha Incio" readonly='1'/>
+                    <field name="date_end" string="Fecha Fin" readonly='1'/>
+                    <newline/>  
+                    <field name="descripcion" readonly='1'/>
+                    </group>
+                                      
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_event_mine_tree">
+            <field name="name">Mis Eventos</field>
+            <field name="model">event.employee</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Eventos" colors="black:state=='draft';blue:state=='confirm';gray:state=='cancel'">
+                	<field name="employee_id" string="Empleado"/>                   
+                    <field name="event_id" string="Evento"/>                                        
+                    <field name="date_begin" string="Fecha Inicio"/>
+                    <field name="date_end" string="Fecha Fin"/>                    
+                    <field name="state" string="Estado"/>                           
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_event_mine_tree_user">
+            <field name="name">Eventos Institucionales</field>
+            <field name="model">event.employee</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Eventos" colors="black:state=='draft';blue:state=='confirm';gray:state=='cancel'">                   
+                    <field name="event_id" string="Evento"/>
+                    <field name="type" string="Tipo"/>                                            
+                    <field name="date_begin" string="Fecha Inicio"/>
+                    <field name="date_end" string="Fecha Fin"/>  
+                    <field name="user_id" string="Creado por"/>                   
+                    <field name="state" string="Estado"/>                           
+                </tree>
+            </field>
+        </record>
+
+		<record id="view_event_employee_calendar" model="ir.ui.view">
+            <field name="name">event.employee.calendar</field>
+            <field name="model">event.employee</field>
+            <field name="type">calendar</field>
+            <field name="arch" type="xml">
+                <calendar color="event_id" date_start="date_begin" date_stop="date_end" string="Organización de Mis Eventos">
+                    <field name="event_id"/>
+                    <field name="type"/>
+                </calendar>
+            </field>
+        </record>
+                        
+        <record model="ir.ui.view" id="view_event_employee_search">
+            <field name="name">Eventos Institucionales</field>
+            <field name="model">event.employee</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Eventos Institucionales">
+                    <group>                        
+                        <field name="event_id" />
+                        <field name="employee_id" widget="selection">
+                        <filter icon="terp-personal"
+                              string="Mis Eventos"                                
+                              domain="[('employee_id','=',uid)]"/>
+                        </field>
+                        <separator orientation="vertical"/>
+                        <field name="date_begin"/>
+                        <field name="date_end"/>           
+                        <separator orientation="vertical"/>             
+                        <field name="state" />
+                    </group>
+                    <newline/>
+                    <group expand="1" string="Group By...">
+                        <filter name='empleado_group' string="Empleado"  icon="terp-personal" context="{'group_by': 'employee_id'}"/>                                                
+                        <filter string="Evento" icon="terp-crm"  context="{'group_by':'event_id'}"/>
+                        <separator orientation="vertical"/>                                               
+                        <filter string="Fecha Inicio" icon="terp-go-month"
+                            domain="[]" context="{'group_by':'date_begin'}"/>
+                        <filter string="Fecha Fin" icon="terp-go-month"
+                            domain="[]" context="{'group_by':'date_end'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="view_event_employee_search_user">
+            <field name="name">Eventos</field>
+            <field name="model">event.employee</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Agenda">
+                    <group>                        
+                        <field name="event_id" />
+                        <separator orientation="vertical"/>                        
+                        <field name="date_begin"/>
+                        <field name="date_end"/>    
+                        <separator orientation="vertical"/>
+                        <field name="state"/>                    
+                    </group>
+                    <newline/>
+                    <group expand="1" string="Group By...">                       
+                        <filter string="Evento" icon="terp-crm"  context="{'group_by':'event_id'}"/>
+                        <separator orientation="vertical"/>                       
+                        <filter string="Fecha Inicio" icon="terp-go-month"
+                            domain="[]" context="{'group_by':'date_begin'}"/>
+                        <filter string="Fecha Fin" icon="terp-go-month"
+                            domain="[]" context="{'group_by':'date_end'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        
+         <record model="ir.actions.act_window" id="action_event_mine">
+           <field name="name">Eventos Institucionales</field>
+           <field name="type">ir.actions.act_window</field>
+           <field name="res_model">agenda.agenda</field>
+           <field name="view_type">form</field>
+           <field name="view_mode">tree,form</field>           
+           <field name="domain">[('state','in',['draft','confirm','cancel'])]</field>
+           <field name="search_view_id" ref="view_event_search"/>
+           <field name="context">{'search_default_draft':'1','user_loggin_agenda':uid}</field>       
+       </record>
+		
+       
+        
+        <record model="ir.actions.act_window" id="action_event_mine_user">
+            <field name="name">Mis Eventos</field>
+            <field name="res_model">event.employee</field>
+            <field name="view_type">tree</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="context">{'view_id':'action_event_mine'}</field>
+            <field name="domain">[('employee_id.user_id.id','=',uid),('state','not in',['draft'])]</field>
+            <field name="view_id" ref="view_event_mine_tree_user"/> 
+            <field name="search_view_id" ref="view_event_employee_search_user"/>
+            <field name="context">{'search_default_state':'confirm'}</field>
+        </record>
+ 
+        <menuitem name="Agenda Institucional" id="menu_agenda" sequence='30' 
+				  groups="gt_agenda.group_agenda_user,gt_agenda.group_agenda_manager"
+				  web_icon="images/agenda_bn.png"
+				  web_icon_hover="images/agenda_color.png"/>                                    
+        <menuitem name="Agenda Institucional" id="menu_event_root" parent="menu_agenda" sequence='100' groups="gt_agenda.group_agenda_user,gt_agenda.group_agenda_manager"/>       
+        <menuitem name="Gestionar Eventos" id="menu_event_agenda_action" action="action_event_user_view" parent="menu_event_root" sequence="200" groups="gt_agenda.group_agenda_user"/>
+        <menuitem name="Todos los Eventos" id="menu_event_agenda_action_admin" action="action_event_mine" parent="menu_event_root" sequence="300" groups="gt_agenda.group_agenda_manager"/>       
+        <menuitem name="Eventos Institucionales" id="menu_action_events_mine" parent="menu_event_root" action="action_event_admin_view" sequence="100" groups="gt_agenda.group_agenda_manager"/>
+        <menuitem name="Eventos Institucionales" id="menu_action_events_mine_user" parent="menu_event_root" action="action_event_admin_view" sequence="100" groups="gt_agenda.group_agenda_user"/>       
+        <menuitem name="Configuración" id="menu_agenda_config" parent="menu_agenda" sequence='101' groups="gt_agenda.group_agenda_manager"/>
+        <menuitem name="Tipo de Eventos" id="menu_event_type" action="action_event_type" parent="menu_agenda_config" groups="gt_agenda.group_agenda_manager"/> 
+        
+</data>      
+</openerp>

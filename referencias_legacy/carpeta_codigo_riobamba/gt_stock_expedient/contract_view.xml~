@@ -1,0 +1,19 @@
+<openerp>
+<data>
+	
+    <record model="ir.ui.view" id="contract_expedient_form">
+        <field name="name">contract.expedient.form</field>
+        <field name="type">form</field>
+        <field name="model">doc_contract.contract</field>
+        <field name="inherit_id" ref="gt_doc_contract.view_doc_contract_form"/>
+        <field name="arch" type="xml">
+          <field name="creation_date" position="after">
+			<field name="expedient_id" string="Trámite" colspan="2" 
+				   attrs="{'readonly':['|',('state','!=','draft'),'|',
+						  ('info_general','=',False),('is_cp','=',True)]}"/>
+		  </field>
+        </field>
+    </record>
+                       
+</data>
+</openerp>

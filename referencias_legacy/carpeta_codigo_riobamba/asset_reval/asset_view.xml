@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      
+      <menuitem id="menu_reval_asset_root" 
+		parent="account_asset.menu_finance_assets"
+		groups="account.group_account_manager,account.group_account_manager,gt_account_asset.group_gt_account_asset_manager"
+		name="Revalorizacion"
+		/>
+      
+      <!-- Reporte -->
+
+       <record id="view_revaloriza_categoria" model="ir.ui.view">
+	 <field name="name">Reporte Revalorizacion</field>
+	 <field name="model">revaloriza.categoria</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Reporte">
+	     <field name="date_start" required="1"/>
+	     <field name="date_stop" required="1"/>
+	     <newline/>
+	     <field name="line_ids" readonly="1">
+	       <tree>
+		 <field name="categ_id"/>
+	       </tree>
+	       <form>
+		 <field name="categ_id"/>
+		 <field name='line_ids'>
+		   <tree>
+		     <field name='rev_id'/>
+		   </tree>
+		 </field>
+	       </form>
+	     </field>
+	     <group col="2" colspan="4">
+	       <button name="generaReporteCateg" type="object" icon="gtk-execute"  string="Generar"/>
+	       <button name="printRevalorizaCateg" type="object" icon="gtk-print"  string="Imprimir"/>
+	     </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_revaloriza_report" model="ir.actions.act_window">
+        <field name="name">Reporte Revalorizacion</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">revaloriza.categoria</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_revaloriza_report"
+		icon="STOCK_EXECUTE"
+		action="action_revaloriza_report"
+		parent="menu_reval_asset_root"
+		name="Reporte Revalorizacion"
+		sequence="2"/>
+      
+      <!-- Vista Activos -->
+
+    <record id="view_account_asset_rev_form" model="ir.ui.view">
+      <field name="name">account.asset.rev.form_asset</field>
+      <field name="model">account.asset.asset</field>
+      <field name="inherit_id" ref="gt_account_asset.view_account_asset_asset2_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="/form/notebook/page[@string='Histórico']" position="after">
+	  <page string='Revalorizacion'>
+	    <group string="Ultima Revalorizacion" colspan="4" col='12'>
+	      <field name='fecha_revalorizado' readonly="1" colspan="2"/>
+	      <field name='valor' readonly="1" colspan="2"/>
+	      <field name='residual_actual' readonly="1" colspan="2"/>
+	      <field name='anios_depreciacion' readonly="1" colspan="2"/>
+	      <field name='nueva_depreciacion' readonly="1" colspan="2"/>
+	      <button name="recompute_dep" string="Recalcular Depreciacion" states='open' type="object" icon="gtk-execute"/>
+	    </group>
+	    <newline/>
+	    <field name='rev_ids' string="Revalorizaciones" nolabel="1" readonly="1" colspan="4"/>
+	  </page>
+	</xpath>
+      </field>
+    </record>
+
+      <!-- Revalorizacion views
+		-->
+      <record model="ir.ui.view" id="view_asset_reval_form">
+	<field name="name">account.asset.reval.form</field>
+	<field name="model">account.asset.reval</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Revalorizacion">
+	    <group col="4" colspan="4">
+	      <field name="name" colspan="2" readonly="1"/>
+	      <field name="date" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}" required='1'/>
+	      <field name="asset_id" colspan="4" attrs="{'readonly': [('state', '!=','Borrador')]}" on_change="onchange_asset_reval(asset_id)"/>
+	      <field name="perito_id" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	      <field name="autorizado_id" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/>	      
+	    </group>
+	    <group col="4" colspan="4" string='Detalle Anterior'>
+	      <field name="valor_ant" colspan="2" readonly="1"/>
+	      <field name="fecha_ant" colspan="2" readonly="1"/>
+	      <field name="dep_acumulada_ant" colspan="2" readonly="1"/>
+	      <field name="residual_ant" colspan="2" readonly="1"/>
+	      <field name="actual_ant" colspan="2" readonly="1"/>
+	      <field name="anios_ant" colspan="2" readonly="1"/>
+	    </group>
+	    <group col="4" colspan="4" string='Detalle Revalorizacion'>
+	      <field name="valor" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	      <!--field name="fecha" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/-->
+	      <field name="nueva_depreciacion" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	      <field name="residual_actual" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	      <field name="depreciacion" colspan="2" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	      <field name='diferencia'/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string='Miembros Comision'>
+		<field name="comision_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', '!=','Borrador')]}"/>
+	      </page>
+	      <page string='Detalle Cotizaciones'>
+		<field name="cotiza_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', '!=','Borrador')]}">
+		  <tree editable='bottom'>
+		    <field name="name"/>
+		    <field name="num"/>
+		    <field name="monto"/>
+		  </tree>
+		</field>
+	      </page>
+	      <page string='Detalle Depreciacion'>
+		<field name="depreciation_line_ids" colspan="4" nolabel="1" readonly="1">
+		</field>
+	      </page>
+	    </notebook>
+	    <group col="6" colspan="4">
+	      <field name="state" widget="statusbar"/>
+	      <button name="rev_calcula" string="Calcular" states='Borrador' type="object" icon="gtk-execute"/>
+	      <button name="rev_autoriza" string="Autorizar" states='Borrador' type="object" icon="gtk-ok"/>
+	      <button name="rev_ejecuta" string="Ejecutar" states='Autorizado' type="object" icon="gtk-ok"/>
+	      <button name="rev_borrador" string="Regresar" states='Autorizado,Ejecutado' type="object" icon="gtk-execute"/>
+	    </group>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_asset_reval_tree" model="ir.ui.view">
+	<field name="name">account.asset.reval.tree</field>
+	<field name="model">account.asset.reval</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree colors="black:state == 'Borrador';blue:state in ('Autorizado');green:state == 'Ejecutado'" string="Revalorizacion">
+	    <field name="name"/>
+	    <field name="asset_id"/>
+	    <field name="category_id"/>
+	    <field name="date"/>
+	    <field name="perito_id"/>
+	    <field name="autorizado_id"/>
+	    <field name="valor_ant" sum="Total"/>	    
+	    <field name="dep_acumulada_ant" sum="Total"/>
+	    <field name="residual_ant" sum="Total"/>
+	    <field name="actual_ant" sum="Total"/>
+	    <field name="anios_ant"/>
+	    <field name="valor" sum="Total"/>	    
+	    <field name="nueva_depreciacion" sum="Total"/>
+	    <field name="residual_actual" sum="Total"/>
+	    <field name="depreciacion" sum="Total"/>
+	    <field name="state"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_asset_reval_filter" model="ir.ui.view">
+	<field name="name">Revalorizacion.Busca</field>
+	<field name="model">account.asset.reval</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Revalorizacion">
+	    <field name="name"/>
+	    <field name="asset_id"/>
+	    <field name="category_id"/>
+	    <field name="date"/>
+	    <field name="perito_id"/>
+	    <field name="autorizado_id"/>
+	    <field name="state"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_asset" string="Activo" icon="STOCK_INDENT" domain="[]" context="{'group_by':'asset_id'}"/>
+	      <filter name="group_asset_categ" string="Categoria" icon="STOCK_INDENT" domain="[]" context="{'group_by':'category_id'}"/>
+	      <filter name="group_perito" string="Perito" icon="STOCK_INDENT" domain="[]" context="{'group_by':'perito_id'}"/>
+	      <filter name="group_autoriza" string="Autorizado" icon="STOCK_INDENT" domain="[]" context="{'group_by':'autorizado_id'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_asset_reval" model="ir.actions.act_window">
+	<field name="name">Revalorizacion</field>
+	<field name="res_model">account.asset.reval</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+	  
+      <menuitem id="menu_asset_reval"
+		action="action_asset_reval"
+		parent="menu_reval_asset_root"
+		name="Revalorizar"
+		sequence="1"
+		/>
+    </data>
+</openerp>

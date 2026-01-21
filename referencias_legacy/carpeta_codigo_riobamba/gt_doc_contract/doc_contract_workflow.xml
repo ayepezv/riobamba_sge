@@ -1,0 +1,71 @@
+<openerp>
+    <data>
+	<!--DOC_CONTRACT_CONTRACT WORKFLOW--> 
+        <record id="wkf_doc_contract" model="workflow">
+            <field name="name">wkf_doc_contract</field>
+            <field name="osv">doc_contract.contract</field>
+            <field name="on_create" eval="1"/>
+        </record>
+        
+        <record id="act_draft" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_doc_contract"/>
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+        </record>
+        
+  	    <record id="act_open" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_doc_contract"/>
+            <field name="name">open</field>
+            <field name="kind">function</field>
+            <field name="action">action_draft_open()</field>
+        </record>
+        
+        <record id="act_execution" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_doc_contract"/>
+            <field name="name">execution</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_execution()</field>
+        </record>
+        
+        <record id="act_cancelled" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_doc_contract"/>
+            <field name="name">cancelled</field>
+            <field name="flow_stop">True</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_cancelled()</field>
+        </record>
+        
+        <record id="act_done" model="workflow.activity">
+            <field name="wkf_id" ref="wkf_doc_contract"/>
+            <field name="name">done</field>
+            <field name="flow_stop">True</field>
+            <field name="kind">function</field>
+            <field name="action">action_open_done()</field>    
+        </record>
+          
+        <record id="trans_draft_open" model="workflow.transition">
+            <field name="act_from" ref="act_draft"/>
+            <field name="act_to" ref="act_open"/>
+            <field name="signal">wkf_draft_open</field>
+        </record>
+        
+        <record id="trans_open_execution" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_execution"/>
+            <field name="signal">wkf_open_execution</field>
+        </record>
+        
+        <record id="trans_open_cancelled" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_cancelled"/>
+            <field name="signal">wkf_open_cancelled</field>
+        </record>
+        
+        <record id="trans_open_done" model="workflow.transition">
+            <field name="act_from" ref="act_open"/>
+            <field name="act_to" ref="act_done"/>
+            <field name="signal">wkf_open_done</field>
+        </record>
+                     
+	</data>
+</openerp>

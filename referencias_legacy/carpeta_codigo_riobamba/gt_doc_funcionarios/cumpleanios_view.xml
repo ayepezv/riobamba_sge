@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- ASISTENTE CUMPLEAÑOS DE LOS FUNCIONARIOS DEL GADMLI -->
+
+      <record id="view_cumpleanios" model="ir.ui.view">
+	<field name="name">Cumpleanios</field>
+	<field name="model">cumpleanios</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Reportes">
+            <group col="4" colspan="4">
+              <field name="opcion" colspan="2" required="1"/>
+	      <field name="mes" colspan="2" required="1"/>
+              
+	    </group>  
+	    <newline/>
+	    <field name='line_ids' readonly="1" colspan="4" nolabel="1">
+	      <tree>
+                <field name='fecha_n'/>
+                <field name='dia_c' invisible="1"/>
+                <field name='frase'/>
+                <field name='empleado'/>
+	      </tree>
+	    </field>
+	    <newline/>
+            <newline/>
+	    <group col="3" colspan="4">
+	      <button icon="gtk-cancel" special="cancel"
+		      string="Salir" />
+	      <button name="mostrar_cumpleanios" type="object" icon="gtk-execute"  string="Generar"/>
+	      <button name="notificar_cumpleanios" type="object" icon="terp-mail-"  string="Enviar Email Felicitacion"/>
+	    </group>
+
+	    
+          </form>
+        </field>
+      </record>
+
+      
+      <record id="action_cumpleanios" model="ir.actions.act_window">
+        <field name="name">Cumpleaños</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cumpleanios</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+  
+
+   <menuitem id="menu_empleados_docs" name="Empleados" parent="gt_document_manager.menu_document_manager"/>
+      
+   <menuitem id="menu_empleados_cumpleanios" icon="STOCK_EXECUTE" action="action_cumpleanios"
+	     parent="menu_empleados_docs" name="Cumpleaños"/>
+   
+
+    </data>
+</openerp>

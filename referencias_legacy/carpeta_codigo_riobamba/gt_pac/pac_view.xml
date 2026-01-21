@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_purchase_pac" parent="base.menu_purchase_root" name="PAC"/>
+
+    <!-- CATALOGO PAC -->
+
+    <record id="view_product_pac_form" model="ir.ui.view">
+      <field name="name">view.product.pac.form</field>
+      <field name="model">produc.pac</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Catalogo">
+	  <group colspan="4">
+	    <field name="code"/>			
+	    <field name="name"/>
+	    <field name="categ_id"/>
+	    <field name="uom"/>
+	    <field name="pu"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_product_pac_tree" model="ir.ui.view">
+      <field name="name">view.product.pac.tree</field>
+      <field name="model">product.pac</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Catalogo">
+          <field name="code" select="1"/>
+          <field name="name" select="1"/>
+          <field name="pu" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_product_pac" model="ir.actions.act_window">
+      <field name="name">Catalogo</field>
+      <field name="res_model">product.pac</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_product_pac" parent="menu_purchase_pac" 
+			  action="action_product_pac" sequence="0"/>
+
+
+
+    <!-- PAC -->
+
+    <record id="view_purchase_pac_form" model="ir.ui.view">
+      <field name="name">view.purchase.pac.form</field>
+      <field name="model">purchase.pac</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="PAC">
+	  <group colspan="4">
+	    <field name="code" select="1" colspan="2" readonly="1"/>
+	    <field name="creado_id" select="1" colspan="2" readonly="1"/>
+            <field name="name" select="1" required="1"/>
+            <field name="department_id" select="1"/>
+            <field name="year_id" select="1"/>
+	  </group>
+	  <notebook>
+	    <page string="Detalle">
+	      <field name="line_ids" nolabel="1">
+		<tree editable="top">
+		  <field name="name" on_change="onchange_pac(name)"/>
+		  <field name="tipo" required="1"/>
+		  <field name="budget_id" required="1"/>
+		  <field name="uom"/>
+		  <field name="qty"/>
+		  <field name="pu" attrs="{'readonly': [('tipo', '=','Bienes')]}"/>
+		  <field name="total" readonly="1" sum="TOTAL"/>
+		  <field name="p1"/>
+		  <field name="p2"/>
+		  <field name="p3"/>
+		  <field name="tipo_producto" required="1"/>
+		  <field name="catalogo" required="1"/>
+		  <field name="procedimiento" required="1"/>
+		  <field name="bid" required="1"/>
+		  <field name="regimen" required="1"/>
+		  <field name="tipo_budget" required="1"/>
+		</tree>
+	      </field>	      
+	    </page>
+	  </notebook>
+	  <group colspan="4" col="5">
+	    <field name="state" readonly="1" widget="statusbar" statusbar_visible="Borrador,Anulado,Agrupado,Aprobado" 
+		   statusbar_colors='{"auto":"blue", "Aprobado":"green"}'/>
+	    <button name="pacBorrador" states="Anulado,Aprobado" type="object" string="Regresar a borrador" 
+		    icon="gtk-execute"/>
+	    <button name="pacAnulado" states="Borrador" string="Anular" type="object" icon="gtk-cancel"/>
+	    <button name="pacAprobado" states="Borrador" 
+		    string="Aprobar" type="object" icon="gtk-jump-to"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_purchase_pac_tree" model="ir.ui.view">
+      <field name="name">view.purchase.pac.tree</field>
+      <field name="model">purchase.pac</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="PAC">
+          <field name="name" select="1"/>
+          <field name="department_id" select="1"/>
+          <field name="year_id" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_purchase_pac_pac" model="ir.actions.act_window">
+      <field name="name">PAC</field>
+      <field name="res_model">purchase.pac</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_product_pac_pac" parent="menu_purchase_pac" 
+			  action="action_purchase_pac_pac" sequence="1"/>
+    
+    <!-- TDR -->
+    <record id="view_pac_tdr_form" model="ir.ui.view">
+      <field name="name">view.pac.tdr.form</field>
+      <field name="model">pac.tdr</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="TDR">
+	  <group colspan="4">
+            <field name="code" colspan="2" readonly="1"/>
+	    <field name="user_id" colspan="2" readonly="1"/>
+            <field name="name" colspan="4"/>
+            <field name="employee_id" select="1" colspan="4"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Antecedentes">
+	      <field name="antecedentes" nolabel="1" required="1"/>
+	    </page>
+	    <page string="Objetivos">
+	      <field name="objetivo" required="1"/>
+	      <field name="objetivo_esp" required="1"/>
+	    </page>
+	    <page string="Alcance">
+	      <field name="alcance" required="1" nolabel="1"/>
+	    </page>
+	    <page string="Metodologia">
+	      <field name="metodologia" required="1" nolabel="1"/>
+	    </page>
+	    <page string="Informacion">
+	      <field name="informacion" required="1" nolabel="1"/>
+	    </page>
+	    <page string="Producto">
+	      <field name="producto" required="1" nolabel="1"/>
+	    </page>
+	    <page string="Plazo">
+	      <field name="plazo" required="1" nolabel="1"/>
+	    </page>
+	    <page string="Personal">
+	      <field name="personal" required="1" nolabel="1"/>
+	    </page>
+	    <page string="Pago">
+	      <field name="pago" required="1" nolabel="1"/>
+	    </page>
+	  </notebook>
+	  <group col='5' colspan="4">
+	    <field name="state" readonly="1" widget="statusbar" statusbar_visible="Borrador,Aprobado" 
+		   statusbar_colors='{"auto":"blue", "Solicitado":"blue"}'/>
+	    <button name="print_tdr" states="Aprobado" string="Imprimir TDR" 
+		    type="object" icon="gtk-print"/> 
+	    <button name="return_draft_tdr" states="Aprobado" type="object" string="Regresar a borrador" 
+		    confirm="Solo el usuario creador del requerimiento puede regresar, esta seguro que desea regresar" 
+		    icon="gtk-execute"/>
+	    <button name="draft_confirmed_tdr" states="Borrador" string="Aprobar" type="object" icon="gtk-media-play"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_pac_tdr_tree" model="ir.ui.view">
+      <field name="name">view.pac.tdr.tree</field>
+      <field name="model">pac.tdr</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="TDR">
+          <field name="name" select="1"/>
+          <field name="employee_id" select="1"/>
+          <field name="antecedentes" select="1"/>
+          <field name="objetivo" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_pac_tdr" model="ir.actions.act_window">
+      <field name="name">TDR</field>
+      <field name="res_model">pac.tdr</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_pac_tdr" parent="purchase.menu_procurement_management" 
+			  action="action_pac_tdr" sequence="0"/>
+
+    <!-- MENU EN DOCUMENTAL -->
+
+    <record id="action_purchase_pac_pac_doc" model="ir.actions.act_window">
+      <field name="name">PAC</field>
+      <field name="res_model">purchase.pac</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('creado_id','=',uid)]</field>
+    </record>
+
+    <menuitem
+	id="menu_pac_documental_alone"
+	sequence="0"
+	groups="gt_government_procedure.group_purchase_basic,gt_document_manager.group_doc_user"
+	parent="gt_government_procedure.menu_purchase_requisition_document"
+	action="action_purchase_pac_pac_doc"/>
+
+    <menuitem
+	id="menu_pac_tdr_documental"
+	sequence="1"
+	groups="gt_government_procedure.group_purchase_basic,gt_document_manager.group_doc_user"
+	parent="gt_government_procedure.menu_purchase_requisition_document"
+	action="action_pac_tdr"/>
+
+    <!-- TIPO PROCESO -->
+    <record id="view_pac_tipo_form" model="ir.ui.view">
+      <field name="name">view.pac.tipo.form</field>
+      <field name="model">pac.tipo</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tipo Proceso">
+	  <group colspan="4">
+	    <field name="name"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_pac_tipo_tree" model="ir.ui.view">
+      <field name="name">view.pac.tipo.tree</field>
+      <field name="model">pac.tipo</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Tipo Proceso">
+          <field name="name" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_purchase_tipo_pac" model="ir.actions.act_window">
+      <field name="name">Tipo Procesos</field>
+      <field name="res_model">pac.tipo</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_purchase_tipo_proceso" parent="gt_government_procedure.menu_purchase_table_config" 
+	      action="action_purchase_tipo_pac"/>
+
+    <!-- FORM CON TIPO PROCESO -->
+    <record model="ir.ui.view" id="purchase_req_pac_inherit">
+      <field name="name">purchase.req.pac.form.inherit</field>
+      <field name="type">form</field>
+      <field name="model">purchase.requisition</field>
+      <field name="inherit_id" ref="gt_government_procedure.purchase_req_inherit"/>
+      <field name="arch" type="xml">
+	<field name="total_compra" position="replace">
+	  <field name="tipo_id"/>
+	</field>
+      </field>
+    </record>
+	
+<!--  CATEGORIAS -->
+    <record id="view_pac_categ_form" model="ir.ui.view">
+      <field name="name">view.pac.categoria.form</field>
+      <field name="model">pac.categoria</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Categorias">
+	  <group colspan="4">
+	    <field name="name" colspan="4"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_pac_categoria_tree" model="ir.ui.view">
+      <field name="name">view.pac.categoria.tree</field>
+      <field name="model">pac.categoria</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Categorias">
+          <field name="name" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_pac_categ" model="ir.actions.act_window">
+      <field name="name">Categorias</field>
+      <field name="res_model">pac.categoria</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_pac_categ" parent="menu_purchase_pac" 
+	      action="action_pac_categ" sequence="3"/>
+
+    <!--  UNIDADES DE MEDIDA -->
+    <record id="view_pac_uom_form" model="ir.ui.view">
+      <field name="name">view.pac.uom.form</field>
+      <field name="model">pac.uom</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Unidad de medida">
+	  <group colspan="4">
+	    <field name="name" colspan="4"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_pac_uom_tree" model="ir.ui.view">
+      <field name="name">view.pac.uom.tree</field>
+      <field name="model">pac.uom</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Unidad de medida">
+          <field name="name" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_pac_uom" model="ir.actions.act_window">
+      <field name="name">Unidad de medida</field>
+      <field name="res_model">pac.uom</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_pac_uom" parent="menu_purchase_pac" 
+	      action="action_pac_uom" sequence="4"/>
+
+    </data>
+</openerp>

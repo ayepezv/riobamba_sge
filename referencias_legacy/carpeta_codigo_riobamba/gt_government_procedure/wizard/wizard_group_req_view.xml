@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+<record id="view_wizard_group_req" model="ir.ui.view">
+  <field name="name">Agrupación Solicitudes de compra</field>
+  <field name="model">wizard.group.req</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Asistente para la creación de proceso de compras públicas">
+      <label colspan="2" nolabel="1" string="Este wizard le permite a usted crear un proceso de compras publicas"/>
+	  <newline/>
+      <group col="2" colspan="2">
+		<!--field name="supplier_id" colspan="4" required="1"/>
+		<field name="warehouse_id" colspan="4" required="1"/-->
+		<field name="date" colspan="2" required="1"/>
+		<newline/>
+		<field name="desc" colspan="2"/>
+	  </group>
+	  <newline/>
+	  <group string="Solicitudes" colspan="2">
+		<field name="name" colspan="2" nolabel="1"/>
+	  </group>
+	  <newline/>
+	  <group col="3" colspan="2" string="Acciones">
+		<button icon="gtk-cancel" special="cancel"
+				string="Salir" />
+		<button name="group_req" type="object" icon="gtk-execute"  string="Agrupar Solicitudes" 
+				confirm="Esta seguro que desea crear el proceso de compras públicas??.
+						 Una vez creado usted podra gestionar el flujo determinado."/>
+	  </group>
+	</form>
+  </field>
+</record>
+
+
+<record id="action_wizard_group_req" model="ir.actions.act_window">
+  <field name="name">Agrupación Solicitudes de compra</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">wizard.group.req</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<!--menuitem id="menu_wizard_group_req"
+		  icon="STOCK_EXECUTE"
+		  action="action_wizard_group_req"
+		  groups="purchase.group_purchase_user"
+		  parent="purchase.menu_procurement_management"
+		  name="Agrupar Solicitudes"/-->
+
+</data>
+</openerp>

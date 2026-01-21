@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem id="menu_fondo_partida_parent"
+	      parent="gt_budget.menu_budget_queries_base"
+	      name="Fondos Partida"
+	      sequence="1"/>
+    
+
+    <record id="view_wizard_budget_update_certificate" model="ir.ui.view">
+      <field name="name">view.wizard.budget.update</field>
+      <field name="model">wizard.account.budget.update</field>
+      <field name="priority">2</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Actualizar Datos">
+          <separator string="Actualizar valores de documento" colspan="4"/>
+          <field name="amount" string="Certificado"/>
+          <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+          <button string="Actualizar" name="action_update" type="object" icon="gtk-execute"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_wizard_budget_update_compromised" model="ir.ui.view">
+      <field name="name">view.wizard.budget.update</field>
+      <field name="model">wizard.account.budget.update</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Actualizar Datos">
+          <separator string="Actualizar valores de documento" colspan="4"/>
+          <field name="amount" string="Comprometido"/>
+          <newline/>
+          <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+          <button string="Actualizar" name="action_update" type="object" icon="gtk-execute"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_update_certificate" model="ir.actions.act_window">
+      <field name="name">Actualizar Certificado</field>
+      <field name="res_model">wizard.budget.update</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="context">{'certified': True}</field>
+      <field name="view_id" ref="view_wizard_budget_update_certificate"/>
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_action_wiz_budget_cert" model="ir.actions.act_window.view">
+      <field eval="1" name="sequence"/>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_wizard_budget_update_certificate"/>
+      <field name="act_window_id" ref="action_update_certificate"/>
+    </record>    
+
+    <record id="action_update_compromised" model="ir.actions.act_window">
+      <field name="name">Actualizar Certificado</field>
+      <field name="res_model">wizard.budget.update</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="context">{'compromised': True}</field>      
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_action_wiz_budget_compr" model="ir.actions.act_window.view">
+      <field eval="1" name="sequence"/>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_wizard_budget_update_compromised"/>
+      <field name="act_window_id" ref="action_update_compromised"/>
+    </record>        
+
+
+    <record id="view_wizard_budget_queries" model="ir.ui.view">
+      <field name="name">view.wizard.budget.query</field>
+      <field name="model">wizard.budget.query</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Consultar Presupuesto">
+	  <field name="budget_id" widget="selection"/>
+	  <button special="cancel" string="Cerrar" icon="gtk-cancel"/>
+	  <button name="action_budgets" string="Consultar" type="object" icon="gtk-execute"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_budget_queries" model="ir.actions.act_window">
+      <field name="name">Consultar Presupuesto</field>
+      <field name="res_model">wizard.budget.query</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+    </record>
+
+
+    <menuitem parent="menu_budget_queries_base" id="menu_budget_queries" action="action_budget_queries" sequence="30"/>
+
+    <!-- saldo por partida -->
+
+      <menuitem id="menu_budget_verificar_fondo_budget"
+		icon="STOCK_EXECUTE"
+		action="action_budget_verificar_fondo"
+		parent="menu_fondo_partida_parent"
+		name="Verificar Fondos Partida"/>
+
+  </data>
+</openerp>

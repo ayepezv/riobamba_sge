@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+    <record id="aeroo_marc_employee_id" model="ir.actions.report.xml">
+        <field name="name">Marcaciones empleado</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">assistance.resumen.diario</field>
+        <field name="report_name">employee_marcs</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_employee_marcaciones.ods</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+	<record id="aeroo_marc_dates" model="ir.actions.report.xml">
+        <field name="name">Asistencia Detallada</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">assistance.resumen.diario</field>
+        <field name="report_name">employee_marcs_pr</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_asistemcia_detalle.ods</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+    <record id="aeroo_sanciones" model="ir.actions.report.xml">
+        <field name="name">Registros</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">hr.attendance</field>
+        <field name="report_name">employee_sancion</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_employee_sancion.ods</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+    <record id="aero_summary_marc" model="ir.actions.report.xml">
+        <field name="name">Sumario de Marcaciones</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">assistance.summary</field>
+        <field name="report_name">assistance_summary</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_summary_period.odt</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+        <!--record id="aeroo_assistenace_employee_id" model="ir.actions.report.xml">
+        <field name="name">Asistencia empleado</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">assistance.resumen.diario</field>
+        <field name="report_name">employee_assistance</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_employee_asistencia.ods</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record-->
+	<!--record id="gt_gpa_state_employee" model="ir.actions.report.xml">
+        <field name="name">Sanciones Empleado</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">hr.employee</field>
+        <field name="report_name">hr_state_employee</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_state_employee.odt</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+    <record id="gt_gpa_notice_employee" model="ir.actions.report.xml">
+        <field name="name">Novedades Empleado</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">hr.employee</field>
+        <field name="report_name">hr_notice_employee</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_notice_employee.odt</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+        <record id="gt_gpa_notice_employee_hr" model="ir.actions.report.xml">
+        <field name="name">Novedades Empleado</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">hr.employee</field>
+        <field name="report_name">notice_employee_hr</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">gt_gpa/report/parser.py</field>
+        <field name="report_rml">gt_gpa/report/report_notice_employee.odt</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record-->
+   
+</data>
+</openerp>
+

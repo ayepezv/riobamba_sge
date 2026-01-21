@@ -1,0 +1,1333 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from tools import ustr
+from osv import fields, osv
+from datetime import datetime
+from datetime import timedelta
+from tools.translate import _
+from time import gmtime, localtime
+
+
+class gt_insurance_inform_type(osv.osv):
+    '''
+    Establece los diferentes tipos de Solicitudes de informe
+    '''
+    _description = 'Tipo de Solicitud de Informes' 
+    _name = 'gt.insurance.inform.type'  
+    _columns = {'name': fields.char('Nombre de Tipo de Informe', size=64, required=True),               
+                'from_employee': fields.boolean('Dirigido a empleado', ),
+                'from_partner': fields.boolean('Dirigido a proveedor', ),
+                'from_reenter': fields.boolean('Solicitud ingreso de nuevo bien', ),
+                'from_activate': fields.boolean('Solicitud de activación', ),
+                'from_other': fields.boolean('Dirigido a otro', ),
+                #'name_other': fields.char('Quien genera:', size=64),
+                'is_close': fields.boolean('Solicitud de cierre de Siniestro',),
+                'from_attached': fields.boolean('Requiere Adjunto', size=64),
+                'from_prev': fields.boolean('Requiere informe previo', size=64),
+                #'from_output': fields.boolean('Autorización de salida', size=64),
+                'prev_inform_id': fields.many2one('gt.insurance.inform.type','Informe previo', size=64),                                 
+                }
+
+    def _sinister_unique(self, cr, uid, ids, context=None):
+        old_ids= self.search(cr, uid, [('id','!=',ids)])
+        for obj in self.browse(cr,uid,ids,context):
+            for old_obj in self.browse(cr,uid,old_ids,context): 
+                if ustr(obj.name)==ustr(old_obj.name):
+                    return False
+        return True
+                        
+    _constraints = [(_sinister_unique, '\n\nEl nombre ingresado ya pertenece a otro Tipo de Informe', ['name']),]  
+          
+    def confirm_responsable(self, cr, uid, vals, context=None):
+        '''
+        Verifica que exista un responsable asignado par el tipo de informe
+        '''
+        responsable=False
+        try:
+            if vals['from_employee'] == True:
+                responsable=True
+        except:
+            pass
+        try:
+            if vals['from_partner'] == True:
+                responsable=True
+        except:
+            pass
+        try:
+            if vals['from_other'] == True:
+                responsable=True
+        except:
+            pass
+        return responsable
+    
+    def create(self, cr, uid, vals, context=None):
+        """        
+        Se redefine el create para que verifique el el informe tenga un respobable
+        no puede crear un tipo de informe sin indicar a quien va dirigido
+        """    
+        res=[]  
+        if self.confirm_responsable(cr, uid, vals, context=None) == True:
+            res = super(gt_insurance_inform_type, self).create(cr, uid, vals, context=context)
+        else:
+            raise osv.except_osv(('Error !'), ('Es necesario indicar a quien va dirigido el Informe'))
+        return res
+            
+    def write(self, cr, uid, ids, vals, context=None):
+        """        
+        Se redefine el write para garantizar que el informe tenga un respobable
+        no puede crear un tipo de informe sin indicar a quien va dirigido
+        """    
+        res=[]  
+        inform_ids= self.pool.get('gt.insurance.inform').search(cr, uid, [('state', '=', 'open')])
+        if inform_ids:
+            for obj_inform in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_ids, context):          
+                if obj_inform.name.id ==int(ids[0]):
+                    raise osv.except_osv(('Error !'), ('Informe "Abierto" consume información de este objeto.\n\n No se procederá con el cambio'))
+                else:
+                    if self.confirm_responsable(cr, uid, vals, context=None) == True:
+                        super(gt_insurance_inform_type, self).write(cr, uid, ids, vals)
+                    else:
+                        raise osv.except_osv(('Error !'), ('Es necesario indicar a quien va dirigido el Informe'))
+                    return True 
+        else:
+            super(gt_insurance_inform_type, self).write(cr, uid, ids, vals)
+        return True
+    def unlink(self, cr, uid, ids, context=None):
+        for formulario in self.browse(cr, uid, ids, context):
+                raise osv.except_osv('Error', 'No puede eliminar un tipo de informe')
+        return False         
+    '''        
+    def unlink(self, cr, uid, ids, context=None):
+        #No se puede eliminar si existen Informes Requeridos al tipo
+        head = self.read(cr, uid, ids, [], context=context)
+        for s in head:
+            sinister_ids= self.pool.get('gt.insurance.sinister.type').search(cr, uid, [])
+            for obj_sinister in self.pool.get('gt.insurance.sinister.type').browse(cr, uid, sinister_ids, context):
+                for inf_related in obj_sinister.inform_ids:
+                    if inf_related.id==s['id']:
+                        raise osv.except_osv(_(ustr('Error\n Tipo de Informe: '+ustr(s['name'])+ustr(':  relacionado con Clasificador de Siniestro: '+ ustr(obj_sinister.name)))), _('No puede ser eliminado'))
+        return osv.osv.unlink(self, cr, uid, ids, context=context)
+    '''                    
+gt_insurance_inform_type()
+
+
+class res_users_(osv.osv):
+    '''
+    Relacion de usuario a informe para domain de informe
+    '''
+    _inherit = 'res.users'
+    _columns = {'inform_ids_v': fields.many2one('gt.insurance.inform','Informes Solicitados'),                
+                }   
+res_users_()
+
+
+def _employee_get(obj, cr, uid, context=None):
+    '''
+    devuelve el usuario que crea el objeto
+    '''
+    ids = obj.pool.get('res.users').search(cr, uid, [('id', '=', uid)], context=context)
+    return ids and ids[0] or False
+
+
+class gt_insurance_inform(osv.osv):
+    '''
+    Representa las diferentes solicitudes de informe de cada uno de los siniestros 
+    '''
+    _description = 'Solicitudes de informe' 
+    _name = 'gt.insurance.inform' 
+    _order = 'date DESC'                 
+    def get_value_bool(self, cr, uid, ids, field_name, arg, context=None):
+       '''
+        Funcion "multi" que permite obtener los campos requeridos en base al tipo de informe
+       '''
+       res = {}  
+       inform_type = self.pool.get('gt.insurance.inform.type')       
+       for obj in self.browse(cr, uid, ids, context=context):
+           res[obj.id] = {}
+           inform_type_ids= inform_type.search(cr, uid, [('id','=', obj.name.id)])
+           if inform_type_ids: 
+               for obj_inform_type in inform_type.browse(cr, uid, inform_type_ids, context):                                    
+                   if obj_inform_type.from_attached == True:
+                       res[obj.id]['from_attached']  = True
+                   else:                    
+                       res[obj.id]['from_attached']  = False
+                   if obj_inform_type.from_employee == True:
+                       res[obj.id]['from_employee']  = True
+                   else:                    
+                       res[obj.id]['from_employee']  = False                                                        
+                   if obj_inform_type.from_partner == True:
+                       res[obj.id]['from_partner']  = True                      
+                   else:                    
+                       res[obj.id]['from_partner']  = False
+                   if obj_inform_type.from_other == True:
+                       res[obj.id]['from_other']  = True                       
+                   else:                    
+                       res[obj.id]['from_other']  = False
+                   if obj_inform_type.from_prev == True:
+                       res[obj.id]['from_prev']  = True
+                   else:                    
+                       res[obj.id]['from_prev']  = False
+                   if obj_inform_type.from_reenter == True:
+                       res[obj.id]['from_reenter']  = True       
+                   else:                    
+                       res[obj.id]['from_reenter']  = False
+                   if obj_inform_type.from_activate == True:
+                       res[obj.id]['from_activate']  = True       
+                   else:                    
+                       res[obj.id]['from_activate']  = False
+                
+                   if obj_inform_type.is_close == True:
+                       res[obj.id]['is_close']  = True
+                   else:                    
+                       res[obj.id]['is_close']  = False
+                   #if obj_inform_type.from_output == True:
+                   #    res[obj.id]['from_output']  = True
+                   #else:                    
+                   #    res[obj.id]['from_output']  = False
+       return res   
+       
+   
+    _columns = {'name':fields.many2one('gt.insurance.inform.type','Tipo de Informe', size= 32, required=True),             
+                'prev_inform_id' : fields.related('name','prev_inform_id', type='many2one', 
+                                                relation="gt.insurance.inform.type", string='Informe previo', 
+                                                readonly=True,),
+                'description': fields.char('Descripción Informe', size=256),                
+                'text_mail': fields.char('Correo', size=64),                 
+                'code': fields.char('Código', size=64),
+                'date':fields.date('Fecha de creación', size=64, required=True),                                                
+                'partner_id' : fields.many2one('res.partner','Proveedor', store=True),             
+                'employee_id': fields.many2one('hr.employee','Solicitado a', store=True, required=True),                                
+                
+                'applicant_name': fields.char('Persona a la que se solicita', size=64, store=True),                            
+                'from_attached' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all', string='Adjuntos'),
+                'is_close' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all', string='Solicitud de cierre'),
+                'from_employee' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all', string='Solicitud a empleado'),
+                'from_reenter' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all',string='Solicitud a empleado'),
+                'from_activate' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all',string='Solicitud a activacion'),
+                'from_partner' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all',string='Solicitud a proveedor'),
+                'from_other' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all',string='Solicitud a otro'),
+                'from_prev' : fields.function(get_value_bool, type='boolean',
+                                          method=True, store = True, multi='all',string='Solicitud a empleado'),
+                #'from_output': fields.function(get_value_bool, type='boolean',
+                #                          method=True, store = True, multi='all'),
+                'notes': fields.text('Observaciones'),  
+                'attachment_ids' : fields.one2many('ir.attachment.sinister','inf_document_id','Adjuntos',
+                                                   ondelete='cascade'),                                                                          
+                'state': fields.selection([('draft', ''),
+                                           ('open', 'Solicitado'),                                          
+                                           ('response', 'Respondido'),
+                                           ('cancel', 'Cancelado'),
+                                           ('close', 'Finalizado'),
+                                           ],'Estado', required=True, readonly=True, store=True),
+                'sinister_id' : fields.many2one('gt.insurance.sinister.memory','Siniestro', required=True),                                                                 
+                'directory_id':fields.related('sinister_id', 'directory_id',
+                                             type="many2one",relation="document.directory",
+                                             string="Directorio", store=True ),
+                'new_account_asset_id': fields.many2one('account.asset.asset','Nuevo activo para Póliza', domain=[('state','=',('open'))]),
+                'account_asset_id':fields.related('sinister_id', 'account_asset_id',readonly=True,
+                                             type="many2one",relation="account.asset.asset",
+                                             string="Activo", store=True ),
+                'sinister_description': fields.related('sinister_id', 'description',
+                                             type="char",relation="gt.insurance.sinister.memory",
+                                             string="Descripción Siniestro", store=True,  readonly=True ),
+                'category_id':fields.related('account_asset_id', 'category_id',
+                                             type="many2one",relation="account.asset.category",
+                                             string="Categoría", store=True ),
+                'created_id' : fields.many2one('res.users','Solicitado por', store=True),
+                'department_id': fields.many2one('hr.department','Departamento', required=True ),
+                'job_id': fields.many2one('hr.job','Cargo', required=True ),
+                'users_ids':fields.many2many('res.users','gt_insurance_inform_user_id','inform_id','user_id','Usuarios',readonly=True),
+                #'expedient_id':fields.many2one('doc_expedient.expedient','Trámite', size= 32),
+                #'task_id':fields.many2one('doc_expedient.task','Tarea de Trámite', size= 32),
+                
+                }
+    def _check_documents(self, cr, uid, ids, context=None):
+        #Verifica si el informe requiere un archivo adjunto
+       for contract in self.browse(cr, uid, ids):
+           if contract.attachment_ids:
+               for doc in contract.attachment_ids:
+                   if not doc.datas_fname:
+                       raise osv.except_osv('Error', 'Un adjunto no ha sido agregado correctamente en el adjunto: '+doc.name)
+                       return False
+       return True
+    _constraints = [
+                  (_check_documents, 'Error! Un adjunto no ha sido agregado correctamente',['attachment_ids'])
+                  ]
+
+    def create(self, cr, uid, vals, context=None):
+        """        
+        establece el codigo para el informe de siniestro
+        """   
+        #for obj in self.pool.get('gt.insurance.sinister.memory').browse(cr,uid,[vals['sinister_id']],context):
+        #    code_sin= obj.      
+        code_t= str(self.pool.get('ir.sequence').get(cr, uid, 'gt.insurance.informes'))    
+        vals['code'] =   code_t  
+        res = super(gt_insurance_inform, self).create(cr, uid, vals, context=context)        
+        return res
+    def write(self, cr, uid, ids, vals, context=None):
+        """        
+        Verifica la agregación de usuarios relacionados
+        """    
+        res=[]  
+        verificar_usuarios=False
+        try:
+            if vals['users_ids']:
+                verificar_usuarios=True
+        except:pass
+        if verificar_usuarios:
+            for obj in self.browse(cr,uid,ids,context):                
+               list_user_inf = vals['users_ids'][0][2]
+               for usuario in obj.users_ids:
+                    if usuario.id not in list_user_inf:
+                        id_obj=self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','=', obj.sinister_id.id)])
+                        inform_ids =self.pool.get('gt.insurance.inform').search(cr, uid, [('sinister_id','=', id_obj[0]),
+                                                                                          ('state','!=', 'cancel')])
+                        if obj.sinister_id.created_id.id not in list_user_inf:
+                            raise osv.except_osv('Error', 'No puede eliminar al usuario que ha creado el Siniestro')
+                        for obj_informes in self.pool.get('gt.insurance.inform').browse(cr,uid,inform_ids,context):
+                            if obj_informes.employee_id.user_id.id not in list_user_inf:
+                                raise osv.except_osv('Error', 'No puede eliminar un usuario del que depende un informe')
+                                return False                                              
+        super(gt_insurance_inform, self).write(cr, uid, ids, vals)
+        return True
+    def onchange_job(self, cr, uid, ids, employee_id, context=None):
+        #actualiza el cargo al cambiar al empleado
+        if not employee_id:
+            return {}
+        obj_employee = self.pool.get('hr.employee')
+        employee = obj_employee.browse(cr, uid, employee_id)
+        return {'value':{'job_id':employee.job_id.id}}
+    def onchange_employee_id(self, cr, uid, ids, job_id, employee_id,department_id, context=None):
+        if job_id and department_id:
+            if employee_id:
+                for obj_emp in self.pool.get('hr.employee').browse(cr, uid, [employee_id], context):
+                    if obj_emp.job_id.id !=job_id:
+                        employee_id= self.pool.get('hr.employee').search(cr, uid, [('job_id','=', job_id),
+                                                                                   ('department_id','=', department_id),])  
+                        if employee_id:
+                            return {'value':{'employee_id':employee_id[0]}}
+                        else:
+                            return {'value':{'employee_id':''}}
+            else:
+                employee_id= self.pool.get('hr.employee').search(cr, uid, [('job_id','=', job_id),
+                                                                            ('department_id','=', department_id),])  
+                if employee_id:
+                    return {'value':{'employee_id':employee_id[0]}}
+                else:
+                    return {'value':{'employee_id':''}}
+                
+                
+            
+                
+    def onchange_job_id(self, cr, uid, ids, context=None):        
+       return {'value':{'job_id':'','employee_id':''}}
+    def name_get(self, cr, uid, ids, context=None):        
+        # el name_ger devuelve el codigo del informe, (el nombre es un tipo)
+        if not len(ids):
+            return []
+        res = []
+        for record in self.read(cr, uid, ids, ['id','code',], context=context):
+            try:
+                res.append((record['id'], record['code'] ))
+            except:
+                pass
+        return res 
+        
+    def create_request(self, cr, uid, ids, context):
+        '''
+        crea las notificaciones para el empleado correspondiente cada vez que se le asigna un informe
+        '''
+        for obj_inform in self.pool.get('gt.insurance.inform').browse(cr, uid, ids, context):
+            try:                
+                if not obj_inform.employee_id.user_id.id:
+                    raise osv.except_osv(('Error !'), ('El empleado no tiene un usuario relacionado'))
+                self.pool.get('res.request').create(cr, uid, {'name': ustr(obj_inform.name.name),
+                                                          'priority': '1',
+                                                          'module': 'Siniestro',                                                       
+                                                          'active': True,
+                                                          'act_to': obj_inform.employee_id.user_id.id,
+                                                          'trigger_date': time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                          'state': 'waiting',
+                                                          'ref_doc1': 'gt.insurance.inform,%d'% (obj_inform.id,),
+                                                          'body':'Siniestro:  ' +ustr(obj_inform.sinister_id.name.name)+ ustr(',  código:  ')+ ustr(obj_inform.sinister_id.code) +'\nInforme:  ' +ustr(obj_inform.name.name) +ustr(',  código:  ')+ ustr(obj_inform.code)
+                                                          })
+            except:
+                raise osv.except_osv(('Error !'), ('No se ha agregado los "Informes" como referencias de solicitud'))                       
+            
+    def create_users(self, cr, uid, ids, context=None):
+        """        
+         va asignando los usuarios relacionados
+        """
+        for obj in self.browse(cr, uid, ids, context=None):
+            inf_id=obj.id                       
+            #verifica si el creador es el responsable, caso contrario agregal al responsable como parte del grupo
+            cr.execute ("INSERT INTO gt_insurance_inform_user_id (inform_id,user_id) VALUES(" + str(inf_id) + "," + str(obj.created_id.id)+")")
+            employee_id= self.pool.get('hr.employee').search(cr, uid, [('id','=', int(obj.employee_id.id))])
+            if employee_id:
+                for obj_employee in self.pool.get('hr.employee').browse(cr, uid, employee_id, context=None):
+                    employee_user_id = obj_employee.user_id.id            
+            cr.execute('SELECT user_id FROM gt_insurance_inform_user_id WHERE  user_id='+ str(employee_user_id) +'and inform_id =' + str(inf_id) )
+            result = cr.fetchall()
+            if not result:
+                cr.execute ("INSERT INTO gt_insurance_inform_user_id (inform_id,user_id) VALUES(" + str(inf_id) + "," + str(employee_user_id)+")")
+            # Trae todos los usuarios relacionados con el siniestro
+            cr.execute('SELECT user_id FROM gt_insurance_sinister_user_id WHERE  sini_id =' + str(obj.sinister_id.id)+'and user_id <>'+ str(obj.created_id.id)+ 'and user_id <>'+ str(employee_user_id) )
+            result = cr.fetchall()  
+            if result:
+                for row in result:
+                    cr.execute ("INSERT INTO gt_insurance_inform_user_id (inform_id,user_id) VALUES(" + str(inf_id) + "," + str(row[0])+")")  
+            #LLeva al informe todos los usuarios relacionados con el informe   
+            cr.execute('SELECT user_id FROM gt_insurance_inform_user_id WHERE  inform_id =' + str(inf_id)  )
+            result = cr.fetchall()  
+            if result:
+                for row in result:
+                    cr.execute('SELECT user_id FROM gt_insurance_sinister_user_id WHERE sini_id =' + str(obj.sinister_id.id)+'and user_id ='+ str(row[0]))
+                    resultado = cr.fetchall()
+                    if not resultado:
+                        cr.execute ("INSERT INTO gt_insurance_sinister_user_id (sini_id,user_id) VALUES(" + str(obj.sinister_id.id) + "," + str(row[0])+")")                       
+    '''   
+    def unlink(self, cr, uid, ids, context=None):
+        Solo puede ser eliminado si esta en estado borrador
+        head = self.read(cr, uid, ids, [], context=context)
+        for s in head:
+            if s['sinister_id'] =='' or s['state']!='draft':
+                raise osv.except_osv(_(ustr('Error!\n')), _('Solo puede eliminar informes en estado "Borrador" ' ))
+        return osv.osv.unlink(self, cr, uid, ids, context=context)            
+    '''
+    def unlink(self, cr, uid, ids, context=None):
+        for formulario in self.browse(cr, uid, ids, context):
+                raise osv.except_osv('Error', 'No puede eliminar una Solicitud de Informe')
+        return False                                                
+    def required_fields(self, cr, uid, ids, id_inform_type, context=None):
+        '''
+        on_change: al seleccionar el tipo de informe, verifica los campos requeridos en el informe en base a dicho tipo
+        '''
+        res = {'value': {}}
+        inform_type = self.pool.get('gt.insurance.inform.type')
+        inform_type_ids= inform_type.search(cr, uid, [('id','=', id_inform_type)])
+        for obj_inform_type in inform_type.browse(cr, uid, inform_type_ids, context):
+            res['value'] = {'from_attached': obj_inform_type.from_attached,
+                            'from_employee': obj_inform_type.from_employee,
+                            'from_partner': obj_inform_type.from_partner,
+                            'from_other': obj_inform_type.from_other,
+                            'from_reenter': obj_inform_type.from_reenter,
+                            'from_activate': obj_inform_type.from_activate,
+                            #'from_output': obj_inform_type.from_output,                            
+                            'is_close': obj_inform_type.is_close,
+                            'from_prev': obj_inform_type.from_prev,}      
+        return res
+            
+    def action_inform_draft(self, cr, uid, ids):
+        # cambia a estado draft
+        self.write(cr, uid, ids, { 'state': 'draft' })
+        return True  
+      
+    def action_inform_open(self, cr, uid, ids):
+        '''cambia el informe a estado "abierto"
+         para ello verifica si existe algun informe previo como requerido y que este este en estado cerrado
+        ''' 
+        for obj in self.browse(cr, uid, ids, context=None):
+            inform_ids= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', obj.id)])
+            for obj_gt_insurance_inform in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_ids, context=None):                               
+                if obj_gt_insurance_inform.from_prev:                    
+                    inform_ids_= self.pool.get('gt.insurance.inform').search(cr, uid, [('sinister_id','=', obj.sinister_id.id)])
+                    result=exist=False
+                    for obj_gt_insurance_inform_ in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_ids_, context=None):                       
+                        if obj_gt_insurance_inform_.name.id == obj_gt_insurance_inform.name.prev_inform_id.id:
+                            exist=True
+                            if obj_gt_insurance_inform_.state =='response' or obj_gt_insurance_inform_.state =='close':
+                                result=True   
+                                                         
+                    if result:
+                        self.create_request(cr, uid, ids, context=None)
+                        task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                      'other_action' : ustr(obj.name.name) ,
+                                                                      'description':  ustr(obj.name.name),
+                                                                      #'desc_task': obj_sinister.name.name + '\n' +obj_sinister.description,
+                                                                      'department': obj.employee_id.department_id.id,
+                                                                      'employee_id' : obj.employee_id.id,
+                                                                      'job_id': obj.employee_id.job_id.id,
+                                                                      'user_id':obj.created_id.id,
+                                                                      'expedient_id':obj_gt_insurance_inform.sinister_id.expedient_id.id,
+                                                                      'state': 'progress',
+                                                                      }, context=None)
+                        self.write(cr, uid, ids, { 'state': 'open',
+                                                  'code': ustr(self.pool.get('ir.sequence').get(cr, uid, 'gt.insurance.sinister.type')),
+                                                  'task_id': task_id,
+                                                  'expedient_id': obj_gt_insurance_inform.sinister_id.expedient_id.id })
+                        message = (ustr("El informe ha sido solicitado.  Se ha enviado una notificación a ")) + ustr(obj.employee_id.name)
+                        self.log(cr, uid, obj.id, message)                        
+                    else:
+                        if exist:
+                            raise osv.except_osv(('Error !'), ('El requisito previo:   ' + ustr(obj_gt_insurance_inform.name.prev_inform_id.name) + '; debe estar en estado Respondido o Cerrado'))
+                        else:
+                            raise osv.except_osv(('Error !'), ('Requisito: Debe existir un ' + ustr(obj_gt_insurance_inform.name.prev_inform_id.name) + ''))
+                else:
+                    self.create_users(cr, uid, ids)
+                    self.create_request(cr, uid, ids, context=None)
+                    task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                      'other_action' : ustr(obj.name.name) ,
+                                                                      'description':  ustr(obj.name.name),
+                                                                      #'desc_task': obj_sinister.name.name + '\n' +obj_sinister.description,
+                                                                      'department': obj.employee_id.department_id.id,
+                                                                      'employee_id' : obj.employee_id.id,
+                                                                      'job_id': obj.employee_id.job_id.id,
+                                                                      'user_id':obj.created_id.id,
+                                                                      'expedient_id':obj_gt_insurance_inform.sinister_id.expedient_id.id,
+                                                                      'state': 'progress',
+                                                                      }, context=None)
+                    self.write(cr, uid, ids, { 'state': 'open',
+                                              'code': ustr(self.pool.get('ir.sequence').get(cr, uid, 'gt.insurance.sinister.type')),
+                                              'task_id': task_id,
+                                              'expedient_id': obj_gt_insurance_inform.sinister_id.expedient_id.id })
+                    message = (ustr("El informe ha sido solicitado.  Se ha enviado una notificación a ")) + ustr(obj.employee_id.name)
+                    self.log(cr, uid, obj.id, message)                                                               
+        return True
+    
+    def action_inform_response(self, cr, uid, ids):
+        ''' cambia el estado del informe a estado respondido
+         verifica los campos requeridos y adjuntos necesarios
+        ''' 
+        for obj in self.browse(cr, uid, ids, context=None):
+            if int(obj.employee_id.user_id.id) !=int(uid):
+                raise osv.except_osv(('Error !'), ('El usuario no esta autorizado a responder el informe'))
+            else:                
+                gt_insurance_inform_ = self.pool.get('gt.insurance.inform')
+                resultado=True
+                inform_ids= gt_insurance_inform_.search(cr, uid, [('id','=', obj.id)])
+                for obj_gt_insurance_inform in gt_insurance_inform_.browse(cr, uid, inform_ids, context=None):
+                    task_id_=obj_gt_insurance_inform.task_id.id
+                    if obj_gt_insurance_inform.from_attached:
+                        inform_ids= self.pool.get('ir.attachment.sinister').search(cr, uid, [('inf_document_id','=', obj.id)])
+                        if not inform_ids:                        
+                            resultado=False                    
+                            raise osv.except_osv(('Error !'), ('El informe requiere un archivo adjunto'))
+                    if obj_gt_insurance_inform.from_reenter ==True:   
+                        try:
+                            if not obj_gt_insurance_inform.new_account_asset_id:
+                                resultado=False
+                                raise osv.except_osv(('Error !'), ('El informe requiere que se indique el nuevo activo creado para asignarlo a la Póliza'))
+                        except:
+                            resultado=False                        
+                            raise osv.except_osv(('Error !'), ('El informe requiere que se indique el nuevo activo creado'))
+                if resultado==True:
+                    self.write(cr, uid, ids, { 'state': 'response' })                                                                                                   
+                    self.pool.get('doc_expedient.task').write(cr, uid, [task_id_], { 'state': 'done' })
+        return True  
+      
+    def action_inform_close(self, cr, uid, ids, context=None):
+        #cambia el informe a estado cerrado        
+        for obj in self.browse(cr, uid, ids, context=None):
+            if obj.created_id.id:               
+                if int(obj.created_id.id) !=int(uid):
+                    raise osv.except_osv(('Error !'), ('EL usuario no esta autorizado a cerrar el informe'))
+                else:
+                    self.write(cr, uid, ids, { 'state':'close' }, context)            
+        return True    
+    
+    def action_inform_cancel(self, cr, uid, ids, context=None):
+        #cambia el informe a estado cancelado
+        self.write(cr, uid, ids, { 'state': 'cancel' }, context)
+        return True  
+    
+    def get_directory(self, cr, uid, ids, sinister_id, context=None):
+        # devielve el directorio correspondiente al siniestro
+        res = {'value': {}}
+        inform_type = self.pool.get('gt.insurance.sinister.memory')
+        inform_type_ids= inform_type.search(cr, uid, [('id','=', int(sinister_id))])
+        if inform_type_ids:
+            for obj_inform_type in inform_type.browse(cr, uid, inform_type_ids, context):
+                res['value'] = {'directory_id': obj_inform_type.directory_id.id,
+                                }      
+        return res
+          
+    def load_department(self, cr, uid, ids,  context=None):        
+        '''
+        al cambiar el departamento vacia los campos de job_id y employee_id que son dependientes 
+        '''
+        res = {'value': {}}
+        res['value'] = {'employee_id': '',}
+        return res
+    
+    def load_job_id(self, cr, uid, ids,  context=None):        
+        '''
+        al cambiar el trabajo vacia el campo employee_id que es dependiente
+        '''
+        res = {'value': {}}
+        res['value'] = {'employee_id': '',}
+        return res         
+              
+    _defaults = {       
+        'state':'draft',  
+        'date': lambda *a: time.strftime('%Y-%m-%d'),
+        'created_id': _employee_get,     
+    }
+gt_insurance_inform()
+
+
+class Ir_Attachment_(osv.osv):
+   '''  
+   Permite adjuntar archivos a informe
+   ''' 
+   _inherit = 'ir.attachment'
+   _name= 'ir.attachment.sinister'
+   _columns = dict(
+       inf_document_id = fields.many2one('gt.insurance.inform', 'Informe relacionado', readonly=True), 
+       is_old= fields.boolean('Confirma creación', size=64),
+       sinister_id = fields.related('inf_document_id', 'sinister_id',readonly=True,
+                                             type="many2one",relation="gt.insurance.sinister.memory",
+                                             string="Siniestro", store=True ),)
+   def unlink(self, cr, uid, ids, context=None):
+       for formulario in self.browse(cr, uid, ids, context):
+           raise osv.except_osv('Error', 'No puede eliminar un documento')
+       return False
+   def onchange_nameunique(self, cr, uid, ids, name,inf_document_id, context=None):
+        #verifica que el nombre ingresado sea unico
+        if not name or not inf_document_id:
+            return {}
+        attach_ids = self.search(cr, uid, [('inf_document_id','=',inf_document_id)])
+        for obj_adjuntos in self.browse(cr, uid, attach_ids, context):
+            if ustr(obj_adjuntos.name)==ustr(name):
+                raise osv.except_osv(('Error !'), ('El descripción de archivo ingresado pertenece a otro registro'))
+                return False
+        return True
+    
+
+   #_constraints = [(_adj_unique, ustr('\n\nEstá intentando cargar un archivo adjunto con una descripción que ya existe.'), ['name']),]    
+      
+   #_sql_constraints = [('name_unique', 'unique(name)', u'El nombre del adjunto debe ser único')]
+   _defaults = {       
+        'is_old':False,      
+    }
+
+   def create(self, cr, uid, vals, context=None):
+        """        
+        Permite que lso documentos adjuntos se visualicen en SGP
+        """    
+        res=[]
+        inform_id=int(vals['inf_document_id']) 
+        if inform_id:
+            attach_ids = self.search(cr, uid, [('inf_document_id','=',int(vals['inf_document_id'])),])
+            for obj_adjuntos in self.browse(cr, uid, attach_ids, context):
+                if ustr(obj_adjuntos.name)==vals['name']:
+                    raise osv.except_osv(('Error !'), (ustr('Está intentando cargar un archivo adjunto con una descripción que ya existe.')))
+               
+           
+            for obj_inform in self.pool.get('gt.insurance.inform').browse(cr, uid, [inform_id], context):
+                vals['document_id']=obj_inform.task_id.id
+                vals['document_expedient_id']=obj_inform.expedient_id.id  
+                vals['is_old']=True 
+                added_id= self.pool.get('ir.attachment').create(cr, uid,{'name': vals['name'],
+                                                                         'parent_id': vals['parent_id'],
+                                                                         'datas_fname': vals['datas_fname'],
+                                                                         'datas':vals['datas'],
+                                                                         'parent_id': vals['parent_id'],
+                                                                         'document_id': obj_inform.task_id.id,
+                                                                         'document_expedient_id': obj_inform.sinister_id.expedient_id.id,
+                                                                         }, context=context)                
+                res = super(Ir_Attachment_, self).create(cr, uid, vals, context=context)     
+        return res
+        
+  
+Ir_Attachment_()
+
+
+class account_asset_(osv.osv):
+    '''
+    Agregar campos: "sinister_id"
+    Indica el siniestro con el que se reporta el activo
+    '''
+    _description = 'Hereda de la clase activos fijos, y agrega campo para relacionar con siniestros'
+    _inherit = 'account.asset.asset'
+    _columns = {'sinister_ids': fields.one2many('gt.insurance.sinister.memory','account_asset_id','Siniestros',),
+                }   
+account_asset_()
+
+
+class hr_employee_(osv.osv):
+    '''
+    Agregar relacion con el siniestro para los puestos de trabajo
+    '''
+    _description = 'hered''Hereda de la clase activos fijos, y agrega campo que permite establecer permisos de siniestros'
+    _inherit = 'hr.employee'
+    _columns = {'sinister_id_': fields.many2one('gt.insurance.sinister.type','Siniestro', size= 32),
+                }   
+hr_employee_()
+
+
+class gt_insurance_sinister_type(osv.osv):
+    '''
+    Tipo de Siniestro
+    '''
+    _description = 'Clasificador de Siniestros' 
+    _name = 'gt.insurance.sinister.type'  
+    _columns = {'name': fields.char('Nombre de clasificador de Siniestro', size=64, required=True),       
+                'code': fields.char('Código', size=64, readonly=True,),           
+                'days_number': fields.integer('Dias para registro de siniestro'),                                                   
+                'inform_ids':fields.many2many('gt.insurance.inform.type','gt_insurance_sinister_type_informe','sini_id','inf_id','Tipos de Informe'),                                             
+                }   
+    
+    def _sinister_unique(self, cr, uid, ids, context=None):
+        old_ids= self.search(cr, uid, [('id','!=',ids)])
+        for obj in self.browse(cr,uid,ids,context):
+            for old_obj in self.browse(cr,uid,old_ids,context): 
+                if ustr(obj.name)==ustr(old_obj.name):
+                    return False
+        return True
+                        
+    _constraints = [(_sinister_unique, '\n\nEl nombre ingresado ya pertenece a otro Clasificador de Siniestros', ['name']),]    
+      
+    def create(self, cr, uid, vals, context=None):
+        """        
+        establece el codigo para el clasificador de siniestros
+        """          
+        code_t= str(self.pool.get('ir.sequence').get(cr, uid, 'gt.insurance.sinister.type')) 
+        vals['code']=code_t  
+        res = super(gt_insurance_sinister_type, self).create(cr, uid, vals, context=context)        
+        return res             
+         
+    def write(self, cr, uid, ids, vals, context=None):
+        """        
+        Se redefine el write para garantizar que mo exista un 
+        siniestro abierto consumiendo información mientras se hace el cambio
+        """    
+        res=[]  
+        inform_ids= self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('state', '=', 'open')])
+        if inform_ids:
+            for obj_inform in self.pool.get('gt.insurance.sinister.memory').browse(cr, uid, inform_ids, context):
+                if obj_inform.name.id ==ids[0]:
+                    raise osv.except_osv(('Error !'), ('Siniestro "Abierto" consume información de este objeto.\n\n No se procederá con el cambio'))
+                else:
+                    super(gt_insurance_sinister_type, self).write(cr, uid, ids, vals) 
+        else:
+            super(gt_insurance_sinister_type, self).write(cr, uid, ids, vals)          
+        return True      
+    def unlink(self, cr, uid, ids, context=None):
+        for formulario in self.browse(cr, uid, ids, context):
+                raise osv.except_osv('Error', 'No puede eliminar un registro')
+        return False  
+    '''   
+    def unlink(self, cr, uid, ids, context=None):
+         No puede eliminar el tipo de siniestro si existe un siniestro relacionado
+        head = self.read(cr, uid, ids, [], context=context)
+        for s in head:
+            sinister_ids= self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('name','=',s['id'])])
+            if sinister_ids:
+                raise osv.except_osv(_(ustr('Error\n Clasificador de Siniestro '+ustr(s['name'])+ustr(''))), _('No puede ser eliminado'))
+        return osv.osv.unlink(self, cr, uid, ids, context=context)
+    '''             
+gt_insurance_sinister_type()
+
+
+
+#class gt_doc_expedient(osv.osv):
+#    '''
+#    agrega campo con relacion a siniestros
+#    '''
+#    _description = 'Agrega campo para relacion con siniestros'
+#    _inherit = 'doc_expedient.expedient'
+#    _columns = {'sinister_ids': fields.many2one('gt.insurance.sinister.memory','Siniestros'),
+#                }   
+#gt_doc_expedient()
+
+
+class gt_insurance_sinister_memory(osv.osv):
+    '''
+    Registra la memoria del siniestro
+        Contiene informacion del bien 
+        Cada uno de sus Informes Requeridos
+    '''
+    _description = 'Informacion de siniestro' 
+    _name = 'gt.insurance.sinister.memory'  
+    _order = 'date_sinister DESC'                                                              
+    _columns = {#'search_asset': fields.char('Activo a buscar', size=64,
+                #                           help='Código del activo a buscar', required=True),
+                'inform_rel_ids':fields.many2many('gt.insurance.inform.type','gt_insurance_sinister_informe','sini_id','inf_id','Tipos de Informe'),
+                'name':fields.many2one('gt.insurance.sinister.type','Siniestro', size= 32, required=True),                
+                'description': fields.char('Descripción', size=256),                
+                'expedient_name': fields.char('Descripción corta', size=128),
+                'expedient_code': fields.char('Trámite a buscar', size=64,
+                                              help='Código del trámite a buscar',),
+                'observation': fields.text('Observación'),
+                'create_expedient': fields.boolean('Crear Trámite', size=64),
+                'code': fields.char('Código', size=64, readonly=True,),
+                'date_sinister': fields.datetime('Fecha de creación', size=64, required=True),                
+                'date': fields.date('Fecha', size=64, required=True),
+                'inform_ids': fields.one2many('gt.insurance.inform','sinister_id','Informes relacionado'),  
+                #'expedient_id':fields.many2one('doc_expedient.expedient','Trámite', size= 32,                                               
+                #'ids_expedients': fields.one2many('doc_expedient.expedient','sinister_ids','Tramites existentes',),
+                #'expedient_selection': fields.selection(get_tramite,'Trámite'),
+                #'expedient_selection': fields.char('Trámite', size=128),
+                
+                #'ref_expedient_id':fields.many2one('doc_expedient.expedient','Trámite', size= 32),                                           
+                'account_asset_id': fields.many2one('account.asset.asset','Activo fijo',
+                                                     readolny=True),   
+                'account_asset_id_': fields.many2one('account.asset.asset','Activo fijo',
+                                                     readonly=True),
+                'tipo_id' : fields.related('account_asset_id_','tipo_id', type='many2one',
+                                             relation="gt.account.asset.tipo", string='Tipo de bien',
+                                             readonly=True,store=True),
+                'subtipo_id': fields.related('account_asset_id_','subtipo_id', type='many2one',
+                                             relation="gt.account.asset.subtipo", string='Subtipo de Bien',
+                                             readonly=True,store=True),
+                'class_id': fields.related('account_asset_id_','class_id', type='many2one',
+                                           relation="gt.account.asset.class", string='Clase de Bien',
+                                           readonly=True,store=True),
+                'category_id': fields.related('account_asset_id_','category_id', type='many2one',
+                                           relation="account.asset.category", string='Cuenta Contable',
+                                           readonly=True,store=True),
+                'income_id': fields.related('account_asset_id_','income_id', type='many2one',
+                                           relation="gt.account.asset.income", string='Clasificador de bien',
+                                           readonly=True,store=True),
+                #'directory_id': fields.many2one('document.directory','Directorio', size=64),
+                #'directory_id': fields.related('expedient_id', 'directory_id',readonly=True,
+                #                             type="many2one",relation="document.directory",
+                #                             string="Directorio", store=True ),            
+                #'policy_id' : fields.related('account_asset_id', 'policy_id',readonly=True,
+                #                             type="many2one",relation="gt.insurance.policy",
+                #                             string="Póliza", store=True ),
+                'policy_id' : fields.many2one('gt.insurance.policy.temporal','Póliza'),
+                'code_asset' : fields.related('account_asset_id','tipo_id',readonly=True,
+                                             type="many2one", relation="gt.account.asset.tipo",
+                                              string="Tipo de Bien", store=True ),
+                'employee_id' : fields.related('account_asset_id', 'employee_id',readonly=True,
+                                             type="many2one",relation="hr.employee",
+                                             string="Custodio", store=True ),                                
+                'state': fields.selection([('draft', 'Borrador'),
+                                           ('open', 'Abierto'),
+                                           ('cancel', 'Cancelado'),
+                                           ('close', 'Finalizado'),
+                                           ],'Estado', required=True),
+                'created_id' : fields.many2one('res.users','Creado por', store=True), 
+                'users_ids':fields.many2many('res.users','gt_insurance_sinister_user_id','sini_id','user_id','Usuarios'),
+                }    
+    
+    _defaults = {'state':'draft',
+                 'date_sinister': lambda *a: time.strftime("%Y-%m-%d %H:%M:%S"),
+                 'account_asset_id_':'',
+                 'created_id': _employee_get,
+                 'create_expedient':True,
+                 #'search_asset':'0'
+    }
+    def name_search(self, cr, uid, name='', args=[], operator='ilike', context={}, limit=80):
+        #Devuelve el codigo del Siniestro
+        ids = []
+        ids_name = self.search(cr, uid, [('name', operator, name)] + args, limit=limit, context=context)
+        ids = list(set(ids + ids_name))
+        if name:
+            code = self.search(cr, uid, [('code', operator, name)] + args, limit=limit, context=context)           
+            ids = list(set(ids + code))
+        return self.name_get(cr, uid, ids, context=context) 
+    
+    def onchange_asset_sinister(self, cr, uid, ids, asset_id,context=None):
+        '''
+        carga directamente la informacion del activo al seleccionar el siniestro
+        '''
+        if asset_id:
+            for obj_asset in self.pool.get('account.asset.asset').browse(cr, uid, [asset_id], context):
+                policy_ids= self.pool.get('gt.insurance.policy.temporal').search(cr, uid, [('asset_id', '=', obj_asset.id),
+                                                                                       ('state', 'in', ['open','review'])])
+                if policy_ids:
+                    return {'value':{'employee_id':obj_asset.employee_id.id,
+                                 'code_asset':obj_asset.tipo_id.id,
+                                 'policy_id':policy_ids[0]
+                                 }}
+                else:
+                    return {'value':{'employee_id':obj_asset.employee_id.id,
+                                 'code_asset':obj_asset.tipo_id.id,
+                                 'policy_id':''
+                                 
+                                 }}
+    
+    #def create(self, cr, uid, vals, context=None):
+    #    """        
+    #     va asignando los usuarios responsables de los informes
+    #    """    
+    #    res=[]
+    #    res = super(gt_insurance_sinister_memory, self).create(cr, uid, vals, context=context)           
+    #    return res    
+    def write(self, cr, uid, ids, vals, context=None):
+        """        
+        Verifica la agrecación de usuarios relacionados al siniestro
+        """    
+        res=[]  
+        verificar_usuarios=False
+        if vals.has_key("users_ids"):
+            verificar_usuarios=True
+        if verificar_usuarios:
+            for obj in self.browse(cr,uid,ids,context):
+                id_obj=self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','=', obj.id)])                
+                list_user = vals['users_ids'][0][2]
+                for siniestro in self.pool.get('gt.insurance.sinister.memory').browse(cr,uid,ids,context):
+                    for usser in  siniestro.users_ids:
+                        if  usser.id in list_user:
+                            result= True
+                        else:                            
+                            if usser.id == obj.created_id.id:
+                                raise osv.except_osv('Error', 'No puede eliminar al usuario que ha creado el Siniestro')
+                                return False
+                            else:
+                                inform_ids =self.pool.get('gt.insurance.inform').search(cr, uid, [('sinister_id','=', obj.id),
+                                                                                                  ('state','!=', 'cancel')])
+                                for obj_informes in self.pool.get('gt.insurance.inform').browse(cr,uid,inform_ids,context):
+                                    if obj_informes.employee_id.user_id.id not in list_user:
+                                        raise osv.except_osv('Error', 'No puede eliminar un usuario del que depende un informe')
+                                        return False
+        
+
+        super(gt_insurance_sinister_memory, self).write(cr, uid, ids, vals)
+        return True     
+       
+    def compare_date(self, cr, uid, ids, date,date_sinister, context=None):
+        #verifica que la fecha de siniestro sea menor a la fecha en que se esta reportando el mismo
+        if not date:
+            return {}
+        else:
+            if date >= date_sinister:
+                raise osv.except_osv('Error', 'La fecha de en que se dió Siniestro no puede ser mayor a la fecha de creacion')
+                return {'value':{'date':''}}                                    
+    
+    def _unique_sinister(self, cr, uid, ids, context=None):  
+        #verifica que el codigo del siniestro sea único
+        result=True
+        certificate_ = []
+        for obj_areas_line in self.browse(cr,uid,ids,context):
+            subject_line = self.pool.get('gt.insurance.sinister.memory')
+            s_line= subject_line.search(cr, uid, []) 
+            if len(s_line) <2:
+                result=True
+            else:
+                result=False                
+        return result
+    def unlink(self, cr, uid, ids, context=None):
+        for formulario in self.browse(cr, uid, ids, context):
+                raise osv.except_osv('Error', 'No puede eliminar un registro')
+        return False    
+    '''
+    def unlink(self, cr, uid, ids, context=None):
+        # solo se puede eliminar siniestros en estado borrador
+        head = self.read(cr, uid, ids, [], context=context)
+        for s in head:
+            if s['state']!='draft':
+                raise osv.except_osv(_(ustr('Error!\n')), _('Solo puede eliminar Siniestros en estado "Borrador" ' ))
+        return osv.osv.unlink(self, cr, uid, ids, context=context) 
+    '''        
+    def name_get(self, cr, uid, ids, context=None):        
+        # el name_ger devuelve el codigo del siniestro, (el nombre es un tipo)
+        if not len(ids):
+            return []
+        res = []
+        for record in self.read(cr, uid, ids, ['id','code',], context=context):
+            try:
+                res.append((record['id'], record['code'] ))
+            except:
+                pass
+        return res      
+    
+    def account_asset_in_review(self, cr, uid, ids, context=None):
+        #cambia estado de activo a revisión
+        sinister_id =self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','in', ids)])
+        for obj_sinister in self.pool.get('gt.insurance.sinister.memory').browse(cr, uid, sinister_id, context=None):
+            self.pool.get('gt.insurance.sinister.memory').write(cr, uid, ids, {'account_asset_id_' : obj_sinister.account_asset_id.id}, context)
+            account_asset_id= self.pool.get('account.asset.asset').search(cr, uid, [('id','=', obj_sinister.account_asset_id.id),
+                                                                                   ('state','=', 'open')])
+            low_reason_='Siniestro:  '+ustr(obj_sinister.name)+'\n'+ustr(obj_sinister.description)            
+            self.pool.get('account.asset.asset').write(cr, uid, account_asset_id, {'state' : 'review',
+                                                                                   's_date_siniestro' :time.strftime('%Y-%m-%d'),
+                                                                                   'new_low_reason':low_reason_}, context)                                                                                   
+        return True
+    
+    ''' Se quita el proceso por que se va a utilizar el de tramitología
+    def create_directory_siniestro(self, cr, uid, ids, context=None):
+        # crea el directorio del siniestro
+        obj_document_directory = self.pool.get('document.directory')
+        ids_dir_cont = obj_document_directory.search(cr, uid, [('name','=','Siniestro')], limit=1)
+        id_dir_cont = obj_document_directory.read(cr, uid, ids_dir_cont, ['id'])         
+        for sinister  in self.browse(cr, uid, ids, context):
+            pid = obj_document_directory.create(cr,uid,{'name': ustr(sinister.code),'parent_id':ids_dir_cont[0],})
+            self.write(cr, uid, sinister.id, {'directory_id': pid})                                                                
+        return True 
+    '''
+
+    def create_informs_related(self, cr, uid, ids, context=None):
+        '''
+        En base a los informes requeridos en el tipo de siniestro, 
+        crea la misma relacion m2m entre el siniestro y los tipos de informe requeridos 
+        '''
+        for obj in self.browse(cr, uid, ids, context=None):            
+            type_sinister =self.pool.get('gt.insurance.sinister.type').search(cr, uid, [('id','=', obj.name.id)])
+            for obj_type_sinister in self.pool.get('gt.insurance.sinister.type').browse(cr, uid, type_sinister, context=None):                
+                cr.execute('SELECT inf_id FROM gt_insurance_sinister_type_informe WHERE  sini_id =' + str(obj_type_sinister.id) )
+                res = cr.fetchall() 
+                if res:
+                    cr.execute ("INSERT INTO gt_insurance_sinister_user_id (sini_id,user_id) VALUES(" + str(obj.id) + "," + str(obj.created_id.id)+")")
+                    for row in res: 
+                        cr.execute ("INSERT INTO gt_insurance_sinister_informe (inf_id,sini_id) VALUES(" + str(row[0]) + "," + str(obj.id)+")")                                                
+                else:
+                    raise osv.except_osv(('Error !'), ('El tipo siniestro seleccionado no tiene Informes Requeridos'))
+
+    def get_inform_id(self, cr, uid, ids, context):  
+        '''
+        obtiene los ids de Informes Requeridos
+        '''
+        res = []
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','=', id_activo)])
+        for obj in self.browse(cr, uid, sinister_id, context):         
+            for obj_inform in obj.inform_rel_ids:
+                res.append(obj_inform.id)        
+        return res
+       
+    def action_draft_open_siniestro(self, cr, uid, ids, context=None):
+        '''
+        cambia el estado del siniestro a abierto, se encarga de llamar los procesos para:
+            crear Informes Requeridos
+            cambiar el estado del activo a revisión
+            generar el codigo del activo y colocarlo en estado abierto
+            crear el directorio del siniestro en base al código
+        '''
+        for obj in self.browse(cr, uid, ids, context=None):
+            sinister_id =self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','=', obj.id)])
+            for obj_sinister in self.pool.get('gt.insurance.sinister.memory').browse(cr, uid, sinister_id, context=None):
+                if obj_sinister.date >= obj_sinister.date_sinister:                    
+                    raise osv.except_osv('Error', 'La fecha de en que se dió Siniestro no puede ser mayor a la fecha de creación')
+                else:  
+                    print datetime.today()+timedelta(days=obj.name.days_number)
+                    start_d = datetime.strptime( str(time.strftime('%Y-%m-%d %H:%M:%S')), '%Y-%m-%d %H:%M:%S')
+                    today_= str(datetime.strptime(str(timedelta(days=-obj.name.days_number) + start_d), "%Y-%m-%d %H:%M:%S"))
+                    today__ = datetime.strptime(str(today_), "%Y-%m-%d %H:%M:%S")
+                    date_selected = today__.strftime("%Y-%m-%d")
+                    if obj_sinister.date<date_selected:               
+                        raise osv.except_osv('Error', 'En base al tipo siniestro se ha superado la fecha limite para el registro(' +str(obj.name.days_number)+' dias)')                     
+                    else:
+                        code_sinister = str(obj_sinister.name.code)+'-' + str(self.pool.get('ir.sequence').get(cr, uid, 'gt.insurance.sinister.memory'))
+                        self.create_informs_related(cr, uid, ids, context=None)                                                          
+                        self.account_asset_in_review(cr, uid, ids, context=None)    
+                        descrip=ustr(obj_sinister.name.name)
+                        if obj_sinister.create_expedient ==True: 
+                            if obj_sinister.description:
+                                descrip= descrip + '\n' + ustr(obj_sinister.description)
+                            if not obj_sinister.employee_id.user_id.id:
+                                raise osv.except_osv(('Error !'), ustr('Verifique que el empleado custodio del activo tenga un usuario relacionado'))
+                            else:
+                                expedient_id= self.pool.get('doc_expedient.expedient').create(cr, uid,{'name':  str('Siniestro:  ') +ustr(obj_sinister.name.name)+'-'+ obj_sinister.name.code,
+                                                                                                       'state': 'draft',
+                                                                                                       'ubication':'internal',
+                                                                                                       'resumen': descrip,}, context=context)
+                                task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                                      'other_action' : str('Siniestro Iniciado') ,
+                                                                                      'description': obj_sinister.name.code  +'  '+descrip ,
+                                                                                      #'desc_task': obj_sinister.name.name + '\n' +obj_sinister.description,
+                                                                                      'department': obj_sinister.employee_id.department_id.id,
+                                                                                      'employee_id' : obj_sinister.employee_id.id,
+                                                                                      'job_id': obj_sinister.employee_id.job_id.id,
+                                                                                      'user_id': obj_sinister.created_id.id,
+                                                                                      'expedient_id':expedient_id,
+                                                                                      'state': 'done',
+                                                                                      }, context=context)
+                            self.pool.get('doc_expedient.expedient').action_draft_created(cr, uid, [expedient_id],context)
+                            self.pool.get('doc_expedient.task').write(cr, uid, [task_id], {'state' : 'done'}, context)                                          
+                            self.write(cr, uid, ids, {'state' : 'open','code':code_sinister,
+                                                      'expedient_id':expedient_id,
+                                                      }, context)    
+                        else:
+                            task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                                  'other_action' : ustr('Siniestro Iniciado') ,
+                                                                                  'description': obj_sinister.name.code  +'  '+descrip ,
+                                                                                  #'desc_task': obj_sinister.name.name + '\n' +obj_sinister.description,
+                                                                                  'department': obj_sinister.employee_id.department_id.id,
+                                                                                  'employee_id' : obj_sinister.employee_id.id,
+                                                                                  'job_id': obj_sinister.employee_id.job_id.id,
+                                                                                  'user_id': obj_sinister.created_id.id,
+                                                                                  'expedient_id':obj_sinister.expedient_id.id,
+                                                                                  'state': 'done',
+                                                                                  }, context=context)
+                            self.write(cr, uid, ids, {'state' : 'open','code':code_sinister}, context)                  
+        return True    
+    
+    def action_open_close_siniestro(self, cr, uid, ids, context=None):
+        '''
+        ambia el estado del siniestro a cerrado
+        verifica que el siniestro tenga todos los informes requeridos en estado cerrado 
+        '''
+        for obj in self.browse(cr, uid, ids, context=None):
+            exist_inform=False
+            sinister_id =self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','=', obj.id)])
+            for obj_sinister in self.pool.get('gt.insurance.sinister.memory').browse(cr, uid, sinister_id, context=None):
+                if uid ==obj_sinister.created_id.id:
+                    for inf_siniestro in obj_sinister.inform_rel_ids :
+                        inform_r_ids_= self.pool.get('gt.insurance.inform').search(cr, uid, [('sinister_id','=', obj_sinister.id),
+                                                                                             ('state','=', 'close'),
+                                                                                             ('name','=', inf_siniestro.id)])                   
+                        if not inform_r_ids_:
+                            raise osv.except_osv(('Error !'), ('Verificar estado de:   '+ ustr(inf_siniestro.name)))
+                    inform_not_close= self.pool.get('gt.insurance.inform').search(cr, uid, [('sinister_id','=', obj_sinister.id),
+                                                                                         ('state','in', ['draft','open','response']),])
+                    if inform_not_close:
+                        raise osv.except_osv(('Error !'), ('Existen informes que no han sido cerrados '))
+                else:
+                     raise osv.except_osv(('Error !'), ('El usuario no tiene permisos para cerrar el Siniestro'))
+                    
+                task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                     'other_action' : ustr('Siniestro Cerrado') ,
+                                                                     'description': obj_sinister.name.code  +'  '+ustr(obj_sinister.name.name) ,
+                                                                     #'desc_task': obj_sinister.name.name + '\n' +obj_sinister.description,
+                                                                     'department': obj_sinister.employee_id.department_id.id,
+                                                                     'employee_id' : obj_sinister.employee_id.id,
+                                                                     'job_id': obj_sinister.employee_id.job_id.id,
+                                                                     'user_id': obj_sinister.created_id.id,
+                                                                     'expedient_id':obj_sinister.expedient_id.id,
+                                                                     'state': 'done',
+                                                                     }, context=context)                         
+        self.write(cr, uid, ids, { 'state': 'close' }, context)                                                             
+         
+    def action_open_cancel_siniestro(self, cr, uid, ids, context=None):
+        #cambia el estado del siniestro a cancelado
+        sinister_id =self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','in', ids)])
+        for obj_sinister in self.pool.get('gt.insurance.sinister.memory').browse(cr, uid, sinister_id, context=None):
+            if uid ==obj_sinister.created_id.id:
+                self.pool.get('gt.insurance.sinister.memory').write(cr, uid, ids, {'account_asset_id_' : obj_sinister.account_asset_id.id}, context)
+                account_asset_id= self.pool.get('account.asset.asset').search(cr, uid, [('id','=', obj_sinister.account_asset_id.id),
+                                                                                       ('state','=', 'review')])
+                self.pool.get('account.asset.asset').write(cr, uid, account_asset_id, {'state' : 'open'}, context)
+                try:
+                    if obj_sinister.expedient_id: 
+                        try:
+                            task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                                     'other_action' : ustr('Siniestro Cancelado') ,
+                                                                                     'description': obj_sinister.name.code  +'  '+ustr(obj_sinister.name.name) ,
+                                                                                     #'desc_task': obj_sinister.name.name + '\n' +obj_sinister.description,
+                                                                                     'department': obj_sinister.employee_id.department_id.id,
+                                                                                     'employee_id' : obj_sinister.employee_id.id,
+                                                                                     'job_id': obj_sinister.employee_id.job_id.id,
+                                                                                     'user_id': obj_sinister.created_id.id,
+                                                                                     'expedient_id':obj_sinister.expedient_id.id,
+                                                                                     'state': 'done',
+                                                                                     }, context=context)
+                        except:
+                            pass
+                except:
+                    pass
+            else:
+                raise osv.except_osv(('Error !'), ('Existen informes que no han sido cerrados '))
+                
+        self.write(cr, uid, ids, { 'state': 'cancel' }, context)
+        return True  
+    
+    def action_draft_siniestro(self, cr, uid, ids, context=None):
+        #cambia el estado del siniestro a borrador
+        self.write(cr, uid, ids, { 'state': 'draft' }, context)
+        return True                           
+         
+    def get_policy(self, cr, uid, ids, id_inform_type, context=None):        
+        '''
+        (on_change) en base al activo: Carga la Póliza, número de serie y custorio 
+        '''
+        res = {'value': {}}
+        inform_type = self.pool.get('account.asset.asset')
+        inform_type_ids= inform_type.search(cr, uid, [('id','=', id_inform_type)])
+        for obj_inform_type in inform_type.browse(cr, uid, inform_type_ids, context):
+            res['value'] = {'policy_id': obj_inform_type.policy_id.id,
+                            'code_asset': ustr(obj_inform_type.name),
+                            'employee_id': obj_inform_type.employee_id.id,                            
+                            }
+        return res
+gt_insurance_sinister_memory()
+
+
+class gt_insurance_change_asset_state(osv.osv_memory):
+    '''
+     Para cerrar un siniestro se debe dar elegir un estado para el activo: Operativo o dado de baja
+    '''
+    _name = 'gt.insurance.change.asset.state'
+    _description = 'Cuando el siniestro se cierra, determina el nuevo estado' 
+    _columns = {
+        'name': fields.char('Nuevo estado', size=10),     
+        'low': fields.boolean('Dar de baja', ),
+        'operative': fields.boolean('Establecer como operativo', ),
+        'account_asset_id': fields.many2one('account.asset.asset','Activo de siniestro',readolny=True,),
+        'account_asset_id_': fields.many2one('account.asset.asset','Nuevo Activo',readolny=True,),
+       # 'insured_amount': fields.float('Nuevo valor asegurado', size= 20),
+        'reason': fields.text('Historia'),
+        'add_reason': fields.text('Justificacion', required=True),
+        #'policy_id' : fields.many2one('gt.insurance.policy','Póliza'),
+        #'previous_value': fields.float('Actual valor asegurado', size= 20),   
+        'employee_id': fields.many2one('hr.employee','Solicitado a', store=True, required=True),                      
+        }         
+    
+    def unlink(self, cr, uid, ids, context=None):
+        for formulario in self.browse(cr, uid, ids, context):
+                raise osv.except_osv('Error', 'No puede eliminar un registro')
+        return False
+    def change_state(self, cr, uid, ids, context):
+        '''
+        wizard que permite "CERRAR" el siniestro y establecer las acciones con el activo
+        acciones en base a los informes ingresados
+        '''            
+        id_activo=context.get('active_id')
+        inform_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_inform in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_id, context):            
+            sinister_id= obj_inform.sinister_id.id
+        for obj in self.browse(cr, uid, ids, context):
+            if int(obj.employee_id.user_id.id) !=int(uid):
+                raise osv.except_osv(('Error !'), ('EL usuario no esta autorizado a responder el informe'))
+            else:
+                for obj_inform in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_id, context):
+                    if obj_inform.account_asset_id.state !='review':
+                        raise osv.except_osv(('Error !\nEstado del activo incorrecto'), (ustr('No es posible continuar el proceso del activo con este ayudande')))
+                    else:
+                        if obj_inform.account_asset_id.low_reason:                                
+                                first_msg=ustr(obj.reason)+ '\n\n'
+                        else:
+                            first_msg=''                                                                                                
+                        if obj.operative==True:                        
+                            self.pool.get('account.asset.asset').write(cr, uid, [obj_inform.sinister_id.account_asset_id.id], {'state':'open'}, context)                    
+                            self.pool.get('gt.insurance.inform').write(cr, uid, [obj_inform.id], { 'state': 'response' })
+                            message =ustr(first_msg) + 'Siniestro '+ustr(obj_inform.sinister_id.code)+'.   Tipo:  ' +ustr(obj_inform.sinister_id.name.name)+'.   Informe: '+ustr(obj_inform.name.name)+'.   Usuario: '+ustr(obj_inform.created_id.name)+'.   Establecido como operativo:  ' + str(time.strftime('%Y-%m-%d %H:%M:%S'),) + '\n' +ustr(obj.add_reason)
+                            self.pool.get('account.asset.asset').write(cr, uid, [obj_inform.sinister_id.account_asset_id.id], {'state':'open','low_reason':message}, context)
+                            return {'type':'ir.actions.act_window_close'}
+                        else:
+                            if obj.low==True:
+                                if obj_inform.new_account_asset_id.state != 'open':
+                                    raise osv.except_osv(('Error !'), (ustr('El nuevo activo debe estar operativo par acontinuar con la operación')))
+                                else:                       
+                                    _inform_ids_= self.pool.get('gt.insurance.inform').search(cr, uid, [('sinister_id','=', obj_inform.sinister_id.id),
+                                                                                                       ('from_reenter','=','true')])
+                                    #import pdb
+                                    #pdb.set_trace()
+                                    #self.pool.get('account.asset.asset').write(cr, uid, [obj_inform.new_account_asset_id.id], {'policy_id':obj_inform.sinister_id.account_asset_id.policy_id.id}, context)
+                                    self.pool.get('gt.insurance.inform').write(cr, uid, [obj_inform.id], { 'state': 'response' })
+                                    message =ustr(first_msg) + 'Siniestro '+ustr(obj_inform.sinister_id.code)+'.   Tipo:  ' +ustr(obj_inform.sinister_id.name.name)+'.   Informe: '+ustr(obj_inform.name.name)+'.   Usuario: '+ustr(obj_inform.created_id.name)+'.   Dado de baja:  ' + str(time.strftime('%Y-%m-%d %H:%M:%S'),) + '\n' +ustr(obj.add_reason)
+                                    self.pool.get('account.asset.asset').write(cr, uid, [obj_inform.sinister_id.account_asset_id.id], {'state':'close','low_reason':message}, context)
+                                    return {'type':'ir.actions.act_window_close'}   
+                            else:
+                                raise osv.except_osv(('Error !'), ('Seleccione una opción'))
+
+    def change_state_cancel(self, cr, uid, ids, context):
+        '''
+        wizard que permite CANCELAR el siniestro en esta caso, el activo pasa a estado operativo
+        '''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.sinister.memory').search(cr, uid, [('id','=', id_activo)])        
+        for obj in self.browse(cr, uid, ids, context): 
+            if int(obj.employee_id.user_id.id) !=int(uid):
+                raise osv.except_osv(('Error !'), ('EL usuario no esta autorizado a responder el informe'))
+            else:
+                for obj_sinister in self.pool.get('gt.insurance.sinister.memory').browse(cr, uid, sinister_id):
+                    if obj_sinister.account_asset_id.low_reason:
+                        first_msg=ustr(obj_sinister.account_asset_id.low_reason) + '\n\n'
+                    else:
+                        first_msg=''
+                    message =ustr(first_msg) + 'Siniestro '+ustr(obj_sinister.code)+'; tipo  ' +ustr(obj_sinister.name.name)+'.   Cancelado:' + str(time.strftime('%Y-%m-%d %H:%M:%S'),) + '\n' +ustr(obj.add_reason) 
+                    self.pool.get('account.asset.asset').write(cr, uid, [obj_sinister.account_asset_id.id], {'state':'open', 'low_reason': message}, context)                
+                    self.pool.get('gt.insurance.sinister.memory').write(cr, uid, [obj_sinister.id], { 'state': 'close' })
+                    return {'type':'ir.actions.act_window_close'}                                                                                                                         
+
+    def get_account_asset_id(self, cr, uid, context): 
+        #al cargar el wizard, obtiene por defecto el activo implicado
+        id_asset=''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            id_asset= obj_sinister.account_asset_id.id
+        return id_asset 
+      
+    def get_low(self, cr, uid, context): 
+        #al cargar el wizard, verifica si es para dar de baja
+        id_asset=''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            id_asset= obj_sinister.from_reenter
+        return id_asset
+    def get_employee(self, cr, uid, context): 
+        #al cargar el wizard, verifica el reponsable
+        id_employee=''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            id_employee= obj_sinister.employee_id.id
+        return id_employee
+    
+    def get_operative(self, cr, uid, context): 
+        #al cargar el wizard, verifica si es para dar de baja
+        id_asset=''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            id_asset= obj_sinister.from_activate
+        return id_asset    
+    
+    def get_asset_reason(self, cr, uid, context): 
+        #al cargar el wizard, en caso de existir verifica el historial de "justificaciones" par las acciones tomadas
+        reason=''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            reason= obj_sinister.sinister_id.account_asset_id.low_reason
+        return reason    
+        
+    def get_account_asset_id_(self, cr, uid, context): 
+        #al cargar el wizard, de ser necesario verifica si existe un nuevo activo que lo va a reemplazar en la Póliza
+        id_asset=''
+        id_activo=context.get('active_id')
+        inform_ids_= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_gt_insurance_inform_ in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_ids_, context=None):
+                    id_asset=obj_gt_insurance_inform_.new_account_asset_id.id
+        return id_asset         
+         
+    def get_policy_id(self, cr, uid, context):        
+        #al cargar el wizard, de ser necesario verifica la Póliza que será afectada
+        id_policy=''
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            id_policy= obj_sinister.account_asset_id.policy_id.id
+        return id_policy   
+    
+    def get_amount(self, cr, uid, context):
+        #al cargar el wizard, verifica el monto asegurado para el activo a dar de baja
+        amount=0
+        id_activo=context.get('active_id')
+        sinister_id= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_sinister in self.pool.get('gt.insurance.inform').browse(cr, uid, sinister_id):
+            amount=obj_sinister.account_asset_id.insured_amount
+        return amount 
+    
+    def get_insured_amount(self, cr, uid, context):
+        #al cargar el wizard, verifica si existe un monto para asegurar el nuevo activo 
+        id_asset=''
+        id_activo=context.get('active_id')
+        inform_ids_= self.pool.get('gt.insurance.inform').search(cr, uid, [('id','=', id_activo)])
+        for obj_gt_insurance_inform_ in self.pool.get('gt.insurance.inform').browse(cr, uid, inform_ids_, context=None):
+                    id_asset=obj_gt_insurance_inform_.new_account_asset_id.insured_amount
+        return id_asset       
+            
+    _defaults = {
+                 'low': get_low,
+                 'operative':get_operative,
+                 'account_asset_id':get_account_asset_id,
+                 'employee_id':get_employee,
+                 'account_asset_id_': get_account_asset_id_,
+                 'reason': get_asset_reason,
+                 #'policy_id':get_policy_id,
+                # 'previous_value':get_amount,
+                # 'insured_amount':get_insured_amount,
+             
+    }        
+gt_insurance_change_asset_state()
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

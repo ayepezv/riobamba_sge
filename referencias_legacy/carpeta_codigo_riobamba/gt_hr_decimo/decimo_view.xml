@@ -1,0 +1,319 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- WIZARD FROM OBJ
+-->
+    <record id="view_import_dec3_wizard" model="ir.ui.view">
+      <field name="name">Importar Hoja</field>
+      <field name="model">import.dec3</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls). El formato debe ser: Nombre - cedula - valor"/>
+	    <group colspan="4">
+	      <field name="datas" required="1"/>	      
+	      <field name="opcion" required="1"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+	      <button name="import_Dec3" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <act_window
+       id="act_import_sheet_dec3"
+       name="Importar Hoja"
+       res_model="import.dec3"
+       view_mode="form"
+       target="new"
+       src_model="hr.decimo.tercero"/>
+
+
+<record model="ir.ui.view" id="view_hr_decimo_tercero">
+  <field name="name">hr.decimo.tercero.form</field>
+  <field name="model">hr.decimo.tercero</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Decimo Tercero">
+      <field name="name" select="1" readonly="1" colspan="2"/>
+      <field name="activos" colspan="2"/>
+      <field name="contract_type" required="1"/>
+      <field name="fy_id" required="1"/>
+      <field name="period_start" required="1"/>
+      <field name="period_end" required="1"/>
+      <notebook colspan="4">
+	<page string="Detalle">
+	  <field name="line_ids" nolabel="1">
+	    <tree editable="bottom">
+	      <field name="contract_id"/>
+	      <field name="fecha_contrato"/>
+	      <field name="dic" sum="DIC"/>
+	      <field name="ene" sum="ENE"/>
+	      <field name="feb" sum="FEB"/>
+	      <field name="mar" sum="MAR"/>
+	      <field name="abr" sum="ABR"/>
+	      <field name="may" sum="MAY"/>
+	      <field name="jun" sum="JUN"/>
+	      <field name="jul" sum="JUL"/>
+	      <field name="ago" sum="AGO"/>
+	      <field name="sep" sum="SEP"/>
+	      <field name="oct" sum="OCT"/>
+	      <field name="nov" sum="NOV"/>
+	      <field name="total" sum="TOTAL"/>	      
+	      <field name="total_dec" sum="TOTAL"/>
+	      <field name="descuento_judicial" sum="TOTAL"/>
+	      <field name="descuento_anticipo" sum="TOTAL"/>
+	      <field name="recibir" sum="RECIBIR"/>
+	      <field name='budget_id'/>
+	    </tree>
+	  </field>
+	</page>
+	<page string="Detalle Programa Rubro">
+	  <field name="detalle_ids" nolabel="1">
+	    <tree>
+	      <field name="programa_id" readonly="1"/>
+	      <field name="rubro_id" readonly="1"/>
+	      <field name="partida_id" readonly="1"/>
+	      <field name="monto" readonly="1" sum="TOTAL"/>
+	    </tree>
+	  </field>
+	</page>
+      </notebook>
+      <group colspan="4" col='9'>
+	<field name="state" readonly="1"/>
+	<button name="compute_dec3" string="Calcular" states='Borrador' type="object" icon="gtk-execute" groups="base.group_hr_manager,base.group_hr_user"/>
+	<button name="colocarPartidaD3" string="Agrega Presupuestarias" states='Autorizado,Borrador,Aprobado' 
+		type="object" icon="gtk-execute" groups="account.group_account_manager,base.group_hr_manager"/>
+	<button name="genera_dec3" string="Contabilizar" states='Autorizado' type="object" icon="gtk-execute" groups="account.group_account_manager"/>
+	<button name="aprobar_dec3" string="Aprobar" states='Borrador' type="object" icon="gtk-execute" groups="base.group_hr_manager,base.group_hr_user"/>
+	<button name="autorizar_dec3" string="Autorizar" states='Aprobado' type="object" icon="gtk-execute" groups="account.group_account_manager"/>
+	<button name="regresa_dec3" string="Regresar Borrador" type="object" icon="gtk-execute" groups="base.group_hr_manager,base.group_hr_user"/>
+	<button name="genera_ret_dec3" string="Gererar Rol Judicial" states='Aprobado,Autorizado' type="object" icon="gtk-execute" 
+		groups="base.group_hr_manager,base.group_hr_user"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record id="hr_decimo_tercero_tree" model="ir.ui.view">
+  <field name="name">hr.decimo.tercero.tree</field>
+  <field name="model">hr.decimo.tercero</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+	<tree string="Decimo Tercero">
+	  <field name="name"/>
+	  <field name="period_start"/>
+	  <field name="period_end"/>
+	  <field name="state"/>
+	</tree>
+  </field>
+</record>
+<record model="ir.actions.act_window" id="decimo_tercero_action">
+  <field name="name">Decimo Tercero</field>
+  <field name="res_model">hr.decimo.tercero</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem id="menu_decimo" parent="hr.menu_hr_root" name="Decimos"/>
+
+<menuitem name="Decimo Tercero" 
+		  id="menu_decimo_tercero" 
+		  parent="menu_decimo" 
+		  action="decimo_tercero_action"/>
+
+<record id="view_wizard_export_dec4" model="ir.ui.view">
+  <field name="name">Exportar Rol Dec 4</field>
+  <field name="model">hr.dec4.export</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Exportar Rol">	 
+      <group col="4" colspan="4">
+	<label colspan="4" nolabel="1" string="Este wizard le permite exportar el rol de pagos de decimo 4 en una hoja de excel (.xls)"/>
+	<field name="datas_fname" colspan="2" invisible="1"/>
+	<field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	<newline/>
+	<group col="4" colspan="4">
+	  <button name="generar_archivo_dec4" string="Generar" colspan="2" type="object" icon="gtk-execute"/>
+	  <button special="cancel" string="Cancelar" colspan="2" type="object" icon="gtk-cancel"/>
+	</group>
+      </group>
+    </form>
+  </field>
+</record>
+
+<act_window
+    id="act_export_dec4"
+    name="Exportar Rol Dec4"
+    res_model="hr.dec4.export"
+    target="new"
+    view_mode="form"
+    src_model="hr.decimo.cuarto"/>
+
+
+<record model="ir.ui.view" id="view_hr_decimo_cuarto">
+  <field name="name">hr.decimo.cuarto.form</field>
+  <field name="model">hr.decimo.cuarto</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Decimo Cuarto">
+      <group string="Acciones" colspan="4" col='10'>
+	<field name="state" readonly="1" widget="statusbar"/>
+	<button name="compute_dec4" string="Calcular" states='Borrador' type="object" icon="terp-sale" groups="base.group_hr_manager,base.group_hr_user"/>
+	<button name="load_wizard_xls" states='Borrador' string="Cargar Excel (XLS)" type="object" icon="gtk-execute"/>
+	<button name="colocarPartidaD4" string="Agrega Presupuestarias" states='Aprobado,Autorizado,Borrador' 
+		type="object" icon="gtk-execute" groups="account.group_account_manager,base.group_hr_manager"/>
+	<button name="genera_dec4" string="Contabilizar" states='Autorizado' type="object" icon="gtk-execute"  groups="account.group_account_manager"/>
+	<button name="aprobar_dec4" string="Aprobar" states='Borrador' type="object" icon="gtk-ok" groups="base.group_hr_manager,base.group_hr_user"/>
+	<button name="autorizar_dec4" string="Autorizar" states='Aprobado' type="object" icon="gtk-ok" groups="account.group_account_manager"/>
+	<button name="regresa_dec4" string="Regresar Borrador" type="object" icon="gtk-execute" groups="base.group_hr_manager,base.group_hr_user"/>
+	<button name="genera_ret_dec4" string="Gererar Rol Judicial" states='Aprobado,Autorizado' type="object" icon="gtk-execute" 
+		groups="base.group_hr_manager,base.group_hr_user"/>
+      </group>
+      <group string="Informacion General" colspan="4" col="6">
+	<field name="creado_por" readonly="1"/>
+	<field name="fecha_creacion" readonly="1"/>
+	<field name="basico" required="1" attrs="{'readonly': [('state', '=','Autorizado')]}"/>
+	<field name="name" select="1" readonly="1"/>
+	<field name="contract_type" required="1" attrs="{'readonly': [('state', '=','Autorizado')]}" widget="selection"/>
+	<field name="ajuste_decimo" required="1" attrs="{'readonly': [('state', '=','Autorizado')]}"/>
+	<field name="fy_id" required="1" attrs="{'readonly': [('state', '=','Autorizado')]}" widget="selection"/>
+	<field name="date_start" required="1" attrs="{'readonly': [('state', '=','Autorizado')]}"/>
+	<field name="date_stop" required="1" attrs="{'readonly': [('state', '=','Autorizado')]}"/>
+      </group>
+      <notebook colspan="4">
+	<page string="Detalle">
+	  <field name="line_ids" nolabel="1" attrs="{'readonly': [('state', '=','Autorizado')]}">
+	    <tree editable="bottom">
+	      <!--field name="contract_id"/-->
+	      <field name="employee_id"/>
+	      <field name="cedula"/>
+	      <field name="fecha_contrato"/>
+	      <!--field name="mar" sum="MAR" string='MAR'/>
+	      <field name="abr" sum="ABR" string='ABR'/>
+	      <field name="may" sum="MAY" string='MAY'/>
+	      <field name="jun" sum="JUN" string='JUN'/>
+	      <field name="jul" sum="JUL" string='JUL'/>
+	      <field name="ago" sum="AGO" string='AGO'/>
+	      <field name="sep" sum="SEP" string='SEP'/>
+	      <field name="oct" sum="OCT" string='OCT'/>
+	      <field name="nov" sum="NOV" string='NOV'/>
+	      <field name="dic" sum="DIC" string='DIC'/>
+	      <field name="ene" sum="ENE" string='ENE'/>
+	      <field name="feb" sum="FEB" string='FEB'/-->
+	      <!-- SIERRA -->
+	      <field name="ago" sum="AGO" string='AGO'/>
+	      <field name="sep" sum="SEP" string='SEP'/>
+	      <field name="oct" sum="OCT" string='OCT'/>
+	      <field name="nov" sum="NOV" string='NOV'/>
+	      <field name="dic" sum="DIC" string='DIC'/>
+	      <field name="ene" sum="ENE" string='ENE'/>
+	      <field name="feb" sum="FEB" string='FEB'/>
+	      <field name="mar" sum="MAR" string='MAR'/>
+	      <field name="abr" sum="ABR" string='ABR'/>
+	      <field name="may" sum="MAY" string='MAY'/>
+	      <field name="jun" sum="JUN" string='JUN'/>
+	      <field name="jul" sum="JUL" string='JUL'/>
+	      <field name="total_decimo" sum="TOTAL"/>
+	      <field name="ajuste" sum="TOTAL"/>
+	      <field name="descuento_judicial" sum="TOTAL" string="Desc. Jud."/>
+	      <field name="dias_lab" string="Dias. Lab"/>
+	      <field name="acumula"/>
+	      <field name="recibir" sum="RECIBIR"/>
+	      <field name="budget_id"/>
+	    </tree>
+	  </field>
+	</page>
+	<page string="Detalle Programa Rubro">
+	  <field name="move_id" readonly="1"/>
+	  <field name="certificate_id" readonly="1"/>
+	  <field name="detalle_ids" nolabel="1" colspan="4" readonly="1">
+	    <tree>
+	      <field name="programa_id" readonly="1"/>
+	      <field name="rubro_id" readonly="1"/>
+	      <field name="partida_id" readonly="1"/>
+	      <field name="partner_id" readonly="1"/>
+	      <field name="monto" readonly="1" sum="TOTAL"/>
+	    </tree>
+	  </field>
+	</page>
+      </notebook>
+    </form>
+  </field>
+</record>
+
+<record id="hr_decimo_cuarto_tree" model="ir.ui.view">
+  <field name="name">hr.decimo.cuarto.tree</field>
+  <field name="model">hr.decimo.cuarto</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Decimo Cuarto" colors="blue:state == 'Borrador';black:state == 'Aprobado';red:state == 'Autorizado';green:state == 'Pagado'">
+      <field name="creado_por"/>
+      <field name="fecha_creacion"/>
+      <field name="name"/>
+      <field name="contract_type"/>
+      <field name="date_start"/>
+      <field name="date_stop"/>
+      <field name="state"/>
+    </tree>
+  </field>
+</record>
+
+<record id="view_decimo_cuarto_filter" model="ir.ui.view">
+  <field name="name">Buscar Decimo Cuarto</field>
+  <field name="model">hr.decimo.cuarto</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Buscar Decimo Cuarto">
+      <group>
+	<field name="creado_por"/>
+	<field name="fecha_creacion"/>
+	<field name="name"/>
+	<field name="contract_type"/>
+	<field name="date_start"/>
+	<field name="date_stop"/>
+	<field name="state"/>
+      </group>
+      <newline/>
+    </search>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="decimo_cuarto_action">
+  <field name="name">Decimo Cuarto</field>
+  <field name="res_model">hr.decimo.cuarto</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+<menuitem name="Decimo Cuarto" 
+		  id="menu_decimo_cuarto" 
+		  parent="menu_decimo" 
+		  action="decimo_cuarto_action"/>
+<!-- menu DECIMOS financiero-->
+
+  <record id="action_dec3_financiero" model="ir.actions.act_window">
+    <field name="name">Decimo Tercero</field>
+    <field name="res_model">hr.decimo.tercero</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+ <menuitem action="action_dec3_financiero" icon="STOCK_JUSTIFY_FILL" sequence="12"
+            id="menu_action_dec3_financiero"  parent="gt_hr_payroll_account.menu_finance_roles"/>
+
+  <record id="action_dec4_financiero" model="ir.actions.act_window">
+    <field name="name">Decimo Cuarto</field>
+    <field name="res_model">hr.decimo.cuarto</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+ <menuitem action="action_dec4_financiero" icon="STOCK_JUSTIFY_FILL" sequence="13"
+            id="menu_action_dec4_financiero"  parent="gt_hr_payroll_account.menu_finance_roles"/>
+<!-- -->
+    </data>
+</openerp>

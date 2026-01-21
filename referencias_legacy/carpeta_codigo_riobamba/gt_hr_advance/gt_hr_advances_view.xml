@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+	  <report auto="False" id="anticipoemp" model="saldo.anticipoemp"
+		  name="anticipoemp" rml="gt_hr_advance/report/anticipoemp.mako"
+		  usage="default" string="Saldo Anticipo" header="True" report_type="webkit"/> 
+		
+	  <menuitem id="menu_hr_payroll_advance_root"
+		    parent="hr.menu_hr_root"
+		    name="Anticipos"
+		    groups="base.group_hr_manager,base.group_hr_user"/>
+	  
+	  
+	  <record model="ir.ui.view" id="view_anticipo_form">
+	    <field name="name">hr.payroll.advance.form</field>
+	    <field name="model">hr.payroll.advance</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+	      <form string="Prestamo">
+		<group colspan="4" col="6">
+		  <field name="name" select="1" colspan="2"/>
+		  <!--field name="category_id" required="1" domain="[('category_id','not in',('Total','Extra Rol','Basic'))]"/-->
+		  <field name="category_id" required="1" domain="[('code','ilike','ANTIC')]"/>
+		  <field name="amount" on_change="onchange_amount(amount)"/>
+		  <field name="num_pagos"/>
+		  <!--field name="pagos_por_mes"/-->
+		  <!--field name="pendiente" readonly="1"/-->
+		  <field name="period_id" required="1" domain="[('state','=','abierto')]"/>
+		  <field name="contract_id" domain="[('activo','=',True)]"/>
+		  <field name="fecha"/>
+		  <field name="fecha_ap" readonly="1"/>
+		  <field name="garante_id" required="1" on_change="onchange_garante(garante_id)"/>
+		</group>
+		<field name="line_ids" nolabel="1" colspan="4">
+		  <tree editable="bottom">
+		    <field name="period_id" widget='selection'/>
+		    <field name="date"/>
+		    <field name="label"/>
+		    <field name="state"/>
+		    <field name="valor" sum='TOTAL'/>
+		  </tree>
+		</field>
+		<group colspan="4" col="6">
+		  <group colspan="3" col="1">
+		    <button name="draft_to_compute" states="draft" string="Generar Descuentos" icon="gtk-execute" type="object"/>
+		    <button name="draft_to_aprobar" states="draft" string="Aprobar" icon="gtk-ok" type="object"/>
+		    <button name="recompute_advance" icon="terp-stock_effects-object-colorize" string="Refinanciar" type="object" 
+			    states="aprobado" 
+			    confirm="Seguro que desea cancelar el prestamo? si lo hace los valores pendientes pasaran a borrador y el prestamo sera refinanciado"/>
+		    <button name="prestamo_draft_cancel" states="aprobado" string="Cancelar Prestamo" icon="gtk-cancel" type="object" 
+			    confirm="Esta seguro que desea cancelar el prestamo? si lo hace los valores pendientes pasaran a borrador y el prestamo sera anulado"/>
+		    <button name="prestamo_return_draft" states="aprobado" string="Regresar Prestamo" icon="gtk-go-back" type="object" 
+			    confirm="Esta seguro que desea regresar"/>
+		    <button name="prestamo_draft_cancel" states="draft" string="Anular" icon="gtk-cancel" type="object"/>
+		  </group>
+		  <group colspan="3" col="2">
+		    <!--field name="interes_valor" colspan="1"/>
+			<field name="interes" colspan="1"/-->
+		    <field name="a_pagar" readonly="1" colspan="1"/>
+		    <field name="saldo_pendiente" readonly="1" colspan="1"/>
+		    <field name="state" readonly="1"/>
+		  </group>
+		</group>
+	      </form>
+	    </field>
+	  </record>
+	  
+	  
+	  <record model="ir.ui.view" id="view_payroll_advance_line_tree">
+	    <field name="name">hr.payroll.advance.view.tree</field>
+	    <field name="model">hr.payroll.advance</field>
+	    <field name="type">tree</field>
+	    <field name="arch" type="xml">
+	      <tree string="Anticipos Empleados">
+		<field name="employee_id"/>
+		<field name="name"/>
+		<field name="category_id"/>
+		<field name="garante_id"/>
+		<field name="fecha"/>
+		<field name="fecha_ap"/>
+		<field name="period_id"/>
+		<field name="state"/>
+		<field name="amount" sum="TOTAL"/>
+		<field name="saldo_pendiente" sum="TOTAL"/>
+	      </tree>
+	    </field>
+	  </record>
+	  
+	  <record id="view_payroll_advance_filter" model="ir.ui.view">
+	    <field name="name">payroll.advance.list.select</field>
+	    <field name="model">hr.payroll.advance</field>
+	    <field name="type">search</field>
+	    <field name="arch" type="xml">
+	      <search string="Buscar Anticipos">
+		<group col='10' colspan='4'>
+		  <filter icon="terp-document-new" name="l_draft" string="Borrador" domain="[('state','=','draft')]" separator="1"/>
+		  <filter icon="terp-check" name="l_approved" string="Aprobado" domain="[('state','=','aprobado')]" separator="1" />
+		  <filter icon="terp-check" name="l_approved" string="Anulado" domain="[('state','=','anulado')]" separator="1"/>
+		  <separator orientation="vertical"/>
+		  <field name="name" select="1" string="Reference"/>
+		  <field name="employee_id" select="1"/>
+		  <field name="garante_id" select="1"/>
+		  <!--field name="garante_id" select="1"/-->
+		  <field name="fecha" select="1"/>
+		  <field name="fecha_ap" select="1"/>
+		</group>
+		<newline/>
+		<group expand="1" string="Agrupado por..." colspan="4" col="10">
+		  <filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'employee_id'}"/>
+		  <filter string="Garante" icon="terp-partner" domain="[]" context="{'group_by':'garante_id'}"/>
+		  <separator orientation="vertical"/>
+		  <filter string="Estado" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+		  <separator orientation="vertical"/>
+		  <filter string="Fecha Solicitud" icon="terp-go-month" domain="[]" context="{'group_by':'fecha'}"/>
+		  <filter string="Fecha Aprobacion" icon="terp-go-month" domain="[]" context="{'group_by':'fecha_ap'}"/>
+		  <separator orientation="vertical"/>
+		  <filter string="Periodo Inicial" icon="terp-document-new" domain="[]" context="{'group_by':'period_id'}"/>
+		  <filter string="Cabecera Salarial" icon="terp-go-month" domain="[]" context="{'group_by':'category_id'}"/>
+		</group>
+	      </search>
+	    </field>
+	  </record>
+	  
+	  
+	  <!--menuitem id="menu_hr_payroll_prestamo" parent="hr.menu_hr_root" name="Prestamos" sequence="9" groups="base.group_hr_manager"/-->
+	  
+	  <record id="action_hr_payroll_advance_" model="ir.actions.act_window">
+	    <field name="name">Anticipos Empleados</field>
+	    <field name="res_model">hr.payroll.advance</field>
+	    <field name="view_type">form</field>
+	    <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','Anticipo')]</field>
+            <field name="context">{'default_type': 'Anticipo'}</field>
+	  </record>
+	  
+	  <menuitem id="menu_hr_payroll_advance_"
+		    action="action_hr_payroll_advance_"
+		    parent="menu_hr_payroll_advance_root"
+		    name="Anticipos Empleados"
+		    groups="base.group_hr_manager,base.group_hr_user"/>
+	  
+	  <!-- AGRUPA RUBROS ANTICIPOS -->
+	  <record id="view_hr_consolida_descuento" model="ir.ui.view">
+            <field name="name">Consolidar</field>
+            <field name="model">consolida.descuento</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Consolidar">
+                <field name="period_id" colspan="2"/>
+		<newline/>
+		<field name="rule_id" colspan="2"/>
+		<newline/>
+		<group col="3" colspan="1">
+		  <button icon="gtk-cancel" special="cancel"
+	        	  string="Salir" />
+		  <button name="consolidaDescuento" type="object" icon="gtk-execute"  string="Consolidar" 
+			  confirm="Esta seguro que desea consolidar"/>
+		</group>
+              </form>
+            </field>
+	  </record>
+      
+      
+      <record id="action_consolida_descuento" model="ir.actions.act_window">
+        <field name="name">Consolida Anticipo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">consolida.descuento</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_consolida_descuento"
+		icon="STOCK_EXECUTE"
+		action="action_consolida_descuento"
+		parent="menu_hr_payroll_advance_root"
+		name="Consolida anticipo"/>
+
+      <!-- saldos anticipo -->
+	  <record id="view_hr_saldo_anticipoemp" model="ir.ui.view">
+            <field name="name">Saldo Anticipo</field>
+            <field name="model">saldo.anticipoemp</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Saldo Anticipo">
+                <field name="date_start" colspan="2"/>
+                <field name="date_end" colspan="2"/>
+		<newline/>
+		<field name="employee_id" colspan="2"/>
+		<newline/>
+		<group col="4" colspan="4">
+		  <button name="calculaSaldoAnticipo" type="object" icon="gtk-execute"  string="Calcular"/>
+		  <button name="imprimirSaldoAnticipo" type="object" icon="gtk-print"  string="Imprimir"/>
+		  <button icon="gtk-cancel" special="cancel"
+	        	  string="Salir" />
+		</group>
+		<notebook colspan="4">
+		  <page string="Detalle">
+		    <field name="line_ids" readonly="1" nolabel="1">
+		      <tree>
+			<field name="employee_id"/>
+			<field name="monto" sum="Total"/>
+			<field name="pagado" sum="Total"/>
+			<field name="saldo" sum="Total"/>
+		      </tree>
+		    </field>
+		  </page>
+		</notebook>
+              </form>
+            </field>
+	  </record>
+      
+      
+      <record id="action_saldo_anticipoemp" model="ir.actions.act_window">
+        <field name="name">Saldo Anticipo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">saldo.anticipoemp</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_saldo_anticipoemp"
+		icon="STOCK_EXECUTE"
+		action="action_saldo_anticipoemp"
+		parent="menu_hr_payroll_advance_root"
+		sequence="3"
+		name="Saldos anticipo"/>
+
+      
+	  <!-- -->
+	  <record model="ir.ui.view" id="view_advance_form_line">
+	    <field name="name">hr.payroll.advance.form.line</field>
+	    <field name="model">hr.payroll.advance.line</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+	      <form string="Prestamo">
+		<group colspan="4" col="4">
+		  <field name="name" colspan="2" readonly="1"/>
+		  <field name="employee_id" colspan="2" readonly="1"/>
+		  <field name="advance_id" colspan="2" readonly="1" required="1"/>
+		  <field name="categ_id" colspan="2" readonly="1"/>
+		  <newline/>
+		  <field name="period_id" colspan="2" readonly="1"/>
+		  <field name="num_pago" colspan="2" readonly="1"/>
+		  <field name="saldo" colspan="2" readonly="1"/>
+		  <field name="total" colspan="2" readonly="1"/>
+		  <field name="state" colspan="2" readonly="1"/>
+		</group>
+	      </form>
+	    </field>
+	  </record>
+	  
+	  <record model="ir.ui.view" id="view_payroll_advance_line_line_tree">
+	    <field name="name">hr.payroll.advance.line.view.tree</field>
+	    <field name="model">hr.payroll.advance.line</field>
+	    <field name="type">tree</field>
+	    <field name="arch" type="xml">
+	      <tree string="Anticipos Empleados">
+		<field name="employee_id"/>
+		<field name="period_id"/>
+		<field name="categ_id"/>
+		<!--field name="type"/-->
+		<field name="total"/>
+		<field name="state"/>
+	      </tree>
+	    </field>
+	  </record>
+		
+	  <record id="view_payroll_advance_line_filter" model="ir.ui.view">
+	    <field name="name">payroll.advance.line.list.select</field>
+	    <field name="model">hr.payroll.advance.line</field>
+	    <field name="type">search</field>
+	    <field name="arch" type="xml">
+	      <search string="Buscar Anticipos Empleados">
+		<group col='10' colspan='4'>
+		  <filter icon="terp-document-new" name="l_draft" string="Pendiente" domain="[('state','=','pendiente')]" separator="1"/>
+		  <filter icon="terp-check" name="l_approved" string="Pagado" domain="[('state','=','pagado')]" separator="1" />
+		  <filter icon="terp-check" name="l_approved" string="Anulado" domain="[('state','=','anulado')]" separator="1"/>
+		  <separator orientation="vertical"/>
+		  <field name="employee_id" select="1"/>
+		  <field name="period_id" select="1"/>
+		        <field name="categ_id" select="1"/>
+		        <!--field name="type" select="1"/-->
+		</group>
+		      <newline/>
+		      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		        <filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'employee_id'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Estado" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+		        <separator orientation="vertical"/>
+		        <filter string="Periodo" icon="terp-go-month" domain="[]" context="{'group_by':'period_id'}"/>
+		        <filter string="Cabecera Salarial" icon="terp-document-new" domain="[]" context="{'group_by':'categ_id'}"/>
+		        <!--filter string="Tipo de Cabecera" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'type'}"/-->
+		      </group>
+		    </search>
+		  </field>
+		</record>
+
+		<record id="action_hr_payroll_advance_line" model="ir.actions.act_window">
+		  <field name="name">Anticipos Empleados</field>
+		  <field name="res_model">hr.payroll.advance.line</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		</record>
+
+		<!--menuitem id="menu_hr_payroll_prestamo_line"
+			  action="action_hr_payroll_prestamo_line"
+			  parent="menu_hr_payroll_prestamo"
+			  name="Detalle de Prestamos"
+			  groups="base.group_hr_manager"/-->
+			  
+			  
+		<!-- ingresos egresos para prestamos /-->
+		
+		<record model="ir.ui.view" id="view_hr_ie_line_advance_inherit_form">
+		  <field name="name">hr.ie.line.advance.inherit.loan</field>
+		  <field name="model">hr.ie.line</field>
+		  <field name="inherit_id" ref="gt_hr_ie.view_ie_line_form"/>
+		  <field name="type">tree</field>
+		  <field name="arch" type="xml">
+		      <field name="head_id" position="after">
+		      	<field name="pago_adv_id" readonly="1"/>
+		      </field>
+		  </field>
+		</record>
+
+<!-- PAGOS PLANIFICADOS -->
+
+	  <record model="ir.ui.view" id="view_advance_planificado">
+	    <field name="name">hr.payroll.advance.planificado.form</field>
+	    <field name="model">hr.payroll.advance</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+	      <form string="Prestamo">
+		<group colspan="4" col="6">
+		  <field name="name" select="1" colspan="2"/>
+		  <field name="category_id" required="1"/>
+		  <field name="amount" on_change="onchange_amount(amount)"/>
+		  <field name="num_pagos"/>
+		  <!--field name="pagos_por_mes"/-->
+		  <!--field name="pendiente" readonly="1"/-->
+		  <field name="period_id" required="1" domain="[('state','=','abierto')]"/>
+		  <field name="contract_id" domain="[('activo','=',True)]"/>
+		  <field name="fecha"/>
+		  <field name="fecha_ap" readonly="1"/>
+		  <field name="garante_id" required="1"/>
+
+		</group>
+		<field name="line_ids" nolabel="1" colspan="4">
+		  <tree editable="bottom">
+		    <field name="period_id"/>
+		    <field name="date"/>
+		    <field name="label"/>
+		    <field name="state"/>
+		    <field name="valor" sum='TOTAL'/>
+
+		  </tree>
+		</field>
+		<group colspan="4" col="6">
+		  <group colspan="3" col="1">
+		    <button name="draft_to_compute" states="draft" string="Generar Descuentos" icon="gtk-execute" type="object"/>
+		    <button name="draft_to_aprobar" states="draft" string="Aprobar" icon="gtk-ok" type="object"/>
+		    <button name="recompute_advance" icon="terp-stock_effects-object-colorize" string="Refinanciar" type="object" states="aprobado" confirm="Esta seguro que desea cancelar el prestamo? si lo hace los valores pendientes pasaran a borrador y el prestamo sera refinanciado"/>
+		    <button name="prestamo_draft_cancel" states="aprobado" string="Cancelar Prestamo" icon="gtk-cancel" type="object" confirm="Esta seguro que desea cancelar el prestamo? si lo hace los valores pendientes pasaran a borrador y el prestamo sera anulado"/>
+		    <button name="prestamo_return_draft" states="aprobado" string="Regresar Prestamo" icon="gtk-go-back" type="object" 
+			    confirm="Esta seguro que desea regresar"/>
+		    <button name="prestamo_draft_cancel" states="draft" string="Anular" icon="gtk-cancel" type="object"/>
+		  </group>
+		  <group colspan="3" col="2">
+		    <field name="a_pagar" readonly="1" colspan="1"/>
+		    <field name="saldo_pendiente" readonly="1" colspan="1"/>
+		    <field name="state" readonly="1"/>
+		  </group>
+		</group>
+	      </form>
+	    </field>
+	  </record>
+
+	  <menuitem id="menu_hr_payroll_planificado_root"
+		    parent="hr.menu_hr_root"
+		    name="Ingresos/Egresos Planificados"
+		    groups="base.group_hr_manager,base.group_hr_user"/>
+	  
+
+	  <record id="action_hr_payroll_advance_planificado" model="ir.actions.act_window">
+	    <field name="name">Ingresos/Egresos Planificados</field>
+	    <field name="res_model">hr.payroll.advance</field>
+	    <field name="view_type">form</field>
+	    <field name="view_mode">tree,form</field>
+            <field name="domain">[('type','=','Planificado')]</field>
+            <field name="context">{'default_type': 'Planificado'}</field>
+	  </record>
+
+	  <record id="action_advance_planificado_form" model="ir.actions.act_window.view">
+	    <!--field eval="1" name="sequence"/-->
+	    <field name="view_mode">form</field>
+	    <field name="view_id" ref="view_advance_planificado"/>
+	    <field name="act_window_id" ref="action_hr_payroll_advance_planificado"/>
+	  </record>
+	  
+	  <menuitem id="menu_hr_payroll_advance_planificado"
+		    action="action_hr_payroll_advance_planificado"
+		    parent="menu_hr_payroll_planificado_root"
+		    name="Ingresos/Egresos Planificados"
+		    groups="base.group_hr_manager,base.group_hr_user"/>
+
+
+<!--
+SOLICTUD DOCUMENTAL
+  -->
+
+<!--record model="ir.ui.view" id="hr_advance_form_doc">
+  <field name="name">hr.payroll.advance.form</field>
+  <field name="model">hr.payroll.advance</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+	<form string="Solicitud de Anticipo">
+	  <group colspan="4" col="6">
+		<field name="name" select="1" colspan="2" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		<field name="amount" on_change="onchange_amount(amount)" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		<field name="num_pagos" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		<field name="period_id" required="1" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		<field name="contract_id" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+		<field name="fecha" readonly="1"/>
+		<field name="state" readonly="1"/>
+	  </group>
+	  <notebook colspan="4">
+		<page string="Detalle Pagos">
+		  <field name="line_ids" nolabel="1" colspan="4" readonly="1"/>
+		</page>
+	  </notebook>
+	  <group colspan="4" col="6">
+		<group colspan="3" col="1">
+		  <button name="draft_to_solicitar" states="draft" string="Solicitar" icon="gtk-ok" type="object"/>
+		</group>
+		<group colspan="3" col="2">
+		  <field name="a_pagar" readonly="1" colspan="1"/>
+		  <field name="saldo_pendiente" readonly="1" colspan="1"/>
+		</group>
+	  </group>
+	</form>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_anticipo_doc">
+  <field name="name">Solicitar Anticipo</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">hr.payroll.advance</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[('user_id','=',uid)]</field>
+</record>
+
+<record id="view_advance_form_doc_1" model="ir.actions.act_window.view">
+  <field eval="2" name="sequence"/>
+  <field name="view_mode">form</field>
+  <field name="view_id" ref="hr_advance_form_doc"/>
+  <field name="act_window_id" ref="action_anticipo_doc"/>
+</record>
+
+<record id="view_advance_tree1_doc_1" model="ir.actions.act_window.view">
+  <field eval="1" name="sequence"/>
+  <field name="view_mode">tree</field>
+  <field name="view_id" ref="view_payroll_advance_line_tree"/>
+  <field name="act_window_id" ref="action_anticipo_doc"/>
+</record>
+
+<menuitem id="menu_anticipo_document_parent" parent="gt_document_manager.menu_parent_he_doc" 
+		  name="Solicitar Anticipo" sequence="2"
+		  action="action_anticipo_doc"/-->
+
+		
+    </data>
+</openerp>

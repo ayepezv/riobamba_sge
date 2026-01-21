@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+      <record id="view_hr_payslip_by_employees_inherit" model="ir.ui.view">
+        <field name="name">hr_payroll_payslip_employees_inherit</field>
+        <field name="model">hr.payslip.employees</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_by_employees"/>
+        <field name="arch" type="xml">
+          <field name="employee_ids" position="replace">
+            <field name="contract_type_id" colspan="2" readonly="1" invisible="1"/>
+	    <field name="dec_fr"/>
+            <field name="otra_estructura" colspan="2" attrs="{'required':[('dec_fr','in',('Decimo','Fondo Reserva'))]}"/>
+            <field name="contract_ids" colspan="4" nolabel="1" 
+		   domain="[('activo','=',True),('subtype_id','=',contract_type_id),('date_start','&lt;=',date_end),'|',('date_end','&gt;=',date_start),('date_end','=',False)]"/>
+            <newline/>
+            <field name="date_start" colspan="2" readonly="1" invisible="1"/>
+            <field name="date_end" colspan="2" readonly="1" invisible="1"/>
+            <field name="employee_ids" nolabel="1" invisible="1"/>
+          </field>
+        </field>
+      </record>
+      
+    </data>
+</openerp>

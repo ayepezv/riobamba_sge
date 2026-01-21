@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+      <record id="view_print_reform_container" model="ir.ui.view">
+        <field name="name">Reforma</field>
+        <field name="model">report.reform.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Reforma">
+	    <notebook colspan="4">
+	      <page string="Formulario">
+		<group colspan="4" string="">
+		  <field name="fiscalyear" required="1"/>
+		  <field name="nivel" string='Nivel' colspan="2"/>
+		  <field name="poa" required="1"/>
+		  <field name="massive_in"/>
+		  <field name="massive_out"/>
+		</group>
+		<separator  colspan="4" />
+		<button icon="gtk-cancel" special="cancel" string="Salir" />
+		<button name="print_report" type="object" icon="gtk-print" string="Imprimir"/>
+	      </page>
+	    </notebook>
+	  </form>
+        </field>
+      </record> 
+      
+    <!--record id="action_print_reform_container" model="ir.actions.act_window">
+      <field name="name">Imprimir Reforma</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.reform.wizard</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>	
+      <field name="view_id" ref="view_print_reform_container"/>
+      <field name="context">{'report_name':'ReformReport'}</field> 
+      <field name="target">new</field>	  	          
+    </record>1 
+    	
+    <record model="ir.values" id="action_print_reform_container_value">
+      <field name="model_id" ref="gt_budget.model_mass_reform" />
+      <field name="name">Reporte</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_reform_container'))" />
+      <field name="key">action</field>
+      <field name="model">mass.reform</field>
+    </record>
+
+    <record model="ir.values" id="action_print_reform_container_value2">
+      <field name="model_id" ref="gt_budget.model_mass_reform_ingreso" />
+      <field name="name">Reporte</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_reform_container'))" />
+      <field name="key">action</field>
+      <field name="model">mass.reform.ingreso</field>
+    </record-->
+      
+      <record id="view_print_budget_card" model="ir.ui.view">
+        <field name="name">Cedula Presupuestaria</field>
+        <field name="model">report.budget.card</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cédula Presupuestaria">
+	    <notebook colspan="4">
+	     <page string="Formulario">
+            <group colspan="4" string="Cédula Presupuestaria">
+	      <field name="fiscalyear" required="1" on_change="onchange_fiscalyear(fiscalyear)"/>
+	      <field name="date_from" string='Fecha Inicio' required="1" colspan="2"/>
+	      <field name="date_to" string='Fecha Fin' required="1" colspan="2"/>
+	      <field name="nivel_aux" string='Nivel AUX' colspan="2" invisible="1"/>
+	      <field name="nivel" string='Nivel' colspan="2"/>
+	      <field name="project" colspan="" on_change="onchange_project(project,date_from,date_to,context)" 
+		     attrs="{'invisible': [('tipo', '=','ingreso')]}"/>
+	      <field name="tipo_nivel" string='Tipo Nivel' colspan="2"/>
+	      <field name="proy" colspan="4" on_change="onchange_proyecto(proy,date_from,date_to,context)"
+		     attrs="{'invisible': [('tipo', '=','ingreso')]}"/>
+	      <field name="asig_inicial" colspan=""/>
+	      <field name="tipo" invisible="1" colspan="2"/>
+	      <field name="project_id" colspan="2" 
+		     attrs="{'invisible': [('proy', '==',False)], 'required': [('proy','=',True)]}"/>
+             <field name="program_ids" colspan="4" 
+		    attrs="{'invisible': [('project', '==',False)], 'required': [('project','=',True)]}"/>
+	    </group>
+	    <separator string="Archivo Excel" colspan="4"/>
+	      <field name="datas_fname" colspan="2" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+	      <separator string="Archivo Txt" colspan="4"/>
+		<field name="filename" invisible="1"/>
+		<field name="data" filename="filename" colspan="4"/>
+            <separator  colspan="4" />
+	    <!--button icon="gtk-cancel" special="cancel" string="Salir" /-->
+	    <group colspan="4" col='5'>
+	      <button name="print_report" type="object" icon="gtk-print" string="Imprimir"/>
+	      <button name="print_report_sobregiradas" attrs="{'invisible':[('tipo','=','ingreso')]}" type="object" icon="gtk-print" string="Imprimir sobregiradas"/>
+	      <button name="gen_esigef_file" type="object" icon="gtk-print" string="Genera Archivos ESIGEF y Excel"/>
+	      <button name="gen_esigef_pdf" type="object" icon="gtk-print" string="Nivel 4 Esigef"/>
+	      <button name="gen_excel_budget" type="object" icon="gtk-print" string="Exporta Excel"/>
+	    </group>
+	     </page>
+	     <page string="Mensajes esigef">
+	       <group expand="1">
+		 <field name="mensajes" colspan="4" nolabel="1"/>
+	       </group>
+	     </page>
+	     </notebook>
+	  </form>
+        </field>
+      </record> 
+      
+    <record id="action_print_budget_card" model="ir.actions.act_window">
+      <field name="name">Ejecución Presupuestaria</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.budget.card</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>	
+      <field name="view_id" ref="view_print_budget_card"/>
+      <field name="context">{'report_name':'BudgetCard'}</field> 
+      <field name="target">new</field>	  	          
+    </record> 
+    	
+    <record model="ir.values" id="action_print_budget_card_value">
+      <field name="model_id" ref="gt_budget.model_budget_poa" />
+      <field name="name">Ejecución Presupuestaria</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card'))" />
+      <field name="key">action</field>
+      <field name="model">budget.poa</field>
+    </record>
+    
+    <record id="action_print_budget_card_income" model="ir.actions.act_window">
+	  <field name="name">Cédula de Ingresos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.budget.card</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>	
+	  <field name="view_id" ref="view_print_budget_card"/>			          
+	  <field name="target">new</field>
+	  <field name="domain">[('tipo','=', 'ingreso')]</field>
+	  <field name="context">{'report_name':'BudgetCardIncome'}</field>    	  	          
+    </record> 
+    	    	
+    <record model="ir.values" id="action_print_budget_card_income_value">
+      <field name="model_id" ref="gt_budget.model_budget_poa" />
+      <field name="name">Cédula de Ingresos</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card_income'))" />
+      <field name="key">action</field>
+      <field name="model">budget.poa</field>
+    </record>   
+        
+    <record id="action_print_budget_card_expense" model="ir.actions.act_window">
+	  <field name="name">Cédula de Gastos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.budget.card</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>	
+	  <field name="view_id" ref="view_print_budget_card"/>			          
+	  <field name="target">new</field>
+	  <field name="domain">[('tipo','=', 'gasto')]</field>
+	  <field name="context">{'report_name':'BudgetCardExpense'}</field>    	  	          
+    </record> 
+    
+    <record model="ir.values" id="action_print_budget_card_expense_value">
+      <field name="model_id" ref="gt_budget.model_budget_poa" />
+      <field name="name">Cédula de Gastos</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card_expense'))" />
+      <field name="key">action</field>
+      <field name="model">budget.poa</field>
+    </record>
+        
+    <!--record id="action_print_budget_card_expense_group" model="ir.actions.act_window">
+	  <field name="name">Cédula Presupuestaria de Gastos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.budget.card</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>	
+	  <field name="view_id" ref="view_print_budget_card"/>			          
+	  <field name="target">new</field>
+	  <field name="context">{'report_name':'BudgetCardExpenseGroup'}</field>    	  	          
+    </record> 
+    	    	
+    <record model="ir.values" id="action_print_budget_card_expense_group_value">
+      <field name="model_id" ref="gt_budget.model_budget_poa" />
+      <field name="name">Cédula Presupuestaria de Gastos</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card_expense_group'))" />
+      <field name="key">action</field>
+      <field name="model">budget.poa</field>
+    </record-->
+
+    <!-- CEDULAS DESDE  MENU-->
+
+    <menuitem id="menu_cedulas" 
+              parent="gt_budget.menu_budget_queries_base" 
+	      sequence="10" name="Cedulas"/>
+
+    <menuitem id="menu_cedula_ingreso"
+	      icon="STOCK_EXECUTE"
+	      action="action_print_budget_card_income"
+	      parent="menu_cedulas"
+	      sequence="1"
+	      name="Ingresos"/>
+
+    <menuitem id="menu_cedula_gasto"
+	      icon="STOCK_EXECUTE"
+	      action="action_print_budget_card_expense"
+	      parent="menu_cedulas"
+	      sequence="2"
+	      name="Gastos"/>
+
+    <!-- Proforma presupuestaria -->
+
+    
+
+    <menuitem id="menu_proforma_presupuestaria" 
+              parent="gt_budget.menu_budget_queries_base" 
+	      sequence="11" name="Proforma Presupuestaria"/>
+
+    <record id="view_proforma_presupuestaria_ingreso" model="ir.ui.view">
+      <field name="name">Proforma Presupuestaria Ingreso</field>
+      <field name="model">proforma.presupuestaria.ingreso</field>
+      <field name="arch" type="xml">
+        <form string="Proforma Presupuestaria Ingreso">
+          <group colspan="4" col="4">
+	    <field name='poa_id' colspan="2" required="1" widget="selection"/>
+	  </group>
+	  <group>
+	    <button name="print_report_proforma_ingreso" type="object" icon="gtk-print" string="Imprimir"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_proforma_presupuestaria_ingreso" model="ir.actions.act_window">
+      <field name="name">Proforma Presupuestaria Ingreso</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">proforma.presupuestaria.ingreso</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>    
+
+
+    <menuitem id="menu_proforma_presupuestaria_ingreso"
+	      icon="STOCK_EXECUTE"
+	      action="action_proforma_presupuestaria_ingreso"
+	      parent="menu_proforma_presupuestaria"
+	      sequence="1"
+	      name="Ingresos"/>
+
+
+    <record id="view_proforma_presupuestaria_gasto" model="ir.ui.view">
+      <field name="name">Proforma Presupuestaria Gasto</field>
+      <field name="model">proforma.presupuestaria.gasto</field>
+      <field name="arch" type="xml">
+        <form string="Proforma Presupuestaria Gasto">
+          <group colspan="4" col="4">
+	    <field name='poa_id' colspan="2" required="1" widget="selection"/>
+	    <field name='program_id' colspan="2" required="1" widget="selection"/>
+	  </group>
+	  <group>
+	    <button name="print_report_proforma_gasto" type="object" icon="gtk-print" string="Imprimir"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_proforma_presupuestaria_gasto" model="ir.actions.act_window">
+      <field name="name">Proforma Presupuestaria Gasto</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">proforma.presupuestaria.gasto</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>    
+
+
+    <menuitem id="menu_proforma_presupuestaria_gasto"
+	      icon="STOCK_EXECUTE"
+	      action="action_proforma_presupuestaria_gasto"
+	      parent="menu_proforma_presupuestaria"
+	      sequence="2"
+	      name="Gastos"/>
+
+    <!-- Proforma presupuestaria Resumen-->
+
+    
+
+    <menuitem id="menu_proforma_presupuestaria_resumen" 
+              parent="gt_budget.menu_budget_queries_base" 
+	      sequence="12" name="Proforma Presupuestaria Resumen"/>
+
+    <record id="view_proforma_presupuestaria_ingreso_resumen" model="ir.ui.view">
+      <field name="name">Proforma Presupuestaria Ingreso Resumen</field>
+      <field name="model">proforma.presupuestaria.ingreso.resumen</field>
+      <field name="arch" type="xml">
+        <form string="Proforma Presupuestaria Ingreso Resumen">
+          <group colspan="4" col="4">
+	    <field name='poa_id' colspan="2" required="1" widget="selection"/>
+	  </group>
+	  <group>
+	    <button name="print_report_proforma_ingreso_resumen" type="object" icon="gtk-print" string="Imprimir"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_proforma_presupuestaria_ingreso_resumen" model="ir.actions.act_window">
+      <field name="name">Proforma Presupuestaria Ingreso Resumen</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">proforma.presupuestaria.ingreso.resumen</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>    
+
+
+    <menuitem id="menu_proforma_presupuestaria_ingreso_resumen"
+	      icon="STOCK_EXECUTE"
+	      action="action_proforma_presupuestaria_ingreso_resumen"
+	      parent="menu_proforma_presupuestaria_resumen"
+	      sequence="1"
+	      name="Ingresos"/>
+
+
+    <record id="view_proforma_presupuestaria_gasto_resumen" model="ir.ui.view">
+      <field name="name">Proforma Presupuestaria Gasto Resumen</field>
+      <field name="model">proforma.presupuestaria.gasto.resumen</field>
+      <field name="arch" type="xml">
+        <form string="Proforma Presupuestaria Gasto Resumen">
+          <group colspan="4" col="4">
+	    <field name='poa_id' colspan="2" required="1" widget="selection"/>
+	    <field name='program_id' colspan="2" required="1" widget="selection"/>
+	  </group>
+	  <group>
+	    <button name="print_report_proforma_gasto_resumen" type="object" icon="gtk-print" string="Imprimir"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_proforma_presupuestaria_gasto_resumen" model="ir.actions.act_window">
+      <field name="name">Proforma Presupuestaria Gasto Resumen</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">proforma.presupuestaria.gasto.resumen</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>    
+
+
+    <menuitem id="menu_proforma_presupuestaria_gasto_resumen"
+	      icon="STOCK_EXECUTE"
+	      action="action_proforma_presupuestaria_gasto_resumen"
+	      parent="menu_proforma_presupuestaria_resumen"
+	      sequence="2"
+	      name="Gastos"/>
+
+    <!-- -->
+     
+</data>
+</openerp>

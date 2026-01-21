@@ -1,0 +1,85 @@
+<html>
+<head>
+    <style type="text/css">
+    ${css}
+    td {
+    padding:2px 4px 2px 4px;
+    font-size:10px;
+    }
+    table th {
+	padding:2px 4px 2px 4px;
+	border-top:1px solid #fafafa;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+    font-size:10px;
+    }
+    .project {
+	padding:3px 12px 9px 12px;
+	border-top:1px solid #fafafa;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ababab), to(#ababab));
+	background: -moz-linear-gradient(top,  #ededed,  #ababab);
+    font-size:12px;
+    }
+    table_basic {
+    width: 100%;
+    }
+    table_title {
+	border-top:1px solid #ffffff;
+    }
+    hr {
+    border: 0;
+    border-bottom: 1px solid #FFFFFF;
+    border-top: 1px solid #AAAAAA;
+    clear: both;
+    height: 0;
+    margin: 12px 0 18px;
+    }
+    </style>
+</head>
+ <body>
+   <h1 style="text-align:center;" align="center">Stock por fecha</h1>
+   <table class="table_basic table_title">
+	 <tr>
+	   <td>Bodega: ${ get_bodega_kdx(objects) }</td>
+	 </tr>
+	 <tr>
+	   <td>Fecha Desde: ${ objects.date_start[0] }</td>
+	 </tr>
+	 <tr>
+	   <td>Fecha Hasta: ${ objects.date_end[0] }</td>
+	 </tr>
+   </table>
+   <table width="100%">
+     <tr>
+       <th width="10%">Codigo</th>
+       <th width="45%">Descripcion</th>
+       <th width="15%">UdM</th>
+       <th width="10%">Cantidad</th>
+       <th width="10%">Costo Unitario</th>
+       <th width="10%">Costo Total</th>
+     </tr>
+   </table>
+   <table width="100%">
+     %for data in browse_group(objects):
+     <tr>
+	   <th width="10%"></th>
+       <th width="45%" align="left" colspan="5">${ data['name'] }</th>
+	   <th width="15%"></th>
+       <th width="10%" align="right">${ formatLang(data['qty'], digits=2) }%</th>
+	   <th width="10%"></th>
+       <th width="10%" align="right">${ formatLang(data['total'], digits=2) }%</th>
+     </tr>     
+     %for o in data['line_ids']:
+     <tr style="font-size:10px;">
+       <td width="10" align="left">${ o.product_id.default_code }</td>
+       <td width="45%" align="left">${ o.product_id.name }</td>
+       <td width="15%" align="right">${ o.udm_id.name }</td>
+       <td width="10%" align="right">${ formatLang(o.qty, digits=2) }%</td>
+       <td width="10%" align="right">${ formatLang(o.cu, digits=2) }%</td>
+       <td width="10%" align="right">${ formatLang(o.ct, digits=2) }%</td>
+     </tr>
+     %endfor
+     %endfor
+   </table>
+</body>
+</html>

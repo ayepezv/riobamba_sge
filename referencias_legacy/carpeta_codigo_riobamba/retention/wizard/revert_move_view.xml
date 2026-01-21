@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record model="ir.ui.view" id="view_revert_move_form">
+	<field name="name">Reversar Comprobante</field>    
+	<field name="model">revert.move</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">         
+        <form string="Reversar Comprobante">
+          <group  colspan="4">
+	    <field name="year_id" colspan="2" widget='selection' required="1"/>
+	    <field name="move_id" colspan="4" required="1" domain="[('fiscalyear_id','=',year_id)]"/>
+	    <field name="date" colspan="2" required="1"/>
+	  </group> 
+	  <group  colspan="4">
+	    <button name="revert_move" string="Generar Asiento Reverso" confirm="Esta seguro que desea generar el asiento en negativo" 
+		    icon="gtk-execute" type="object" colspan="2"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_revert_move">
+      <field name="name">Reversar Comprobante</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">revert.move</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem
+	id="revert_move_menu"
+	sequence="4"
+	parent="account.menu_finance_entries"
+	action="action_revert_move"/>
+
+
+    </data>
+</openerp>

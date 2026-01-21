@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+         <!--  Partners inherited form -->      
+
+		 <record id="view_event_employee_info_form" model="ir.ui.view">
+           <field name="name">res.employee.event.info.inherit</field>
+           <field name="model">hr.employee</field>
+           <field name="type">form</field>
+           <field name="inherit_id" ref="gt_hr_base.view_employee_modified_form"/>
+           <field name="arch" type="xml">          
+			 <notebook position="inside">
+			   <page string="Agenda Institucional">
+                 <field name="event_ids_agenda" colspan="4" nolabel="1">
+                   <tree string="Eventos" colors="black:state=='draft';blue:state=='confirm'">
+                     <field name="event_id" string="Evento"/>
+                     <field name="date_begin" string="Fecha Incio"/>
+                     <field name="date_end" string="Fecha Fin"/>
+                     <field name="state" string="Estado"/>
+                   </tree>
+                 </field>
+               </page>
+             </notebook>
+		   </field>
+		 </record>
+		 
+   </data>
+</openerp>

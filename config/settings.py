@@ -51,6 +51,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,10 +59,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize', 
-    'django_admin_listfilter_dropdown',
+    # 'django_admin_listfilter_dropdown',
     'guardian',
     'apps.core',
-    'apps.financiero',
+    'apps.planificacion',   # 1. Planificación Institucional
+    'apps.compras',         # 2. Compras Públicas
+    'apps.presupuestos',    # 3. Presupuestos
+    'apps.financiero',      # 4. Gestión Financiera
+    'apps.tesoreria',       # 5. Tesorería y Pagos
+    'apps.contabilidad',    # 6. Contabilidad
+    'apps.talento_humano',  # 7. Talento Humano
+    'apps.inventario',      # 8. Gestión de Inventario
+    'apps.activos',         # 9. Activos Fijos
+    'apps.proyectos',       # 10. Gestión de Proyectos
+    'apps.permisos',        # 11. Permisos y Trámites
+    'apps.agua_potable',    # 12. Agua Potable
+    'apps.juridico',        # 13. Gestión Jurídica
+    'apps.auditoria',       # 14. Auditoría Interna
+    'apps.servicios',       # 15. Servicios Generales
 ]
 
 MIDDLEWARE = [
@@ -72,6 +87,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'apps.auditoria.middleware.AuditMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -138,6 +154,7 @@ USE_THOUSAND_SEPARATOR = True # Required for intcomma to work properly
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 AUTH_USER_MODEL = 'core.CustomUser'
 
 AUTHENTICATION_BACKENDS = (
@@ -147,3 +164,126 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "SGE Riobamba",
+    "site_header": "SGE Riobamba EP",
+    "site_brand": "Riobamba EP",
+    "welcome_sign": "Sistema de Gestión Empresarial",
+    "search_model": "auth.User", # TODO: Use presupuestos.PresupuestoProxy in future
+    "user_avatar": None,
+    "topmenu_links": [
+        {"name": "Inicio", "url": "admin:index"},
+        {"name": "Sitio Web", "url": "/"},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": False,
+    "hide_apps": ["auth"],
+    "hide_models": [],
+    
+    # ORDEN JERÁRQUICO MAESTRO
+    "order_with_respect_to": [
+        "planificacion",
+        "compras",
+        "presupuestos",
+        "financiero",
+        "tesoreria",
+        "contabilidad",
+        "talento_humano",
+        "inventario",
+        "activos",
+        "proyectos",
+        "permisos",
+        "agua_potable",
+        "juridico",
+        "auditoria",
+        "servicios",
+        "core",
+        "auth",
+    ],
+    
+    # ICONOGRAFÍA
+    "icons": {
+        "auth": "fas fa-cogs",
+        "core": "fas fa-cube",
+        
+        # Short names
+        "planificacion": "fas fa-sitemap",
+        "compras": "fas fa-shopping-cart",
+        "presupuestos": "fas fa-coins",
+        "financiero": "fas fa-file-invoice-dollar",
+        "tesoreria": "fas fa-cash-register",
+        "contabilidad": "fas fa-calculator",
+        "talento_humano": "fas fa-users",
+        "inventario": "fas fa-boxes",
+        "activos": "fas fa-laptop-house",
+        "proyectos": "fas fa-project-diagram",
+        "permisos": "fas fa-clipboard-check",
+        "agua_potable": "fas fa-faucet",
+        "juridico": "fas fa-gavel",
+        "auditoria": "fas fa-search-dollar",
+        "servicios": "fas fa-concierge-bell",
+        
+        # Full App Config names (Fallback)
+        "apps.planificacion": "fas fa-sitemap",
+        "apps.compras": "fas fa-shopping-cart",
+        "apps.presupuestos": "fas fa-coins",
+        "apps.financiero": "fas fa-file-invoice-dollar",
+        "apps.tesoreria": "fas fa-cash-register",
+        "apps.contabilidad": "fas fa-calculator",
+        "apps.talento_humano": "fas fa-users",
+        "apps.inventario": "fas fa-boxes",
+        "apps.activos": "fas fa-laptop-house",
+        "apps.proyectos": "fas fa-project-diagram",
+        "apps.permisos": "fas fa-clipboard-check",
+        "apps.agua_potable": "fas fa-faucet",
+        "apps.juridico": "fas fa-gavel",
+        "apps.auditoria": "fas fa-search-dollar",
+        "apps.servicios": "fas fa-concierge-bell",
+
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+    },
+    "default_icon_parents": "fas fa-folder",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": False,
+    "custom_css": "css/custom_admin.css",
+    "custom_js": "js/custom_admin.js",
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-light",  # Fondo blanco para el logo
+    "accent": "accent-info",         # Acentos celestes
+    "navbar": "navbar-white navbar-light", # Barra superior blanca limpia
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-light-info", # Sidebar blanca con selección celeste
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "cerulean", # TEMA CLAVE: Celeste y Blanco
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-info",      # Botones primarios celestes
+        "secondary": "btn-outline-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
+}
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000 # Increased for large PAC inlines
+

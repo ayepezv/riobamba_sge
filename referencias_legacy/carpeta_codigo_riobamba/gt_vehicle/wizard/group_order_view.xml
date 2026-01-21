@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_group_order" model="ir.ui.view">
+        <field name="name">Agrupar Solicitudes Movilización</field>
+        <field name="model">group.order</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Agrupar solicitudes de movilización">
+			
+            <group col="4" colspan="4">
+              <field name="employee_id"/>
+			  <field name="order_id" domain="[('state','=','aprobado'),('padre','!=','t')]"/>
+			  <newline/>
+			  <group string="Solicitudes" colspan="4">
+				<field name="order_ids" colspan="4" nolabel="1" domain="[('state','=','aprobado'),('padre','!=','t')]">
+				  <tree>
+					<field name="ref"/>
+					<field name="movilization_date"/>
+					<field name="responsable_id"/>
+					<field name="department_id"/>
+				  </tree>
+				</field>
+			  </group>
+			  <group col="3" colspan="4">
+				<button icon="gtk-cancel" special="cancel"
+	        			string="Salir" />
+				<button name="group_order" type="object" icon="gtk-execute"  string="Agrupar" 
+						confirm="¿Está seguro que desea agrupar las órdenes en una sola?"/>
+			  </group>
+			</group>
+          </form>
+        </field>
+      </record>
+	  
+
+      <record id="action_group_order" model="ir.actions.act_window">
+        <field name="name">Agrupar Solicitudes de Movilización</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">group.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_group_order"
+		icon="STOCK_EXECUTE"
+		action="action_group_order"
+		parent="menu_vehicle_actions"
+		name="Agrupar Órdenes de Movilización"/>
+
+
+</data>
+</openerp>

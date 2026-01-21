@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_hr_ir_root" 
+			  parent="hr_payroll.menu_hr_root_payroll" 
+			  name="Impuesto renta"
+			  groups="base.group_hr_manager" sequence="100"/>
+
+      <!-- Renta views
+		-->
+      <record model="ir.ui.view" id="view_ir_head_form">
+	<field name="name">hr.ir.head.form</field>
+	<field name="model">hr.ir.head</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Impuesto Renta">
+	    <group col="4" colspan="4">
+	      <field name="name" colspan="2" domain="[('category_id','not in',('Total','Extra Rol','Basic'))]"/>
+	      <field name="period_id" colspan="2"  domain="[('state','=','abierto')]" widget='selection'/>
+	    </group>
+	    <group col="8" colspan="4">
+	      <button name="compute_renta" colspan="2" string="Calcular Impuesto Renta" type="object" icon="gtk-execute"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string='Detalle'>
+		<field name="line_ids" colspan="4" nolabel="1">
+		  <tree string="Detalle" editable="bottom">
+		    <field name="contract_id"/>
+		    <field name="date"/>
+		    <field name="sueldo"/>
+		    <field name="ingresos"/>
+		    <field name="gastos"/>
+		    <field name="deducibles"/>
+		    <field name="base_imponible"/>
+		    <field name="renta_anual"/>
+		    <field name="renta_mensual"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_ir_head_tree" model="ir.ui.view">
+	<field name="name">hr.ir.head.tree</field>
+	<field name="model">hr.ir.head</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Impuesto renta">
+	    <field name="name"/>
+	    <field name="period_id"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_ir_head_filter" model="ir.ui.view">
+	<field name="name">Renta</field>
+	<field name="model">hr.ir.head</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Renta">
+	    <field name="name"/>
+	    <field name="period_id"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_categ" string="Rubro" icon="STOCK_INDENT" domain="[]" context="{'group_by':'name'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_ir_head" model="ir.actions.act_window">
+	<field name="name">Impuesto renta</field>
+	<field name="res_model">hr.ir.head</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+	  
+      <menuitem id="menu_hr_ir_head"
+		action="action_ir_head"
+		parent="menu_hr_ir_root"
+		name="Impuesto Renta"
+		groups="base.group_hr_manager"/>
+      
+      <!-- -->
+      <!--menuitem id="menu_hr_ie_head_otros_conta"
+		action="action_ie_head"
+		parent="retention.menu_finance_anticipos"
+		name="Otros Anticipos"
+		groups="base.group_hr_manager,account.group_account_user"/-->
+
+
+    </data>
+</openerp>

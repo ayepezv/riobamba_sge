@@ -1,0 +1,135 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Author :  Cristian Salamea cristian.salamea@gnuthink.com
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+
+from osv import osv
+from osv import fields
+
+class validateMoveLine(osv.TransientModel):
+    _name = 'validate.move.line'
+    _columns = dict(
+        name = fields.text('Log ERROR'),
+        v_id = fields.many2one('validate.move','Detalle'),
+    )
+validateMoveLine()
+
+class validateMove(osv.TransientModel):
+    _name = 'validate.move'
+    _columns = dict(
+        date_start = fields.date('Desde'),
+        date_end = fields.date('Hasta'),
+        line_ids = fields.one2many('validate.move.line','v_id','Detalle'),
+    )
+
+    def validate_move(self, cr, uid, ids, context=None):
+        move_obj = self.pool.get('account.move')
+        line_obj = self.pool.get('validate.move.line')
+        for this in self.browse(cr, uid, ids):
+            #delete antes
+            lines_antes = line_obj.search(cr, uid, [('v_id','=',this.id)])
+            line_obj.unlink(cr, uid, lines_antes)
+            move_ids = move_obj.search(cr, uid, [('date','>=',this.date_start),('date','<=',this.date_end),('migrado','=',False),('state','=','posted')],order='date')
+            j = 0
+            for move_id in move_ids:
+                move = move_obj.browse(cr, uid, move_id)
+                message = move_obj.check_esigef_msg(cr, uid, [move_id])
+                if message:
+                    line_obj.create(cr, uid, {
+                        'seq':j,
+                        'v_id':this.id,
+                        'name':message,
+                    })
+                #validacion de fechas da asiento con periodo y detalle de lineas
+                if move.validar_cp == False and move.certificate_id and move.date<move.certificate_id.date_commited:
+                    aux_txt = 'La fecha del compromiso no puede ser mayor a la fecha del comprobante contable - ' + move.name
+                    j += 1
+                    line_obj.create(cr, uid, {
+                        'seq':j,
+                        'v_id':this.id,
+                        'name':aux_txt,
+                    })
+                if move.date<=move.period_id.date_stop and move.date>=move.period_id.date_start:
+                    for line in move.line_id:
+                        if not (line.date<=move.period_id.date_stop and line.date>=move.period_id.date_start):
+                            #error fechas
+                            aux_txt = 'No corresponde las fechas en el detalle contable del asiento - ' + move.name
+                            j += 1
+                            line_obj.create(cr, uid, {
+                                'seq':j,
+                                'v_id':this.id,
+                                'name':aux_txt,
+                            })
+                        #validar aplicacion presupuestaria
+                        if line.budget_accrued or line.budget_paid:
+                            #verificar los anteriores que no tenian budget_id_cert
+                            if not (line.budget_id_cert or line.budget_id or line.budget_post):
+                                j += 1
+                                aux_txt = 'El detalle del asiento - ' + move.name + ' - Esta en devengado o pagado y no tiene partida'
+                                line_obj.create(cr, uid, {
+                                    'seq':j,
+                                    'v_id':this.id,
+                                    'name':aux_txt,
+                                })
+                            #verificar el compromiso con lo devengado
+                            account = line.account_id
+                            if line.budget_accrued:
+                                if line.budget_post.id != account.budget_id.id:
+                                    j += 1
+                                    if line.budget_id:
+                                        aux_txt = 'El detalle del asiento - ' + move.name + ' - No corresponde la partida' + line.budget_id.code + ' con la cuenta contable seleccionada - ' + line.account_id.code
+                                    else:
+                                        aux_txt = 'El detalle del asiento - ' + move.name + ' - No corresponde la partida' + ' con la cuenta contable seleccionada - ' + line.account_id.code
+                                    line_obj.create(cr, uid, {
+                                        'seq':j,
+                                        'v_id':this.id,
+                                        'name':aux_txt,
+                                    })  
+                else:
+                    aux_txt = 'No corresponde las del asiento - ' + move.name + ' - Con el periodo seleccionado'
+                    j += 1
+                    line_obj.create(cr, uid, {
+                        'seq':j,
+                        'v_id':this.id,
+                        'name':aux_txt,
+                    })
+        return True
+
+    def print_validacion(self, cr, uid, ids, context=None):
+        '''
+        cr: cursor de la base de datos
+        uid: ID de usuario
+        ids: lista ID del objeto instanciado
+
+        Metodo para imprimir reporte
+        '''                
+        if not context:
+            context = {}
+        datas = {'ids' : ids,
+                 'model': 'account.move'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'validate.move',
+            'model': 'validate.move',
+            'datas': datas,
+            'nodestroy': True,
+            }        
+    
+validateMove()

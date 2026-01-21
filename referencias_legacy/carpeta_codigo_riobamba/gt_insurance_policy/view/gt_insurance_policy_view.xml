@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 		
+
+	<!--RESPONSABLE DE seguros-->
+	<record  id="view_form_gt_account_rseguros" model="ir.ui.view">
+		<field name="name">Responsable de seguros</field>
+		<field name="model">gt.account.asset.rseguros</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Responsable de seguros">
+			<group colspan="4" col="4" >				
+				<field name="name" colspan="2"/>														
+			</group>										
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_account_rseguros" model="ir.ui.view" >
+		<field name="name">Responsable de seguros</field>
+		<field name="model">gt.account.asset.rseguros</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Responsable de seguros" toolbar="1">
+				<field name="name" colspan="2" />				
+			</tree>
+		</field>
+	</record>		
+	<record id="action_gt_account_rseguros" model="ir.actions.act_window">
+    	<field name="name">Responsable de seguros</field>             
+        <field name="res_model">gt.account.asset.rseguros</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<!--TIPO DE Póliza-->
+	<record  id="view_form_gt_policy_type" model="ir.ui.view">
+		<field name="name">Tipo de Póliza</field>
+		<field name="model">gt.insurance.policy.type</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Tipo de Póliza">
+			<group colspan="4" col="4" >
+				<field name="code" colspan="2" readonly="1"/>
+				<field name="name" colspan="2" string='Descripción'/>														
+			</group>										
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_policy_type" model="ir.ui.view" >
+		<field name="name">Tipo de Póliza</field>
+		<field name="model">gt.insurance.policy.type</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Tipo de Póliza" toolbar="1">
+				<field name="code" colspan="2" />
+				<field name="name" colspan="2"  string='Descripción'/>
+			</tree>
+		</field>
+	</record>		
+	<record id="view_search_gt_policy_type" model="ir.ui.view">
+		<field name="name">Tipo de Póliza</field>
+        <field name="model">gt.insurance.policy.type</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Tipo de Póliza">
+            	<group>
+            		<field name="code"/>
+                	<field name="name" string='Descripción'/>                												
+				</group>              			  		
+			</search>
+		</field>
+	</record>
+	<record id="action_gt_policy_type" model="ir.actions.act_window">
+    	<field name="name">Tipos de Póliza</field>             
+        <field name="res_model">gt.insurance.policy.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<!--RAMO DE Póliza-->
+	<record  id="view_form_gt_policy_branch" model="ir.ui.view">
+		<field name="name">Ramo de Póliza</field>
+		<field name="model">gt.insurance.policy.branch</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Ramo de Póliza">
+			<group colspan="4" col="4" >
+				<field name="code" colspan="2" readonly="1"/>
+				<field name="name" colspan="2" string='Descripción'/>														
+			</group>										
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_policy_branch" model="ir.ui.view" >
+		<field name="name">Ramo de Póliza</field>
+		<field name="model">gt.insurance.policy.branch</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Ramo de Póliza" toolbar="1">
+				<field name="code" colspan="2"/>
+				<field name="name" colspan="2" string='Descripción'/>
+				
+			</tree>
+		</field>
+	</record>		
+	<record id="view_search_gt_policy_branch" model="ir.ui.view">
+		<field name="name">Ramo de Póliza</field>
+        <field name="model">gt.insurance.policy.branch</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Ramo de Póliza">
+            	<group>
+                	<field name="code"/>
+                	<field name="name" string='Descripción'/>
+                												
+				</group>              			  		
+			</search>
+		</field>
+	</record>
+	<record id="action_gt_policy_branch" model="ir.actions.act_window">
+    	<field name="name">Ramo de Póliza</field>             
+        <field name="res_model">gt.insurance.policy.branch</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<!--Cerrar la poliza-->
+	<record id="view_close_policy" model="ir.ui.view">
+		<field name="name">Cierre de Póliza</field>
+	  	<field name="model">gt.insurance.policy.close_policy</field>
+	  	<field name="type">form</field>
+	  	<field name="arch" type="xml">
+	  		<form string=" Cerrar Poliza">
+	  			<group colspan='4' col='4'>	  												
+					<group colspan='4' string="Datos de Poliza a cerrar">
+						<field name="policy_id" colspan="2" readonly="1"/>	
+						<field name="partner_id" colspan="2" readonly="1"/>											
+						<field name="requires_justification" colspan="2" readonly="1"/>
+					</group>	
+					<newline/>
+					<group colspan='4' string="Justificación de Cierre" attrs="{'invisible':[('requires_justification','=',False)]}">
+						<separator orientation="horizontal" string="Se está solicitando el cierre de la póliza antes de la fecha de fin establecida.   Esta acción requiere una justificación"/>
+						<newline/>
+						<field name="name" colspan="1" nolabel="1" attrs="{'required': [('requires_justification','=',True)],}"/>						
+					</group>
+					<newline/>													
+					<button name="action_open_close_policy" string="Confirmar" colspan="1"  type="object"
+						confirm="Esta acción no se podrá revertir. Desea confirmar la acción" icon="gtk-close"/>
+								
+				</group>
+	    	</form>
+		</field>
+	</record>
+	<record id="action_close_policy" model="ir.actions.act_window">
+            <field name="name">Cierre de Póliza</field>
+            <field name="res_model">gt.insurance.policy.close_policy</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name='view_id' ref='view_close_policy'/>
+            <field name="target">new</field>            
+	</record>	
+	<!--Póliza-->
+	<record  id="view_form_gt_policy" model="ir.ui.view">
+	  <field name="name">Póliza</field>
+	  <field name="model">gt.insurance.policy</field>
+	  <field name="type">form</field>		
+	  <field name="arch" type="xml">
+	    <form string="Póliza">	
+	      <separator colspan="4"/>	
+	      <field name="state" colspan="1" widget="statusbar" 
+		     statusbar_visible="draft,open,cancel,close,done" 
+		     statusbar_colors='{"pending":"blue"}' select="1"/>		
+	      <button name="print_asegurados" colspan="1" states="open" string="Activos asegurados" type="object" icon="gtk-print"/>
+	      <button name="print_informacion_poliza" states="open" colspan="1" string="Informacion de poliza" type="object" icon="gtk-print"/>		
+	      <group colspan="4" col="6" >
+		<field name="name" colspan="4" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="code" colspan="1" readonly='1'/>
+		<!--field name="temporal" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/-->
+		<field name="partner_id" widget="selection" colspan="1" required="1" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="employee_id" widget="selection" colspan="2" attrs="{'readonly':[('state','=','close')]}"/>
+		<field name="prev_day" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="number" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="type_id" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="branch_id" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="date_issue" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="date_start" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="date_end" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>	
+		<!--field name="invoice_id"  colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"
+		    domain="[('partner_id','=',partner_id)]"  /-->				
+		<field name="insured_amount" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		<field name="calculated_amount" colspan="2" readonly="1"/>
+		<separator orientation="vertical" colspan ='4'/>
+		<button name="calcular_monto_poliza" states="open" type="object"  string="Actualizar Monto" colspan="2"  icon="gtk-apply"/>
+		
+		<!--field name="prima" colspan="2" attrs="{'readonly':[('state','in',['open','close'])]}"/-->		
+	      </group>	
+	      <group colspan="4" col="6" >
+		<notebook colspan="4"> 
+		  <page string="Objetos de Póliza">										
+		    <field name="active_ids" nolabel="1" attrs="{'readonly':[('state','in',['draft','close'])]}"  domain="[('state','in',['open','review','prev_close']),('state_policy','=','open')]">
+		      <tree string="" editable="top">
+			<field name="asset_id" />
+			<field name="insured_amount"/>			                
+			<field name="state"/>
+			<field name="state_policy"/>
+		      </tree>
+		      <form string="">
+			<!--field name="tipo_id" required='1' on_change="onchange_asst_tipo_id(tipo_id)"/-->
+			<field name="asset_id" domain="[('state','in',['open','review','prev_close'])]" on_change="onchange_asset_id_policy(asset_id)" />
+			<field name="insured_amount"/>			                
+		      </form>									
+		    </field>					
+		  </page>
+		  <page string="Concepto">
+		    <field name="concept" colspan="4"  nolabel="1" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		  </page>								
+		  <page string="Cobertura">
+		    <field name="coverage" colspan="4"  nolabel="1" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		  </page>
+		  <page string="Riesgo Excluido">
+		    <field name="excluded_risk" colspan="4"  nolabel="1" attrs="{'readonly':[('state','in',['open','close'])]}"/>
+		  </page>		
+		  <page string="Justificación de Cierre">
+		    <field name="observation" colspan="4"  nolabel="1" readonly="1"/>
+		  </page>
+		  <page string="Exclusiones">
+		    <field name="less_transfer_ids" colspan="4" nolabel="1"  widget="many2many" readonly='1'>
+		      <tree string="">
+			<field name="name" string="Código de Actualización"/>					
+			<field name="created_id" />													
+			<field name="date_transfer" />
+			<field name="new_policy_id" string="Transferido a póliza"/>
+		      </tree>
+		    </field>
+		  </page>
+		  <page string="Inclusiones">
+		    <field name="add_transfer_ids" colspan="4" nolabel="1"  widget="one2many" readonly='1'>
+		      <tree string="">
+			<field name="name" string="Código de Actualización"/>							
+			<field name="created_id" widget="selection"/>					
+			<field name="date_transfer" />
+			<field name="policy_id" string="Transferido desde póliza"/>
+		      </tree>
+		    </field>
+		  </page>
+		</notebook>
+	      </group>
+	      <newline/>
+	      <group colspan="4" col="8" >					
+		<button name="wkf_draft_open" states="draft"  string="Abrir" colspan="2"  icon="gtk-apply"/>
+		<!--button name="wkf_open_cancel" states="open" string="Cancelar" colspan="1"/-->
+		<button type="action" icon="gtk-close" name="%(action_close_policy)d" states="open"  string="Cerrar" colspan="2"/>
+		<button name="wkf_cancel_draft" states="cancel" string="Borrador" colspan="2"/>
+		<separator orientation="vertical"/>				
+	      </group>
+	    </form>
+	  </field>
+	</record> 
+	<record id="view_tree_gt_policy" model="ir.ui.view" >
+	  <field name="name">Póliza</field>
+	  <field name="model">gt.insurance.policy</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree colors="grey:state in ('cancel','done','close');blue:state == 'open'" string="Pólizas">
+	      <field name="code" colspan="2" />
+	      <field name="name" colspan="2" />				
+	      <field name="number" colspan="2"/>
+	      <field name="type_id" colspan="2"/>
+	      <field name="branch_id" colspan="2"/>
+	      <field name="date_start" colspan="2"/>
+	      <field name="date_end" colspan="2"/>			
+	      <!--field name="invoice_id" colspan="2"/-->
+	      <field name="state" colspan="2"/>
+	    </tree>
+	  </field>
+	</record>		
+	<record id="view_search_gt_policy" model="ir.ui.view">
+	  <field name="name">Póliza</field>
+          <field name="model">gt.insurance.policy</field>
+          <field name="type">search</field>
+          <field name="arch" type="xml">
+            <search string="Póliza">
+              <group>
+            	<field name="code"/>
+                <field name="name"/>
+                <field name="number"/>
+                <field name="type_id" colspan="2"/>
+		<field name="branch_id" colspan="2"/>
+		<field name="date_start" colspan="2"/>
+		<field name="date_end" colspan="2"/>
+		<field name="partner_id" colspan="2"/>
+		<!--field name="invoice_id" colspan="2"/-->	
+		<field name="state" colspan="2"/>										
+	      </group>              	
+	      <newline/>
+	      <group expand="1"  string="Agrupar por...">
+		<filter string="Tipo de Póliza" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'type_id'}" />
+		<separator orientation="vertical"/>
+		<filter string="Ramo de Póliza" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'branch_id'}" />
+		<separator orientation="vertical"/>
+		<!--filter string="Proveedor" icon="terp-go-home" domain="[]" context="{'group_by' : 'partner_id'}" />
+		    <separator orientation="vertical"/-->
+		<!--filter string="Factura" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'invoice_id'}" />
+		    <separator orientation="vertical"/-->
+		<filter string="Estado" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'state'}" />
+		<separator orientation="vertical"/>
+	      </group>		  		
+	    </search>
+	  </field>
+	</record>
+	
+	<!--activos asegurados-->
+	<record  id="view_form_gt_policy_temporal" model="ir.ui.view">
+	  <field name="name">Activos Asegurados</field>
+	  <field name="model">gt.insurance.policy.temporal</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Activos Asegurados">
+	      <group colspan="4" col="4" >				
+		<!--field name="tipo_id" colspan="2"/>
+		    <field name="asset_id" colspan="2" domain="[('tipo_id','=',tipo_id),('income_id','=',1),('state','=',['open','review'])]"/-->
+		<field name="policy_id" colspan="2" readonly="1"/>										
+		<field name="asset_id" colspan="2" readonly="1" 
+		       context="{'form_view_ref': 'gt_account_asset.view_account_asset_asset_form_read'}"/>
+		<field name="insured_amount" colspan="2" readonly="1"/>
+		<field name="employee_id" colspan="2"/>
+		<field name="income_id" colspan="2" readonly="1" widget='selection'/>
+		<!--field name="tipo_id" colspan="2" readonly="1" widget='selection'/>
+		    <field name="subtipo_id" colspan="2" readonly="1" widget='selection'/>	
+		    <field name="class_id" colspan="2" readonly="1" widget='selection'/-->		
+	      </group>										
+	    </form>
+	  </field>
+	</record> 
+	<record id="view_tree_gt_policy_temporal" model="ir.ui.view" >
+	  <field name="name">Activos Asegurados</field>
+	  <field name="model">gt.insurance.policy.temporal</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Activos Asegurados" toolbar="1" colors="grey:state in ['done','close'];blue:state in ['open','no_depreciate'];red:state == 'review'; green:state == 'close'">
+	      <field name="policy_id" colspan="2"/>										
+	      <field name="asset_id" colspan="2"/>
+	      <field name="employee_id" colspan="2"/>
+	      <field name="insured_amount" colspan="2" />
+	      <!--field name="tipo_id" colspan="2"/>
+		  <field name="subtipo_id" colspan="2"/>
+		  <field name="class_id" colspan="2"/-->				
+	      <field name="state" colspan="2"/>
+	    </tree>
+	  </field>
+	</record>		
+	<record id="view_search_gt_policy_temporal" model="ir.ui.view">
+	  <field name="name">Activos Asegurados</field>
+          <field name="model">gt.insurance.policy.temporal</field>
+          <field name="type">search</field>
+          <field name="arch" type="xml">
+            <search string="Activos Asegurados">
+              <group>
+		<field name="policy_id" colspan="2"/>										
+		<field name="asset_id" colspan="2"/>
+		<field name="employee_id" colspan="2"/>
+		<field name="state" colspan="2"/>
+	      </group>   
+	      <newline/>
+	      <group expand="1"  string="Agrupar por...">
+		<filter string="Poliza" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'policy_id'}" />
+		<separator orientation="vertical"/>
+		<filter string="Activo" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'asset_id'}" />
+		<separator orientation="vertical"/>
+		<filter string="Custodio" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'employee_id'}" />
+		<separator orientation="vertical"/>
+		<filter string="Estado" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'state'}" />
+		<separator orientation="vertical"/>
+	      </group>           			  		
+	    </search>
+	  </field>
+	</record>
+	<record id="action_gt_policy_temporal" model="ir.actions.act_window">
+    	  <field name="name">Activos Asegurados</field>             
+          <field name="res_model">gt.insurance.policy.temporal</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">tree,form</field>
+	</record>
+	
+	<!--Activos-->
+	<!--record id="view_account_asset_asset_sinister_form_3" model="ir.ui.view">
+	    <field name="name">Siniestros</field>
+	    <field name="model">account.asset.asset</field>
+	    <field name="inherit_id" ref="account_asset.view_account_asset_asset_form"/>
+	    <field name="arch" type="xml">
+      	    <xpath expr="/form/notebook/page[@string='Componentes']" position="after">
+	    <page string="Pólizas">
+	    <separator colspan="4" string="Pólizas"/>
+	    <newline/>
+	    <field name="policy_id" colspan="2" nolabel='1' attrs="{'readonly': [('state', '!=','draft')]}"  domain="[('state','=','open')]" >
+	    <tree string="Poliza">
+	    <field name="policy_id"   />	
+	    <field name="insured_amount" />
+	    <field name="state_policy" />																		
+	    </tree>
+	    <form >
+	    <field name="state_policy" invisible="1" />
+	    <field name="policy_id" attrs="{'readonly': [('state_policy', 'in',['open','close','modif'])]}" />																			
+	    <field name="insured_amount" attrs="{'readonly': [('state_policy', 'in',['open','close','modif'])]}"/>												
+	    </form>
+	    </field>
+	    <newline/>
+            
+	    </page>	
+	    </xpath>
+        </field>
+	</record-->  
+	<record id="view_account_asset_asset_form_read" model="ir.ui.view">
+	  <field name="name">ACTIVOS</field>
+	  <field name="model">account.asset.asset</field>
+	  <field name="inherit_id" ref="gt_account_asset.view_account_asset_asset_form_read"/>
+	  <field name="arch" type="xml">
+      	    <xpath expr="/form/notebook/page[@string='Componentes']" position="after">
+	      <page string="Pólizas" attrs="{'invisible':[('code','=','')]}">
+		<separator colspan="4" string="Pólizas"/>
+		<newline/>
+		<field name="policy_id" colspan="2" nolabel='1' attrs="{'readonly': [('state', '!=','draft')]}"  domain="[('state','=','open')]" >
+		  <tree string="Poliza">
+		    <field name="policy_id"   />	
+		    <field name="insured_amount" />
+		    <field name="state_policy" />																		
+		    <!--field name="asset_id" />													
+			<field name="insured_amount" /-->
+		  </tree>
+		  <form >
+		    <field name="state_policy" invisible="1" />
+		    <field name="policy_id" attrs="{'readonly': [('state_policy', 'in',['open','close','modif'])]}" />																			
+		    <field name="insured_amount" attrs="{'readonly': [('state_policy', 'in',['open','close','modif'])]}"/>																				
+							<!--field name="insured_amount" /--> 													
+						</form>
+				</field>
+		      	<newline/>
+        	       
+		      </page>	
+		</xpath>
+        </field>
+    </record>      
+	
+	
+	<record id="view_account_asset_asset_sinister_form_3" model="ir.ui.view">
+      <field name="name">Siniestros</field>
+      <field name="model">account.asset.asset</field>
+      <field name="inherit_id" ref="account_asset.view_account_asset_asset_form"/>
+      <field name="arch" type="xml">
+      	<xpath expr="/form/notebook/page[@string='General']" position="after">
+		      <page string="Pólizas" attrs="{'invisible':[('code','=','')]}">
+		      	<separator colspan="4" string="Pólizas"/>
+		      	<newline/>
+		      	<field name="policy_id" colspan="2" nolabel='1' attrs="{'readonly': [('state', '!=','draft')]}"  domain="[('state','=','open')]" >
+						<tree string="Poliza">
+							<field name="policy_id"   />	
+							<field name="insured_amount" />
+							<field name="state_policy" />																		
+							<!--field name="asset_id" />													
+							<field name="insured_amount" /-->
+						</tree>
+						<form >
+							<field name="state_policy" invisible="1" />
+							<field name="policy_id" />																			
+							<field name="insured_amount"/>																				
+							<!--field name="insured_amount" /--> 													
+						</form>
+				</field>
+		      	<newline/>
+		      	<!--separator colspan="4" string="Trasnferencias de Poliza"/-->
+		      	<!--field name="transfer_codes" colspan="2" nolabel='1' widget="many2many" readonly='1'>
+						<tree string="Historial de pólizas ">
+							<field name="name" />																			
+							<field name="transfer_id" />													
+						</tree>
+						<form >
+							<field name="name" />																			
+							<field name="transfer_id" />													
+						</form>
+				</field-->   
+				<!--field name="temporal_policy_ids" colspan="2" nolabel='1'  widget="many2many" readonly='1'>
+						<tree string="Pólizas Temporales">
+							<field name="name" />																			
+							<field name="policy_id" />													
+						</tree>
+						<form >
+							<field name="name" />																			
+							<field name="policy_id" />													
+						</form>						
+				</field-->           	       
+		      </page>	
+		</xpath>
+        </field>
+    </record>  
+       	
+    <!--record id="view_tree_account_asset_asset" model="ir.ui.view">
+        <field name="name">Activos</field>
+        <field name="model">account.asset.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_asset_tree"/>
+        <field name="arch" type="xml">        	
+	    <xpath expr="/tree/field[@name='company_id']" position="after">
+	    	<field name="insured_amount" colspan="2" readonly="1" attrs="{'required': [('parent_id','=','')],}"/>
+	    	<field name="policy_id" colspan="2" readonly="1" attrs="{'required': [('parent_id','=','')],}"/>
+	    </xpath>	   
+        </field>
+    </record-->
+    <!--record id="view_search_account_asset_asset" model="ir.ui.view">
+        <field name="name">Activos</field>
+        <field name="model">account.asset.asset</field>
+        <field name="inherit_id" ref="gt_account_asset.view_account_asset_asset2_search"/>
+        <field name="arch" type="xml">        	
+	    <xpath expr="/search/group/field[@name='partner_id']" position="after">
+	    	<field name="policy_id" colspan="2" readonly="1"/>
+
+	    </xpath>
+		<xpath expr="/search/group/filter[@string='Estado']" position="before">
+      		<separator orientation="vertical"/>  
+			<filter string="Póliza" icon="terp-partner" domain="[]" context="{'group_by':'policy_id'}"/>
+			<separator orientation="vertical"/>
+		</xpath>	
+        </field>
+    </record-->
+	
+    <!--Transferencaid e activos de poliza-->
+	<record  id="view_form_gt_insurance_policy_transfer" model="ir.ui.view">
+		<field name="name">Actualización de póliza</field>
+		<field name="model">gt.insurance.policy.transfer</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Actualización de Póliza">			
+			<separator colspan="4"/>						
+			<field name="state"  widget="statusbar"
+					statusbar_visible="draft,open,response,cancel,close,done"
+					statusbar_colors='{"pending":"blue"}'/>
+			
+			<group colspan="4" col="6" string="Información " >
+				<field name="created_id" colspan="2" readonly="1" widget="selection"/>
+				<field name="date_transfer" colspan="2" readonly="1"/>
+				<field name="name" colspan="2" readonly="1"/>
+			</group>								
+			<group colspan="4" col="4"  string="Póliza origen" attrs="{'readonly': [('state', '!=','draft')]}">													
+				<field name="policy_id" colspan="4" on_change="get_policy_fiels(policy_id)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+				<field name="number" colspan="2" />				
+				<field name="_state" colspan="2" />
+			</group>			
+			<group colspan="4" col="4" string="Póliza destino" attrs="{'readonly': [('state', '!=','draft')]}">								
+				<field name="new_policy_id" domain="[('state','=','open')]" 
+					 colspan="4" on_change="get_new_policy_fiels(new_policy_id)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+				<field name="new_number" colspan="2" />
+				<field name="_new_state" colspan="2" />
+			</group>	
+			<button name="get_asset_ids" string="Cargar Activos" colspan="4"  type="object"
+				attrs="{'invisible': [('state', '!=','open')]}"/>
+			<field name="active_to_trasnfer" colspan="4" nolabel="1" widget="many2many" attrs="{'readonly': [('state', '!=','open')]}"
+				domain="[('transfer_id','=',active_id)]" >
+					<tree string="Activos de poliza" editable="top">  														
+							<field name="name" readonly="1"/>			                			              
+			                <field name="transfer_id" readonly="1"/>			                
+			                <field name="active_id" readonly="1"/>             			                
+			                <field name="asset_id" readonly="1"/>
+			                <field name="insured_amount" readonly="1"/>
+			                <field name="new_insured_amount" attrs="{'readonly': [('name', '!=',False)]}"/>
+					</tree>	
+			</field>
+			<button name="abrir_transferir_poliza" states="draft" string="Abrir" icon="gtk-apply" type="object"/>
+			<button name="confirmar_transferir_poliza" states="open" string="Confirmar  cambio de póliza" icon="gtk-yes" type="object"
+				confirm="Esta acción no se podrá revertir. Desea confirmar la acción"/>			
+				
+												
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_insurance_policy_transfer" model="ir.ui.view" >
+		<field name="name">Actualización de póliza de activos de póliza</field>
+		<field name="model">gt.insurance.policy.transfer</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Actualización de Póliza" toolbar="1"
+				colors="grey:state in ('cancel','done');blue:state == 'open'; black:state == 'close'">
+				<field name="name" colspan="2" string='Código de Actualización'/>
+				<field name="created_id" colspan="2"/>
+				<field name="state" colspan="2"/>
+				<field name="policy_id" colspan="2"/>
+				<field name="new_policy_id" colspan="2"/>
+			</tree>
+		</field>
+	</record>		
+	<record id="view_search_gt_insurance_policy_transfer" model="ir.ui.view">
+		<field name="name">Actualización de póliza</field>
+        <field name="model">gt.insurance.policy.transfer</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Actializacion de Póliza">
+            	<group>
+                	<field name="name" string ='Código de Actualización'/>
+                	<field name="created_id" colspan="2"/>
+                	<field name="state" colspan="2"/>											
+				</group>    
+				<newline/>
+				<group expand="1"  string="Agrupar por...">
+					<filter string="Actualizado por" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'created_id'}" />
+					<separator orientation="vertical"/>
+					<filter string="Estado" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'state'}" />
+					<separator orientation="vertical"/>
+				</group>          			  		
+			</search>
+		</field>
+	</record>
+	<record id="action_gt_insurance_policy_transfer" model="ir.actions.act_window">
+    	<field name="name">Actualización de póliza</field>             
+        <field name="res_model">gt.insurance.policy.transfer</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>    
+    <!--Actualizacion de activo-->
+	<record  id="view_form_gt_insurance_policy_tr_line" model="ir.ui.view">
+		<field name="name">Actualización de Activo</field>
+		<field name="model">gt.insurance.policy.tr.line</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Tipo de Activo">			
+			<separator colspan="4"/>						
+			<group colspan="4" col="6" string="Códigos " >
+				<field name="transfer_id" colspan="2" readonly="1"/>
+				<field name="name" colspan="2" readonly="1"/>
+			</group>								
+			<group colspan="4" string="Póliza origen">													
+				<field name="old_policy_id" colspan="2" readonly="1"/>
+				<field name="insured_amount" colspan="2" readonly="1"/>				
+			</group>	
+			<group colspan="4" string="Póliza destino">																	
+				<field name="new_policy_id" colspan="2" readonly="1"/>	
+				<field name="new_insured_amount" colspan="2" readonly="1"/>			
+			</group>		
+			<field name="created_id" colspan="2" readonly="1" widget="selection"/>								
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_insurance_policy_tr_lin" model="ir.ui.view" >
+		<field name="name">Actualización de Activo</field>
+		<field name="model">gt.insurance.policy.tr.line</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Actualización de Activo" editable="top">  														
+				<field name="name" />			                			              
+                <field name="transfer_id" />			                
+                <field name="active_id"/>             			                
+                <field name="insured_amount"/>
+                <field name="new_insured_amount"/>
+			</tree>
+		</field>
+	</record>			
+	<record id="action_gt_insurance_policy_tr_line" model="ir.actions.act_window">
+    	<field name="name">Actualización de Activo</field>             
+        <field name="res_model">gt.insurance.policy.tr.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>     	      
+	<record id="action_gt_policy" model="ir.actions.act_window">
+    	<field name="name">Póliza</field>             
+        <field name="res_model">gt.insurance.policy</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<menuitem name="Pólizas y Siniestros " id="menu_polizas_siniestros" sequence="70"
+		parent="gt_document_manager.menu_document_manager"
+		groups="gt_insurance_policy.group_policy_manager,gt_insurance_policy.group_policy_readonly,gt_insurance_policy.group_policy_user"/>
+	<menuitem name="Pólizas" id="menu_poliza_seguros" parent="menu_polizas_siniestros"
+		sequence="5" 
+		groups="group_policy_manager,group_policy_readonly,group_policy_user"/>     		
+    <menuitem name="Pólizas" id="menu_poliza" parent="menu_poliza_seguros" 
+    	action="action_gt_policy" sequence="5" 
+    	groups="group_policy_manager,group_policy_readonly,group_policy_user"/>
+    <menuitem name="Activos asegurados" id="menu_polizas_temporales" parent="menu_poliza_seguros" 
+    	action="action_gt_policy_temporal" sequence="10"
+    	groups="group_policy_manager,group_policy_readonly,group_policy_user,account.group_account_manager"/> 
+    <menuitem name="Pólizas y Siniestros " id="menu_configuracion_polizas" sequence="70"
+		parent="gt_document_manager.menu_document_manager_configuration" 
+		groups="group_policy_manager,group_policy_user"/> 		
+    <menuitem name="Tipos de Póliza" id="menu_tipos_de_poliza" parent="menu_configuracion_polizas" 
+    	action="action_gt_policy_type" sequence="5" 
+    	groups="group_policy_manager"/>
+	<menuitem name="Responsable Seguros" id="menu_action_gt_account_rseguros" parent="menu_configuracion_polizas" 
+    	action="action_gt_account_rseguros" sequence="30" 
+    	/>
+    	
+    <menuitem name="Ramo de Póliza" id="menu_ramos_de_poliza" parent="menu_configuracion_polizas" 
+    	action="action_gt_policy_branch" sequence="10" 
+    	groups="group_policy_manager"/>  
+    <menuitem name="Actualización de póliza" id="menu_actualizacion_activos" parent="menu_poliza_seguros" 
+    	action="action_gt_insurance_policy_transfer" sequence="15"
+    	groups="group_policy_manager,group_policy_user"/>
+    	    	      
+</data>
+</openerp>
+
+

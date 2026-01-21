@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_hr_update_wage" model="ir.ui.view">
+        <field name="name">Actualizar Sueldo</field>
+        <field name="model">hr.payroll.update.wage</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente actualización sueldo">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite a usted actualizar el salario de un empleado"/>
+            <group col="4" colspan="4">
+	      <group colspan="4">
+                <field name="contract_id" colspan="2" on_change="onchange_contract(contract_id)"/>
+	      </group>
+	      <newline/>
+	      <group colspan="4">
+                <field name="wage" colspan="2"/>
+		<field name="new_wage" colspan="2"/>
+		<newline/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="update_wage" type="object" icon="gtk-execute"  string="Actualizar" 
+			confirm="Esta seguro que desea modificar el salario"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_hr_update_wage" model="ir.actions.act_window">
+        <field name="name">Actualizar Sueldo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.payroll.update.wage</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_update_wage"
+		icon="STOCK_EXECUTE"
+		action="action_hr_update_wage"
+		parent="menu_hr_wizard_wage"
+		name="Individual"/>
+
+
+      <record id="view_hr_update_masive_wage" model="ir.ui.view">
+        <field name="name">Actualizar Sueldo Masivo</field>
+        <field name="model">hr.payroll.update.masive.wage</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente actualización sueldo masivo">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite a usted actualizar el salario de los empleados, usted puede elegir si la actualización la realizará por un valor o un porcentaje. Así como también especificar a que empleados nomas va a afectar el alza, ya sea a todos o solo a los empleados que perciben el salario básico..."/>
+	    <newline/>
+	    <label colspan="4" nolabel="1" string="Por ejemplo si su sueldo es 1000 y actualiza VALOR 10 el nuevo sueldo será 1010"/>
+	    <label colspan="4" nolabel="1" string="Por ejemplo si su sueldo es 1000 y actualiza PORCENTAJE 10 el nuevo sueldo será 1100"/>
+            <group col="4" colspan="4">
+	      <group colspan="4">
+                <field name="type" colspan="2" required="1"/>
+                <field name="basico" colspan="2"/>
+                <field name="type_value" colspan="2" required="1"/>
+		<field name="whos" colspan="2" required="1"/>
+		<newline/>
+	      </group>
+	      <newline/>
+	      <group colspan="4" string="ACTUALIZADOS">
+		<field name="log" colspan="4" nolabel="1"/>
+	      </group>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="update_wage" type="object" icon="gtk-execute"  string="Actualizar" 
+			confirm="Esta seguro que desea modificar el salario"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_hr_update_masive_wage" model="ir.actions.act_window">
+        <field name="name">Alza Sueldo Masivo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.payroll.update.masive.wage</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_update_masive_wage"
+		icon="STOCK_EXECUTE"
+		action="action_hr_update_masive_wage"
+		parent="menu_hr_wizard_wage"
+		name="Colectivo/Personalizado"/>
+
+
+</data>
+</openerp>

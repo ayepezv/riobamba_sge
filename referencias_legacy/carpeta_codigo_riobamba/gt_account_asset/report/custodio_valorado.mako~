@@ -1,0 +1,58 @@
+<html>
+<head>
+    <style type="text/css">
+    </style>
+</head>
+ <body>
+   %for o in objects:
+   <h2 style="text-align:center;" align="center">DIRECCION FINANCIERA</h2>
+   <h2 style="text-align:center;" align="center">BIENES POR CUSTODIO</h2>
+   <%
+      total=total_categoria=0
+      %>
+   %for categoria in get_categories_custodio(o):
+   <tr>
+     <th width="60%" style="text-align:left;" > CATEGORIA: ${categoria.name}</th>
+   </tr>
+   <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+	 <thead>
+	   <tr>
+	     <th width="30%" style="text-align:left;">Codigo</th>
+	     <th width="30%">Descripcion</th>
+	     <th width="7%">Valor Compra</th>
+	   </tr>
+	 </thead>
+        <%
+      total_categoria=0
+      %>
+     %for activo in get_activos_custodio(o,categoria.id):
+     <%
+	total_categoria+=activo.purchase_value
+	%>
+     <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+       <tr>
+	 <td width="30%" style="font-size:11px;text-align:left">${activo.code}</td>
+	 <td width="30%" style="font-size:11px;text-align:right">${activo.name}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${activo.purchase_value}</td>
+       </tr>
+     </table>
+     %endfor
+      <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+       <tr>
+	 <!--td width="35%" style="font-size:11px;text-align:left">${}</td>
+	 <td width="35%" style="font-size:11px;text-align:right">${}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${}</td-->
+	 <td width="93%" style="font-size:11px;text-align:right"><b>TOTAL CATEGORIA</b></td>
+	 <td width="7%" style="font-size:11px;text-align:right"><b>${total_categoria}</b></td>
+       </tr>
+     </table>
+        <%
+      total_departamento=0
+      %>
+     %endfor   
+   </table>
+</table>
+   %endfor
+</body>
+</html>

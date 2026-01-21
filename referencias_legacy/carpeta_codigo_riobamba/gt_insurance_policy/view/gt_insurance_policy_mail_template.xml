@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data  noupdate="1">
+        <!--Export edi document  -->
+        <record id="ir_actions_server_inform" model="ir.actions.server">
+            <field name="code"></field>
+	    	<field eval="7" name="sequence"/>
+            <field name="state">code</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_gt_insurance_policy"/>
+            <field name="condition">True</field>
+            <field name="name">gt_insurance_policy_inform_mail_template</field>
+        </record>
+       <!-- EDI related Email Templates menu -->
+        <record model="ir.actions.act_window" id="action_email_templates_inform">
+            <field name="name">Plantilla Email Caducidad de Pólizas</field>
+            <field name="res_model">email.template</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="email_template.email_template_tree"/>
+            <field name="search_view_id" ref="email_template.view_email_template_search"/>
+            <field name="context">{'search_default_model_id':'gt.insurance.policy'}</field>
+	    	<field name="context" eval="{'search_default_model_id': ref('model_gt_insurance_policy')}"/>
+        </record>
+	<!--menuitem id="menu_email_templates_inform"  action="action_email_templates_inform" sequence="15"/-->
+        <!--Email template -->
+        <record id="email_template_edi_covenant" model="email.template">
+            <field name="name">Caducidad de Pólizas</field>
+            <field name="email_from">${object.employee_id.work_email or ''}</field>
+            <field name="subject"> POLIZA:  ${object.name or ''}</field>
+            <field name="email_to">${object.employee_id.work_email}</field>
+            <!--field name="body"> La fecha de caducidad de la polzia ${object.name or ''} esta proxima</field-->
+            <field name="model_id" ref="model_gt_insurance_policy"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+</div>	
+            ]]></field>
+        </record>
+    </data>
+
+</openerp>

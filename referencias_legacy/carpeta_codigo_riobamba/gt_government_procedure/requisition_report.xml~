@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <!-- Reporte de solicitud de compra -->
+    <report auto="False" id="purchase_requisition_report" model="purchase.requisition"
+            name="purchase_requisition_report" file="gt_government_procedure/report/solicitud.mako"
+            usage="default" string="Reporte Solicitud Compra" header="True" report_type="webkit" />
+
+  </data>
+</openerp>

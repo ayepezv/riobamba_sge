@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- no esta implementado el reporte: report auto="False"
+                id="report_account_budget_roof"
+                model="budget.roof"
+                name="report.account.budget.roof"
+                file="gt_budget/report/report_budget_roof.mako"
+                string="Techo Presupuestario"
+                report_type="webkit"
+				header="True"/-->
+
+        <report auto="False" 
+                id="crossovered_buget_certificate_request" 
+                model="budget.certificate"
+                name="crossovered.request" 
+                file="gt_account_budget/report/report_certificate.mako"
+                string="Presupuesto Referencial" 
+                header="True" report_type="webkit" menu="False"/>
+
+		<!-- ok -->
+        <report auto="False" 
+                id="crossovered_buget_certificate_compromise" 
+                model="budget.certificate"
+                name="budget.compromise" 
+                file="gt_budget/report/report_compromise.mako"
+                string="Compromiso Presupuestario" 
+                header="True" report_type="webkit" menu="False"/>   
+              
+		<report auto="False" 
+				id="crossovered_buget_card" 
+                model="budget.poa"
+                name="BudgetCard" 
+                file="gt_budget/report/report_budget_card.mako"
+                string="Ejecución Presupuestaria" 
+                header="True" report_type="webkit" menu="False"/>
+       
+       <report auto="False" 
+                id="crossovered_buget_card_income_group" 
+                model="budget.budget"
+                name="BudgetCardIncome" 
+                file="gt_account_budget/report/report_budget_card_income.mako"
+                string="Resumen Cédula de Ingresos" 
+                header="True" report_type="webkit" menu="False"/>   
+                
+       <report auto="False" 
+                id="crossovered_buget_card_expense" 
+                model="budget.budget"
+                name="BudgetCardExpense" 
+                file="gt_account_budget/report/report_budget_card_expense.mako"
+                string="Resumen Cédula de Gastos" 
+                header="True" report_type="webkit" menu="False"/> 
+               
+       <report auto="False" 
+                id="crossovered_buget_card_expense_group" 
+                model="budget.budget"
+                name="BudgetCardExpenseGroup" 
+                file="gt_account_budget/report/report_budget_card_expense_group.mako"
+                string="Cédula Presupuestaria de Gastos" 
+                header="True" report_type="webkit" menu="False"/>      
+                 
+    </data>
+</openerp>

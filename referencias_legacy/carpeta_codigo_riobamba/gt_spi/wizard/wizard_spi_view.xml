@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+      <record id="view_wizard_cambia_concepto" model="ir.ui.view">
+        <field name="name">Cambiar Concepto</field>
+        <field name="model">wizard.cambia.concepto</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cambiar Concepto">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="name" colspan="2" required="1"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon='gtk-cancel' special="cancel"
+			string="Cancel" />
+		<button name="cambiaConceptoSpi" string="Cambiar"
+			colspan="1" type="object" icon="gtk-execute" />
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_cambia_concepto_spi" model="ir.actions.act_window">
+        <field name="name">Cambiar Concepto</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.cambia.concepto</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+      <record id="view_wizard_no_move" model="ir.ui.view">
+        <field name="name">Verificar No Carga Comprobante</field>
+        <field name="model">wizard.no.move</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Verificar no aparece comprobante contable">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="name" colspan="2" required="1"/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon='gtk-cancel' special="cancel"
+			string="Cancel" />
+		<button name="loadMoveSpi" string="Verificar"
+			colspan="1" type="object" icon="gtk-execute" />
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_no_move_spi" model="ir.actions.act_window">
+        <field name="name">Verificar No Carga Comprobante</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">wizard.no.move</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+    </data>
+</openerp>

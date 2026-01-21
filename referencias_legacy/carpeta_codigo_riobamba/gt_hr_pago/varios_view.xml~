@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_quincena_root" 
+	      parent="hr_payroll.menu_hr_root_payroll" 
+	      name="Quincena"
+	      groups="base.group_hr_manager" sequence="100"/>
+
+   <record model="ir.ui.view" id="view_quincena_line_line_form">
+      <field name="name">hr.quincena.line.line.form</field>
+      <field name="model">hr.quincena.line.line</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Quincena Detalle Empleado">
+	  <group col="4" colspan="4">
+	    <field name="name" colspan="2"/>
+	    <field name="employee_id" colspan="2"/>
+	    <field name="valor" colspan="2"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_quincena_line_line_tree" model="ir.ui.view">
+      <field name="name">hr.quincena.line.line.tree</field>
+      <field name="model">hr.quincena.line.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Quincenas detalle empleado">
+	  <!--field name="name"/-->
+	  <field name="employee_id"/>
+	  <field name="period_id"/>
+	  <field name="valor"/>
+	</tree>
+      </field>
+    </record>
+
+    <record id="view_quincena_line_line_filter" model="ir.ui.view">
+      <field name="name">Quincena Detalle</field>
+      <field name="model">hr.quincena.line.line</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+	<search string="Periodos">
+	  <field name="period_id"/>
+	  <field name="employee_id"/>
+	</search>
+      </field>
+    </record>
+
+   <record model="ir.ui.view" id="view_quincena_dept_line_form">
+      <field name="name">hr.dept.line.form</field>
+      <field name="model">hr.dept.line</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Quincena Detalle Departamento">
+	  <group col="4" colspan="4">
+	    <field name="name" colspan="2"/>
+	    <field name="department_id" colspan="2"/>
+	    <field name="valor" colspan="2"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_quincena_dept_line_tree" model="ir.ui.view">
+      <field name="name">hr.quincena.dept.line.tree</field>
+      <field name="model">hr.dept.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Quincenas detalle depto">
+	  <field name="name"/>
+	  <field name="department_id"/>
+	  <field name="valor"/>
+	</tree>
+      </field>
+    </record>
+
+   <record model="ir.ui.view" id="view_quincena_line_form">
+      <field name="name">hr.quincena.line.form</field>
+      <field name="model">hr.quincena.line</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Quincena Detalle">
+	  <group col="4" colspan="4">
+	    <field name="name" colspan="2"/>
+	    <field name="program_id" colspan="2"/>
+	    <!--field name="line_ids" colspan="4"/-->
+	    <field name="valor" colspan="2"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_quincena_line_tree" model="ir.ui.view">
+      <field name="name">hr.quincena.line.tree</field>
+      <field name="model">hr.quincena.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Quincenas detalle">
+	  <field name="name"/>
+	  <field name="program_id"/>
+	  <field name="valor"/>
+	</tree>
+      </field>
+    </record>
+    <!-- Quincena views
+    -->
+   <report auto="False" id="rol_quincena" model="hr.quincena"
+            name="hr.quincena" rml="gt_hr_quincena/report/quincena.mako"
+            usage="default" string="Quincena" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_quincena_form">
+      <field name="name">hr.quincena.form</field>
+      <field name="model">hr.quincena</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Quincena">
+	  <group col="4" colspan="4">
+	    <field name="name" colspan="2" domain="[('category_id','not in',('Total','Extra Rol','Basic'))]"/>
+	    <field name="period_id" colspan="2"  domain="[('state','=','abierto')]"/>
+	  </group>
+	  <button name="load_employee_quincena" states="draft" string="Generar" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	  <button name="print_quincena" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  <field name="line_ids" colspan="4" nolabel="1">
+	    <tree string="Detalle" editable="bottom">
+	      <field name="name"/>
+	      <field name="program_id"/>
+	      <field name="valor" sum="SUBTOTAL RUBROS $$"/>
+	    </tree>
+	  </field>
+	  <group>
+	    <field name="state"  widget="statusbar" statusbar_colors='{"draft":"black","pendiente":"blue","pagado":"green"}'/>
+	    <button name="pendiente_quincena" states="draft" string="Aprobar" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	    <button name="a_borrador_quincena" states="pendiente" string="Regresar Borrador" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_quincena_tree" model="ir.ui.view">
+      <field name="name">hr.quincena.tree</field>
+      <field name="model">hr.quincena</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Quincenas" colors="black:state == 'draft';blue:state == 'pendiente';green:state == 'pagado'">
+	  <field name="name"/>
+	  <field name="period_id"/>
+	  <field name="state"/>
+	</tree>
+      </field>
+    </record>
+    
+    <record id="view_quincena_filter" model="ir.ui.view">
+      <field name="name">Quincena</field>
+      <field name="model">hr.quincena</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+	<search string="Periodos">
+	  <field name="name"/>
+	  <field name="period_id"/>
+	</search>
+      </field>
+    </record>
+    
+    <record id="action_quincena" model="ir.actions.act_window">
+      <field name="name">Rol Quincenal</field>
+      <field name="res_model">hr.quincena</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+     </record>
+
+    <record id="action_quincena_detalle" model="ir.actions.act_window">
+      <field name="name">Rol Quincenal Detalle</field>
+      <field name="res_model">hr.quincena.line.line</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+     </record>
+    
+    <menuitem id="menu_hr_quincena"
+	      action="action_quincena"
+	      parent="menu_quincena_root"
+	      name="Rol Quincenal"
+	      groups="base.group_hr_manager"/>
+
+    <menuitem id="menu_hr_quincena_detalle"
+	      action="action_quincena_detalle"
+	      parent="menu_quincena_root"
+	      name="Rol Quincenal Detalle"
+	      groups="base.group_hr_manager"/>
+    
+    
+
+    </data>
+</openerp>

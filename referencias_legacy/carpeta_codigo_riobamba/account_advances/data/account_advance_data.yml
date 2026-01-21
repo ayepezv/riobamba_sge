@@ -1,0 +1,14 @@
+-
+  Nuevo tipo de cuentas para Anticipos
+-
+  !record {model: account.account.type, id: acc_type_out_advances}:
+    name: 'Anticipo Proveedores'
+    code: 'out_advance'
+    close_method: 'balance'
+    report_type: 'expense'
+-
+  !record {model: account.account.type, id: acc_type_in_advance}:
+    name: 'Anticipo Clientes'
+    code: 'in_advance'
+    close_method: 'balance'
+    'report_type': 'income'

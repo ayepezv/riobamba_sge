@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+class rol_banco(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(rol_banco, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_banco': self.get_banco,
+            'get_cuenta': self.get_cuenta,
+        })
+
+    def get_cuenta(self, payroll):
+        partner_obj = self.pool.get('res.partner')
+        partner_ids = partner_obj.search(self.cr, self.uid, [('ced_ruc','=',payroll.employee_id.name)],limit=1)
+        aux_cuenta = 'NO CUENTA'
+        if partner_ids:
+            partner = partner_obj.browse(self.cr, self.uid, partner_ids[0])
+            if partner.bank_ids:
+                tipo = 'Ahorros'
+                if partner.bank_ids[0].type_cta == 'cte':
+                    tipo = 'Corriente'
+                aux_cuenta = partner.bank_ids[0].acc_number + ' - ' + tipo
+        return aux_cuenta
+
+    def get_banco(self, payroll):
+        partner_obj = self.pool.get('res.partner')
+        partner_ids = partner_obj.search(self.cr, self.uid, [('ced_ruc','=',payroll.employee_id.name)],limit=1)
+        aux_banco = 'No proveedor - NO BANCO'
+        if partner_ids:
+            partner = partner_obj.browse(self.cr, self.uid, partner_ids[0])
+            if partner.bank_ids:
+                aux_banco =partner.bank_ids[0].bank.bic  + ' - ' + partner.bank_ids[0].bank.name 
+        return aux_banco
+
+report_sxw.report_sxw('report.rol_banco',
+                       'hr.payslip.run', 
+                       'addons/gt_hr_payroll_ec/report/banco.mako',
+                       parser=rol_banco,
+                       header=False)
+

@@ -1,0 +1,7 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_ie_head","hr.ie.head","model_hr_ie_head","base.group_hr_manager",1,1,1,1
+"access_hr_ie_line","hr.ie.line","model_hr_ie_line","base.group_hr_manager",1,1,1,1
+"access_hr_ie_verif","ie.verif","model_ie_verif","base.group_hr_manager",1,1,1,1
+"access_hr_ie_no","ie.no","model_ie_no","base.group_hr_manager",1,1,1,1
+"access_hr_ie_verif conta","ie.verif","model_ie_verif","account.group_account_user",1,1,1,
+1"access_hr_ie_no conta","ie.no","model_ie_no","account.group_account_user",1,1,1,1

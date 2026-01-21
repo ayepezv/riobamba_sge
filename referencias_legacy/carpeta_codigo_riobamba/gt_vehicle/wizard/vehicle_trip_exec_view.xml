@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="action_route_line" model="ir.actions.act_window">
+            <field name="name">Procesar Ruta</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">vehicle.exec</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="vehicle_exec_form" model="ir.ui.view">
+            <field name="name">vehicle.exec.form</field>
+            <field name="model">vehicle.exec</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Detalle de Rutas">                  
+                  <field name="route_ids" colspan="4" nolabel="1" mode="tree,form" width="300" height="200">
+                    <tree editable="bottom" string="Detalle Ruta">
+                      <field name="sec" readonly="1"/>
+                      <field name="desde" />
+                      <field name="hasta" />
+					  <field name="km_inicial"/>
+					  <field name="km_final"/>
+                    </tree>
+                  </field>
+                  <separator string="" colspan="4" />
+                  <label string="" colspan="2"/>
+                  <group col="2" colspan="2">
+                    <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+                    <button name="do_exec" string="Ejecutar" colspan="1" type="object" icon="gtk-go-forward" />
+                  </group>
+                </form>
+            </field>
+        </record>
+		
+        <record id="vehicle_exec_line_list" model="ir.ui.view">
+            <field name="name">vehicle.exec.line.list</field>
+            <field name="model">vehicle.exec.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom" string="Detalle Ruta">
+                  <field name="desde" />
+                  <field name="hasta" />
+				  <field name="km_inicial"/>
+				  <field name="km_final"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</openerp>

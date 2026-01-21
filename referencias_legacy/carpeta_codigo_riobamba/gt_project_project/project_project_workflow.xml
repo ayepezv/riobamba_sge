@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <!-- Activities -->
+
+    <record id="wkf" model="workflow">
+      <field name="name">gt.project.project</field>
+      <field name="osv">project.project</field>
+      <field name="on_create">True</field>
+    </record>
+
+    <record id="act_draft" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="flow_start">True</field>
+      <field name="name">open</field>
+      <field name="action">write({'state':'open'})</field>
+      <field name="kind">function</field>      
+    </record>
+
+    <record id="act_planning_done" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">planning_done</field>
+      <field name="action">action_planning({'new_state': 'plan_done'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_planning_ok" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">planning_ok</field>
+      <field name="action">action_planning({'new_state': 'plan_ok'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_execution" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">execution_init</field>
+      <field name="action">set_open()</field>
+      <field name="kind">function</field>
+    </record>    
+
+    <record id="act_execution_done" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">execution_done</field>
+      <field name="action">action_execution({'new_state': 'exec_done'})</field>
+      <field name="kind">function</field>
+    </record>
+    
+    <record id="act_execution_ok" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">execution_ok</field>
+      <field name="action">action_execution({'new_state': 'exec_ok'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_done" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">project_done</field>
+      <field name="action">action_close({'new_state': 'done'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_done_wo_end" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">project_done_wo_end</field>
+      <field name="action">action_close({'new_state': 'done_wo_end'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_done_poa" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">project_done_poa</field>
+      <field name="action">action_close({'new_state': 'done_poa'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_expost_init" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">project_expost</field>
+      <field name="action">action_expost({'new_state': 'expost'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_expost_done" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">project_expost_done</field>
+      <field name="action">action_expost({'new_state': 'expost_done'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_expost_ok" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">project_expost_ok</field>
+      <field name="action">action_expost({'new_state': 'expost_ok'})</field>
+      <field name="kind">function</field>
+    </record>    
+
+    <record id="act_pending" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">activity_pending</field>
+      <field name="action">write({'state':'pending'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <record id="act_replaning" model="workflow.activity">
+      <field name="wkf_id" ref="wkf"/>
+      <field name="name">activity_replaning</field>
+      <field name="action">write({'state':'replaning'})</field>
+      <field name="kind">function</field>
+    </record>
+
+    <!-- Transitions -->
+
+    <record id="t1" model="workflow.transition">
+      <field name="act_from" ref="act_draft"/>
+      <field name="act_to" ref="act_planning_done"/>
+      <field name="signal">signal_planning</field>
+      <field name="condition">test_planning()</field>
+    </record>
+
+    <record id="t111" model="workflow.transition">
+      <field name="act_from" ref="act_planning_done"/>
+      <field name="act_to" ref="act_draft"/>
+      <field name="signal">signal_goback</field>
+    </record>
+
+    <record id="t2" model="workflow.transition">
+      <field name="act_from" ref="act_planning_done"/>
+      <field name="act_to" ref="act_planning_ok"/>
+      <field name="signal">signal_planning</field>
+      <field name="group_id" ref="gt_project_project.group_project_planning"/>
+    </record>
+
+    <record id="t3" model="workflow.transition">
+      <field name="act_from" ref="act_planning_ok"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_execution</field>
+      <field name="condition">test_exec()</field>
+    </record>
+    <!-- replanificacion debe volver al inicio o solo replanificacion ?-->
+
+    <record id="t333" model="workflow.transition">
+      <field name="act_from" ref="act_execution"/>
+      <field name="act_to" ref="act_replaning"/>
+      <field name="signal">signal_replaning</field>
+      <field name="group_id" ref="gt_project_project.group_project_replaning"/>
+    </record>
+
+    <record id="t334" model="workflow.transition">
+      <field name="act_from" ref="act_replaning"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_re_execution</field>
+      <field name="group_id" ref="gt_project_project.group_project_replaning"/>
+    </record>
+
+    <record id="t31" model="workflow.transition">
+      <field name="act_from" ref="act_planning_ok"/>
+      <field name="act_to" ref="act_draft"/>
+      <field name="signal">signal_goback</field>
+    </record>    
+
+    <record id="t4" model="workflow.transition">
+      <field name="act_from" ref="act_execution"/>
+      <field name="act_to" ref="act_execution_done"/>
+      <field name="signal">signal_execution</field>
+    </record>    
+
+    <record id="t5" model="workflow.transition">
+      <field name="act_from" ref="act_execution_done"/>
+      <field name="act_to" ref="act_execution_ok"/>
+      <field name="signal">signal_execution</field>
+      <field name="group_id" ref="gt_project_project.group_project_exec_ok"/>
+    </record>
+
+    <record id="t6" model="workflow.transition">
+      <field name="act_from" ref="act_execution_ok"/>
+      <field name="act_to" ref="act_expost_init"/>
+      <field name="signal">signal_expost</field>
+    </record>
+
+    <record id="t61" model="workflow.transition">
+      <field name="act_from" ref="act_execution_ok"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_goback</field>
+    </record>
+
+    <record id="t62" model="workflow.transition">
+      <field name="act_from" ref="act_execution_done"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_goback</field>
+    </record>    
+
+    <record id="t7" model="workflow.transition">
+      <field name="act_from" ref="act_execution"/>
+      <field name="act_to" ref="act_done_wo_end"/>
+      <field name="signal">signal_close</field>
+      <field name="condition">test_close()</field>
+    </record>
+
+    <record id="t71" model="workflow.transition">
+      <field name="act_from" ref="act_done_wo_end"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_goback</field>
+    </record>
+
+    <record id="t72" model="workflow.transition">
+      <field name="act_from" ref="act_done_wo_end"/>
+      <field name="act_to" ref="act_expost_init"/>
+      <field name="signal">signal_expost</field>
+    </record>    
+
+    <record id="t8" model="workflow.transition">
+      <field name="act_from" ref="act_execution"/>
+      <field name="act_to" ref="act_done_poa"/>
+      <field name="signal">signal_close_poa</field>
+    </record>
+
+    <record id="t81" model="workflow.transition">
+      <field name="act_from" ref="act_done_poa"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_goback</field>
+    </record>
+
+    <record id="t82" model="workflow.transition">
+      <field name="act_from" ref="act_done_poa"/>
+      <field name="act_to" ref="act_expost_init"/>
+      <field name="signal">signal_expost</field>
+    </record>    
+
+    <record id="t10" model="workflow.transition">
+      <field name="act_from" ref="act_expost_init"/>
+      <field name="act_to" ref="act_expost_done"/>
+      <field name="signal">signal_expost</field>
+      <field name="condition">test_expost()</field>
+    </record>
+
+    <record id="t101" model="workflow.transition">
+      <field name="act_from" ref="act_expost_init"/>
+      <field name="act_to" ref="act_execution"/>
+      <field name="signal">signal_goback</field>
+    </record>
+
+    <record id="t102" model="workflow.transition">
+      <field name="act_from" ref="act_expost_done"/>
+      <field name="act_to" ref="act_expost_init"/>
+      <field name="signal">signal_goback</field>
+    </record>    
+
+    <record id="t103" model="workflow.transition">
+      <field name="act_from" ref="act_expost_ok"/>
+      <field name="act_to" ref="act_expost_init"/>
+      <field name="signal">signal_goback</field>
+    </record>
+    
+    <record id="t11" model="workflow.transition">
+      <field name="act_from" ref="act_expost_done"/>
+      <field name="act_to" ref="act_expost_ok"/>
+      <field name="signal">signal_expost</field>
+    </record>
+
+    <record id="t12" model="workflow.transition">
+      <field name="act_from" ref="act_expost_ok"/>
+      <field name="act_to" ref="act_done"/>
+      <field name="signal">signal_close</field>
+      <field name="condition">True</field>
+    </record>    
+  </data>
+</openerp>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    	
+    	
+    	<!-- VACACIONES -->
+    	
+    	<!--record model="ir.actions.act_window" id="cargar_holidays_period">
+		  <field name="name">Bancos</field>
+		  <field name="res_model">holidays.period</field>
+		  <field name="view_mode">tree,form</field>
+		</record> 
+
+		<menuitem id="menu_cargar_holidays_period" parent="gt_hr_base.menu_cargar_hr" 
+				  name="Periodos de Vacaciones" action="cargar_holidays_period"/-->
+
+    </data>
+</openerp>

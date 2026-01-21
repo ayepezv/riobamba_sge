@@ -1,0 +1,79 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+
+    %for inv in objects :
+	<H2><center>ACTA DE ENTREGA RECEPCION DE BIENES ${inv.name or ''|entity}</center></H2>
+	<table WIDTH=1000 style="font-size:14px;text-align:justify">
+	  <tr WIDTH=1000>
+	    <td WIDTH=1000 style="font-size:14px;text-align:justify"> En el Cant&oacute;n de ${user.company_id.city or ''|entity}, Provincia de/del ${user.company_id.state_id.name or ''|entity}, el ${inv.date or ''|entity}, en las oficinas de ${user.context_department_id.name or ''|entity}, de el ${user.company_id.name or ''|entity}, se re&uacute;nen por una parte ${user.context_department_id.coordinador_id.complete_name or ''|entity}, en calidad de ${user.context_department_id.coordinador_id.job_id.name or ''|entity}, y por otra, ${inv.emp_new_id.complete_name or ''|entity}, con el fin de realizar el acta de entrega recepci&oacute;n de los bienes que se detallan a continuaci&oacute;n, conforme lo indica el reglamento General Sustitutivo para el manejo y Administraci&oacute;n de Bienes del Sector P&uacute;blico en su cap&iacute;tulo VII, Art. 64</td>		
+	  </tr>
+	</table>
+	<br>
+	<br>
+	<table WIDTH=1000 style="font-size:14px" rules="none" border="1">	
+	  <tr WIDTH=1000 > <b>		
+	      <td  width="25%">C&oacute;digo</td>
+	      <td  width="45%">Descripci&oacute;n</b></td>
+<td  width="10%">N&uacute;mero Serie</td>
+<td  width="10%">Fecha de Adquisici&oacute;n</td>
+<td  width="10%">Valor</td>
+</tr>
+</table>
+%for activo in inv.transfer_ids:
+<table WIDTH=1000 style="font-size:14px" border="1" cellpadding="2" cellspacing="0">	
+  <tr WIDTH=1000 style="page-break-inside:avoid"> <b>		
+      <td  width="25%">${activo.asset_id.code or ''|entity}</td>
+      <td  width="45%">${activo.asset_id.name or ''|entity} - ${activo.asset_id.otros_accesorios or ''|entity}</b></td>
+<td  width="10%" align="center">${activo.asset_id.serial_number or ''|entity}</td>
+<td  width="10%">${activo.asset_id.purchase_date or ''|entity}</td>
+<td  width="10%" align="right">${activo.asset_id.purchase_value or ''|entity}</td>
+</tr>
+</table>	
+	%endfor
+<table WIDTH=1000 style="font-size:14px" border="1" cellpadding="2" cellspacing="0">	
+  <tr WIDTH=1000 style="page-break-inside:avoid"> <b>		
+      <td  width="80%" ></td>
+<td  width="10%" >Total</td>
+<td  width="10%" align="right">${inv.valor_total or ''|entity}</td>
+</tr>
+</table>
+	<br>
+	<table WIDTH=1000 style="font-size:14px;text-align:justify">
+	  <tr WIDTH=1000>
+	    <td WIDTH=1000 style="text-align:justify">La presente acta de entrega y recepción se la suscribe y se la firma en 2 ejemplares del mismo tenor amparado a lo que dispone el Artículo 11 del Reglamento General de Bienes del Sector Público, señalando además, que a partir de la presente fecha  dicho bien quedará bajo su responsabilidad y cuidado según lo estipula  el Art. 3 con los  incisos 2 y 4, así como también el artículo 92  del mismo Reglamento, hasta que sea devuelta a ésta Sección</td>
+	  </tr>
+	  <tr WIDTH=1000>
+	    <td WIDTH=1000 >En constacia y fe de lo actuado, firman las partes intervinientes</td>
+	  </tr>
+	</table>
+	<br>
+	<br>
+	<br>
+<br>
+	<br>
+	<br>
+	<table WIDTH=1000 style="font-size:14px" >	
+		<tr WIDTH=1000 > <b>		
+			<td WIDTH=300 > <center> ENTREGUE CONFORME</center></td>
+			<td WIDTH=300 > <center> RECIBI CONFORME</center></b></td>
+			<td WIDTH=300 > <center> AUTORIZADO</center></td>
+		</tr>
+		<tr WIDTH=1000 > <b>		
+			<td WIDTH=300 > <center> ${inv.emp_old_id.complete_name or ''|entity} </center></td>
+			<td WIDTH=300 > <center> ${inv.emp_new_id.complete_name or ''|entity} </center></b></td>
+			<td WIDTH=300 > <center> ${inv.autorizado_por.complete_name or ''|entity}</center></td>
+		</tr>
+		<tr WIDTH=1000 > <b>		
+			<td WIDTH=300 > <center> ${inv.emp_old_id.name or ''|entity}</center></td>
+			<td WIDTH=300 > <center> ${inv.emp_new_id.name or ''|entity}</center></b></td>
+			<td WIDTH=300 > <center> ${inv.autorizado_por.name or ''|entity}</center></td>
+		</tr>
+	</table>
+    %endfor
+</body>
+</html>

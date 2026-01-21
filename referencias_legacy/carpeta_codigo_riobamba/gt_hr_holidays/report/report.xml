@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <report auto="False" id="report_permiso" model="hr.holidays"
+            name="hr.holidays" rml="gt_hr_holidays/report/permiso.mako"
+            usage="default" string="Solicitud" header="True" report_type="webkit"/>
+
+    <report auto="False" id="report_lista_faltas" model="hr.holidays"
+            name="hr.holidays" rml="gt_hr_holidays/report/lista_faltas.mako"
+            usage="default" string="Listado" header="True" report_type="webkit"/>
+
+    <report auto="False" id="report_permiso_hora" model="permiso.hora"
+            name="permiso.hora" rml="gt_hr_holidays/report/permiso_hora.mako"
+            usage="default" string="Solicitud" header="True" report_type="webkit"/>
+
+    <report auto="False" id="report_medico" model="certificado.permiso"
+            name="certificado.permiso" rml="gt_hr_holidays/report/medico.mako"
+            usage="default" string="Certificado Medico" header="True" report_type="webkit"/>
+  </data>
+</openerp>

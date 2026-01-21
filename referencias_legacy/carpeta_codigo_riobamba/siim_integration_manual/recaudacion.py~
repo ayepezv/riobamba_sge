@@ -1,0 +1,44 @@
+
+##############################################################################
+#    Autores
+#    Mario Chogllo
+#    Diego Abad A
+##############################################################################
+from XLSWriter import XLSWriter
+import base64
+import xlrd
+from tools import ustr
+import time
+from osv import osv, fields
+import decimal_precision as dp
+
+DP = dp.get_precision('Budget')
+
+class budgetTitulo(osv.Model):
+    _name = 'budget.titulo'
+    _columns = dict(
+        name = fields.many2one('budget.post','Partida',required=True),
+        is_titulo = fields.boolean('Anio Anterior'),
+    )
+budgetTitulo()
+
+class recaudacionManualLine(osv.Model):
+    _name = 'recaudacion.manual.line'
+    _columns = dict(
+        mn_id = fields.many2one('recaudacion.manual'),
+        budget_id = fields.many2one('budget.post','Partida'),
+        genera_emision = fields.boolean('Con Emision?'),
+        monto = fields.float('Valor'),
+    )
+recaudacionManualLine()
+
+class recaudacionManual(osv.Model):
+    _name = 'recaudacion.manual'
+    _columns = dict(
+        name = fields.date('Fecha'),
+        desc = fields.char('Descripcion',size=256),
+        bank_id = fields.many2one('account.journal','Banco'),
+        line_ids = fields.one2many('recaudacion.manual.line','mn_id','Detalle'),
+        move_id = fields.many2one('account.move','Comprobante Generado'),
+    )
+recaudacionManual()

@@ -1,0 +1,631 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    
+    <record id="view_wizard_docx_form" model="ir.ui.view">
+    <field name="name">Wizard plantillas</field>
+    <field name="model">docx.wizard</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Wizard">
+	<field name="name" colspan="2" invisible="1"/>
+	<field name="tipo" colspan="4"/>
+	<field name="file" colspan="2" filename="filename"/>
+	<button name="generate_template" string="Generar" icon="gtk-apply" type="object" colspan="2"/>
+	<field name="filename" invisible="1" colspan="2"/>
+      </form>
+    </field>
+  </record>
+
+  <act_window name="Generar plantilla"
+              res_model="docx.wizard"
+              src_model="hr.contract"
+              view_mode="form"
+              target="new"
+              key2="client_action_multi"
+              id="act_generar_plantilla"/>
+
+    <menuitem id="hr.menu_hr_root" icon="terp-hr" name="Talento Humano" sequence="15"
+	      web_icon="images/tthh.jpg"
+	      web_icon_hover="images/tthh.jpg"
+	      groups="base.group_hr_manager,base.group_hr_user,base.group_user"/>
+    
+    <record model="ir.ui.view" id="view_work_period_line">
+      <field name="name">hr.work.period.line.form</field>
+      <field name="model">hr.work.period.line</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Periodos">
+	  <field name="name" select="1"/>
+	  <field name="date_start"/>
+	  <field name="date_stop"/>
+	  <field name="month"/>
+	  <!--field colspan="4" name="week_ids" nolabel="1">
+		<tree string="Semanas">
+		  <field name="date_start"/>
+		  <field name="date_stop"/>
+		</tree>
+	  </field-->
+	</form>
+  </field>
+</record>
+
+<record id="view_work_period_line_tree" model="ir.ui.view">
+  <field name="name">hr.work.period.line.tree</field>
+  <field name="model">hr.work.period.line</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+	<tree string="Periodos">
+	  <field name="name"/>
+	  <field name="date_start"/>
+	  <field name="date_stop"/>
+	  <field name="month"/>
+	  <field name="state"/>
+	</tree>
+  </field>
+</record>
+
+<!--record id="view_work_period_line_filter" model="ir.ui.view">
+  <field name="name">Periodos</field>
+  <field name="model">hr.work.period.line</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Periodos">
+      <field name="name"/>
+      <field name="date_start"/>
+      <field name="date_stop"/>
+      <field name="month"/>
+      <newline />
+      <group expand="1" string="Agrupar por...">
+        <filter string="Periodo" icon="terp-personal" domain="[]" context="{'group_by':'period_id'}"/>
+      </group>
+    </search>
+  </field>
+</record-->
+
+<record id="view_calendar_line_tree" model="ir.ui.view">
+  <field name="name">hr.calendar.line.tree</field>
+  <field name="model">hr.calendar.line</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+	<tree string="Días">
+	  <field name="date"/>
+	</tree>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_hr_work_period_form">
+  <field name="name">hr.work.period.view.form</field>
+  <field name="model">hr.work.period</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+  	<form>
+	<field name="name" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	<field name="date_start" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	<field name="date_stop" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	<field name="activo"/>
+	<field name="basic_wage" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	<field name="intervalo" invisible="1"/>
+	<newline/>
+	<notebook colspan="4">
+	  <!--field name="active"/-->
+	  <page string="Lineas Periodo">
+		<field name="line_ids" nolabel="1" colspan="4" string="Lineas" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	  </page>
+	  <!--page string="Calendario Laboral">
+		<field name="hour_start" attrs="{'readonly': [('state', 'not in',('draft'))]}" widget="float_time" required="1"/>
+		<field name="hour_end" attrs="{'readonly': [('state', 'not in',('draft'))]}" widget="float_time" required="1"/>
+		<field name="hour_start_aft" attrs="{'readonly': [('state', 'not in',('draft'))]}" widget="float_time" required="1"/>
+		<field name="hour_end_aft" attrs="{'readonly': [('state', 'not in',('draft'))]}" widget="float_time" required="1"/>
+		<field name="hour_start_ext" attrs="{'readonly': [('state', 'not in',('draft'))]}" widget="float_time" required="1"/>
+		<field name="hour_end_ext" attrs="{'readonly': [('state', 'not in',('draft'))]}" widget="float_time" required="1"/>
+		<field name="calendar_ids" nolabel="1" colspan="4">
+		  <tree editable="bottom">
+			<field name="date" required="1"/>
+		  </tree>
+		</field>
+	  </page-->
+	</notebook>
+	<group colspan="4">
+	  <field name="state"/>
+	  <button name="period_draft_generate" states="draft" string="Generar" icon="gtk-apply" type="object"/>
+	  <!--button name="period_generate_confirmar" states="generated" string="Confirmar" icon="gtk-ok" type="object"/-->
+	</group>
+	</form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_hr_work_period_tree">
+  <field name="name">hr.work.period.view.tree</field>
+  <field name="model">hr.work.period</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+  	<tree>
+	<field name="name"/>
+	<field name="date_start"/>
+	<field name="date_stop"/>
+	<field name="intervalo"/>
+	<field name="activo"/>
+	<field name="state"/>
+	</tree>
+  </field>
+</record>
+
+
+<record model="ir.actions.act_window" id="work_period_action">
+  <field name="name">Periodo Laboral</field>
+  <field name="res_model">hr.work.period</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[('activo','in',('True','False'))]</field>
+</record> 
+
+<menuitem id="menu_period_configure" parent="hr.menu_hr_configuration" name="Periodo Laboral"/>
+
+<menuitem name="Periodo Laboral" 
+		  id="menu_work_period" 
+		  parent="menu_period_configure" 
+		  action="work_period_action"/>
+
+<!-- TABLA RETENCIONES IMPUESTO A LA RENTA
+	 VIEWS: TREE, FORM , MENU
+  -->
+
+<menuitem id="menu_sri" parent="hr.menu_hr_configuration" name="SRI" sequence="9"/>
+
+<record model="ir.ui.view" id="view_hr_base_retention_form">
+  <field name="name">hr.base.retention.form</field>
+  <field name="model">hr.base.retention</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Tabla Base de Retención">
+      <field name="name" select="1"/>
+      <field name="period_id" select="1"/>
+      <field name="active" select="1"/>
+      <field name="max_deduction"/>
+      <notebook colspan="4">
+		<page string="Lineas">
+		  <field name="retention_line" nolabel="1" colspan="4">
+			<tree editable="bottom" string="Detalle">
+			  <field name="basic_fraction"/>
+			  <field name="excess_to"/>
+			  <field name="basic_fraction_tax"/>
+			  <field name="percent"/>
+			</tree>
+		  </field>
+		</page>
+		<page string="Max. Deduccion">
+		  <field name="projection_max_line" nolabel="1"/>
+		</page>
+      </notebook>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_base_retention_tree">
+  <field name="name">hr.base.retention.view.tree</field>
+  <field name="model">hr.base.retention</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Base de Retencion">
+      <field name="name" select="1"/>
+      <field name="period_id" select="1"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_hr_base_retention" model="ir.actions.act_window">
+  <field name="name">Tabla base de Retención</field>
+  <field name="res_model">hr.base.retention</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_hr_base_retention" 
+		  id="hr_menu_base_retention" 
+		  parent="menu_sri"/>
+
+<!--
+PROYECCIONES IMP RENTA 
+VIEWS: FORM, TREE y MENU
+-->
+
+<record model="ir.ui.view" id="view_deduction_form">
+  <field name="name">hr.deduction.form</field>
+  <field name="model">hr.deduction</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Deduccion IMP. Renta">
+      <field name="code" select="1"/>
+      <field name="name" select="1"/>
+      <newline/>
+      <group string="Descripción" colspan="4">
+		<field name="description" nolabel="1" select="1"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_deduction_tree">
+  <field name="name">hr.deduction.view.tree</field>
+  <field name="model">hr.deduction</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Deduccion Imp. Renta">
+      <field name="code" select="1"/>
+      <field name="name" select="1"/>
+      <field name="description" select="1"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_deduction" model="ir.actions.act_window">
+  <field name="name">Deducción Impuesto Renta</field>
+  <field name="res_model">hr.deduction</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_deduction" 
+	  id="hr_menu_base_proyeccion" 
+	  parent="menu_sri"/>
+
+<!--
+   MAX DEDUCCTION LINE
+  -->
+<record model="ir.ui.view" id="view_max_deduction_form">
+  <field name="name">hr.projection.max.form</field>
+  <field name="model">hr.projection.max</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Lineas">
+      <field name="name"/>
+      <field name="max_value"/>
+    </form>
+  </field>
+</record>
+
+<record id="view_max_deduction_tree" model="ir.ui.view">
+  <field name="name">hr.projection.max.tree</field>
+  <field name="model">hr.projection.max</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Lineas">
+      <field name="name"/>
+      <field name="max_value" sum="TOTAL"/>
+    </tree>
+  </field>
+</record>
+
+<!-- SECTORIAL RAMA
+-->
+<record model="ir.ui.view" id="view_rama_form">
+  <field name="name">sectorial.rama.form</field>
+  <field name="model">sectorial.rama</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Rama">
+      <field name="name" required="1"/>
+      <field name="descripcion"/>
+    </form>
+  </field>
+</record>
+
+<!--
+Job Line
+-->
+<record model="ir.ui.view" id="view_job_line_form">
+  <field name="name">hr.job.line.form</field>
+  <field name="model">hr.job.line</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+	<form string="Nombre Puestro Trabajo">
+	  <field name="name"/>
+	</form>
+	</field>
+</record>
+
+<record model="ir.ui.view" id="view_job_line_tree">
+  <field name="name">hr.job.line.view.tree</field>
+  <field name="model">hr.job.line</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+	<tree string="Nombre Puesto Trabajo">
+	  <field name="name"/>
+	</tree>
+  </field>
+</record>
+
+
+		  
+<!--  JOB - Puestos de trabajo -->
+
+<record model="ir.ui.view" id="view_hr_job_form_modified">
+  <field name="name">hr.job.modified.form</field>
+  <field name="model">hr.job</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="hr.view_hr_job_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="/form/group/field[@name='name']" position="replace">
+      <field name="name" colspan="6" required="1"/>
+    </xpath>
+    <xpath expr="/form/group/field[@name='department_id']" position="replace">
+      <field name="department_id" colspan="6" required="1"/>
+      <field name="budget_id" colspan="3"/>
+      <field name="grupo_id" colspan="3"/>
+    </xpath>
+    <xpath expr="/form/group/field[@name='company_id']" position="replace">
+      <field name="company_id" widget="selection" groups="base.group_multi_company" invisible="1"/>
+      
+    </xpath>
+    <xpath expr="/form/notebook/page[@string='Description']/separator[@string='Job Description']" position="replace">
+      <separator colspan="4" string="Descripción del trabajo"/>
+    </xpath>
+    <xpath expr="/form/notebook/page[@string='Description']/separator[@string='Requirements']" position="replace">
+      <separator colspan="4" string="Requerimientos"/>
+    </xpath>
+    <xpath expr="/form/notebook/page[@string='Employees']" position="replace">
+      <page string="Empleados">
+        <field name="employee_ids" colspan="4" nolabel="1" widget="many2many" mode="tree,form"/>
+      </page>
+    </xpath>
+  </field>
+</record>
+
+	<!--record model="ir.ui.view" id="view_hr_job_survey_modified">
+		<field name="name">hr.job.modified.survey</field>
+		<field name="model">hr.job</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="hr_recruitment.hr_job_survey"/>
+		<field name="arch" type="xml">
+			<xpath expr="/form/group/field[@name='survey_id']" position="replace">
+			</xpath>
+			<xpath expr="/form/group/field[@name='expected_employees']" position="replace">
+				<field name="active"/>
+			</xpath>
+		</field>
+	</record-->
+	
+	<record model="ir.ui.view" id="view_hr_job_search_modified">
+	  <field name="name">hr.job.modified.search</field>
+	  <field name="model">hr.job</field>
+	  <field name="type">form</field>
+	  <field name="inherit_id" ref="hr.view_job_filter"/>
+	  <field name="arch" type="xml">
+	    <xpath expr="/search/filter[@string='In Recruitment']" position="replace">
+	      <filter icon="gtk-apply" domain="[('active','=',True)]" string="Activos"/>
+	      <filter icon="gtk-close" domain="[('active','=',False)]" string="Inactivos"/>
+	    </xpath>
+	    <xpath expr="/search/field[@name='department_id']" position="replace">
+	      <field name="department_id"/>
+	    </xpath>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_hr_job_tree_modified">
+	  <field name="name">hr.job.modified.tree</field>
+	  <field name="model">hr.job</field>
+	  <field name="type">form</field>
+	  <field name="inherit_id" ref="hr.view_hr_job_tree"/>
+	  <field name="arch" type="xml">
+	    <xpath expr="/tree/field[@name='department_id']" position="after">
+	      <field name="budget_id"/>
+	      <field name="grupo_id"/>
+	      <field name="escala"/>
+	      <field name="grado"/>
+	    </xpath>
+	    <xpath expr="/tree/field[@name='company_id']" position="replace">
+	    </xpath>
+	    <xpath expr="/tree/field[@name='expected_employees']" position="replace">
+	    </xpath>
+	    <xpath expr="/tree/field[@name='state']" position="replace">
+	    </xpath>
+	  </field>
+	</record>
+
+<!-- SECTORIAL TABLE
+-->
+<!--menuitem id="menu_sectorial" parent="hr.menu_hr_configuration" name="Tabla Sectorial" sequence="9"/-->
+
+<record model="ir.ui.view" id="view_sectorial_line_form">
+  <field name="name">hr.sectorial.line.form</field>
+  <field name="model">hr.sectorial.table.line</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Lineas">
+	  <field name="comision_id"/>
+      <field name="name" required="1"/>
+      <field name="job_id" widget="selection"/>
+	  <field name="level"/>
+      <field name="code"/>
+      <field name="value"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_sectorial_form">
+  <field name="name">hr.sectorial.form</field>
+  <field name="model">hr.sectorial.table</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Tabla Sectorial">
+      <field name="name" required="1"/>
+      <field name="year" required="1"/>
+      <field name="vigente"/>
+      <field name="line_ids" colspan="4" nolabel="1">
+		<tree editable="bottom" string="Lineas Tabla Sectorial">
+		  <field name="comision_id"/>
+		  <field name="name" required="1"/>
+		  <field name="job_id"/>
+		  <field name="level"/>
+		  <field name="code"/>
+		  <field name="value"/>
+		</tree>
+      </field>
+	<group>
+	  <field name="state" readonly="1"/>
+	  <button name="set_vigente" icon="terp-stock_effects-object-colorize" string="Vigente" type="object" states="draft"/>
+	  <button name="set_antigua" icon="terp-stock_effects-object-colorize" string="Antigua" type="object" states="vig"/>
+	</group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_sectorial_tree">
+  <field name="name">hr.sectorial.view.tree</field>
+  <field name="model">hr.sectorial.table</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Tabla Sectorial">
+      <field name="name" select="1"/>
+      <field name="year"/>
+      <field name="vigente"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="view_sectorial_configuration">
+  <field name="name">Tabla Sectorial</field>
+  <field name="res_model">hr.sectorial.table</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<!--menuitem name="Tabla Sectorial" 
+	  id="sectorial_configuracion" 
+	  parent="menu_sectorial" 
+	  action="view_sectorial_configuration"/-->
+
+<!-- SECTORIAL COMISION
+-->
+
+<record model="ir.ui.view" id="view_sectorial_comision_form">
+  <field name="name">sectorial.comision.view</field>
+  <field name="model">sectorial.comision</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Comision Sectorial">
+      <field name="name"/>
+	  <field name="number"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_sectorial_comision_tree">
+  <field name="name">sectorial.comision.view.tree</field>
+  <field name="model">sectorial.comision</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Tabla Sectorial">
+      <field name="name" select="1"/>
+      <field name="number" select="1"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_sectorial_comision">
+  <field name="name">Comision Sectorial</field>
+  <field name="res_model">sectorial.comision</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<!--menuitem name="Comision Sectorial" 
+	  id="sectorial_comision_configuracion" 
+	  parent="menu_sectorial" 
+	  action="action_sectorial_comision"/-->
+
+<!-- BASIC CONFIGURATION
+-->
+
+
+<record model="ir.actions.act_window" id="view_base_configuration">
+  <field name="name">Base</field>
+  <field name="res_model">hr.base.configuration</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+
+<record id="base_configuration_form" model="ir.ui.view">
+  <field name="name">Base</field>
+  <field name="model">hr.base.configuration</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Opciones de configuracion base">
+	  <group colspan="4" col="2">
+		<field name="desc" required="1"/>
+		<field name="basic_value" required="1"/>
+		<field name="min_vacation" required="1"/>
+		<field name="max_accumulate" required="1"/>
+		<field name="activo"/>
+	  </group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="base_configuration_tree">
+  <field name="name">Opciones de configuracion base</field>
+  <field name="model">hr.base.configuration</field>
+  <field name="type">tree</field>
+  <field name="priority" eval="5"/>
+  <field name="arch" type="xml">
+    <tree string="Opciones de configuracion">
+      <field name="desc"/>
+      <field name="basic_value"/>
+      <field name="min_vacation"/>
+      <field name="max_accumulate"/>
+      <field name="activo"/>
+    </tree>
+  </field>
+</record>
+
+	<!--menuitem name="Base" id="base_configuration_root" parent="hr.menu_hr_configuration" action="view_base_configuration" sequence="1"/>
+
+	<menuitem name="Base" id="base_configuration" parent="base_configuration_root" action="view_base_configuration"/-->
+
+<!-- departamento -->
+    <record id="view_hr_department_code_form" model="ir.ui.view">
+      <field name="name">view.hr.deparment.code.form</field>
+      <field name="model">hr.department</field>
+      <field name="inherit_id" ref="hr.view_department_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="/form" position="replace">
+	  <form string="Departamentos">
+	    <group colspan="4">
+	      <field name="is_direccion" colspan="4"/>
+	      <field name="sequence" colspan="4"/>
+	      <field name="name" colspan="4"/>
+	      <field name="program_id" colspan="4"/>
+	      <field name="direccion_id" colspan="4"/>
+	      <field name="parent_id" colspan="4"/>
+	      <field name="coordinador_id" colspan="4"/>
+	      <field name="manager_id" colspan="4" string="Director/Coordinador"/>
+	    </group>
+	  </form>
+	</xpath>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_hr_depto_search_modified">
+      <field name="name">hr.department.modified.search</field>
+      <field name="model">hr.department</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="hr.view_department_filter"/>
+      <field name="arch" type="xml">
+	<xpath expr="/search/field[@name='name']" position="before">
+	  <filter icon="gtk-ok" domain="[('is_direccion','=',True)]" string="Direcciones"/>
+	</xpath>
+      </field>
+    </record>
+    <!--record id="hr_direccion" model="ir.actions.act_window">
+        <field name="name">Direcciones</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_type">form</field>
+        <field name="search_view_id" ref="hr.view_department_filter"/>
+	<field name="domain">[('is_direccion','=',True)]</field>
+        <field name="context">{'is_direccion':True}</field>
+        </record>
+	
+	<menuitem action="hr_direccion" id="menu_hr_direccion_tree" parent="hr.menu_hr_management" sequence="7" /-->
+
+
+    </data>
+</openerp>

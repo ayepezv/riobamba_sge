@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_agenda_confirm" model="ir.ui.view">
+            <field name="name">Asistentes al Evento</field>
+            <field name="model">agenda.confirm</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Asistentes al Evento">              		
+                    <separator string="Advertencia: algunos asistentes tienen ya eventos asignadas." colspan="4"/>                    
+                    <group colspan="4">
+						<field name="line_ids" colspan="4" nolabel="1" readonly="1">
+							<tree string="Asistentes a Eventos">								
+								<field name="employee" nolabel="1"/>								
+								<field name="name" nolabel="1"/>
+								<field name="evento" nolabel="1"/>								
+							</tree>
+							<form string="Detalle del Asistente">
+								<field name="name" colspan="4"/>
+								<field name="employee"/>
+								<field name="evento" />	
+							</form>
+						</field>
+					</group>
+                    <group colspan="4" col="6">
+                        <button  icon="gtk-close" special="cancel" string="Regresar a Evento"/>
+                        <button icon="gtk-ok" name="confirm" string="Confirmar" type="object" />
+                    </group>
+            </form>
+            </field>
+        </record>
+
+        <record id="action_agenda_confirm" model="ir.actions.act_window">
+            <field name="name">Asistentes al Evento</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">agenda.confirm</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_agenda_confirm"/>
+            <field name="context">{'record_id' : active_id}</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>
+
+
+

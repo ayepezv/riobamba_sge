@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+  
+	<record id="view_alerta" model="ir.ui.view">
+            <field name="name">alerta</field>
+            <field name="model">alert</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              	<form string="Alerta" >
+              		
+				<group string="Alerta" colspan="4" >
+				   <field colspan="2" name="descripcion" nolabel='1' readonly="1" />
+	        		</group>
+	        		<button icon="gtk-ok" special="cancel"
+	        			string="Aceptar" />
+			  	</form>
+            </field>
+		</record>  
+		
+		
+    <record id="action_alert" model="ir.actions.act_window">
+	           <field name="name">Alert</field>
+	           <field name="type">ir.actions.act_window</field>
+	           <field name="res_model">alert</field>
+	           <field name="view_type">form</field>
+	           <field name="view_mode">form</field>		      
+	           <field name="target">new</field>
+    	</record>   
+    	
+    
+
+</data>
+</openerp>

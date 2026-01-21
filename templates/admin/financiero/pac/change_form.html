@@ -1,0 +1,17 @@
+{% extends 'admin/change_form.html' %}
+
+{% block object-tools %}
+{% if change %}
+<ul class="object-tools">
+    <li>
+        <a href="{% url 'admin:financiero_pac_validate' original.pk %}" class="validate-pac-btn"
+            title="Validar que el total del PAC no exceda el Presupuesto">
+            💰 Validar Valores
+        </a>
+    </li>
+    {{ block.super }}
+</ul>
+{% else %}
+{{ block.super }}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,628 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+
+ 
+<!-- agregado en banco desc corta
+-->
+<record id="res_bank_modified" model="ir.ui.view">
+  <field name="name">res.bank.modified</field>
+  <field name="model">res.bank</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="base.view_res_bank_form"/>
+  <field name="arch" type="xml">
+	<field name="active" position="replace">
+	  <field name="active" invisible="1"/>
+	  <field name="short_name"/>
+	</field>
+  </field>
+</record>
+
+<!-- -->
+<record id="journal_cta_modified" model="ir.ui.view">
+  <field name="name">account.journal.modified</field>
+  <field name="model">account.journal</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="account.view_account_journal_form"/>
+  <field name="arch" type="xml">
+	<field name="type" position="after">
+	  <field name="cta_number" attrs="{'required': [('type', '=','bank')],'invisible': [('type', '!=','bank')]}"/>
+	</field>
+  </field>
+</record>
+
+<!--
+   VISTA DE SPI
+-->
+
+<record id="no_acreditado_form" model="ir.ui.view">
+  <field name="name">no.acreditado.form</field>
+  <field name="model">no.acreditado</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form>
+      <field name="line_id" readonly="1" colspan="4"/>
+      <group col="2" colspan="2">
+        <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+        <button name="no_acreditado" string="No Acreditado" confirm="Esta seguro que desea eliminar???" colspan="1" type="object" icon="gtk-ok" />
+      </group>
+    </form>
+  </field>
+</record>
+
+<record id="no_acreditado" model="ir.actions.act_window">
+  <field name="name">No Acreditado</field>
+  <field name="res_model">no.acreditado</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<record model="ir.ui.view" id="view_spi_form">
+  <field name="name">Transferencias SPI</field>
+  <field name="model">account.spi.voucher</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">         
+    <form string="Transferencias SPI">
+      <group  colspan="3">
+      </group>
+      <group  colspan="3">
+	<field name="name" colspan="2" required="1" attrs="{'readonly': [('state', '=','Confirmado')]}"/>
+	<field name="ref_int" colspan="2" readonly="1"/>
+	<field name="ref" colspan="2" required="1" attrs="{'readonly': [('state', '=','Confirmado')]}"/>
+	<field name="tipo" colspan="2" required="1" attrs="{'readonly': [('state', '=','Confirmado')]}"/>
+	<field name="date_done" colspan="2" required="1" attrs="{'readonly': [('state', '=','Confirmado')]}"/>
+	<field name="journal_id" colspan="2" required="1" domain="{('type','=','bank')}"/>
+	<!--field name="date_aux" colspan="2" attrs="{'readonly': [('state', '=','Confirmado')]}"/-->
+	<field name="quincena_id" colspan="4" attrs="{'invisible': [('tipo', '!=','quincena')],'required': [('tipo', '=','quincena')]}"/>
+	<field name="payroll_id" colspan="4" domain="[('state','=','Autorizado')]"
+	       attrs="{'invisible': [('tipo', '!=','mensual')],'required': [('tipo', '=','mensual')]}"/>
+	<field name="varios_id" colspan="4" attrs="{'invisible': [('tipo', '!=','varios')],'required': [('tipo', '=','varios')]}" 
+	       domain="[('state','=','pendiente')]"/>
+	<field name="dec3_id" colspan="4" domain="[('state','=','Autorizado')]"
+	       attrs="{'invisible': [('tipo', '!=','dec3')],'required': [('tipo', '=','dec3')]}"/>
+	<field name="dec4_id" colspan="4" domain="[('state','=','Autorizado')]"
+	       attrs="{'invisible': [('tipo', '!=','dec4')],'required': [('tipo', '=','dec4')]}"/>
+      </group>
+      <group  colspan="3" string="ZIP - Txt">
+	<field name="file_name" invisible="1"/>
+	<field name="archivo" filename="file_name"/>
+	<newline/>
+	<field name="file_namezp" invisible="1"/>
+	<field name="archivozp" filename="file_namezp"/>
+      </group>
+      <group  colspan="4" string="EXCEL">
+	<field name="file_namexls" invisible="1"/>
+	<field name="archivoxls" filename="file_namexls" colspan="2"/>
+	<button name="%(action_cambia_concepto_spi)d"
+		string="Cambiar Concepto" type="action" icon="gtk-execute"/>
+	<button name="%(action_no_move_spi)d" states='Borrador'
+		string="No Carga Comprobante" type="action" icon="gtk-execute"/>
+      </group>
+      <notebook colspan="3">
+	<page string="Detalle Pagos Generales" attrs="{'invisible': [('tipo', '!=','pgeneral')]}">
+	  <field name="line2_ids" domain="[('state','=','posted'),('is_pay','=',False),('journal_id.type','in',('purchase','bank'))]" 
+		 colspan="3" nolabel="1">
+	    <tree editable="bottom">
+	      <field name="name" string="Referencia" readonly="1"/>
+	      <field name="partner_id" readonly="1"/>
+	      <field name="amount" readonly="1" sum="Total Monto"/>
+	      <field name="state" readonly="1"/>
+	    </tree>
+	  </field>
+	</page>
+	<page string="Detalle">
+	  <field name="line_ids" domain="[('state','=','posted')]" colspan="3" 
+		 nolabel="1">
+	    <tree editable="bottom">
+	      <field name="name" string="Referencia" readonly="1"/>
+	      <field name="partner_id" readonly="1"/>
+	      <field name="ref" readonly="1"/>
+	      <field name="amount" sum="Total Monto"/>
+	      <field name="state" invisible="1"/>
+	      <button name="%(no_acreditado)d" states="Pagado" string="No Acreditado" type="action" icon="gtk-execute"/>
+	    </tree>
+	  </field>
+	</page>
+	<page string="Resumen">
+	  <field name="resumen_ids" nolabel="1" readonly="1">
+	    <tree>
+	      <field name="number" readonly="1"/>
+	      <field name="name" readonly="1"/>
+	      <field name="qty" readonly="1"/>
+	      <field name="amount" readonly="1" sum="Total Monto"/>
+	    </tree>
+	  </field>
+	</page>
+      </notebook>
+      <group colspan="4" col="8">
+	<!--field name="state" readonly="1"/-->
+	<field name="state" widget="statusbar" statusbar_colors='{"Generado":"blue","Pagado":"green"}'/>
+	<button name="spi_import_normal" groups="retention.group_tesorero" 
+		states="Borrador" string="Importar Pagos" type="object" icon="gtk-ok"/>
+	<!--button name="spi_import_normal" groups="retention.group_tesorero" 
+		states="Borrador" string="Pagos Generales" type="object" icon="gtk-ok"/-->
+	<button name="spi_realizado" groups="retention.group_tesorero"
+		confirm="Si ejecuta esta accion los comprobantes ya no estaran disponibles para nuevos pagos" 
+		states="Generado" string="Pago Realizado" type="object" icon="gtk-ok"/>
+	<!--button name="spi_draft" groups="retention.group_tesorero" 
+		states="Confirmado,Generado" string="Regresar Borrador" type="object" icon="gtk-go-back" 
+		confirm="Confirmar desea regresar?"/-->
+	<button name="spi_draft" groups="retention.group_tesorero" 
+		states="Confirmado,Generado,Pagado" string="Regresar Borrador" type="object" icon="gtk-go-back" 
+		confirm="Confirmar desea regresar?"/>
+	<button name="ssp_generate" groups="retention.group_tesorero" 
+		states="Borrador" string="Generar SSP" type="object" icon="gtk-execute" 
+		confirm="Confirmar desea generar SSP?"/>
+	<!--button name="spi_generate_xls" groups="retention.group_tesorero" 
+		states="Borrador" string="Generar Excel SPI" type="object" icon="gtk-execute" 
+		confirm="Confirmar desea generar SPI a excel?"/-->
+	<button name="print_resumen" string="Imprimir Autorizacion" states="Generado" type="object" icon="gtk-print"/>
+	<button name="print_resumen_" string="Imprimir Detalle" states="Generado" type="object" icon="gtk-print"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_spi_voucher_tree">
+  <field name="name">account.spi.voucher.tree</field>
+  <field name="type">tree</field>
+  <field name="model">account.spi.voucher</field>
+  <field name="arch" type="xml">
+    <tree string="Transferencias SPI" colors="green:state=='Pagado'; blue:state=='Generado'">
+      <field name="name"/>
+      <field name="ref"/>
+      <field name="date_done"/>
+      <field name="tipo"/>      
+      <field name="total"/>
+      <field name="state"/>
+    </tree>
+  </field>
+</record>
+
+<record id="view_spi_filter" model="ir.ui.view">
+  <field name="name">spi.view</field>
+  <field name="model">account.spi.voucher</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Buscar Transferencias SPI">
+      <group>
+	<filter icon="terp-document-new" name="draft_" string="Borrador" 
+		domain="[('state','=','Borrador')]"/>
+	<filter icon="terp-document-new" name="aprobado_" string="Aprobadas" 
+		domain="[('state','=','Confirmado')]"/>
+      </group>
+      <group>
+        <field name="name"/>
+        <field name="ref"/>
+	<field name="tipo"/>
+        <field name="date_done"/>
+	<field name="state"/>
+      </group>
+      <newline/>
+    </search>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_spi_form">
+  <field name="name">Transferencias SPI</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">account.spi.voucher</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="search_view_id" ref="view_spi_filter"/>
+</record>
+
+<menuitem id="menu_finance_tesoreria_pagos" name="Tesoreria y Pagos" sequence="5"
+	  groups="retention.group_tesorero,retention.group_director_financiero"               
+	  web_icon="images/spi.png"
+          web_icon_hover="images/spi.png"/>
+
+<menuitem
+   id="menu_spi"
+   sequence="25"
+   parent="menu_finance_tesoreria_pagos"
+   action="action_spi_form"
+   groups="retention.group_tesorero,retention.group_director_financiero"/>
+
+<!-- VISTA DE FACTURAS PARA DIR. FINANCIERO CON MODIFICACION DE FECHA DE VENCIMIENTO
+-->
+
+<record model="ir.ui.view" id="view_invoice_director_form">
+  <field name="name">Facturas por Pagar</field>
+  <field name="model">account.invoice</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">         
+    <form string="Factura">
+      <field name="partner_id" readonly="1"/>
+      <field name="date_invoice" string="Fecha" readonly="1"/>
+      <field name="date_due"/>
+      <field name="state"/>
+      <field name="amount_pay" readonly="1"/>
+      <field name="amount_total" readonly="1"/>
+      <field name="residual" readonly="1"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_invoice_director_form">
+  <field name="name">Facturas por Pagar</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">account.invoice</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[('type','=','in_invoice'),('state','in',['open','paid'])]</field>
+  <field name="context">{'search_default_unpaid': 1}</field>
+  <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+</record>
+
+<record id="action_invoice_director_tree_tree" model="ir.actions.act_window.view">
+  <field name="view_mode">tree</field>
+  <field name="view_id" ref="account.invoice_tree"/>
+  <field name="act_window_id" ref="action_invoice_director_form"/>
+</record>
+
+<record id="action_invoice_director_form_form" model="ir.actions.act_window.view">
+  <field name="view_mode">form</field>
+  <field name="view_id" ref="view_invoice_director_form"/>
+  <field name="act_window_id" ref="action_invoice_director_form"/>
+</record>
+
+<!-- pagos realizados menu financiero -->
+<record model="ir.ui.view" id="view_spi_line_form">
+  <field name="name">Transferencias SPI</field>
+  <field name="model">spi.line</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">         
+    <form string="Transferencias SPI">
+      <group  colspan="3">
+	<field name="date" readonly="1"/>
+	<field name="partner_id" readonly="1"/>
+	<field name="name" readonly="1"/>
+	<field name="bank_id" readonly="1"/>
+	<field name="amount" readonly="1"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_spi_line_tree">
+  <field name="name">spi.line.tree</field>
+  <field name="type">tree</field>
+  <field name="model">spi.line</field>
+  <field name="arch" type="xml">
+    <tree colors="green:state=='Pagado'; blue:state=='Generado'">
+      <field name="spi_id" readonly="1"/>
+      <field name="date" readonly="1"/>
+      <field name="partner_id" readonly="1"/>
+      <field name="name" readonly="1"/>
+      <field name="detalle" readonly="1"/> 
+      <field name="certificate_id" readonly="1"/>
+      <field name="pago_id" readonly="1"/>
+      <field name="bank_id" readonly="1"/>
+      <field name="amount" readonly="1"/>
+      <field name="state" readonly="1"/>
+    </tree>
+  </field>
+</record>
+
+<record id="view_spi_line_filter" model="ir.ui.view">
+  <field name="name">spi.line.search.view</field>
+  <field name="model">spi.line</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Buscar Transferencias SPI">
+      <group>
+	<field name="spi_id" readonly="1"/>
+	<field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	<field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+	<field name="partner_id" readonly="1"/>
+	<field name="name" readonly="1"/>
+	<field name="detalle" readonly="1"/>
+	<field name="certificate_id" readonly="1"/>
+	<field name="pago_id" readonly="1"/>
+	<field name="bank_id" readonly="1"/>
+	<field name="amount" readonly="1"/>
+      </group>
+      <newline/>
+      <group expand="1" string="Agrupar por...">
+        <filter string="Fecha" domain="[]" context="{'group_by':'date'}"/>
+        <separator orientation="vertical"/>
+	<filter string="Beneficiario" domain="[]" context="{'group_by': 'partner_id'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_spi_line">
+  <field name="name">Transferencias SPI</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">spi.line</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[('state','=',('Pagado'))]</field>
+  <field name="search_view_id" ref="view_spi_line_filter"/>
+</record>
+
+<menuitem name="Transferencias SPI" 
+	  id="menu_acc_spi" 
+	  parent="account.menu_finance"
+	  action="action_spi_line"/>
+
+<!-- menu de tesoreria -->
+<record model="ir.actions.act_window" id="action_spi_line_teso">
+  <field name="name">Transf. SPI Detalle</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">spi.line</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="search_view_id" ref="view_spi_line_filter"/>
+</record>
+
+<menuitem name="Transf. SPI Detalle" 
+	  id="menu_acc_spi_teso" 
+	  parent="menu_finance_tesoreria_pagos"
+	  action="action_spi_line_teso"/>
+
+<!--menuitem
+   id="menu_invoice_director"
+   sequence="18"
+   parent="menu_finance_tesoreria_pagos"
+   action="action_invoice_director_form"
+   groups="retention.group_director_financiero"/-->
+
+
+<!-- APROBAR PAGOS
+-->
+<!--record id="view_aprobar_pago_filter" model="ir.ui.view">
+  <field name="name">voucher.aprobar.search.gpa</field>
+  <field name="model">account.voucher</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Pagos">
+      <group>
+        <filter icon="terp-camera_test" string="Autorizados" name="autorized" 
+				domain="[('to_pay','=',True)]"/>
+        <filter icon="terp-stock" string="Por autorizar" name="to_auto" 
+				domain="[('to_pay','=',False)]"/>
+        <separator orientation="vertical"/>
+        <filter icon="terp-go-today" string="Hoy" 
+				domain="[('date','&lt;=',time.strftime('%%Y-%%m-%%d 23:59:59')),
+						('date','&gt;=',time.strftime('%%Y-%%m-%%d 00:00:00'))]" 
+				/>
+        <separator orientation="vertical"/>
+		<field name="partner_id"/>
+        <field name="date"/>
+		<field name="reference" string="Referencia" readonly="1"/>
+		<field name="number" readonly="1"/>
+		<field name="amount" readonly="1"/>
+      </group>
+      <newline/>
+      <group expand="1" string="Agrupar por...">
+        <filter string="Proveedor" name="by_part" icon="terp-accessories-archiver" 
+				domain="[]"  context="{'group_by':'partner_id'}"/>
+        <filter string="Fecha" name="groupby_date" icon="terp-accessories-archiver"
+				domain="[]"  context="{'group_by':'date'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record id="voucher_aprobar_pago_tree" model="ir.ui.view">
+  <field name="name">voucher.aprobar.tree.gpa</field>
+  <field name="model">account.voucher</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree colors="green:pay_states == True;
+		  black:pay_states == False" 
+	  string="Pagos" editable="top">
+      <field name="partner_id" readonly="1"/>
+      <field name="date" string="Fecha"/>
+      <field name="reference" string="Referencia" readonly="1"/>
+      <field name="number" readonly="1"/>
+      <field name="amount" readonly="1"/>
+      <field name="date_aproved" required="1"/>
+      <field name="aprobed_id"/>
+      <field name="state" invisible="1"/>
+      <button name="aprobar_pago" string="Aprobar Pago" groups="retention.group_director_financiero" 
+	      type="object" icon="terp-camera_test"/>
+      <field name="pay_states" invisible="1"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_aprobar_pago_form">
+  <field name="name">Aprobar</field>
+  <field name="model">account.voucher</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">         
+    <form string="Aprobar Pago">
+      <field name="partner_id" readonly="1"/>
+      <field name="date" string="Fecha" readonly="1"/>
+      <field name="reference" string="Referencia" readonly="1"/>
+      <field name="number" readonly="1"/>
+      <field name="amount" readonly="1"/>
+      <field name="date_aproved" required="1"/>
+      <field name="aprobed_id"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_aprobar_pago">
+  <field name="name">Aprobar Pagos</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">account.voucher</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="search_view_id" ref="view_aprobar_pago_filter"/>
+  <field name="domain">[('type','=',('payment'))]</field>
+</record>
+
+<record id="action_aprobar_pago_tree" model="ir.actions.act_window.view">
+  <field name="view_mode">tree</field>
+  <field name="view_id" ref="voucher_aprobar_pago_tree"/>
+  <field name="act_window_id" ref="action_aprobar_pago"/>
+</record>
+
+<record id="action_autorizar_pago_form" model="ir.actions.act_window.view">
+  <field name="view_mode">form</field>
+  <field name="view_id" ref="view_aprobar_pago_form"/>
+  <field name="act_window_id" ref="action_aprobar_pago"/>
+</record>
+
+
+<menuitem
+   id="menu_aprobar_pago"
+   sequence="21"
+   parent="menu_finance_tesoreria_pagos"
+   action="action_aprobar_pago"
+   groups="retention.group_director_financiero"/-->
+
+
+<!-- PAGOS TESORERO
+-->
+	
+<!--record model="ir.actions.act_window" id="action_tesoreria_pago">
+  <field name="name">Pagos Realizados</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">account.voucher</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[('type','=',('payment'))]</field>
+  <field name="search_view_id" ref="view_aprobar_pago_filter"/>
+</record>
+
+<record id="action_tes_pago_tree" model="ir.actions.act_window.view">
+  <field name="view_mode">tree</field>
+  <field name="view_id" ref="voucher_aprobar_pago_tree"/>
+  <field name="act_window_id" ref="action_tesoreria_pago"/>
+</record>
+
+<record id="action_tes_pago_form" model="ir.actions.act_window.view">
+  <field name="view_mode">form</field>
+  <field name="view_id" ref="account_voucher.view_vendor_payment_form"/>
+  <field name="act_window_id" ref="action_tesoreria_pago"/>
+</record>
+
+<menuitem
+   id="menu_tes_pago"
+   sequence="19"
+   parent="menu_finance_tesoreria_pagos"
+   action="action_tesoreria_pago"
+   groups="retention.group_tesorero"/-->
+      <!-- MENU DE SOL DE PAGO PARA CONTABLES-->
+      <record id="action_payment_request_teso_2" model="ir.actions.act_window">
+	<field name="name">Ordenes Pago</field>
+	<field name="res_model">payment.request</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_payment_request_tesoreria" parent="menu_finance_tesoreria_pagos" 
+		name="Ordenes Pago" sequence="2"
+		action="action_payment_request_teso_2"
+		/>
+
+<!-- datos generales -->
+<record model="ir.ui.view" id="view_spi_gen_form">
+  <field name="name">Datos Generales</field>
+  <field name="model">spi.datos.generales</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">         
+    <form string="Datos Generales">
+      <group  colspan="3">
+	<field name="name" colspan="2" readonly="1"/>
+	<field name="cuenta" colspan="2" required="1"/>
+	<field name="date" colspan="2" required="1"/>
+	<field name="period_id" colspan="2" required="1"/>
+	<field name="ref" colspan="2" required="1"/>
+	<field name="localidad" colspan="2" required="1"/>
+	<field name="resp1" colspan="4" required="1"/>
+	<field name="cargo1" colspan="4" required="1"/>
+	<field name="resp2" colspan="4" required="1"/>
+	<field name="cargo2" colspan="4" required="1"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_spi_tree">
+  <field name="name">spi.datos.generales.tree</field>
+  <field name="type">tree</field>
+  <field name="model">spi.datos.generales</field>
+  <field name="arch" type="xml">
+    <tree> 
+      <field name="name"/>
+      <field name="cuenta"/>
+      <field name="resp1"/>
+      <field name="cargo1"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_spi_general_form">
+  <field name="name">Datos Generales</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">spi.datos.generales</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+   id="menu_spi_gen"
+   sequence="26"
+   parent="menu_finance_tesoreria_pagos"
+   action="action_spi_general_form"
+   groups="retention.group_tesorero,retention.group_director_financiero"/>
+
+
+<!-- ACCESO A CUENTAS DE BANCO Y PROVEEDORES -->
+
+<record model="ir.actions.act_window" id="cargar_res_bank_action_spi">
+  <field name="name">Bancos</field>
+  <field name="res_model">res.bank</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem id="menu_cargar_res_bank_spi" parent="menu_finance_tesoreria_pagos" name="Bancos" action="cargar_res_bank_action_spi"/>
+
+<record id="action_partner_spi" model="ir.actions.act_window">
+  <field name="name">Proveedores/Beneficiarios</field>
+  <field name="res_model">res.partner</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+<menuitem
+    action="action_partner_spi"
+    icon="STOCK_JUSTIFY_FILL"
+    name="Proveedores/Beneficiarios"
+    id="menu_action_partner_spi"
+    parent="menu_finance_tesoreria_pagos"
+    sequence="0"
+    />
+<record model="ir.actions.act_window" id="cargar_res_partner_bank_action_spi">
+  <field name="name">Cuentas Bancarias</field>
+  <field name="res_model">res.partner.bank</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem id="menu_cargar_res_partner_bank_spi" parent="menu_finance_tesoreria_pagos" 
+	  name="Cuentas Bancarias" action="cargar_res_partner_bank_action_spi"/>
+
+<!-- banco estado -->
+
+<menuitem id="menu_banco_estado_tesoreria" parent="menu_finance_tesoreria_pagos" 
+	  name="Banco Estado" action="retention.action_report_balance_cedula"/>
+
+<!-- ctas por cobrar -->
+
+
+<!--  menu retenciones -->
+
+<menuitem action="retention.action_digital_retention_tree" id="menu_action_digital_retention_process_spi"
+	  parent="menu_finance_tesoreria_pagos"/>    
+
+  </data>      
+</openerp>

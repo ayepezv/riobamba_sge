@@ -1,0 +1,392 @@
+ra<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	
+    	<!-- bsc.formulation = FORMULACION -->
+    	
+    	<record model="ir.ui.view" id="view_bsc_formulation_form">
+    		<field name="name">BSC.Formulacion.Formulario</field>
+    		<field name="model">bsc.formulation</field>
+    		<field name="type">form</field>
+    		<field name="arch" type="xml">
+    			<form string="Formulación">
+    				<group colspan="4">
+	    				<field name="name" colspan="2"/>
+	    				<field name="fy_id" colspan="2"/>
+	    				<notebook colspan="4">
+	    					<page string="Misión">
+	    						<field name="mision" colspan="4" nolabel="1"/>
+	    						<field name="mision_indicador1" colspan="2" widget="progressbar"/>
+	    						<field name="mision_indicador2" colspan="2" widget="progressbar"/>
+	    						<separator string="Estrategias" colspan="4"/>
+	    						<field name="mision_strategies" colspan="4" nolabel="1">
+	    							<tree string="Estrategias">
+	    								<field name="name"/>
+										<field name="bsc_indicador1" widget="progressbar"/>
+										<field name="bsc_indicador2" widget="progressbar"/>
+	    							</tree>
+	    						</field>
+	    					</page>
+	    					<page string="Visión">
+	    						<field name="vision" colspan="4" nolabel="1"/>
+	    						<field name="vision_indicador1" colspan="2" widget="progressbar"/>
+	    						<field name="vision_indicador2" colspan="2" widget="progressbar"/>
+	    						<separator string="Estrategias" colspan="4"/>
+	    						<field name="vision_strategies" colspan="4" nolabel="1">
+	    							<tree string="Estrategias">
+	    								<field name="name"/>
+										<field name="bsc_indicador1" widget="progressbar"/>
+										<field name="bsc_indicador2" widget="progressbar"/>
+	    							</tree>
+	    						</field>
+	    					</page>
+	    					<page string="Política de calidad">
+	    						<field name="politica" colspan="4" nolabel="1"/>
+	    						<field name="politica_indicador1" colspan="2" widget="progressbar"/>
+	    						<field name="politica_indicador2" colspan="2" widget="progressbar"/>
+	    						<separator string="Estrategias" colspan="4"/>
+	    						<field name="politica_strategies" colspan="4" nolabel="1">
+	    							<tree string="Estrategias">
+	    								<field name="name"/>
+										<field name="bsc_indicador1" widget="progressbar"/>
+										<field name="bsc_indicador2" widget="progressbar"/>
+	    							</tree>
+	    						</field>
+	    					</page>
+	    				</notebook>
+	    			</group>
+    			</form>
+    		</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_bsc_formulation_tree">
+    		<field name="name">BSC.Formulacion.VistaArbol</field>
+    		<field name="model">bsc.formulation</field>
+    		<field name="type">tree</field>
+    		<field name="arch" type="xml">
+    			<tree string="Formulación">
+    				<field name="name"/>
+					<field name="mision"/>
+					<field name="vision"/>
+    			</tree>
+    		</field>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_bsc_formulacion">
+			<field name="name">Formulación</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">bsc.formulation</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>           
+		</record>
+		
+		<!-- bsc.axis = EJES -->
+		
+		<record model="ir.ui.view" id="view_bsc_axis_form">
+    		<field name="name">BSC.Ejes.Formulario</field>
+    		<field name="model">project.axis</field>
+    		<field name="type">form</field>
+    		<field name="arch" type="xml">
+    			<form string="Ejes Estratégicos">
+    			    <group colspan="4" col="8">
+					<field name="name" colspan="6" required="1"/>
+					<field name="active" colspan="2"/>
+					<field name="bsc_indicador1" colspan="4" widget="progressbar"/>
+					<field name="bsc_indicador2" colspan="4" widget="progressbar"/>
+					<separator string="Proyectos" colspan="8"/>
+					<field name="projects" colspan="8" nolabel="1" readonly="1">
+						<tree string="Proyectos">
+							<field name="code"/>
+							<field name="name"/>
+							<field name="program_id"/>
+							<field name="estrategy_id"/>
+							<field name="axis_id"/>
+							<field name="department_id"/>
+							<field name="activity_progress" widget="progressbar"/>
+							<field name="compliance" widget="progressbar"/>
+							<field name="state"/>
+						</tree>
+					</field>
+    			    </group>
+    			</form>
+    		</field>
+		</record>
+		
+		<record model="ir.ui.view" id="view_bsc_axis_tree">
+    		<field name="name">BSC.Ejes.VistaArbol</field>
+    		<field name="model">project.axis</field>
+    		<field name="type">tree</field>
+    		<field name="arch" type="xml">
+    			<tree string="Ejes Estratégicos">
+					<field name="name"/>
+					<field name="bsc_indicador1" widget="progressbar"/>
+					<field name="bsc_indicador2" widget="progressbar"/>
+    			</tree>
+    		</field>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_bsc_axis">
+			<field name="name">Ejes Estratégicos</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">project.axis</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>           
+		</record>
+		
+		
+		<!-- bsc.axis = ESTRATEGIAS -->
+		
+		<record model="ir.ui.view" id="view_bsc_strategy_formulario">
+    		<field name="name">BSC.Estrategias.Formulario</field>
+    		<field name="model">project.estrategy</field>
+    		<field name="type">form</field>
+    		<field name="arch" type="xml">
+    			<form string="Estrategias">
+    			    <group colspan="4" col="8">
+					<field name="name" colspan="8" required="1"/>
+					<field name="axis_id" readonly="1" colspan="6"/>
+					<field name="active" colspan="2"/>
+					<field name="bsc_indicador1" colspan="4" widget="progressbar"/>
+					<field name="bsc_indicador2" colspan="4" widget="progressbar"/>
+					<separator string="Proyectos" colspan="8"/>
+					<field name="projects" colspan="8" nolabel="1" readonly="1">
+						<tree string="Proyectos">
+							<field name="code"/>
+							<field name="name"/>
+							<field name="program_id"/>
+							<field name="estrategy_id"/>
+							<field name="axis_id"/>
+							<field name="department_id"/>
+							<field name="activity_progress" widget="progressbar"/>
+							<field name="compliance" widget="progressbar"/>
+							<field name="state"/>
+						</tree>
+					</field>
+    			    </group>
+    			</form>
+    		</field>
+		</record>
+		
+		<record model="ir.ui.view" id="view_bsc_strategy_arbol">
+    		<field name="name">BSC.Estrategias.VistaArbol</field>
+    		<field name="model">project.estrategy</field>
+    		<field name="type">tree</field>
+    		<field name="arch" type="xml">
+    			<tree string="Estrategias">
+					<field name="name"/>
+					<field name="axis_id" readonly="1"/>
+					<field name="bsc_indicador1" widget="progressbar"/>
+					<field name="bsc_indicador2" widget="progressbar"/>
+    			</tree>
+    		</field>
+		</record>
+		
+		<record model="ir.actions.act_window" id="action_bsc_strategy">
+			<field name="name">Estrategias</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">project.estrategy</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>           
+		</record>
+		
+		<record id="view_bsc_bsc_strategy_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_bsc_strategy_arbol"/>
+	        <field name="act_window_id" ref="action_bsc_strategy"/>
+	    </record>
+		
+		<record id="view_bsc_bsc_strategy_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_bsc_strategy_formulario"/>
+	        <field name="act_window_id" ref="action_bsc_strategy"/>
+	    </record>
+		
+		<!-- bsc.perspectiva = PERSPECTIVA -->
+
+		<record model="ir.ui.view" id="view_bsc_perspectiva_form">
+			<field name="name">Perspectiva</field>
+			<field name="model">bsc.perspectiva</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Perspectiva">
+					<field name="name" required="1" colspan="4"/>
+					<field name="indicador1" colspan="2" widget="progressbar"/>
+					<field name="indicador2" colspan="2" widget="progressbar"/>
+					<notebook colspan="4">
+						<page string="Proyectos">
+							<field name="projects" colspan="4" nolabel="1">
+								<tree string="Proyectos">
+									<field name="code"/>
+									<field name="name"/>
+									<field name="program_id"/>
+									<field name="estrategy_id"/>
+									<field name="axis_id"/>
+									<field name="department_id"/>
+									<field name="activity_progress" widget="progressbar"/>
+									<field name="compliance" widget="progressbar"/>
+									<field name="state"/>
+								</tree>
+							</field>
+						</page>
+						<page string="Indicadores Eficacia">
+							<field name="indicadores1" colspan="4" nolabel="1">
+								<tree string="Indicadores">
+									<field name="name"/>
+									<field name="total" widget="progressbar"/>
+								</tree>
+								<form string="Indicadores">
+									<group colspan="4" col="8">
+										<field name="name" colspan="4"/>
+										<field name="total" colspan="2" widget="progressbar"/>
+										<field name="detalle_ids" nolabel="1" colspan="8">
+											<tree string="Detalle" editable="bottom">
+												<field name="name"/>
+												<field name="valor_meta"/>
+												<field name="valor_real"/>
+											</tree>
+											<form string="Detalle">
+												<field name="name"/>
+												<field name="valor_meta"/>
+												<field name="valor_real"/>
+											</form>
+										</field>
+									</group>
+								</form>
+							</field>
+						</page>
+						<page string="Indicadores Eficiencia">
+							<field name="indicadores2" colspan="4" nolabel="1">
+								<tree string="Indicadores">
+									<field name="name"/>
+									<field name="total" widget="progressbar"/>
+								</tree>
+								<form string="Indicadores">
+									<group colspan="4" col="8">
+										<field name="name" colspan="4"/>
+										<field name="total" colspan="2" widget="progressbar"/>
+										<field name="detalle_ids" nolabel="1" colspan="8">
+											<tree string="Detalle" editable="bottom">
+												<field name="name"/>
+												<field name="valor_meta"/>
+												<field name="valor_real"/>
+											</tree>
+											<form string="Detalle">
+												<field name="name"/>
+												<field name="valor_meta"/>
+												<field name="valor_real"/>
+											</form>
+										</field>
+									</group>
+								</form>
+							</field>
+						</page>
+					</notebook>
+				</form>
+			</field>
+		</record>
+		  
+		<record model="ir.ui.view" id="view_bsc_perspectiva_tree">
+			<field name="name">Perspectivas</field>
+			<field name="model">bsc.perspectiva</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Perspectiva">
+					<field name="name"/>
+					<field name="indicador1" widget="progressbar"/>
+					<field name="indicador2" widget="progressbar"/>
+				</tree>
+			</field>
+		</record>
+		  
+		<record model="ir.actions.act_window" id="action_bsc_perspectiva">
+			<field name="name">Perspectivas</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">bsc.perspectiva</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>           
+		</record>
+
+	  
+		<!-- MENUS -->
+		<menuitem name="Balanced Scorecard" id="menu_bsc_root"
+				  groups="group_bsc_manager"
+				  web_icon="images/bsc_color.png"
+				  web_icon_hover="images/bsc_color.png"/>
+		
+		<menuitem name="Balanced Scorecard" id="menu_bsc_views" parent="menu_bsc_root"
+			sequence="1"/>
+			
+		<menuitem name="Configuración" id="menu_bsc" parent="menu_bsc_root"
+			sequence="2"/>
+			
+		<menuitem name="Formulación" id="bsc_formulacion_menu"
+			parent="menu_bsc" sequence="1" action="action_bsc_formulacion"/>
+			
+		<menuitem name="Ejes Estratégicos" id="bsc_ejes_menu"
+			parent="menu_bsc" sequence="2" action="action_bsc_axis"/>
+			
+		<menuitem name="Estrategias" id="bsc_estrategias_menu"
+			parent="menu_bsc" sequence="3" action="action_bsc_strategy"/>
+			
+		<menuitem name="Perspectivas" id="bsc_perspectiva_menu"
+				parent="menu_bsc" sequence="4" action="action_bsc_perspectiva"/>
+			
+
+				
+		<!-- INICIAR VISTA WEB -->
+        
+        <record model="ir.actions.client" id="action_bsc_web_start">
+          <field name="name">Inicio</field>
+          <field name="tag">bsc.ui.inicio</field>
+        </record>
+
+        <record id="menu_bsc_web_start" model="ir.ui.menu">
+          <field name="name">Inicio</field>
+          <field name="action" ref="action_bsc_web_start"/>
+        </record>
+
+        <menuitem id="menu_bsc_web_start" parent="menu_bsc_views"/>
+        
+        
+        <record model="ir.actions.client" id="action_bsc_web_filosofia">
+          <field name="name">Filosofía Institucional</field>
+          <field name="tag">bsc.ui.filosofia</field>
+        </record>
+
+        <record id="menu_bsc_web_filosofia" model="ir.ui.menu">
+          <field name="name">Filosofía Institucional</field>
+          <field name="action" ref="action_bsc_web_filosofia"/>
+        </record>
+
+        <menuitem id="menu_bsc_web_filosofia" parent="menu_bsc_views"/>
+        
+        
+        <record model="ir.actions.client" id="action_bsc_web_ejes">
+          <field name="name">Ejes Estratégicos</field>
+          <field name="tag">bsc.ui.ejes</field>
+        </record>
+
+        <record id="menu_bsc_web_ejes" model="ir.ui.menu">
+          <field name="name">Ejes Estratégicos</field>
+          <field name="action" ref="action_bsc_web_ejes"/>
+        </record>
+
+        <menuitem id="menu_bsc_web_ejes" parent="menu_bsc_views"/>
+        
+        
+        <record model="ir.actions.client" id="action_bsc_web_perspectivas">
+          <field name="name">Perspectivas</field>
+          <field name="tag">bsc.ui.perspectivas</field>
+        </record>
+
+        <record id="menu_bsc_web_perspectivas" model="ir.ui.menu">
+          <field name="name">Perspectivas</field>
+          <field name="action" ref="action_bsc_web_perspectivas"/>
+        </record>
+
+        <menuitem id="menu_bsc_web_perspectivas" parent="menu_bsc_views"/>
+
+	</data>      
+</openerp>

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <!-- Varios views
+    -->
+   <report auto="False" id="pago_vario" model="hr.varios"
+            name="hr.varios" rml="gt_hr_pago/report/varios.mako"
+            usage="default" string="Pagos Varios" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_varios_form">
+      <field name="name">hr.varios.form</field>
+      <field name="model">hr.varios</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Pago varios">
+	  <group col="4" colspan="4">
+	    <field name="name" colspan="2"/>
+	    <field name="period_id" colspan="2"/>
+	  </group>
+	  <group col="4" colspan="4">
+	    <field name="archivo" colspan="2"/>
+	    <button name="load_varios_excel" states="draft" string="Importar Hoja" type="object" icon="gtk-execute"/>
+	  </group>
+	  <!--button name="load_employee_quincena" states="draft" string="Generar" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	  <button name="print_quincena" string="Imprimir" icon="gtk-print" type="object" colspan="2"/-->
+	  <field name="line_ids" colspan="4" nolabel="1">
+	    <tree string="Detalle" editable="bottom">
+	      <field name="name"/>
+	      <field name="monto"/>
+	      <field name="descuento"/>
+	      <field name="valor" sum="TOTAL PAGOS $" readonly="1"/>
+	    </tree>
+	  </field>
+	  <group>
+	    <field name="state"  widget="statusbar" statusbar_colors='{"draft":"black","pendiente":"blue","pagado":"green"}'/>
+	    <button name="pendiente_varios" states="draft" string="Aprobar" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	    <button name="a_borrador_varios" states="pendiente" string="Regresar Borrador" type="object" icon="gtk-execute" groups="base.group_hr_manager"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_varios_tree" model="ir.ui.view">
+      <field name="name">hr.varios.tree</field>
+      <field name="model">hr.varios</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Pagos Varios" colors="black:state == 'draft';blue:state == 'pendiente';green:state == 'pagado'">
+	  <field name="name"/>
+	  <field name="period_id"/>
+	  <field name="state"/>
+	</tree>
+      </field>
+    </record>
+    
+    <record id="view_varios_filter" model="ir.ui.view">
+      <field name="name">Varios</field>
+      <field name="model">hr.varios</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+	<search string="Periodos">
+	  <field name="name"/>
+	  <field name="period_id"/>
+	</search>
+      </field>
+    </record>
+    
+    <record id="action_hr_varios" model="ir.actions.act_window">
+      <field name="name">Pagos Varios</field>
+      <field name="res_model">hr.varios</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+     </record>
+
+    
+    <menuitem id="menu_hr_varios"
+	      action="action_hr_varios"
+	      parent="hr_payroll.menu_hr_root_payroll"
+	      name="Pagos Varios"
+	      groups="base.group_hr_manager"/>
+
+    </data>
+</openerp>

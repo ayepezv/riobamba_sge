@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="hr.ie" model="hr.ie.head"
+            name="hr.ie.head" rml="gt_hr_ie/report/ie.mako"
+            usage="default" string="Imprimir" header="True" report_type="webkit"/>
+
+    <!--report auto="False" id="hr.ienovedades" model="hr.ie.head"
+            name="novedades" rml="gt_hr_ie/report/novedades.mako"
+            usage="default" string="Reporte Novedades" header="True" report_type="webkit"/-->
+
+  </data>
+</openerp>

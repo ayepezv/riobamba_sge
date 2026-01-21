@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    
+    <record id="view_saldo_vac" model="ir.ui.view">
+      <field name="name">Saldo Vacaciones</field>
+      <field name="model">saldo.vacempleado</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reporte saldo vacaciones">
+	  <group>
+	    <field name="datas_fname" colspan="3" invisible="1"/>
+	    <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	    <button icon="gtk-execute" name="exporta_saldovac" string="Exporta Excel" type="object" colspan="1"/>
+	  </group>
+	  <group col="4" colspan="4">
+	    <field name='line_ids' readonly="1" colspan="4" nolabel="1">
+	      <tree>
+		<field name='employee_id'/>
+		<field name='dias'/>
+	      </tree>
+	    </field>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="calcula_saldovac" type="object" icon="gtk-execute"  string="Ejecutar"/>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+	  
+      <record id="action_saldovac" model="ir.actions.act_window">
+        <field name="name">Saldo Vacaciones</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">saldo.vacempleado</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_saldovac"
+		icon="STOCK_EXECUTE"
+		action="action_saldovac"
+		parent="hr_holidays.menu_open_ask_holidays"
+		name="Saldo Vacaciones"
+		groups="base.group_hr_manager,base.group_hr_user"
+		sequence="101"/>
+
+	  <!-- SAldo de vacaciones tipo laboral -->
+	  
+	  <record id="view_saldo_relab" model="ir.ui.view">
+            <field name="name">Vacaciones Acumuladas Sobrepasado</field>
+            <field name="model">saldo.relab</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Reporte saldo vacaciones">
+		<label colspan="4" nolabel="1" string="Si selecciona LOSEP muestra el personal que tiene saldo de vacaciones mayor igual a 60 y si es Codigo de trabajo mayor o igual a 90"/>
+		<group col="4" colspan="4">
+		  <group colspan="2">
+		    <field name="tipo_id" colspan="2" required="1" widget='selection'/>
+		    <!--field name="opcion" colspan="2" required="1"/-->
+		  </group>
+		  <newline/>
+		  <field name='line_ids' readonly="1" colspan="4" nolabel="1">
+		    <tree>
+		      <field name='employee_id'/>
+		      <field name='dias'/>
+		    </tree>
+		  </field>
+		  <newline/>
+		  <group col="3" colspan="1">
+		    <button icon="gtk-cancel" special="cancel"
+	        	    string="Salir" />
+		    <button name="calcula_saldorelab" type="object" icon="gtk-execute"  string="Ejecutar"/>
+		  </group>
+		</group>
+              </form>
+            </field>
+	  </record>
+
+      <record id="action_saldorel" model="ir.actions.act_window">
+        <field name="name">Vacaciones Acumuladas Sobrepasado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">saldo.relab</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_saldorel"
+		icon="STOCK_EXECUTE"
+		action="action_saldorel"
+		groups="base.group_hr_manager,base.group_hr_user"
+		parent="hr_holidays.menu_open_ask_holidays"
+		name="Vacaciones Acumuladas Sobrepasado"
+		sequence="100"/>
+
+	  <!--LIQUIDACION ATRASOS MINUTOS -->
+	  <record model="ir.ui.view" id="view_liquida_atraso_form">
+	  <field name="name">holiday.liquida.atraso.form</field>
+	  <field name="type">form</field>
+	  <field name="model">liquida.atraso</field>
+	  <field name="arch" type="xml">
+	    <field name="code" readonly="1"/>
+	    <field name="name" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="date" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="saldo_id" domain="[('employee_id','=',name)]" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="total_dias" readonly="1"/>
+	    <field name="total_minutos" readonly="1"/>
+	    <button name="calcula_atraso" string="Calcular" 
+		    type="object" colspan="2"/>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<!--field name="line_ids" nolabel="1" domain="[('name','=',parent.name)]"/-->
+		<field name="line_ids" nolabel="1" domain="[('estado','!=','Liquidado')]"/>
+		  <!--tree editable='bottom'>
+		    <field name="name" invisible='1'/>
+		    <field name="date"/>
+		    <field name="minutos" sum="TOTAL"/>
+		  </tree>
+		</field-->
+	      </page>
+	    </notebook>
+	    <field name="state" readonly="1"/>
+	    <button name="liquida_atraso" string="Liquidar" states="Borrador" 
+		    type="object" colspan="2"/>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_liquida_atraso_tree">
+	  <field name="name">holiday.liquida.atraso.tree</field>
+	  <field name="type">tree</field>
+	  <field name="model">liquida.atraso</field>
+	  <field name="arch" type="xml">
+	    <field name="code"/>
+	    <field name="name"/>
+	    <field name="date"/>
+	    <field name="total_dias"/>
+	    <field name="total_minutos"/>
+	    <field name="state"/>
+	  </field>
+	</record>
+	
+	<record id="view_liquida_atraso_filter" model="ir.ui.view">
+	  <field name="name">holiday.liquida.atraso.list.select</field>
+	  <field name="model">liquida.atraso</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Buscar Liquidacion Atrasos">
+	      <group col='10' colspan='4'>
+		<field name="code"/>
+		<field name="name"/>
+		<field name="date" select="1"/>
+		<field name="state" select="1"/>
+	      </group>
+	      <newline/>
+	      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		<filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'name'}"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_liquida_atraso">
+	  <field name="name">Liquidacion Atrasos</field>
+	  <field name="res_model">liquida.atraso</field>
+	  <field name="view_mode">tree,form</field>
+        </record>
+	
+        <menuitem name="Liquidacion Atrasos" parent="hr_holidays.menu_open_ask_holidays" id="menu_liquida_atraso" 
+		  action="action_liquida_atraso"/>
+
+	  <!--LIQUIDACION PERMISOS MINUTOS -->
+	  <record model="ir.ui.view" id="view_liquida_permiso_form">
+	  <field name="name">holiday.liquida.permiso.form</field>
+	  <field name="type">form</field>
+	  <field name="model">liquida.permiso</field>
+	  <field name="arch" type="xml">
+	    <field name="code" readonly="1"/>
+	    <field name="name" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="date" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="saldo_id" domain="[('employee_id','=',name)]" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="total_dias" readonly="1"/>
+	    <field name="total_minutos" readonly="1"/>
+	    <button name="calcula_atraso" string="Calcular" 
+		    type="object" colspan="2"/>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<!--field name="line_ids" nolabel="1" domain="[('name','=',parent.name)]"/-->
+		<field name="line_ids" nolabel="1" domain="[('tipo','=','Horas'),('liquidado','=',False)]"/>
+		  <!--tree editable='bottom'>
+		    <field name="name" invisible='1'/>
+		    <field name="date"/>
+		    <field name="minutos" sum="TOTAL"/>
+		  </tree>
+		</field-->
+	      </page>
+	    </notebook>
+	    <field name="state" readonly="1"/>
+	    <button name="liquida_permiso" string="Liquidar" states="Borrador" 
+		    type="object" colspan="2"/>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_liquida_permiso_tree1">
+	  <field name="name">holiday.liquida.permiso.tree</field>
+	  <field name="type">tree</field>
+	  <field name="model">liquida.permiso</field>
+	  <field name="arch" type="xml">
+	    <field name="code"/>
+	    <field name="name"/>
+	    <field name="date"/>
+	    <field name="total_dias"/>
+	    <field name="total_minutos"/>
+	    <field name="state"/>
+	  </field>
+	</record>
+	
+	<record id="view_liquida_permiso_filter1" model="ir.ui.view">
+	  <field name="name">holiday.liquida.permiso.list.select</field>
+	  <field name="model">liquida.permiso</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Buscar Liquidacion Permisos">
+	      <group col='10' colspan='4'>
+		<field name="code"/>
+		<field name="name"/>
+		<field name="date" select="1"/>
+		<field name="state" select="1"/>
+	      </group>
+	      <newline/>
+	      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		<filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'name'}"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_liquida_permiso">
+	  <field name="name">Liquidacion Permisos Horas</field>
+	  <field name="res_model">liquida.permiso</field>
+	  <field name="view_mode">tree,form</field>
+        </record>
+	
+        <menuitem name="Liquidacion Permisos Horas" parent="hr_holidays.menu_open_ask_holidays" id="menu_liquida_permiso" 
+		  action="action_liquida_permiso"/>
+		
+	  <!-- FALTAS -->
+	  <delete id="hr_holidays.menu_open_ask_holidays_new" model="ir.ui.menu"/>	
+	  <delete id="hr_holidays.menu_request_approve_holidays" model="ir.ui.menu"/>	
+	  <delete id="hr_holidays.menu_open_company_allocation" model="ir.ui.menu"/>
+	  <record model="ir.actions.act_window" id="action_faltas">
+	    <field name="name">Registro Faltas</field>
+	    <field name="res_model">hr.holidays</field>
+	    <field name="view_mode">tree,form</field>
+          </record>
+          <menuitem name="Registro Faltas" parent="hr_holidays.menu_open_ask_holidays" id="menu_faltas" 
+		    action="action_faltas"/>
+	  <!-- -->
+	  <delete id="hr_holidays.menu_open_allocation_holidays" model="ir.ui.menu"/>
+
+
+	  <!-- ATRASOS MINUTOS -->
+	  <record model="ir.ui.view" id="view_atraso_form">
+	  <field name="name">holiday.atraso.form</field>
+	  <field name="type">form</field>
+	  <field name="model">holiday.atraso</field>
+	  <field name="arch" type="xml">
+	    <field name="name" attrs="{'readonly':[('estado','!=','Realizado')]}"/>
+	    <field name="date" attrs="{'readonly':[('estado','!=','Realizado')]}"/>
+	    <field name="minutos" attrs="{'readonly':[('estado','!=','Realizado')]}"/>
+	    <field name="ref"/>
+	    <field name="estado" readonly="1"/>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_atraso_tree">
+	  <field name="name">holiday.atraso.tree</field>
+	  <field name="type">tree</field>
+	  <field name="model">holiday.atraso</field>
+	  <field name="arch" type="xml">
+	    <field name="name"/>
+	    <field name="date"/>
+	    <field name="minutos"/>
+	    <field name="estado"/>
+	  </field>
+	</record>
+	
+	<record id="view_atraso_filter" model="ir.ui.view">
+	  <field name="name">holiday.atraso.list.select</field>
+	  <field name="model">holiday.atraso</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Buscar Atrasos">
+	      <group col='10' colspan='4'>
+		<field name="name"/>
+		<field name="date" select="1"/>
+		<field name="estado" select="1"/>
+	      </group>
+	      <newline/>
+	      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		<filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'name'}"/>
+		<separator orientation="vertical"/>
+		<filter string="Fecha" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'date'}"/>
+		<filter string="Estado" icon="terp-go-month" domain="[]" context="{'group_by':'state'}"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_atraso">
+	  <field name="name">Registro Atrasos</field>
+	  <field name="res_model">holiday.atraso</field>
+	  <field name="view_mode">tree,form</field>
+        </record>
+	
+        <menuitem name="Registro Atrasos" parent="hr_holidays.menu_open_ask_holidays" id="menu_atraso" 
+		  action="action_atraso"/>
+	  <!-- dias laborados -->
+	<record id="view_dias_tree" model="ir.ui.view">
+	  <field name="name">view.dias.tree</field>
+	  <field name="model">hr.payslip.worked_days</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Dias Laborados">
+	      <!--field name="employee_id" select="1"/-->
+	      <field name="contract_id" select="1"/>
+	      <field name="period_id" select="1"/>
+	      <field name="payslip_id" select="1"/>
+	      <field name="number_of_days" select="1" sum="TOTAL"/>
+	    </tree>
+	  </field>
+	</record>
+	
+	<record id="view_dias_search" model="ir.ui.view">
+	  <field name="name">hr.payslip.worked_days.search</field>
+	  <field name="model">hr.payslip.worked_days</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Dias Laborados">
+	      <group>
+		<separator orientation="vertical"/>
+	      <field name="contract_id" select="1"/>
+	      <field name="period_id" select="1"/>
+	      <field name="payslip_id" select="1"/>
+	      <field name="number_of_days" select="1"/>
+	      </group>
+	      <newline/>
+	      <group expand="1" string="Group By...">
+		<separator orientation="vertical" />
+		<filter icon="terp-stock_effects-object-colorize" name="empleado" 
+			string="Empleado" domain="[]" context="{'group_by':'contract_id'}"/>
+		<separator orientation="vertical" />
+		<filter string="Fecha" icon="terp-go-month" domain="[]"  
+			context="{'group_by':'period_id'}"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	<record id="action_days" model="ir.actions.act_window">
+	  <field name="name">Dias Laborados</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">hr.payslip.worked_days</field>
+	  <field name="domain">[('code','ilike','WORK100')]</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="view_id" ref="view_dias_tree"/>
+	</record>
+	
+	<menuitem id="menu_gt_hr_days" parent="hr_payroll.menu_hr_root_payroll" name="Dias Laborados" sequence="901" action="action_days"/>
+
+	  <!-- edit menus txt -->
+	
+	  <record model="ir.ui.view" id="view_employee_modified_tree_diasvac">
+	    <field name="name">hr.employee.diasvac.modified</field>
+	    <field name="model">hr.employee</field>
+	    <field name="type">tree</field>
+	    <field name="inherit_id" ref="gt_hr_base.view_employee_modified_tree"/>
+	    <field name="arch" type="xml">
+	      <field name="job_id" position="after">
+		<field name="total_normal"/>
+	      </field>
+	    </field>
+	  </record>
+	
+  
+	  <record model="ir.ui.view" id="view_employee_modified_form_holidays">
+	    <field name="name">hr.employee.holidays.modified</field>
+	    <field name="model">hr.employee</field>
+	    <field name="type">form</field>
+	    <field name="inherit_id" ref="hr_holidays.view_employee_form_leave_inherit"/>
+	    <field name="arch" type="xml">
+	      <field name="remaining_leaves" position="replace">
+		<field name="remaining_leaves" invisible="1"/>
+	      </field>
+	    </field>
+	  </record>
+	  
+		<!-- HR Employee -->
+	  
+	  	<record id="view_employee_form_leave_inherit_base" model="ir.ui.view">
+          <field name="name">hr.employee.leave.form.inherit</field>
+          <field name="model">hr.employee</field>
+          <field name="type">form</field>
+          <field name="inherit_id" ref="gt_hr_base.view_employee_modified_form"/>
+          <field name="arch" type="xml">
+	    <notebook position="inside">
+	      <page string="Vacaciones">
+		<group colspan="4" col="6">
+		  <field name="total_normal" readonly="1" colspan="2"/>
+		  <field name="tomados" readonly="1" colspan="2"/>
+		  <!--field name="total_extra" readonly="1" colspan="2"/-->		  
+		  <button name="boton_actualizar_vacaciones" string="Calcular vacaciones" 
+			  type="object" colspan="2"/>
+		</group>
+		<field name="holidays_ids" nolabel="1" colspan="4">
+		  <tree string="Detalle de Vacaciones">
+		    <field name="name"/>
+		    <field name="days_normal"/>
+		    <!--field name="days_extra"/>
+		    <field name="days_prop_normal"/>
+		    <field name="days_prop_extra"/>
+		    <field name="tomados_extra"/-->		    
+		    <field name="tomados_normal"/>
+		  </tree>
+		  <form>
+		    <field name="name" colspan="4" required="1"/>
+		    <field name="date_start" colspan="2" required="1"/>
+		    <field name="date_stop" colspan="2" required="1"/>
+		    <field name="days_normal" colspan="2"/>
+		    <!--field name="days_extra" colspan="2"/>
+		    <field name="days_prop_normal" colspan="2"/>
+		    <field name="days_prop_extra" colspan="2"/>
+		    <field name="tomados_extra"/-->
+		    <field name="tomados_normal"/>
+		    <field name='detalle_ids' readonly="1">
+		      <tree colors="red:state=='Anulado'">
+			<field name="code"/>
+			<field name="desc"/>
+			<field name="date"/>
+			<field name="autorizado_por"/>
+			<field name="date_from"/>
+			<field name="date_end"/>
+			<field name="dias"/>
+			<field name="state"/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+		<!--button string="prueba" name="tarea_actualizar_vacaciones" type="object"/-->
+	      </page>
+	      <page string="Observaciones">
+                <field colspan="4" nolabel="1" name="notes"/>
+              </page>
+	    </notebook>
+          </field>
+        </record>
+        
+        <!-- HR HOLIDAYS -->
+        
+        <record id="view_holiday_new_calendar_inherit" model="ir.ui.view">
+            <field name="name">Permisos y Vacaciones</field>
+            <field name="model">hr.holidays</field>
+            <field name="type">calendar</field>
+            <field name="inherit_id" ref="hr_holidays.view_holiday_new_calendar"/>
+            <field name="arch" type="xml">
+              <xpath expr="/calendar" position="replace">
+	        <calendar string="Permisos y Vacaciones" color="employee_id" date_start="date_from" date_stop="date_to">
+	          <field name="holiday_status_id"/>
+	        </calendar>
+              </xpath>
+            </field>
+        </record>
+        
+        <record id="hr_holidays.edit_holiday_new" model="ir.ui.view">
+          <field name="name">Permisos y Vacaciones</field>
+          <field name="model">hr.holidays</field>
+          <field name="type">form</field>
+          <!--field name="inherit_id" ref="hr_holidays.edit_holiday_new"/-->
+          <field name="arch" type="xml">
+            <!--xpath expr="/form" position="replace"-->
+	    <form string="Permisos y Vacaciones">
+	      <field name="holiday_type" on_change="onchange_type(holiday_type)" attrs="{'readonly':[('state','!=','draft')]}" 
+		     string="Mode" groups="base.group_hr_manager" invisible="1"/>
+	      <field name="name" colspan="2" string="Descripción" attrs="{'readonly':[('state','!=','draft')]}" invisible="1"/>
+	      <field name="code" readonly="1" invisible="1"/>
+	      <field name="employee_id" colspan="2" attrs="{'required':[('holiday_type','=','employee')]}"/>
+	      <field name="department_id" colspan="2" readonly="1"/>
+	      <notebook colspan="4">
+	        <page string="General">
+	          <field name="holiday_status_id" colspan="2" context="{'employee_id':employee_id}" domain="[('code','=','FALTA')]"/>
+	          <!--field name="holiday_status_id" colspan="2" on_change="onchange_sec_id(holiday_status_id)" context="{'employee_id':employee_id}"/-->
+	          <field name="tipo_vacaciones" colspan="2" readonly="1" invisible="1"/>
+	          <!--field name="date_start" colspan="2"/-->
+	          <field name="date_from" colspan="2" on_change="onchange_date_from(date_to, date_from)" required="1"/>
+	          <field name="date_to" colspan="2" on_change="onchange_date_from(date_to, date_from)" required="1"/>
+	          <field name="total_dias" colspan="2"/>
+	          <field name="horas" colspan="2"/>
+		  <field name="line_id" colspan="2" readonly="1"/>
+	          <field name="number_of_days_temp" colspan="2" string="Numero de dias" invisible="1"/>
+	          <field name="double_validation" colspan="2" invisible="1"/>
+	          <newline/>
+	          <!--field name="manager_id"/-->
+	          <field name="manager_id2" attrs="{'invisible':[('double_validation', '!=', True)]}"/>
+	          <separator string="Razones" colspan="4"/>
+	          <field name="notes" nolabel="1" colspan="4"/>
+	          <newline/>
+	          <group colspan="4" col="8">
+		    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate" 
+			   statusbar_colors='{"confirm":"blue","validate1":"blue","refuse":"red"}' colspan="2"/>
+	            <button string="Rechazar" name="refuse" states="confirm,validate1" type="workflow" icon="gtk-no" groups="base.group_hr_user,base.group_hr_manager"/>
+	            <button string="Confirmar" name="confirm" states="draft" type="workflow" icon="gtk-yes"/>
+	            <button string="Primera Aprobación" name="validate" states="confirm" type="workflow" icon="gtk-apply" groups="base.group_hr_user"/>
+	            <button string="Segunda Aprobación" name="second_validate" states="validate1" type="workflow" icon="gtk-apply" groups="base.group_hr_user"/>
+		    <button name="recalcula_descuento_falta" states="validate1,validate" string="Recalcular" 
+			    type="object" icon="gtk-execute"/> 
+		    <button name="print_permiso" colspan="4" states="validate1" string="Imprimir" 
+			    type="object" icon="gtk-print"/> 
+	            <!--button string="Set to Draft" name="set_to_draft" states="refuse,validate" type="object" icon="gtk-convert" groups="base.group_hr_user"/-->
+	          </group>
+	        </page>
+	      </notebook>
+	    </form>
+            <!--/xpath-->
+          </field>
+        </record>
+        
+        <record model="ir.ui.view" id="hr_holidays.allocation_leave_new">
+            <field name="name">Aprobación de Permisos</field>
+            <field name="model">hr.holidays</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Aprobacion de Permisos">
+              <field name="holiday_type" on_change="onchange_type(holiday_type)" attrs="{'readonly':[('state','!=','draft')]}" 
+		     string="Allocation Mode" groups="base.group_hr_manager" invisible="1"/>
+              <field name="name" colspan="2" string="Descripción" attrs="{'readonly':[('state','!=','draft')]}" invisible="1"/>
+            	<newline/>
+		<field name="code" readonly="1"/>
+            	<field name="employee_id" colspan="2" attrs="{'required':[('holiday_type','=','employee')]}"/>
+            	<field name="department_id" colspan="2" readonly="1"/>
+                <notebook colspan="4">
+                    <page string="General">
+                    	<group colspan="4" col="4">
+	                        <field name="holiday_status_id" colspan="2" on_change="onchange_sec_id(holiday_status_id)" context="{'employee_id':employee_id}"/>
+	                        <field name="tipo_vacaciones" colspan="2" readonly="1"/>
+	                        <field name="number_of_days_temp" colspan="2" string="Numero de dias"/>
+	                        <field name="double_validation" colspan="2" readonly="1"/>
+	                        <newline/>
+	                        <field name="manager_id" colspan="2"/>
+	                        <field name="manager_id2" colspan="2" attrs="{'invisible':[('double_validation', '!=', True)]}"/>
+                        </group>
+                        <separator string="Razones" colspan="4"/>
+                        <field name="notes" nolabel="1" colspan="4"/>
+                        <newline/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate" statusbar_colors='{"confirm":"blue","validate1":"blue","refuse":"red"}' colspan="2"/>
+                        <group colspan="2" col="6">
+                            <button string="Rechazar" name="refuse" states="confirm,validate1" type="workflow" icon="gtk-no" groups="base.group_hr_user"/>
+                            <button string="Confirmar" name="confirm" states="draft" type="workflow" icon="gtk-yes"/>
+                            <button string="Primera Aprobación" name="validate" states="confirm" type="workflow" icon="gtk-apply" groups="base.group_hr_user"/>
+                            <button string="Segunda Aprobación" name="second_validate" states="validate1" type="workflow" icon="gtk-apply" groups="base.group_hr_user"/>
+                            <!--button string="Set to Draft" name="set_to_draft" states="cancel,validate,refuse" type="object" icon="gtk-convert" groups="base.group_hr_user"/-->
+                        </group>
+                    </page>
+                </notebook>
+            </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="hr_holidays.view_holiday">
+            <field name="name">hr.holidays.tree</field>
+            <field name="model">hr.holidays</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree colors="red:state == 'refuse';blue:state == ' draft';black:state in ('confirm','validate','validate1')" string="Permisos y Vacaciones">
+                    <field name="holiday_type" invisible="1"/>
+                    <field name="holiday_status_id"/>
+                    <field name="employee_id"/>
+                    <field name="code"/>
+                    <field name="department_id"/>
+                    <field name="category_id" invisible="1"/>
+                    <field name="name" invisible="1"/>
+                    <field name="number_of_days" string="Numero de Días"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="manager_id" invisible="1"/>
+                    <field name="user_id" invisible="1"/>
+                    <!--field name="type"/-->
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- REORGANIZACION DE MENUS -->
+        
+        <record model="ir.actions.act_window.view" id="hr_holidays.action_open_ask_holidays_tree">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="hr_holidays.view_holiday"/>
+            <field name="act_window_id" ref="hr_holidays.open_ask_holidays"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="hr_holidays.action_open_ask_holidays_form">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="hr_holidays.edit_holiday_new"/>
+            <field name="act_window_id" ref="hr_holidays.open_ask_holidays"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="hr_holidays.action_open_ask_holidays_calendar">
+            <field name="sequence" eval="3"/>
+            <field name="view_mode">calendar</field>
+            <field name="view_id" ref="hr_holidays.view_holiday_new_calendar"/>
+            <field name="act_window_id" ref="hr_holidays.open_ask_holidays"/>
+        </record>
+        
+        <!-- Holiday status -->
+        
+        <record id="inherit_edit_holiday_status_form" model="ir.ui.view">
+            <field name="name">Tipos de ausencias</field>
+            <field name="model">hr.holidays.status</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/group/field[@name='name']" position="after">
+                	<field name="code" required="1"/>
+                	<field name="max"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Documental aaa-->
+        
+        <record model="ir.ui.view" id="hr_doc_holidays_form">
+            <field name="name">Ausencias en Documental - Formulario</field>
+            <field name="model">hr.doc.holidays</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Peticiones de Ausencia">
+            	<group colspan="4" col="4">
+	            	<separator string="Información General" colspan="4"/>
+	            	<!--field name="name" colspan="4" attrs="{'readonly':[('state','!=','draft')]}"/-->
+	            	<field name="contract_id" colspan="2"  attrs="{'readonly':[('state','!=','draft')]}" domain="[('department_id','=',department_id)]"/>
+	            	<field name="department_id" colspan="2" readonly="1"/>
+	            	<field name="date_start" colspan="2"  attrs="{'readonly':[('state','!=','draft')]}"/>
+	            	<field name="date_stop" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+	            	<field name="tipo_id" colspan="2" attrs="{'readonly':[('state','!=','draft')]}" widget="selection"/>
+	            	<field name="tipo_vacaciones" colspan="2" readonly="1"/>
+	                <separator string="Razones" colspan="4"/>
+	                <field name="notes" nolabel="1" colspan="4" attrs="{'readonly':[('state','!=','draft')]}"/>
+	                <newline/>
+	                <field name="state" widget="statusbar" statusbar_visible="draft,confirm,validate" statusbar_colors='{"confirm":"blue","validate1":"blue","refuse":"red"}' colspan="2"/>
+	                <group colspan="2" col="4">
+	                    <button string="Solicitar" name="confirm" colspan="2" states="draft" type="object" icon="gtk-yes"/>
+	                    <button string="Anular" name="refuse" colspan="2" states="draft,confirm" type="object" icon="gtk-no" groups="base.group_hr_user"/>
+	                    <button string="Aprobación de Jefe Inmediato" name="aprobar_jefe" colspan="2" states="confirm" type="object" icon="gtk-apply" groups="gt_hr_holidays.group_holidays_approve"/>
+	                    <button string="Aprobación de Coordinador" name="aprobar_coordinador" colspan="2" states="validate1" type="object" icon="gtk-apply" groups="gt_hr_holidays.group_holidays_validate"/>
+	                </group>
+                </group>
+            </form>
+            </field>
+        </record>
+        
+        <record model="ir.ui.view" id="hr_doc_holidays_tree">
+            <field name="name">Ausencias en Documental - Arbol</field>
+            <field name="model">hr.doc.holidays</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree colors="red:state == 'refuse';blue:state == ' draft';black:state in ('confirm','validate','validate1')" string="Permisos y Vacaciones">
+                    <!--field name="name"/-->
+                    <field name="contract_id"/>
+                    <field name="department_id"/>
+                    <field name="tipo_id"/>
+                    <field name="tipo_vacaciones"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_hr_doc_holidays">
+            <field name="name">Ausencias/Vacaciones</field>
+            <field name="res_model">hr.doc.holidays</field>
+            <field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="domain">[('contract_id.employee_id.user_id','=',uid)]</field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_hr_doc_holidays_jefe">
+            <field name="name">Ausencias/Vacaciones-Jefe</field>
+            <field name="res_model">hr.doc.holidays</field>
+            <field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="domain">[('contract_id.department_id.manager_id.user_id','=',uid)]</field>
+        </record>
+        
+        <record model="ir.actions.act_window" id="action_hr_doc_holidays_coordinador">
+            <field name="name">Ausencias/Vacaciones-Coordinador</field>
+            <field name="res_model">hr.doc.holidays</field>
+            <field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="domain">[('contract_id.department_id.coordinador_id.user_id','=',uid)]</field>
+        </record>
+        
+        <!--menuitem name="Ausencias/Vacaciones" parent="gt_document_manager.menu_parent_he_doc" id="menu_doc_holidays"/>
+        <menuitem name="Registro" parent="menu_doc_holidays" id="menu_doc_ask_holidays" action="action_hr_doc_holidays" groups="gt_hr_holidays.group_holidays_register"/>
+        <menuitem name="Aprobar" parent="menu_doc_holidays" id="menu_doc_jefe_holidays" action="action_hr_doc_holidays_jefe" groups="gt_hr_holidays.group_holidays_approve"/>
+        <menuitem name="Validar" parent="menu_doc_holidays" id="menu_doc_coordinador_holidays" action="action_hr_doc_holidays_coordinador" groups="gt_hr_holidays.group_holidays_validate"/-->
+
+        <!-- delete menus -->
+	<delete id="hr_holidays.menu_open_allocation_holidays" model="ir.ui.menu"/>
+	
+	<!-- REgistro permisos horas -->
+	<record model="ir.ui.view" id="view_permiso_hora_form">
+	  <field name="name">permiso.hora.form</field>
+	  <field name="type">form</field>
+	  <field name="model">permiso.hora</field>
+	  <field name="arch" type="xml">
+	    <field name="code" readonly="1"/>
+	    <field name="create_user_id" readonly="1"/>
+	    <field name="employee_id" colspan="2" readonly="1" required="1" on_change="onchange_empholy(employee_id)"/>
+	    <field name="jefe_id" colspan="2" required="1" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="tipo" required="1" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="date_permiso" required="1" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="name" colspan="4" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="date" required="1" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="date_end" attrs="{'readonly':[('state','!=','Borrador')],'invisible':[('tipo','!=','Dias')],'required':[('tipo','=','Dias')]}"/>
+	    <field name="hora_inicio" widget='float_time' required="1" attrs="{'readonly':[('state','!=','Borrador')],'invisible':[('tipo','!=','Horas')]}"/>
+	    <field name="hora_fin" required="1" widget='float_time' attrs="{'readonly':[('state','!=','Borrador')],'invisible':[('tipo','!=','Horas')]}"/>
+	    <field name="total_horas" attrs="{'invisible':[('tipo','!=','Horas')]}" widget='float_time'/>
+	    <field name="total_dias" attrs="{'invisible':[('tipo','!=','Dias')]}"/>
+	    <field name="saldo" attrs="{'readonly':[('state','not in',('Autorizado'))],'invisible':[('tipo','!=','Dias')]}" readonly="1"  
+		   groups="base.group_hr_manager"/>
+	    <field name="tipo2" attrs="{'readonly':[('state','!=','Borrador')]}" required="1"/>
+	    <field name='descuenta' attrs="{'readonly':[('state','not in',('Autorizado'))],'invisible':[('tipo','!=','Dias')]}"/>
+	    <!--field name='aprobado_por' attrs="{'readonly':[('state','not in',('Autorizado'))]}" on_change="onchange_aprobado_por(aprobado_por)"/-->
+	    <!--field name='saldo_id' domain="[('employee_id','=',employee_id)]" colspan="4" 
+		   attrs="{'required':[('descuenta','=',True)],'readonly':[('state','=','Liquidado')],'invisible':[('descuenta','=',False)]}"/-->
+	    <field name='saldo_id' domain="[('employee_id','=',employee_id)]" colspan="4" readonly="1"/>
+	    <group colspan="4" col='10'>
+	      <field name="state" readonly="1" widget="statusbar" statusbar_visible="Borrador,Solicitado,Aprobado" 
+		     statusbar_colors='{"auto":"blue", "Solicitado":"blue"}'/>
+	      <button name="solicitaPermisoHoli" string="Solicitar" type="object" states="Borrador"/>
+	      <button name="returnSolicitaDraft" string="Regresar" type="object" states="Solicitado"/>
+	      <button name="autorizaJefeHoli" string="Autorizar" type="object" states="Solicitado" groups="gt_document_manager.group_doc_leader"/>
+	      <button name="draft_phora_ejecutado" string="Ejecutar" type="object" states="Autorizado" groups="base.group_hr_manager"/>
+	      <button name="returnAutorizadoDraft" string="Regresar" type="object" states="Autorizado"  groups="base.group_hr_manager"/>
+	      <button name="phora_liquidado" string="Liquidar" groups="base.group_hr_manager" type="object" states="Ejecutado" confirm="Confirmar"/>
+	      <button name="returnDraftPhora" string="Regresar" type="object" states="Ejecutado" groups="base.group_hr_manager"/>
+	      <button name="anulaPermiso" string="Anular" type="object" states="Solicitado,Borrador,Autorizado"/>
+	      <button name="returnLiquidadoAutorizado" string="Regresar A Autorizado" type="object" states="Liquidado" groups="base.group_hr_manager"/>
+	    </group>
+	    <field name="line_descuenta_ids" colspan="4" groups="base.group_hr_manager" 
+		   attrs="{'readonly':[('state','=','Liquidado')],'invisible':[('descuenta','=',False)]}">
+	      <tree editable='bottom'>
+		<field name="holi_id" required="1" domain="[('employee_id','=',parent.employee_id)]"/>
+		<field name="dias" required="1" sum="TOTAL"/>
+	      </tree>
+	    </field>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_permiso_hora_tree">
+	  <field name="name">permiso.hora.tree</field>
+	  <field name="type">tree</field>
+	  <field name="model">permiso.hora</field>
+	  <field name="arch" type="xml">
+	    <field name="code"/>
+	    <field name="employee_id"/>
+	    <field name="tipo_contrato_id"/>
+	    <field name="name"/>
+	    <field name="tipo2"/>
+	    <field name="date"/>
+	    <field name="date_end"/>
+	    <field name="hora_inicio" widget='float_time'/>
+	    <field name="hora_fin" widget='float_time'/>
+	    <field name="total_horas" widget='float_time'/>
+	    <field name="total_dias"/>
+	    <field name="state"/>
+	    <button name="phora_liquidado" string="Liquidar" icon='gtk-execute' groups="base.group_hr_manager" type="object" states="Ejecutado"  confirm="Confirmar"/>
+	  </field>
+	</record>
+	
+	<record id="view_permiso_hora_filter" model="ir.ui.view">
+	  <field name="name">permiso.hora.list.select</field>
+	  <field name="model">permiso.hora</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Buscar Permisos">
+	      <group col='10' colspan='4'>
+		<field name="code"/>
+		<field name="employee_id" select="1"/>
+		<field name="name"/>
+		<field name="tipo_contrato_id"/>
+		<field name="tipo"/>
+		<field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+		<field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+		<field name="tipo2"/>
+		<field name="state" select="1"/>
+	      </group>
+	      <newline/>
+	      <group expand="1" string="Agrupado por..." colspan="4" col="10">
+		<filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'employee_id'}"/>
+		<separator orientation="vertical"/>
+		<filter string="Fecha" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'date'}"/>
+		<filter string="Estado" icon="terp-go-month" domain="[]" context="{'group_by':'state'}"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_permiso_hora">
+	  <field name="name">Registro permiso(horas/dias)</field>
+	  <field name="res_model">permiso.hora</field>
+	  <field name="view_mode">tree,form</field>
+	  <!--field name="domain">[('state','in',('Ejecutado','Liquidado','Autorizado'))]</field-->
+        </record>
+	
+        <menuitem name="Registro permisos(horas/dias)" parent="hr_holidays.menu_open_ask_holidays" id="menu_permiso_hora" 
+		  action="action_permiso_hora"/>
+	
+	<!-- permisos en documental -->
+	<record model="ir.actions.act_window" id="action_perm_alone">
+	  <field name="name">Solicitudes</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">permiso.hora</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">[('create_user_id','=',uid)]</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="action_perm_alone_autoriza">
+	  <field name="name">Autorizar</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">permiso.hora</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">[('usuario_autoriza','=',uid),('state','=','Solicitado')]</field>
+	</record>
+
+	<record model="ir.actions.act_window" id="action_perm_alone_autoriza_all">
+	  <field name="name">Autorizadas</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">permiso.hora</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">[('usuario_autoriza','=',uid),('state','=','Autorizado')]</field>
+	</record>
+	
+	<menuitem id="menu_parent_perm_document" parent="gt_document_manager.menu_document_manager" 
+			  name="Permisos/Vacaciones" sequence="6" groups="gt_document_manager.group_doc_user"/>
+	
+	<menuitem id="menu_perm_document" parent="menu_parent_perm_document" 
+		  name="Solicitar" sequence="1" action="action_perm_alone" groups="gt_document_manager.group_doc_user"/>
+
+	<menuitem id="menu_perm_document_jefe" parent="menu_parent_perm_document" 
+		  name="Autorizar" sequence="2" action="action_perm_alone_autoriza" groups="gt_document_manager.group_doc_user"/>
+
+	<menuitem id="menu_perm_document_jefe_autorizadas" parent="menu_parent_perm_document" 
+		  name="Consultar Autorizadas" sequence="3" action="action_perm_alone_autoriza_all" groups="gt_document_manager.group_doc_user"/>
+
+
+	<!-- Certificado permisos -->
+
+	<record model="ir.ui.view" id="view_permiso_certificado_form">
+	  <field name="name">permiso.certificado.form</field>
+	  <field name="type">form</field>
+	  <field name="model">certificado.permiso</field>
+	  <field name="arch" type="xml">
+	    <field name="create_user_id" colspan="4" readonly="1"/>
+	    <field name="institute_id" colspan="4" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="tipo" required="1"/>
+	    <field name="employee_id" colspan="4" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="name" colspan="4" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="date" required="1" attrs="{'readonly':[('state','!=','Borrador')]}"/>
+	    <field name="date_end" attrs="{'readonly':[('state','!=','Borrador')],'invisible':[('tipo','!=','Dias')],'required':[('tipo','=','Dias')]}"/>
+	    <field name="hora_inicio" widget='float_time' required="1" attrs="{'readonly':[('state','!=','Borrador')],'invisible':[('tipo','!=','Horas')]}"/>
+	    <field name="hora_fin" required="1" widget='float_time' attrs="{'readonly':[('state','!=','Borrador')],'invisible':[('tipo','!=','Horas')]}"/>
+	    <field name="total_horas" attrs="{'invisible':[('tipo','!=','Horas')]}" widget='float_time'/>
+	    <field name="total_dias" attrs="{'invisible':[('tipo','!=','Dias')]}"/>
+	    <group colspan="4">
+	      <field name="state" readonly="1"/>
+	      <button name="autorizaJefeCert" string="Autorizar" type="object" states="Borrador" groups="base.group_hr_manager"/>
+	      <button name="anulaCert" string="Anular" type="object" states="Autorizado,Borrador" groups="base.group_hr_manager"/>
+	      <button name="draft_phora_ejecutado_cert" string="Ejecutar" type="object" states="Autorizado" groups="base.group_hr_manager"/>
+	      <button name="return_draftpc" string="Regresar" type="object" states="Ejecutado" groups="base.group_hr_manager"/>
+	    </group>
+	  </field>
+	</record>
+		
+	<record model="ir.ui.view" id="view_permiso_certificado_tree">
+	  <field name="name">permiso.hora.tree</field>
+	  <field name="type">tree</field>
+	  <field name="model">certificado.permiso</field>
+	  <field name="arch" type="xml">
+	    <field name="employee_id"/>
+	    <field name="tipo_contrato_id"/>
+	    <field name="name"/>
+	    <field name="date"/>
+	    <field name="date_end"/>
+	    <field name="total_horas" widget='float_time'/>
+	    <field name="state"/>
+	  </field>
+	</record>
+		
+	<record id="view_permiso_certificado_filter" model="ir.ui.view">
+	    <field name="name">certificado.permiso.list.select</field>
+	    <field name="model">certificado.permiso</field>
+	    <field name="type">search</field>
+	    <field name="arch" type="xml">
+	      <search string="Buscar Certificados">
+		<group col='10' colspan='4'>
+		  <field name="institute_id" select="1"/>
+		  <field name="employee_id" select="1"/>
+		  <field name="tipo_contrato_id"/>
+		  <field name="name"/>
+		  <field name="date" select="1"/>
+		</group>
+		<newline/>
+		<group expand="1" string="Agrupado por..." colspan="4" col="10">
+		  <filter string="Empleado" icon="terp-partner" domain="[]" context="{'group_by':'employee_id'}"/>
+		  <separator orientation="vertical"/>
+		  <filter string="Fecha" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'date'}"/>
+		  <filter string="Estado" icon="terp-go-month" domain="[]" context="{'group_by':'state'}"/>
+		</group>
+	      </search>
+	    </field>
+	  </record>
+
+	  <record model="ir.actions.act_window" id="action_permiso_certificado">
+	    <field name="name">Registro Certificado Medico</field>
+	    <field name="res_model">certificado.permiso</field>
+	    <field name="view_mode">tree,form</field>
+        </record>
+
+	  <record model="ir.actions.act_window" id="action_permiso_certificado_alone">
+	    <field name="name">Registro Certificado Medico</field>
+	    <field name="res_model">certificado.permiso</field>
+	    <field name="view_mode">tree,form</field>
+	    <field name="view_type">form</field>
+	    <field name="domain">[('create_user_id','=',uid)]</field>
+        </record>
+
+        <menuitem name="Registro Certificado Medico" parent="hr_holidays.menu_open_ask_holidays" id="menu_permiso_certificado" 
+				  action="action_permiso_certificado"/>
+
+	<menuitem id="menu_cert_document" parent="menu_parent_perm_document" 
+		  name="Registrar Certificado" sequence="3" action="action_permiso_certificado_alone" groups="gt_document_manager.group_doc_user"/>
+
+	  <!-- CALCULO VACACIONES DIA -->
+	  <record model="ir.ui.view" id="view_calculo_vacaciones_form">
+	  <field name="name">calculo.vacaciones.form</field>
+	  <field name="type">form</field>
+	  <field name="model">calculo.vacaciones</field>
+	  <field name="arch" type="xml">
+	    <field name="name" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <field name="hasta" attrs="{'readonly':[('state','=','Liquidado')]}"/>
+	    <button name="computeDiasVacaciones" string="Calcular" 
+		    type="object" colspan="2" icon='gtk-execute'/>
+	    <button name="executeVacaciones" string="Ejecutar" 
+		    type="object" colspan="2" icon='gtk-ok'/>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<field name="line_ids" nolabel="1">
+		  <tree editable='bottom'>
+		    <field name="employee_id"/>
+		    <field name="dias"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	    <field name="state" readonly="1"/>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_calculo_vacaciones_tree">
+	  <field name="name">calculo.vacaciones.tree</field>
+	  <field name="type">tree</field>
+	  <field name="model">calculo.vacaciones</field>
+	  <field name="arch" type="xml">
+	    <field name="name"/>
+	    <field name="hasta"/>
+	    <field name="state"/>
+	  </field>
+	</record>
+	
+	<record id="view_calculo_vacaciones_filter" model="ir.ui.view">
+	  <field name="name">calculo.vacaciones.list.select</field>
+	  <field name="model">calculo.vacaciones</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Buscar Liquidacion Permisos">
+	      <group col='10' colspan='4'>
+		<field name="name"/>
+		<field name="hasta"/>
+		<field name="state" select="1"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_calcula_vacaciones">
+	  <field name="name">Calcula/Asigna vacaciones diarias</field>
+	  <field name="res_model">calculo.vacaciones</field>
+	  <field name="view_mode">tree,form</field>
+        </record>
+	
+        <menuitem name="Calcula/Asigna vacaciones diarias" parent="hr_holidays.menu_open_ask_holidays" id="menu_calcula_vacaciones" 
+		  action="action_calcula_vacaciones"/>
+
+	<!-- MENU DE PERMISOS NUEVO MENU SOLITO-->
+	<menuitem id="menu_parent_perm_document_alone" 
+		  name="Permisos/Vacaciones" sequence="6" groups="gt_document_manager.group_doc_readonly"/>
+	
+	<menuitem id="menu_perm_document_alone" parent="menu_parent_perm_document_alone" 
+		  name="Solicitar" sequence="1" action="action_perm_alone" groups="gt_document_manager.group_doc_readonly"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,207 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+
+</head>
+<body style="overflow:visible;">	
+    %for decimo in objects:
+    <tr style="border: 1px solid black;"><h4 style="text-align:center;" align="center">ROL DECIMO TERCERO ${decimo.contract_type.name} DEL: ${decimo.period_start.name} -  ${decimo.period_end.name}</h4></tr>
+    <%
+       total=0
+       %>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:10px">
+    <thead style="display: table-header-group">
+      <tr>
+        <th style="font-size:10px" width="5%">Nro.</th>
+        <th style="font-size:10px" width="10%">Funcionario</th>
+        <th style="font-size:10px" width="5%">DIC</th>
+        <th style="font-size:10px" width="5%">ENE</th>
+        <th style="font-size:10px" width="5%">FEB</th>
+        <th style="font-size:10px" width="5%">MAR</th>
+        <th style="font-size:10px" width="5%">ABR</th>
+        <th style="font-size:10px" width="5%">MAY</th>
+        <th style="font-size:10px" width="5%">JUN</th>
+        <th style="font-size:10px" width="5%">JUL</th>
+        <th style="font-size:10px" width="5%">AGO</th>
+        <th style="font-size:10px" width="5%">SEP</th>
+        <th style="font-size:10px" width="5%">OCT</th>
+        <th style="font-size:10px" width="5%">NOV</th>
+        <th style="font-size:10px" width="5%">Total Ganado(+)</th>
+	<th style="font-size:10px" width="5%">Total Decimo(+)</th>
+        <th style="font-size:10px" width="5%">Descuento Anticipo(-)</th>        
+	<th style="font-size:10px" width="5%">Descuento Ret. Judicial(-)</th>
+        <th style="font-size:10px" width="5%">Neto a Recibir</th>
+        <th style="font-size:10px" width="5%">Firma</th>
+      </tr>
+    </thead>
+    <%
+       total = total_ganado = total_decimo = total_anticipo = total_judicial = 0
+       ttdic = ttene = ttfeb = ttmar = ttabr = ttmay = ttjun = ttjul = ttago = ttsep = ttoct = ttnov = ttdic = 0
+       %>
+    %for programa_id in all_programas(decimo):
+    <tr>
+      <td></td>
+      <td width="100%" style="font-size:14;text-align:center;"><b>PROGRAMA/DIRECCION ${programa_id.sequence or  ''} - ${programa_id.name or  ''}</b></td>	  	  
+      <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td>
+      </td><td></td><td></td><td></td><td></td><td></td><td></td>
+    </tr>	
+    <%
+       a=0
+       total_programa = total_decimo_programa = total_ganado_programa = total_anticipo_programa = total_judicial_programa = 0
+       tdic = tene = tfeb = tmar = tabr = tmay = tjun = tjul = tago = tsep = toct = tnov = tdic = 0
+       %>
+    %for decimo_id in all_decimo(decimo,programa_id):
+    <% 
+       a+=1
+       total_decimo += decimo_id.total_dec
+       total_programa+=decimo_id.recibir
+       total_ganado_programa+=decimo_id.total
+       total_anticipo_programa+=decimo_id.descuento_anticipo
+       total_judicial_programa+=decimo_id.descuento_judicial
+       total+=decimo_id.recibir
+       total_ganado+=decimo_id.total
+       total_anticipo+=decimo_id.descuento_anticipo
+       total_judicial+=decimo_id.descuento_judicial
+       total_decimo_programa += decimo_id.total_dec
+       tdic += decimo_id.dic
+       tene += decimo_id.ene
+       tfeb += decimo_id.feb
+       tmar += decimo_id.mar
+       tabr += decimo_id.abr
+       tmay += decimo_id.may
+       tjun += decimo_id.jun
+       tjul += decimo_id.jul
+       tago += decimo_id.ago
+       tsep += decimo_id.sep
+       toct += decimo_id.oct
+       tnov += decimo_id.nov
+       ttdic += decimo_id.dic
+       ttene += decimo_id.ene
+       ttfeb += decimo_id.feb
+       ttmar += decimo_id.mar
+       ttabr += decimo_id.abr
+       ttmay += decimo_id.may
+       ttjun += decimo_id.jun
+       ttjul += decimo_id.jul
+       ttago += decimo_id.ago
+       ttsep += decimo_id.sep
+       ttoct += decimo_id.oct
+       ttnov += decimo_id.nov
+       %>
+    <tr  style="border-collapse:collapse;font-size:10px">
+      <th style="font-size:10px" width="5%">${a}</th>
+      <th style="font-size:10px;text-align:left" width="10%">${decimo_id.employee_id.complete_name}</th>
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.dic}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.ene}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.feb}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.mar}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.abr}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.may}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.jun}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.jul}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.ago}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.sep}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.oct}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.nov}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.total}</th>     
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.total_dec}</th>
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.descuento_anticipo}</th>
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.descuento_judicial}</th>
+      <th style="font-size:10px;text-align:right" width="5%">${decimo_id.recibir}</th>
+      <th style="font-size:10px" width="5%"></th>
+    </tr>
+    %endfor
+    <tr  style="border-collapse:collapse;font-size:10px">
+      <th></th>      
+      <th style="font-size:10px" width="10%">TOTAL PROGRAMA</th>
+      <th style="font-size:10px" width="5%">${tdic}</th>
+      <th style="font-size:10px" width="5%">${tene}</th>
+      <th style="font-size:10px" width="5%">${tfeb}</th>
+      <th style="font-size:10px" width="5%">${tmar}</th>
+      <th style="font-size:10px" width="5%">${tabr}</th>
+      <th style="font-size:10px" width="5%">${tmay}</th>
+      <th style="font-size:10px" width="5%">${tjun}</th>
+      <th style="font-size:10px" width="5%">${tjul}</th>
+      <th style="font-size:10px" width="5%">${tago}</th>
+      <th style="font-size:10px" width="5%">${tsep}</th>
+      <th style="font-size:10px" width="5%">${toct}</th>
+      <th style="font-size:10px" width="5%">${tnov}</th>
+      <th style="font-size:10px" width="5%">${total_ganado_programa}</th>      
+      <th style="font-size:10px" width="5%">${total_decimo_programa}</th>
+      <th style="font-size:10px" width="5%">${total_anticipo_programa}</th>
+      <th style="font-size:10px" width="5%">${total_judicial_programa}</th>
+      <th style="font-size:10px" width="5%">${total}</th>
+      <th style="font-size:10px" width="5%"></th>
+    </tr>
+%endfor
+%endfor
+
+    <tr>
+      <th style="font-size:10px" width="5%"></th>
+      <th style="font-size:10px" width="10%">TOTAL DECIMO TERCERO</th>
+      <th style="font-size:10px" width="5%">${ttdic}</th>
+      <th style="font-size:10px" width="5%">${ttene}</th>
+      <th style="font-size:10px" width="5%">${ttfeb}</th>
+      <th style="font-size:10px" width="5%">${ttmar}</th>
+      <th style="font-size:10px" width="5%">${ttabr}</th>
+      <th style="font-size:10px" width="5%">${ttmay}</th>
+      <th style="font-size:10px" width="5%">${ttjun}</th>
+      <th style="font-size:10px" width="5%">${ttjul}</th>
+      <th style="font-size:10px" width="5%">${ttago}</th>
+      <th style="font-size:10px" width="5%">${ttsep}</th>
+      <th style="font-size:10px" width="5%">${ttoct}</th>
+      <th style="font-size:10px" width="5%">${ttnov}</th>
+      <th style="font-size:10px" width="5%">${total_ganado}</th>
+      <th style="font-size:10px" width="5%">${total_decimo}</th>
+      <th style="font-size:10px" width="5%">${total_anticipo}</th>
+      <th style="font-size:10px" width="5%">${total_judicial}</th>
+      <th style="font-size:10px" width="5%">${decimo.total}</th>
+      <th style="font-size:10px" width="5%"></th>
+    </tr>
+  </table>
+<table width="100%" style="page-break-inside:avoid">
+  <tr style="height:35px">
+    <th></th>
+  </tr>
+  <tr style="font-size:11px">
+    <th width="50%">CREADO POR</th>
+    <th width="50%">AUTORIZADO</th>
+  </tr>  
+  <tr style="height:35px">
+    <th></th>
+  </tr>
+  <tr style="height:35px">
+    <th>______________________</th>
+    <th>______________________</th>
+  </tr>
+  <tr style="font-size:11px">
+    <th width="33%">${user.employee_id.complete_name}</th>
+    <th width="33%">${user.context_department_id.manager_id.complete_name}</th>
+  </tr>  
+</table>
+<table width="100%" style="page-break-inside:avoid">
+  <tr style="height:35px">
+    <th></th>
+    <th></th>
+  </tr>
+  <tr style="height:35px">
+      <th>________________________</th>
+      <th>________________________</th>
+      <th>________________________</th>
+      <th>________________________</th>
+    </tr>
+    <tr style="font-size:11px">
+      <th width="25%">REVISADO POR</th>
+      <th width="25%">CONTADOR GENERAL</th>
+      <th width="25%">ESPECIALISTA DE PRESUPUESTOS</th>
+      <th width="25%">DIRECTOR FINANCIERO</th>
+    </tr>  
+    <tr style="font-size:11px">
+      <th width="25%"></th>
+      <th width="25%"></th>
+      <th width="25%"></th>
+      <th width="25%">AUTORIZO TRANSFERENCIA</th>
+    </tr>  
+  </table>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="mayor_cuentac" model="mayor.cuentac"
+	    name="mayor.cuentac" rml="gt_bank_conciliation/report/conciliacion.mako" header="False"
+	    usage="default" string="Mayor Cuenta" report_type="webkit"
+	    />
+
+    <report auto="False" id="no_contabilizado" model="bank.conciliation.mark"
+            name="no_contabilizado" rml="gt_bank_conciliation/report/no_contabilizado.mako"
+            usage="default" string="No Contabilizados" header="True" report_type="webkit"/>
+
+    <report auto="False" id="no_conciliado_aa" model="mark.line"
+            name="no_conciliado_aa" rml="gt_bank_conciliation/report/no_conciliado_aa.mako"
+            usage="default" string="No Conciliados Anterior" header="True" report_type="webkit"/>
+
+    <report auto="False" id="no_conciliado" model="account.move.line"
+            name="no_conciliado" rml="gt_bank_conciliation/report/no_conciliado.mako"
+            usage="default" string="Reporte Conciliados" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

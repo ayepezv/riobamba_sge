@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for doc.expedient --> 
+        <record id="seq_type_doc_expedient" model="ir.sequence.type">
+            <field name="name">Doc Expedient</field>
+            <field name="code">doc.expedient.type.in</field>
+        </record>
+        <record id="seq_doc_expedient" model="ir.sequence">
+            <field name="name">Doc Expedient</field>
+            <field name="code">doc.expedient.type.in</field>
+            <field name="padding">5</field>
+            <field name="suffix">-I-%(year)s</field>
+        </record>
+        
+        <!-- Sequences for doc.expedient --> 
+        <record id="seq_type_doc_ext_expedient" model="ir.sequence.type">
+            <field name="name">Doc Expedient Type Ext</field>
+            <field name="code">doc.expedient.type.ext</field>
+        </record>
+        <record id="seq_doc_ext_expedient" model="ir.sequence">
+            <field name="name">Doc Expedient Type Ext</field>
+            <field name="code">doc.expedient.type.ext</field>
+            <field name="padding">5</field>
+            <field name="suffix">-E-%(year)s</field>
+        </record>
+        
+        
+    </data>
+</openerp>

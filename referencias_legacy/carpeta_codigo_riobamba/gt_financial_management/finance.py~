@@ -1,0 +1,102 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2012-now Gnuthink Software Labs Co. Ltd. (<http://www.gnuthink.com>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from time import strftime, strptime
+
+from osv import osv, fields
+
+_STATE = [('draft','Borrador'),('pendiente','Aprobado/Pendiente Pago'),('pagado','Pagado')]
+
+class hrVariosLine(osv.osv):
+   _name = 'hr.varios.line'
+   _description = 'Detalle Pagos Varios'
+   _order = 'name'
+
+   def _validar_mayor_cero(self, cr, uid, ids, context=None):
+        obj = self.browse(cr, uid, ids[0], context=context)
+        if obj.valor <= 0:
+            return False
+        return True
+           
+   _columns = dict(
+       name = fields.many2one('res.partner','Beneficiario',required=True),
+       varios_id = fields.many2one('hr.varios','Pagos varios',ondelete='cascade'),
+       valor = fields.float('Valor',required=True),
+       period_id = fields.related('varios_id','period_id',type="many2one",relation='account.period',string="Periodo",store=True),
+       )
+
+   _constraints = [
+       (_validar_mayor_cero, 'Los valores deben ser superiores a cero', ['valor']),
+   ]
+   
+hrVariosLine()
+
+class hrVarios(osv.osv):
+    _name = 'hr.varios'
+    _description = 'Pagos Varios'
+    _order = 'name'
+
+    _columns = dict(
+        name = fields.char('Descripcion',size=64,required=True,states={'draft': [('readonly', False)]}),
+        period_id = fields.many2one('account.period','Periodo',required=True,readonly=True,
+                                    states={'draft': [('readonly', False)]}),
+        observaciones = fields.char('Observaciones',size=128,readonly=True,states={'draft': [('readonly', False)]}),
+        total = fields.float('Total'),
+        line_ids = fields.one2many('hr.varios.line','varios_id','Detalle',readonly=True,states={'draft': [('readonly', False)]}),
+        state = fields.selection(_STATE,'Estado'),
+        )
+
+    def print_varios(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'report.hr.varios'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'hr.varios',
+            'model': 'hr.varios',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    def unlink(self, cr, uid, ids, *args, **kwargs):
+        for this in self.browse(cr, uid, ids):
+            if this.state!='draft':
+                raise osv.except_osv(('Operación no permitida !'), ('No puede eliminar, solo puede realizar esta operacion en estado Borrador'))
+        return super(hrVarios, self).unlink(cr, uid, ids, *args, **kwargs)
+    
+    def a_borrador_varios(self, cr, uid, ids, context=None):
+        for this in self.browse(cr, uid, ids):
+            self.write(cr, uid, this.id,{'state':'draft'})
+        return True
+ 
+    def pendiente_varios(self, cr, uid, ids, context=None):
+        for this in self.browse(cr, uid, ids):
+            self.write(cr, uid, this.id,{'state':'pendiente'})
+        return True
+
+    _defaults = dict(
+        state = 'draft',
+        )
+
+hrVarios()
+
+

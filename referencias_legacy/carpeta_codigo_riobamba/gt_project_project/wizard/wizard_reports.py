@@ -1,0 +1,784 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+#
+##############################################################################
+
+__author__ = 'Mario Chogllo'
+
+import time
+import logging
+from gt_tool import XLSWriter
+from osv import osv, fields
+
+class rfPrograma(osv.TransientModel):
+   _name = 'rf.programa'
+   _columns = dict(
+      tipo = fields.selection([('INGRESO','INGRESO'),('GASTO','GASTO')],'Tipo Reforma'),
+      rfi_id = fields.many2one('mass.reform.ingreso','Reforma Ingreso'),
+      rfg_id = fields.many2one('mass.reform','Reforma Gasto'),
+      program_id = fields.many2one('project.program','Programa'),
+   )
+
+   def printRfPrograma(self, cr, uid, ids, context):
+      obj = self.pool.get('rf.programa')
+      line_obj = self.pool.get('mass.reform.line')
+      linei_obj = self.pool.get('mass.reform.line.ingreso')
+      if not context:
+         context = {}
+      data = self.read(cr, uid, ids, [], context=context)[0]
+      report = self.browse(cr, uid, ids, context)[0]
+      #escribir el programa en las lineas
+      data['tipo'] = report.tipo
+      if report.tipo=='GASTO':
+         for line in report.rfg_id.line_ids:
+            if line.budget_id.program_id.id==report.program_id.id:
+               line_obj.write(cr, uid, line.id,{
+                  'program_id':line.budget_id.program_id.id,
+               })
+         for line in report.rfg_id.line_ids2:
+            if line.budget_id.program_id.id==report.program_id.id:
+               line_obj.write(cr, uid, line.id,{
+                  'program_id':line.budget_id.program_id.id,
+               })
+      data['rfg_id'] = report.rfg_id.id
+      data['rfi_id'] = report.rfi_id.id
+      data['program_id'] = report.program_id.id
+      datas = {'ids': [report.id], 'model': 'report.rf.programa','form':data}
+      return {
+         'type': 'ir.actions.report.xml',
+         'report_name': 'rf.programa',
+         'model': 'rf.programa',
+         'datas': datas,
+         'nodestroy': True,                        
+      }
+
+   _defaults = dict(
+      tipo = 'GASTO',
+   )
+rfPrograma()
+
+class ejecBudgetLine(osv.TransientModel):
+   _name = 'ejec.budget.line'
+   _columns = dict(
+      e_id = fields.many2one('ejec.budget','Partida'),
+      budget_id = fields.char('Partida',size=32),
+      detalle = fields.char('Detalle',size=256),
+      comprobante = fields.char('Num. Comprobante',size=10),
+      date = fields.date('Fecha'),
+      pagado = fields.float('Pagado'),
+      comprometido = fields.float('Comprometido'),
+   )
+ejecBudgetLine()
+
+class ejecBudget(osv.TransientModel):
+   _name = 'ejec.budget'
+
+   def computeEjectBudget(self, cr, uid, ids, context):
+      #busco lineas de asiento contable entre las fechas y con certificado que tenga el budget
+      move_line_obj = self.pool.get('account.move.line')
+      move_obj = self.pool.get('account.move')
+      budget_item_obj = self.pool.get('budget.item')
+      poa_obj = self.pool.get('budget.poa')
+      post_obj = self.pool.get('budget.post')
+      budget_move_line_obj = self.pool.get('ejec.budget.line')
+      data = self.read(cr, uid, ids[0])
+      ids_antes = budget_move_line_obj.search(cr, uid, [('e_id','=',ids[0])])
+      post = post_obj.browse(cr, uid, data['budget_id'][0])
+      text = post.code
+      if ids_antes:
+         budget_move_line_obj.unlink(cr, uid, ids_antes)
+      #buscar los items hijos de ese post
+      budget_ids_1 = budget_item_obj.search(cr, uid, [('poa_id','=',data['poa_id'][0]),('code_aux','=like',text+"%")])
+      move_ids = move_obj.search(cr, uid, [('date','>=',data['date_start']),
+                                           ('state','=','posted'),('date','<=',data['date_end'])],order='date')
+      if move_ids:
+         for move_id in move_ids:
+            comited = accrued = seq = paid = 0
+            lineas_cert = []
+            move = move_obj.browse(cr, uid, move_id)
+            move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id),('budget_id','=',data['budget_id'][0])])
+            if move_line_ids:
+               seq += 1
+               for move_line_id in move_line_ids:
+                  move_line = move_line_obj.browse(cr, uid, move_line_id)
+                  if move_line.budget_accrued:
+                     if move_line.debit != 0:
+                        accrued += move_line.debit
+                     else:
+                        accrued += move_line.credit
+                     if move.certificate_id:
+                        if move.certificate_id.line_ids:
+                           for line_cert in move.certificate_id.line_ids:
+                              if not line_cert.id in lineas_cert:
+                                 if line_cert.id == move_line.budget_id_cert.id:
+                                    comited += line_cert.amount_commited
+                                    lineas_cert.append(line_cert.id)
+                  elif move_line.budget_paid:
+                     if move_line.debit != 0:
+                        paid += move_line.debit
+                     else:
+                        paid += move_line.credit
+               line_id = budget_move_line_obj.create(cr, uid, {
+                   'seq':seq,
+                   'e_id':ids[0],
+                   'date':move.date,
+                   'certificate_id':move.certificate_id.id,
+                   'partner_id':move.partner_id.id,
+                   'move_id':move.name,
+                   'desc':move.narration,
+                   'comprometido':comited,
+                   'devengado':accrued,
+                   'pagado':paid,
+               })
+      return True
+
+   def onchange_budget_ejec(self, cr, uid, ids, budget_id,date_start,date_end, context={}):
+      item_obj = self.pool.get('budget.item')
+      post_obj = self.pool.get('budget.post')
+      res = {}
+      post = post_obj.browse(cr, uid, budget_id)
+      item_ids = item_obj.search(cr, uid, [('budget_post_id','=',post.id)])
+      if item_ids:
+         item = item_obj.browse(cr, uid, item_ids[0],context=context)
+         context = {'by_date':True,'date_start':date_start, 'date_end': date_end,'poa_id':item.poa_id.id}            
+         item = item_obj.browse(cr, uid, item.id,context=context)
+         return {'value':{'inicial':item.planned_amount,'reformas':item.reform_amount,'codificado':item.codif_amount,'comprometido':item.commited_amount,
+                          'devengado':item.devengado_amount,'pagado':item.paid_amount,'disponible':item.commited_balance}}
+
+   _columns = dict(
+      poa_id = fields.many2one('budget.poa','Presupuesto'),
+      date_start = fields.date('Desde'),
+      date_end = fields.date('Hasta'),
+      budget_id = fields.many2one('budget.post','Partida'),
+      inicial = fields.float('Inicial'),
+      codificado = fields.float('Codificado'),
+      comprometido = fields.float('Comprometido'),
+      devengado = fields.float('Devengado'),
+      pagado = fields.float('Pagado'),
+      disponible = fields.float('Disponible'),
+      reformas = fields.float('Reformas'),
+      line_ids = fields.one2many('ejec.budget.line','e_id','Detalle'),
+   )
+ejecBudget()
+
+class budgetMoveLine(osv.TransientModel):
+   _name = 'budget.move.line'
+   _order = 'date asc,cp_id asc,move_id asc'
+   _columns = dict(
+       seq = fields.integer('Num.'),
+       b_id = fields.many2one('budget.move','Movimiento'),
+       date = fields.date('Fecha Compromiso'),
+       certificate_id = fields.many2one('budget.certificate','Certificado'),
+       partner_id = fields.many2one('res.partner','Beneficiario'),
+       move_id = fields.char('# Comprobante Contable',size=32),
+       cp_id = fields.char('# Compromiso',size=32),
+       desc = fields.text('Concepto'),
+       comprometido = fields.float('Comprometido'),
+       devengado = fields.float('Devengado'),
+       pagado = fields.float('Pagado'),
+   )
+budgetMoveLine()
+
+class budgetMove(osv.TransientModel):
+   _name = 'budget.move'
+
+   def default_get(self, cr, uid, fields, context=None):
+      poa_obj = self.pool.get('budget.poa')
+      if context is None:
+         context = {}
+      res = {}
+      #sacar el poa actual
+      date = time.strftime('%Y-%m-%d')
+      poa_ids = poa_obj.search(cr, uid, [('date_start','<=',date),('date_end','>=',date)])
+      if not poa_ids:
+         raise osv.except_osv('Error de configuracion','No ha configurado presupuesto para el anio actual.')
+      res.update({
+         'is_commited':True,
+         'date_start':date,
+         'date_end':date,
+         'poa_id':poa_ids[0],
+      })
+      return res
+
+   _columns = dict(
+      poa_id = fields.many2one('budget.poa','Presupuesto'),
+      all_post = fields.boolean('Todas las partidas'),
+      is_commited = fields.boolean('Incluye Compromisos'),
+      saldo_comp = fields.float('Saldo por comprometer'),
+      saldo_pay = fields.float('Saldo por pagar'),
+      partner_id = fields.many2one('res.partner','Beneficiario'),
+      program_id = fields.many2one('project.program','Programa'),
+      project_id = fields.many2one('project.project','Proyecto'),
+      budget_id = fields.many2one('budget.item','Partida'),
+      date_start = fields.date('Fecha desde'),
+      date_end = fields.date('Fecha Hasta'),
+      inicial = fields.float('Inicial'),
+      codificado = fields.float('Codificado'),
+      comprometido = fields.float('Comprometido'),
+      devengado = fields.float('Devengado'),
+      pagado = fields.float('Pagado'),
+      disponible = fields.float('Disponible'),
+      reformas = fields.float('Reformas'),
+      line_ids = fields.one2many('budget.move.line','b_id','Detalle'),
+      datas = fields.binary('Archivo'),
+      datas_fname = fields.char('Nombre archivo', size=32),
+   )
+   
+   def exportaExcelBMove(self, cr, uid, ids, name, context={}):
+      for this in self.browse(cr, uid, ids):
+         writer = XLSWriter.XLSWriter()
+         cabecera_all = ['MOVIMIENTO DE PARTIDAS']
+         writer.append(cabecera_all)
+         cabecera_all = ['FECHA DESDE',this.date_start,'FECHA HASTA',this.date_end]
+         writer.append(cabecera_all)
+         aux_partida = this.budget_id.code + ' - ' + this.budget_id.name
+         cabecera_all = ['PARTIDA PRESUPUESTARIA',aux_partida]
+         writer.append(cabecera_all)
+         cabecera_all = ['INICIAL',this.inicial,'CODIFICADO',this.codificado,'COMPROMETIDO',this.comprometido,'DEVENGADO',this.devengado,'PAGADO',this.pagado,'DISPONIBLE',this.disponible]
+         writer.append(cabecera_all)
+         total_certificado = total_comprometido = total_devengado = total_pagado = 0
+         writer.append(['Fecha','Doc.Presupuestario','Beneficiario','Comprobante','Concepto','Certificado','Comprometido','Devengado','Pagado'])
+         for line in this.line_ids:
+            writer.append([line.date,line.certificate_id.name,line.partner_id.name,line.move_id,line.desc,line.comprometido,line.comprometido,line.devengado,line.pagado])
+            total_certificado += line.comprometido
+            total_comprometido += line.comprometido
+            total_devengado += line.devengado
+            total_pagado += line.pagado
+         final = ['','','','','TOTALES',total_certificado,total_comprometido,total_devengado,total_pagado]
+      writer.append(final)
+      writer.save("MovimientoPartida.xls")
+      out = open("MovimientoPartida.xls","rb").read().encode("base64")
+      self.write(cr, uid, ids, {'datas': out, 'datas_fname': 'MovimientoPartida.xls'})
+      return True
+
+   def printBudgetMove(self, cr, uid, ids, context):
+      obj = self.pool.get('budget.move')
+      if not context:
+         context = {}
+      report = self.browse(cr, uid, ids, context)[0]
+      obj.computeBudgetMove(cr, uid, ids, context)
+      datas = {'ids': [report.id], 'model': 'report.budget.move'}
+      return {
+         'type': 'ir.actions.report.xml',
+         'report_name': 'budget.move',
+         'model': 'budget.move',
+         'datas': datas,
+         'nodestroy': True,                        
+      }
+
+   def onchange_date_budget_move(self, cr, uid, ids, budget_id,date_start,date_end, context={}):
+      item_obj = self.pool.get('budget.item')
+      res = {}
+      if budget_id:
+         item = item_obj.browse(cr, uid, budget_id,context=context)
+         context = {'by_date':True,'date_start':date_start, 'date_end': date_end,'poa_id':item.poa_id.id}            
+         item = item_obj.browse(cr, uid, budget_id,context=context)
+         aux_c = item.planned_amount - item.commited_amount
+         aux_p = item.planned_amount - item.paid_amount
+         return {'value':{'inicial':item.planned_amount,'reformas':item.reform_amount,'codificado':item.codif_amount,'comprometido':item.commited_amount,
+                          'devengado':item.devengado_amount,'pagado':item.paid_amount,'disponible':item.commited_balance,'saldo_comp':aux_c,'saldo_pay':aux_p,}}
+      else:
+         return res
+
+   def onchange_budget_move(self, cr, uid, ids, budget_id,date_start,date_end, context={}):
+      item_obj = self.pool.get('budget.item')
+      res = {}
+      item = item_obj.browse(cr, uid, budget_id,context=context)
+      context = {'by_date':True,'date_start':date_start, 'date_end': date_end,'poa_id':item.poa_id.id}            
+      item = item_obj.browse(cr, uid, budget_id,context=context)
+      aux_c = item.codif_amount - item.commited_amount
+      aux_p = item.codif_amount - item.paid_amount
+      return {'value':{'inicial':item.planned_amount,'reformas':item.reform_amount,'codificado':item.codif_amount,'comprometido':item.commited_amount,
+                       'devengado':item.devengado_amount,'pagado':item.paid_amount,'disponible':item.commited_balance,'saldo_comp':aux_c,'saldo_pay':aux_p,}}
+      
+
+   def _computeBudgetMoveAll(self, cr, uid, ids, context=None):
+      item_obj = self.pool.get('budget.item')
+      move_obj = self.pool.get('account.move')
+      certificate_line_obj = self.pool.get('budget.certificate.line')
+      for this in self.browse(cr, uid, ids):
+         writer = XLSWriter.XLSWriter()
+         cabecera_all = ['MOVIMIENTO DE PARTIDAS']
+         writer.append(cabecera_all)
+         cabecera_all = ['FECHA DESDE',this.date_start,'FECHA HASTA',this.date_end]
+         writer.append(cabecera_all)
+         item_ids = item_obj.search(cr, uid, [('poa_id','=',this.poa_id.id),('type_budget','=','gasto')],order='code asc')
+         context = {'by_date':True,'date_start': this.date_start, 'date_end': this.date_end,'poa_id':this.poa_id.id}            
+         if item_ids:
+            for item_id in item_ids:
+               cert_line_ids = certificate_line_obj.search(cr, uid, [('budget_id','=',item_id),('certificate_id.date_commited','>=',this.date_start),
+                                                                     ('certificate_id.date_commited','<=',this.date_end)])
+               if cert_line_ids:
+                  item = item_obj.browse(cr, uid, item_id,context=context)
+                  aux_partida = item.code + ' - ' + item.name
+                  cabecera_all = ['PARTIDA PRESUPUESTARIA',aux_partida]
+                  writer.append(cabecera_all)
+                  cabecera_all = ['INICIAL',item.planned_amount,'CODIFICADO',item.codif_amount,'COMPROMETIDO',item.commited_amount]
+                  writer.append(cabecera_all)
+                  total_certificado = total_comprometido = total_devengado = total_pagado = 0
+                  writer.append(['Partida','Fecha','Doc.Presupuestario','Comprobante','Concepto','Beneficiario','Solicitado','Certificado','Comprometido','Devengado','Pagado'])
+                  for line_id in cert_line_ids:
+                     line = certificate_line_obj.browse(cr, uid, line_id)
+                     move_ids = move_obj.search(cr, uid, [('certificate_id','=',line.certificate_id.id)])
+                     move_aux = 'No'
+                     if move_ids:
+                        move = move_obj.browse(cr, uid, move_ids[0])
+                        move_aux = move.name
+                     writer.append([aux_partida,line.certificate_id.date_commited,line.certificate_id.name,move_aux,line.certificate_id.notes,line.partner_id.name,line.amount,line.amount_certified,line.amount_commited,line.budget_accrued,line.budget_paid])
+      writer.save("MovimientoPartida.xls")
+      out = open("MovimientoPartida.xls","rb").read().encode("base64")
+      self.write(cr, uid, ids, {'datas': out, 'datas_fname': 'MovimientoPartida.xls'})
+      return True
+
+   def computeBudgetMove(self, cr, uid, ids, context):
+      #busco lineas de asiento contable entre las fechas y con certificado que tenga el budget
+      move_line_obj = self.pool.get('account.move.line')
+      move_obj = self.pool.get('account.move')
+      migrated_obj = self.pool.get('budget.item.migrated')
+      budget_move_line_obj = self.pool.get('budget.move.line')
+      certificate_line_obj = self.pool.get('budget.certificate.line')
+      certificate_obj = self.pool.get('budget.certificate')
+      data = self.read(cr, uid, ids[0])
+      ids_antes = budget_move_line_obj.search(cr, uid, [('b_id','=',ids[0])])
+      if ids_antes:
+         budget_move_line_obj.unlink(cr, uid, ids_antes)
+      lista_certificados = []
+      for this in self.browse(cr, uid, ids):
+         if this.budget_id and int(this.budget_id.budget_post_id.code[0])>=5:
+            if data['partner_id']:
+               certificate_line_ids = certificate_line_obj.search(cr, uid, [('certificate_id.partner_id','=',data['partner_id'][0]),
+                                                                            ('certificate_id.date_commited','>=',data['date_start']),
+                                                                            ('budget_id','=',data['budget_id'][0]),
+                                                                            ('certificate_id.state','=','commited'),
+                                                                            ('certificate_id.date_commited','<=',data['date_end'])],
+                                                                  order='date_commited')
+            else:
+               certificate_line_ids = certificate_line_obj.search(cr, uid, [('budget_id','=',data['budget_id'][0]),
+                                                                            ('certificate_id.date_commited','>=',data['date_start']),
+                                                                            ('certificate_id.state','=','commited'),
+                                                                            ('certificate_id.date_commited','<=',data['date_end'])],order='date_commited')
+            if certificate_line_ids:
+               for certificate_line_id in certificate_line_ids:
+                  certificate_line = certificate_line_obj.browse(cr, uid, certificate_line_id)
+                  if not certificate_line.certificate_id.id in lista_certificados:
+                     lista_certificados.append(certificate_line.certificate_id.id)
+            seq = 0
+            lista_cp = {}
+            resta_cp = {}
+            if lista_certificados:
+               for certificate_id in lista_certificados:
+                  ##########################COMPROMISO
+                  certificate_alone = certificate_obj.browse(cr, uid, certificate_id)
+                  aux = 0
+                  for line in certificate_alone.line_ids:
+                     if line.budget_id.id==data['budget_id'][0]:
+                        aux += line.amount_commited 
+                     seq += 1
+                  line_id = budget_move_line_obj.create(cr, uid, {
+                     'seq':seq,
+                     'b_id':ids[0],
+                     'date':certificate_alone.date_commited,
+                     'certificate_id':certificate_alone.id,
+                     'partner_id':certificate_alone.partner_id.id,
+                     'move_id':'NO',
+                     'cp_id':certificate_alone.name,
+                     'desc':certificate_alone.notes,
+                     'comprometido':aux,
+                     'devengado':0,
+                     'pagado':0,
+                  })
+                  ###########################################
+                  move_ids = move_obj.search(cr, uid, [('certificate_id','=',certificate_id),('state','=','posted')])
+                  if move_ids:
+                     for move_id in move_ids:
+                        comited = accrued = seq = paid = 0
+                        lineas_cert = []
+                        move = move_obj.browse(cr, uid, move_id)
+                        if not move.certificate_id.id in lista_certificados:
+                           lista_certificados.append(move.certificate_id.id)
+                        if data['budget_id']:
+                           move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id),('budget_id','=',data['budget_id'][0])])
+                        else:
+                           move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id),('budget_id','!=',False)])
+                        if move_line_ids:
+                           seq += 1
+                           for move_line_id in move_line_ids:
+                              move_line = move_line_obj.browse(cr, uid, move_line_id)
+                              aux_valor = 0
+                              if move_line.budget_accrued:
+                                 aux_valor = move_line.debit + move_line.credit
+                                 if move_line.budget_id_cert:
+                                    if move_line.budget_id_cert.budget_id:
+                                       if move_line.budget_id_cert.budget_id.id in lista_cp:
+                                          lista_cp[move_line.budget_id_cert.certificate_id.id] += aux_valor
+                                       else:
+                                          lista_cp[move_line.budget_id_cert.certificate_id.id] = aux_valor
+                                 if move_line.debit != 0:
+                                    accrued += move_line.debit
+                                 else:
+                                    accrued += move_line.credit
+                                 if move.certificate_id:
+                                    if move.certificate_id.line_ids:
+                                       for line_cert in move.certificate_id.line_ids:
+                                          if not line_cert.id in lineas_cert:
+                                             if line_cert.id == move_line.budget_id_cert.id:
+                                                comited += line_cert.amount_commited
+                                                lineas_cert.append(line_cert.id)
+                                 #considerar pronto pago
+                                 if move.type=='Recaudacion':
+                                    migrated_ids = migrated_obj.search(cr, uid, [('date','=',move.date),('move_id','=',move_id)])
+                                    for migrated_id in migrated_ids:
+                                       migrated = migrated_obj.browse(cr, uid, migrated_id)
+                                       comited += migrated.commited_amount
+                              if move_line.budget_paid:
+                                 if move_line.debit != 0:
+                                    paid += move_line.debit
+                                 else:
+                                    paid += move_line.credit
+                           if move_line.budget_id_cert.budget_id:
+                              if move_line.budget_id_cert.budget_id.id in lista_cp:
+                                 resta_cp[move_line.budget_id_cert.certificate_id.id] += move_line.budget_id_cert.amount_commited
+                              else:
+                                 resta_cp[move_line.budget_id_cert.certificate_id.id] = move_line.budget_id_cert.amount_commited
+                           #line_id = budget_move_line_obj.create(cr, uid, {
+                           #   'seq':seq,
+                           #   'b_id':ids[0],
+                           #   'date':move.date,
+                           #   'certificate_id':move.certificate_id.id,
+                           #   'partner_id':move.partner_id.id,
+                           #   'move_id':move.name,
+                           #   'cp_id':move.certificate_id.name,
+                           #   'desc':move.narration,
+                           #   'comprometido':0,
+                           #   'devengado':accrued,
+                           #   'pagado':paid,
+                           #})
+                           budget_move_line_obj.write(cr, uid, line_id,{
+                              'move_id':move.name,
+#                              'cp_id':move.certificate_id.name,
+#                              'comprometido':0,
+                              'devengado':accrued,
+                              'pagado':paid,
+                           })
+                     #aqui sacar los saldos de compromisos
+                     if lista_cp:
+                        for lista_c in lista_cp:
+                           aux_comp = 0
+                           if lista_cp.has_key(lista_c) and resta_cp.has_key(lista_c):
+                              if lista_cp[lista_c]!=resta_cp[lista_c]:
+                                 aux_comp = abs(lista_cp[lista_c]-resta_cp[lista_c])
+                                 certificate = certificate_obj.browse(cr, uid, lista_c)
+                  else:
+                     print "a"
+            #pronto pago
+            migrated_ids = []
+            if data['date_start']>='2017-01-01':
+   #            migrated_ids = migrated_obj.search(cr, uid, [('budget_item_id','=',data['budget_id'][0]),
+   #                                                         ('date','>=',data['date_start']),('date','<=',data['date_end'])],order='date')
+               migrated_ids = migrated_obj.search(cr, uid, [('budget_item_id','=',data['budget_id'][0]),('is_pronto','=',True),
+                                                            ('date','>=',data['date_start']),('date','<=',data['date_end'])],order='date')
+            #import pdb
+            #pdb.set_trace()
+            if migrated_ids:
+               for migrated_id in migrated_ids:
+                  migrated = migrated_obj.browse(cr, uid, migrated_id)
+                  aux_partner_id = 1
+                  aux_move_id = '/'
+                  aux_desc = ''
+                  aux_date = migrated.date
+                  if migrated.move_id:
+                     aux_partner_id = migrated.move_id.partner_id.id
+                     aux_move_id = migrated.move_id.name
+                     aux_desc = migrated.move_id.narration
+                     aux_date = migrated.move_id.date
+                  seq += 1
+                  line_id = budget_move_line_obj.create(cr, uid, {
+                     'seq':seq,
+                     'b_id':ids[0],
+                     'date':aux_date,
+                     'partner_id':aux_partner_id,
+                     'move_id':aux_move_id,
+                     'cp_id':'No',
+                     'desc':aux_desc,
+                     'comprometido':migrated.commited_amount,
+                     'devengado':migrated.devengado_amount,
+                     'pagado':migrated.paid_amount,
+                  })
+         elif this.budget_id and int(this.budget_id.budget_post_id.code[0])<5:
+            lista_moves = {}
+            move_line_ids = move_line_obj.search(cr, uid, [('move_id.date','>=',data['date_start']),('move_id.date','<=',data['date_end']),
+                                                           ('budget_id','=',data['budget_id'][0]),('move_id.state','=','posted')])
+            if move_line_ids:
+               for move_line_id in move_line_ids:
+                  move_line = move_line_obj.browse(cr, uid, move_line_id)
+                  monto_accrued = monto_paid = 0 
+                  if not move_line.move_id.id in lista_moves:
+                     lista_moves[move_line.move_id.id] = []
+                     if move_line.budget_accrued:
+                        if abs(move_line.debit)>0:
+                           monto_accrued = move_line.debit-move_line.credit  
+                        elif abs(move_line.credit)>0:
+                           monto_accrued = move_line.credit-move_line.debit  
+                     if move_line.budget_paid:
+                        if abs(move_line.credit)>0 and move_line.credit<0:
+                           monto_paid = move_line.credit-move_line.debit
+                        elif abs(move_line.credit)>0 and move_line.credit>0:
+                           monto_paid = move_line.credit-move_line.debit                           
+                     lista_moves[move_line.move_id.id].append(monto_accrued)
+                     lista_moves[move_line.move_id.id].append(monto_paid)
+                  else:
+                     if move_line.budget_accrued:
+                        if abs(move_line.debit)>0:
+                           monto_accrued = move_line.debit-move_line.credit  
+                        elif abs(move_line.credit)>0:
+                           monto_accrued = move_line.credit-move_line.debit  
+                     if move_line.budget_paid:
+                        if abs(move_line.credit)>0 and move_line.credit<0:
+                           monto_paid = move_line.credit-move_line.debit
+                        elif abs(move_line.credit)>0 and move_line.credit>0:
+                           monto_paid = move_line.credit-move_line.debit                           
+                     lista_moves[move_line.move_id.id][0]+=monto_accrued
+                     lista_moves[move_line.move_id.id][1]+=monto_paid
+            if lista_moves:
+               seq = 0
+               for lista_move in lista_moves:
+                  move = move_obj.browse(cr, uid, lista_move)
+                  seq += 1
+                  line_id = budget_move_line_obj.create(cr, uid, {
+                     'seq':seq,
+                     'b_id':ids[0],
+                     'date':move.date,
+                     'partner_id':move.partner_id.id,
+                     'move_id':move.name,
+                     'cp_id':"No",
+                     'desc':move.narration,
+                     'comprometido':0,
+                     'devengado':lista_moves[lista_move][0],
+                     'pagado':lista_moves[lista_move][1],
+                  })
+         elif this.all_post:
+            self._computeBudgetMoveAll(cr, uid, ids)
+         else:
+            return True
+      return True
+
+   def computeBudgetMove2(self, cr, uid, ids, context):
+      #busco lineas de asiento contable entre las fechas y con certificado que tenga el budget
+      move_line_obj = self.pool.get('account.move.line')
+      move_obj = self.pool.get('account.move')
+      migrated_obj = self.pool.get('budget.item.migrated')
+      budget_move_line_obj = self.pool.get('budget.move.line')
+      certificate_line_obj = self.pool.get('budget.certificate.line')
+      certificate_obj = self.pool.get('budget.certificate')
+      data = self.read(cr, uid, ids[0])
+      ids_antes = budget_move_line_obj.search(cr, uid, [('b_id','=',ids[0])])
+      if ids_antes:
+         budget_move_line_obj.unlink(cr, uid, ids_antes)
+      if data['partner_id']:
+         move_ids = move_obj.search(cr, uid, [('partner_id','=',data['partner_id'][0]),('date','>=',data['date_start']),
+                                              ('state','=','posted'),('date','<=',data['date_end'])],order='date')
+      else:
+         move_ids = move_obj.search(cr, uid, [('date','>=',data['date_start']),
+                                              ('state','=','posted'),('date','<=',data['date_end'])],order='date')
+      seq = 0
+      lista_certificados = []
+      lista_cp = {}
+      resta_cp = {}
+      for this in self.browse(cr, uid, ids):
+         if move_ids:
+            for move_id in move_ids:
+               comited = accrued = seq = paid = 0
+               lineas_cert = []
+               move = move_obj.browse(cr, uid, move_id)
+               if not move.certificate_id.id in lista_certificados:
+                  lista_certificados.append(move.certificate_id.id)
+               if data['budget_id']:
+                  move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id),('budget_id','=',data['budget_id'][0])])
+               else:
+                  move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id),('budget_id','!=',False)])
+               if move_line_ids:
+                  seq += 1
+                  for move_line_id in move_line_ids:
+                     move_line = move_line_obj.browse(cr, uid, move_line_id)
+                     aux_valor = 0
+                     if move_line.budget_accrued:
+                        aux_valor = move_line.debit + move_line.credit
+                        if move_line.budget_id_cert.budget_id.id in lista_cp:
+                           lista_cp[move_line.budget_id_cert.certificate_id.id] += aux_valor
+                        else:
+                           lista_cp[move_line.budget_id_cert.certificate_id.id] = aux_valor
+                        if move_line.debit != 0:
+                           accrued += move_line.debit
+                        else:
+                           accrued += move_line.credit
+                        if move.certificate_id:
+                           if move.certificate_id.line_ids:
+                              for line_cert in move.certificate_id.line_ids:
+                                 if not line_cert.id in lineas_cert:
+                                    if line_cert.id == move_line.budget_id_cert.id:
+                                       comited += line_cert.amount_commited
+                                       lineas_cert.append(line_cert.id)
+                        #considerar pronto pago
+                        if move.type=='Recaudacion':
+                           migrated_ids = migrated_obj.search(cr, uid, [('date','=',move.date),('move_id','=',move_id)])
+                           for migrated_id in migrated_ids:
+                              migrated = migrated_obj.browse(cr, uid, migrated_id)
+                              comited += migrated.commited_amount
+                     elif move_line.budget_paid:
+                        if move_line.debit != 0:
+                           paid += move_line.debit
+                        else:
+                           paid += move_line.credit
+                  if move_line.budget_id_cert.budget_id.id in lista_cp:
+                     resta_cp[move_line.budget_id_cert.certificate_id.id] += move_line.budget_id_cert.amount_commited
+                  else:
+                     resta_cp[move_line.budget_id_cert.certificate_id.id] = move_line.budget_id_cert.amount_commited
+                  line_id = budget_move_line_obj.create(cr, uid, {
+                     'seq':seq,
+                     'b_id':ids[0],
+                     'date':move.date,
+                     'certificate_id':move.certificate_id.id,
+                     'partner_id':move.partner_id.id,
+                     'move_id':move.name,
+                     'cp_id':move.certificate_id.name,
+                     'desc':move.narration,
+                     #'comprometido':comited,
+                     'comprometido':accrued,
+                     'devengado':accrued,
+                     'pagado':paid,
+                  })
+            #aqui sacar los saldos de compromisos
+            if lista_cp:
+               for lista_c in lista_cp:
+                  if lista_cp[lista_c]!=resta_cp[lista_c]:
+                     certificate = certificate_obj.browse(cr, uid, lista_c)
+                     seq+=1
+                     line_id = budget_move_line_obj.create(cr, uid, {
+                        'seq':seq,
+                        'b_id':ids[0],
+                        'date':certificate.date_commited,
+                        'certificate_id':certificate.id,
+                        'partner_id':certificate.partner_id.id,
+                        'move_id':'NO',
+                        'cp_id':certificate.name,
+                        'desc':certificate.notes,
+                        'comprometido':abs(lista_cp[lista_cp]-resta_cp[lista_cp]),
+                        'devengado':0,
+                        'pagado':0,
+                     })
+      return True
+
+      _defaults = dict(
+         is_commited = True,
+      )
+      
+budgetMove()
+
+class WizardReportProject(osv.TransientModel):
+    _name = "wizard.project.report.kpi"
+    _description = 'Reporte de Indicadores'
+    """
+    Reporte para agrupar proyectos por tipo
+    incluya informacion de propiedades e indicadores
+    """
+
+    def action_print(self, cr, uid, ids, context=None):
+        '''
+        cr: cursor de la base de datos
+        uid: ID de usuario
+        ids: lista ID del objeto instanciado
+
+        Metodo para imprimir reporte de liquidacion de compra
+        '''        
+        if not context:
+            context = {}
+        wiz = self.browse(cr, uid, ids[0], context)
+        project_id = wiz.project_id and wiz.project_id.id or wiz.project2_id.id
+        name_report = wiz.state=='kpi' and 'project_report_kpi' or 'project_report_tasks'
+        datas = {'ids': [project_id], 'model': 'project.project'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': name_report,
+            'model': 'project.project',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    _columns = dict(
+        project_id = fields.many2one('project.project', string='Proyecto'),
+        project2_id = fields.many2one('project.project', string='Proyecto'),
+        type_graph = fields.selection([('axis','Ejes'),('bars','Barras')],
+                                      string='Tipo de Gráfico', required=True),
+        state = fields.selection([('kpi','kpi'),
+                                  ('task','task')], string='tipo'),
+        )
+
+    def _get_state(self, cr, uid, context):
+        return context.get('state','kpi')
+
+    _defaults = dict(
+        type_graph = 'axis',
+        state = _get_state
+        )
+
+
+class WizardProjectReportList(osv.TransientModel):
+    _name = 'wizard.project.report.list'
+
+    _columns = dict(
+        fiscalyear_id = fields.many2one('account.fiscalyear', 'Ejercicio Fiscal', required=True),
+        department_id = fields.many2one('hr.department', 'Dirección Coordinación'),
+        state = fields.selection([('open', 'Planificación'),
+                                  ('plan_done', 'Planificación Terminada'),
+                                  ('plan_ok', 'Planificación Aprobada'),
+                                  ('exec', 'Ejecución'),
+                                  ('exec_done', 'Ejecución Terminada'),
+                                  ('exec_ok', 'Ejecución Aprobada'),
+                                  ('done', 'Finalizado'),
+                                  ('done_wo_end', 'Cerrado sin Terminar'),
+                                  ('done_poa', 'Cerrado por Ejercicio Fiscal'),
+                                  ('pending', 'Suspendido'),
+                                  ('expost', 'ExPOST'),
+                                  ('expost_done', 'ExPost Terminado'),
+                                  ('expost_ok', 'ExPost Aprobado'),
+                                  ('cancelled', 'Cancelado')],
+                                 string='Estado'),        
+        )
+
+    def _get_fy(self, cr, uid, context=None):
+        fy_id = self.pool.get('account.fiscalyear').find(cr, uid)
+        return fy_id
+
+    _defaults = dict(
+        fiscalyear_id = _get_fy
+        )
+
+    def action_print_list(self, cr, uid, ids, context=None):
+        datas = {}
+        project_obj = self.pool.get('project.project')
+        if not context:
+            context = {}
+        wiz = self.browse(cr, uid, ids[0], context)
+        name_report = 'project_report_list'
+        domain = []
+        if wiz.fiscalyear_id:
+            domain.append(('fy_id','=',wiz.fiscalyear_id.id))
+        if wiz.state:
+            domain.append(('state','=',wiz.state))
+        if wiz.department_id:
+            domain.append(('department_id','=',wiz.department_id.id))
+        p_ids = project_obj.search(cr, uid, domain)
+        projects = {}
+        deps = {}
+        projects, deps = project_obj.get_projects_by_department(cr, uid, p_ids)
+        datas['form'] = projects
+        datas['deps'] = deps
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': name_report,
+            'model': 'project.project',
+            'datas': datas,
+            'nodestroy': True,                        
+            }        

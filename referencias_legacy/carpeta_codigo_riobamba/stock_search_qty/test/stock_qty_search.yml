@@ -1,0 +1,201 @@
+
+-
+  In order to test the search by quantity, make in inventory,
+  create a new empty location, and check the product availability
+  using the search functions
+-
+  Create an empty location
+-
+  !record {model: stock.location, id: empty_location}:
+    name: Empty shelf
+    location_id: stock.stock_location_stock
+-
+  Create a product that won't be found anywhere
+-
+  !record {model: product.product, id: absent_product}:
+    categ_id: product.cat0
+    cost_method: standard
+    mes_type: fixed
+    list_price: 1000.0
+    name: Absent product
+    procure_method: make_to_stock
+    supply_method: buy
+    type: product
+    uom_id: product.product_uom_unit
+    uom_po_id: product.product_uom_unit
+-
+  Create Physical Inventory for 2 products in 2 locations
+  Qty for PC1 is 10 in shelf1, 0 in shelf2, 0 in parent location
+  Qty for PC2 is 10 in shelf1, 20 in shelf2, 0 in parent location
+-
+  !record {model: stock.inventory, id: qty_search_inventory}:
+    company_id: base.main_company
+    date: !eval time.strftime('%Y-%m-%d %H:%M:%S')
+    inventory_line_id:
+      - company_id: base.main_company
+        location_id: stock.stock_location_components
+        product_id: product.product_product_pc1
+        product_qty: 10.0
+        product_uom: product.product_uom_unit
+      - company_id: base.main_company
+        location_id: stock.stock_location_14
+        product_id: product.product_product_pc1
+        product_qty: 0.0
+        product_uom: product.product_uom_unit
+      - company_id: base.main_company
+        location_id: stock.stock_location_stock
+        product_id: product.product_product_pc1
+        product_qty: 0.0
+        product_uom: product.product_uom_unit
+      - company_id: base.main_company
+        location_id: stock.stock_location_components
+        product_id: product.product_product_pc2
+        product_qty: 10.0
+        product_uom: product.product_uom_unit
+      - company_id: base.main_company
+        location_id: stock.stock_location_14
+        product_id: product.product_product_pc2
+        product_qty: 20.0
+        product_uom: product.product_uom_unit
+      - company_id: base.main_company
+        location_id: stock.stock_location_stock
+        product_id: product.product_product_pc2
+        product_qty: 0.0
+        product_uom: product.product_uom_unit
+    name: Initial Stock situation for quantity search tests 
+    state: draft
+-
+  Confirm the inventory
+-   
+  !python {model: stock.inventory}: |
+    self.action_confirm(cr,uid,[ref('qty_search_inventory')])
+    self.action_done(cr,uid,[ref('qty_search_inventory')])
+-
+  Plan a Stock Move 10 PC2 from shelf2 to shelf1 in a distant future
+-
+  !record {model: stock.move, id: future_move}:
+    name: 'Test move in a distant future'
+    date: '2099-01-01 10:00:00'
+    location_id: stock.stock_location_14
+    location_dest_id: stock.stock_location_components
+    product_id: product.product_product_pc2
+    product_qty: 10.0
+    product_uom: product.product_uom_unit
+    state: 'confirmed'
+-
+  Test the quantity search on products
+-
+  Check that products are actually returned when not filtering
+-
+  !python {model: product.product}: |
+    product_ids = self.search(cr, uid, [])
+    assert product_ids != [], "No products found when not filtering them"
+-
+  Check that no products are in the empty location
+-
+  !python {model: product.product}: |
+    ctx = {'location': [ref('empty_location')]}
+    product_ids = self.search(cr, uid, [('qty_available', '>', 0.0)],
+                              context=ctx)
+    assert product_ids == [], "Unexpected products where found in a suposedly empty location: %s" % product_ids 
+-
+  Check that quantity=10 in shelf1 for PC1 and PC2
+-
+  !python {model: product.product}: |
+    ctx = {'location': [ref('stock.stock_location_components')]}
+    product_ids = self.search(cr, uid, [('qty_available', '=', 10.0)],
+                              context=ctx)
+    assert ref('product.product_product_pc1') in product_ids, "There should be 10 PC1 in shelf 1 %s" % product_ids
+    assert ref('product.product_product_pc2') in product_ids, "There should be 10 PC2 in shelf 1"
+-
+  Check that quantity=20 in shelf2 for PC2, not for PC1
+-
+  !python {model: product.product}: |
+    ctx = {'location': [ref('stock.stock_location_14')]}
+    product_ids = self.search(cr, uid, [('qty_available', '=', 20.0)],
+                              context=ctx)
+    assert ref('product.product_product_pc1') not in product_ids, "There should not be 20 PC1 in shelf 2"
+    assert ref('product.product_product_pc2') in product_ids, "There should be 20 PC2 in shelf 2"
+-
+  Check that virtual quantity=20 in shelf1 for PC2, not for PC1
+-
+  !python {model: product.product}: |
+    ctx = {'location': [ref('stock.stock_location_components')]}
+    product_ids = self.search(cr, uid, [('virtual_available', '=', 20.0)],
+                              context=ctx)
+    assert ref('product.product_product_pc1') not in product_ids, "There should not virtually be 20 PC1 in shelf 2"
+    assert ref('product.product_product_pc2') in product_ids, "There should be virtually 20 PC2 in shelf 2"
+-
+  Check that quantity variation in shelf2 in the future is -10 PC2, not for PC1
+-
+  !python {model: product.product}: |
+    ctx = {'location': [ref('stock.stock_location_14')],
+           'from_date': '2099-01-01 09:00:00',
+           'to_date': '2099-01-01 11:00:00'}
+    product_ids = self.search(cr, uid, [('virtual_available', '=', -10.0)],
+                              context=ctx)
+    assert ref('product.product_product_pc1') not in product_ids, "There should not be virtually -10 PC2 in shelf 2 between 2 dates"
+    assert ref('product.product_product_pc2') in product_ids, "There should virtually be -10 PC2 in shelf 2 between 2 dates"
+-
+  Check that at least 10 PC1 and PC2 are in the parent location
+-
+  !python {model: product.product}: |
+    ctx = {'location': [ref('stock.stock_location_stock')]}
+    product_ids = self.search(cr, uid, [('qty_available', '>=', 10.0)],
+                              context=ctx)
+    assert ref('product.product_product_pc1') in product_ids, "There should be at least 10 PC1 in stock"
+    assert ref('product.product_product_pc2') in product_ids, "There should be at least 10 PC2 in stock"
+-
+  Test the quantity search on locations
+-
+  Check that locations are actually returned when not filtering
+-
+  !python {model: stock.location}: |
+    location_ids = self.search(cr, uid, [])
+    assert location_ids != [], "No locations found when not filtering"
+-
+  Check that both PC1 is in shelf1 and not shelf2
+-
+  !python {model: stock.location}: |
+    ctx = {'product_id': ref('product.product_product_pc1')}
+    location_ids = self.search(cr, uid, [('stock_real', '>', 0.0)],
+                              context=ctx)
+    assert ref('stock.stock_location_components') in location_ids, "There should be some PC1 in shelf 1"
+    assert ref('stock.stock_location_14') not in location_ids, "There should not be PC1 in shelf 2"
+-
+  Check that 20 PC1 are in shelf2 and not in shelf1
+-
+  !python {model: stock.location}: |
+    ctx = {'product_id': ref('product.product_product_pc2')}
+    location_ids = self.search(cr, uid, [('stock_real', '=', 20.0)],
+                              context=ctx)
+    assert ref('stock.stock_location_components') not in location_ids, "There should not be 20 PC1 in shelf 1"
+    assert ref('stock.stock_location_14') in location_ids, "There should be 20 PC1 in shelf 2"
+-
+  Check that the absent product is nowhere
+-
+  !python {model: stock.location}: |
+    ctx = {'product_id': ref('absent_product')}
+    location_ids = self.search(cr, uid, [('stock_real', '>', 0.0)],
+                              context=ctx)
+    assert location_ids == [], "The product 'Absent product' should not be available anywhere"
+-
+  Check that shelf1 has 20 PC2 in virtual stock, not shelf2
+-
+  !python {model: stock.location}: |
+    ctx = {'product_id': ref('product.product_product_pc2')}
+    location_ids = self.search(cr, uid, [('stock_virtual', '=', 20.0)],
+                              context=ctx)
+    print location_ids
+    assert ref('stock.stock_location_components') in location_ids, "There should be virtually 20 PC2 in shelf 1"
+    assert ref('stock.stock_location_14') not in location_ids, "There should not be virtually 20 PC2 in shelf 2"
+-
+  Check that shelf2 has -10 PCE between before and after the Move
+-
+  !python {model: stock.location}: |
+    ctx = {'product_id': ref('product.product_product_pc2'),
+           'from_date': '2099-01-01 09:00:00',
+           'to_date': '2099-01-01 11:00:00'}
+    location_ids = self.search(cr, uid, [('stock_virtual', '=', -10.0)], context=ctx)
+    assert ref('stock.stock_location_components') not in location_ids, "There should not be virtually -10 PC2 in shelf 1 between 2 dates"
+    assert ref('stock.stock_location_14') in location_ids, "There should be virtually -10 PC2 in shelf 2 between 2 dates"

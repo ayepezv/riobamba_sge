@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+	  
+      <record model="ir.ui.view" id="view_request_mine_tree">
+        <field name="name">res.request.mine.tree</field>
+        <field name="model">res.request</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+          <tree string="Notificaciones">
+            <field name="create_date" />
+            <field name="name" />
+            <field name="act_from" />
+	    <field name="act_to" />
+            <field name="priority" />
+            <field name="module" />
+          </tree>
+        </field>
+      </record>
+	  
+      <record id="action_request_mine" model="ir.actions.act_window">
+        <field name="name">Notificaciones</field>
+        <field name="res_model">res.request</field>
+        <field name="view_type">tree</field>
+        <field name="view_mode">tree</field>
+        <!--field name="context">{'group_by':['month','category_id'],'group_by_no_leaf':1}</field-->
+      <field name="domain">[('act_to','=',uid)]</field>
+        <field name="view_id" ref="view_request_mine_tree"></field>
+      </record>
+	 
+      <record id="view_request_mine" model="ir.actions.act_window.view">
+        <field eval="1" name="sequence"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_request_mine_tree"/>
+        <field name="act_window_id" ref="action_request_mine"/>
+      </record>
+
+      <record id="board_request_form" model="ir.ui.view">
+        <field name="name">board.request.form</field>
+        <field name="model">board.board</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+          <form string="Notificaiones">
+            <board style="2-1">
+              <column>
+                <action name="%(action_request_mine)d" string="Notificaciones"/>
+              </column>
+              <column>
+                <action name="%(action_request_mine)d" string="Notificaciones"/>
+              </column>
+            </board>
+          </form>
+        </field>
+      </record>
+	  
+        <record id="open_board_request" model="ir.actions.act_window">
+          <field name="name">Notificaciones</field>
+            <field name="res_model">res.request</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="usage">menu</field>
+            <field name="view_id" ref="board_request_form"/>
+        </record>
+
+	<menuitem name="Gestión Documental" 
+    		  id="menu_document_manager" 
+    		  sequence="10"
+		  groups="gt_document_manager.group_doc_user"
+		  web_icon="images/documental.png"
+		  web_icon_hover="images/documental.png"
+    		  />
+		
+		<!--menuitem name="Gestión Documental" 
+    			  id="menu_document_manager" 
+    			  sequence="10"
+				  action="action_request_mine"
+    			  /-->	
+		
+
+	</data>      
+</openerp>

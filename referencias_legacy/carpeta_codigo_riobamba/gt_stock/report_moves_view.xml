@@ -1,0 +1,720 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+<!--  INGRESO POR DIRECCION Y POR CATEGORIA  -->
+
+   <report auto="False" id="egreso_direccion" model="egreso.direccion"
+            name="egreso.direccion" rml="gt_stock/report/egreso_direccion.mako"
+            usage="default" string="Egreso x Direccion" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_egresodireccion_form">
+      <field name="name">Egreso x Direccion</field>    
+      <field name="model">egreso.direccion</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Egreso Direccion">
+          <group  colspan="4">
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group> <button name="print_egreso_direccion" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  <group  colspan="4">
+	    <button name="create_egreso_direccion" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_egreso_direccion" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="department_id"/>
+		  <field name="total" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="department_id"/>
+		  <field name="total"/>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_egresodireccion">
+	  <field name="name">Egresos x Direccion</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">egreso.direccion</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_egreso_direccion_categoria"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_egresodireccion"/>
+<!--  INGRESO POR DIRECCION Y POR CATEGORIA  -->
+
+   <report auto="False" id="ingreso_direccion" model="ingreso.direccion"
+            name="ingreso.direccion" rml="gt_stock/report/ingreso_direccion.mako"
+            usage="default" string="Ingreso x Direccion" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_ingresodireccion_form">
+      <field name="name">Ingreso x Direccion</field>    
+      <field name="model">ingreso.direccion</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Ingreso Direccion">
+          <group  colspan="4">
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="create_ingreso_direccion" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_ingreso_direccion" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="direccion_id"/>
+		  <field name="total" sum="TOTAL"/>
+		</tree>
+		<tree>
+		  <field name="direccion_id"/>
+		  <field name="total"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_ingresodireccion">
+	  <field name="name">Ingresos x Direccion</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">ingreso.direccion</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_ingreso_direccion_categoria"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_ingresodireccion"/>
+
+<!--  EGRESO POR CATEGORIA  -->
+
+   <report auto="False" id="egreso_categoria" model="egreso.categoria"
+            name="egreso.categoria" rml="gt_stock/report/egreso_categoria.mako"
+            usage="default" string="Egreso Categoria" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_egreso_categoria_form">
+      <field name="name">Egreso por Categoria</field>
+      <field name="model">egreso.categoria</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Egreso Categoria">
+          <group  colspan="4">
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="create_egreso_categoria" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_egreso_categ" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		  <field name="cantidad"/>
+		  <field name="subtotal" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="cantidad"/>
+		  <field name="subtotal"/>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_egresocategoria">
+	  <field name="name">Egresos por Categoria</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">egreso.categoria</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_egreso_categoria"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_egresocategoria"/>
+<!--  INGRESO POR CATEGORIA  -->
+
+   <report auto="False" id="ingreso_detalle_move" model="ingreso.detalle.move"
+            name="ingreso.detalle.move" rml="gt_stock/report/ingreso_detalle_move.mako"
+            usage="default" string="Ingreso Detalle Categoria" header="False" report_type="webkit"/>
+
+   <report auto="False" id="ingreso_categoria" model="ingreso.categoria"
+            name="ingreso.categoria" rml="gt_stock/report/ingreso_categoria.mako"
+            usage="default" string="Ingreso Categoria" header="False" report_type="webkit"/>
+
+   <report auto="False" id="ingreso_categoria_line" model="ingreso.categoria"
+            name="ingreso.categoria.line" rml="gt_stock/report/ingreso_categoria_line.mako"
+            usage="default" string="Ingreso Categoria Detalle" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_ingreso_categoria_form">
+      <field name="name">Ingreso por Categoria</field>
+      <field name="model">ingreso.categoria</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Ingreso Categoria">
+          <group  colspan="4">
+	    <field name='category_id' colspan="4"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="create_ingreso_categoria" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_ingreso_categ" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	    <button name="print_ingreso_categ_detalle" string="Imprimir Detalle" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		  <field name="cantidad"/>
+		  <field name="subtotal" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="cantidad"/>
+		  <field name="subtotal"/>
+		  <notebook colspan="4">
+		    <page string='detalle'>
+		      <field name='line_ids' nolabel="1">
+			<tree>
+			  <field name="product_id"/>
+			  <field name="cantidad"/>
+			  <field name="subtotal" sum='TOTAL'/>
+			</tree>
+		      </field>
+		    </page>
+		  </notebook>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_ingresocategoria">
+	  <field name="name">Ingresos por Categoria</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">ingreso.categoria</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_ingreso_categoria"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_ingresocategoria"/>
+
+<!-- ing categ detalle-->
+
+    <record model="ir.ui.view" id="view_report_ingreso_detalle_move_form">
+      <field name="name">Ingreso por Categoria Detalle</field>
+      <field name="model">ingreso.detalle.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Ingreso Categoria Detalle">
+          <group  colspan="4">
+	    <field name='category_id' colspan="4"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4" col="4">
+	    <button name="create_ingreso_categoriam" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_ingreso_categm" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	    <!--button name="print_ingreso_categ_detallem" string="Imprimir Detalle" icon="gtk-print" type="object" colspan="2"/-->
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		  <field name="cantidad"/>
+		  <field name="subtotal" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="cantidad"/>
+		  <field name="subtotal"/>
+		  <notebook colspan="4">
+		    <page string='detalle'>
+		      <field name='line_ids' nolabel="1">
+			<tree>
+			  <field name="numero"/>
+			  <field name="product_id"/>
+			  <field name="cantidad"/>
+			  <field name="subtotal" sum='TOTAL'/>
+			</tree>
+		      </field>
+		    </page>
+		  </notebook>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_ingresodetallemove">
+	  <field name="name">Ingresos por Categoria Detalle</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">ingreso.detalle.move</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_ingreso_detalle_move"
+	   sequence="5"
+	   parent="stock.menu_traceability"
+	   action="action_report_ingresodetallemove"/>
+
+<!--  KDX POR CATEGORIA  -->
+
+   <report auto="False" id="saldo_kdx_categoria" model="kardex.categoria"
+            name="kardex.categoria" rml="gt_stock/report/kdx_categoria.mako"
+            usage="default" string="Kardex Categoria" header="True" report_type="webkit"/>
+
+   <report auto="False" id="saldo_kdx_categoriadet" model="kardex.categoria"
+            name="kardex.categoriadet" rml="gt_stock/report/kdx_categoriadet.mako"
+            usage="default" string="Kardex Categoria Detalle" header="True" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_kdx_categoria_form">
+      <field name="name">Kardez Categoria</field>
+      <field name="model">kardex.categoria</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Kardex Categoria">
+          <group  colspan="4">
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4" col='6'>
+	    <button name="create_kdx_categoria" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_categ_kdx" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	    <button name="print_categ_kdxdet" string="Imprimir Detalle" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle Corriente">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		  <field name="inicial" sum="TOTAL"/>
+		  <field name="ingreso" sum="TOTAL"/>
+		  <field name="egreso" sum="TOTAL"/>
+		  <field name="saldo" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="inicial"/>
+		  <field name="ingreso"/>
+		  <field name="egreso"/>
+		  <field name="saldo"/>
+		  <field name="line_ids">
+		    <tree>
+		      <field name='name'/>
+		      <field name='cantidad'/>
+		      <field name='precio'/>
+		      <field name='total'/>
+		    </tree>
+		  </field>
+		</form>
+	      </field>
+	    </page>
+	    <page string="Detalle Inversion">
+	      <field name="line_ids2" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		  <field name="inicial" sum="TOTAL"/>
+		  <field name="ingreso" sum="TOTAL"/>
+		  <field name="egreso" sum="TOTAL"/>
+		  <field name="saldo" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="inicial"/>
+		  <field name="ingreso"/>
+		  <field name="egreso"/>
+		  <field name="saldo"/>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_kdxcategoria">
+	  <field name="name">Kardex Categoria</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">kardex.categoria</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_kdx_categoria_qty"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_kdxcategoria"/>
+
+<!-- KDX -->
+
+   <report auto="False" id="kdx_bodega" model="report.move.head"
+            name="kdx.bodega" rml="gt_stock/report/kdx_bodega.mako"
+            usage="default" string="Reporte kdx" header="True" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_move_kdx_form">
+      <field name="name">Movimientos Stock</field>
+      <field name="model">report.move.head</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Movimientos">
+          <group  colspan="4" col="6">
+	    <field name="date_start" required="1"/>
+	    <field name="date_end" required="1"/>
+	    <newline/>
+	    <field name="product_id"/>
+	    <field name="qty_inicial" readonly="1"/>
+	    <newline/>
+	    <field name="bodega_id" required="1" colspan="4"/>
+	    <newline/>
+	  </group>
+	    <button name="create_line_move_kdx" string="Generar" icon="gtk-execute" type="object"/>
+	    <button name="print_line_move_kdx" string="Imprimir" icon="gtk-print" type="object"/>
+	  <notebook colspan="4">
+	    <page string="Movimientos">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="date"/>
+		  <field name="department_id"/>
+		  <field name="documento"/>
+		  <field name="tipo"/>
+		  <field name="qty"/>
+		  <field name="saldo"/>
+		  <field name="cu"/>
+		  <field name="ct"/>
+		</tree>
+		<form>
+		  <field name="date"/>
+		  <field name="department_id"/>
+		  <field name="documento"/>
+		  <field name="tipo"/>
+		  <field name="qty"/>
+		  <field name="saldo"/>
+		  <field name="cu"/>
+		  <field name="ct"/>
+		</form>
+	      </field>
+	      <group string="Totales" colspan="4" col="2">
+		<field name="total_in" readonly="1"/>
+		<field name="total_in_usd" readonly="1"/>
+		<field name="total_out" readonly="1"/>
+		<field name="total_out_usd" readonly="1"/>
+		<field name="total" readonly="1"/>
+	      </group>
+	    </page>
+	  </notebook>
+	  
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_move_kdx">
+	  <field name="name">Kardex</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.move.head</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_move_stock_kdx"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_move_kdx"/>
+	
+<!-- saldos de productos -->
+   <report auto="False" id="saldo_x_bodega" model="report.saldo.product"
+            name="saldo.producto" rml="gt_stock/report/saldo_producto.mako"
+            usage="default" string="Saldos productos" header="True" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_saldo_product_form">
+      <field name="name">Saldo de productos</field>
+      <field name="model">report.saldo.product</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Movimientos">
+          <group  colspan="4">
+	    <field name="bodega_id" domain="[('type','=','usage')]" colspan="2"/>
+	    <field name="categ_id" colspan="2"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="create_product_qty" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_product_qty" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="line_ids">
+		    <tree>
+		      <field name="product_id"/>
+		      <field name="udm_id"/>
+		      <field name="qty"/>
+		      <field name="valor"/>
+		      <field name="total" sum="TOTAL"/>
+		    </tree>
+		  </field>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_product_qty">
+	  <field name="name">Saldos de productos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.saldo.product</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_product_qty"
+	   sequence="0"
+	   parent="stock.menu_traceability"
+	   action="action_report_product_qty"/>
+
+<!-- SALDO A FECHAS-->
+   <report auto="False" id="saldo_x_bodega_date" model="saldo.product.date"
+            name="saldo.product.date" rml="gt_stock/report/saldo_producto_date.mako"
+            usage="default" string="Saldos productos Fecha" header="True" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_saldo_product_date_form">
+      <field name="name">Saldo de productos fecha</field>
+      <field name="model">saldo.product.date</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Detalle">
+          <group  colspan="4">
+	    <field name="bodega_id" domain="[('type','=','usage')]" colspan="2"/>
+	    <field name="categ_id" colspan="2"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="create_product_qty" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_product_qty" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="categ_id"/>
+		</tree>
+		<form>
+		  <field name="categ_id"/>
+		  <field name="line_ids" colspan="4" nolabel="1">
+		    <tree>
+		      <field name="product_id"/>
+		      <field name="udm_id"/>
+		      <field name="qty"/>
+		      <field name="valor"/>
+		      <field name="total" sum="TOTAL"/>
+		    </tree>
+		  </field>
+		</form>
+		<!--tree>
+		  <field name="product_id"/>
+		  <field name="udm_id"/>
+		  <field name="qty"/>
+		  <field name="valor"/>
+		  <field name="total" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="product_id"/>
+		  <field name="udm_id"/>
+		  <field name="qty"/>
+		  <field name="valor"/>
+		  <field name="total" sum="TOTAL"/>
+		</form-->
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_product_qty_date">
+	  <field name="name">Saldos de productos fecha</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">saldo.product.date</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_product_qty_date"
+	   sequence="1"
+	   parent="stock.menu_traceability"
+	   action="action_report_product_qty_date"/>
+
+<!-- egresos de productos -->
+   <report auto="False" id="saldo_egresos" model="report.egresos"
+            name="egreso.report" rml="gt_stock/report/egresos.mako"
+            usage="default" string="Egresos" header="False" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_report_egresos_form">
+      <field name="name">Egresos</field>
+      <field name="model">report.egresos</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Movimientos de egreso">
+          <group  colspan="4">
+	    <field name="bodega_id" domain="[('usage','=','internal')]" required="1" colspan="2"/>
+	    <field name="unidad_id" colspan="2"/>
+	    <field name="solicitant_id" colspan="2"/>
+	  </group>
+	  <group  colspan="4">
+	    <field name="date_start" required="1" colspan="2"/>
+	    <field name="date_end" required="1" colspan="2"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="create_egreso" string="Generar" icon="gtk-execute" type="object"/>
+	    <button name="print_egreso" string="Imprimir" icon="gtk-print" type="object"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="product_id"/>
+		  <field name="udm_id"/>
+		  <field name="doc_egreso"/>
+		  <field name="date"/>
+		  <field name="num_sol"/>
+		  <field name="solicitante_id"/>
+		  <field name="date_sol"/>
+		  <field name="qty"/>
+		  <field name="p_unitario"/>
+		  <field name="total" sum="TOTAL"/>
+		</tree>
+		<form>
+		  <field name="product_id"/>
+		  <field name="udm_id"/>
+		  <field name="doc_egreso"/>
+		  <field name="date"/>
+		  <field name="num_sol"/>
+		  <field name="solicitante_id"/>
+		  <field name="date_sol"/>
+		  <field name="qty"/>
+		  <field name="p_unitario"/>
+		  <field name="total" sum="TOTAL"/>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_egresos">
+	  <field name="name">Egresos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.egresos</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_egresos"
+	   sequence="1"
+	   parent="stock.menu_traceability"
+	   action="action_report_egresos"/>
+
+<!-- Ingresos -->
+   <report auto="False" id="saldo_ingresos" model="report.ingresos"
+            name="ingreso.report" file="gt_stock/report/ingresos.mako"
+            usage="default" string="Ingresos" header="True" report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0" />
+
+    <record model="ir.ui.view" id="view_report_ingresos_form">
+      <field name="name">Ingresos</field>
+      <field name="model">report.ingresos</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Ingresos">
+          <group  colspan="4" col="6">
+	    <field name="bodega_id" domain="[('usage','=','internal')]" required="1"/>
+	    <field name="date_start" required="1"/>
+	    <field name="date_end" required="1"/>
+	  </group>
+	  <group  colspan="4">
+	    <button name="print_ingreso" string="Imprimir" icon="gtk-print" type="object"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_ingresos">
+	  <field name="name">Ingresos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.ingresos</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_ingresos"
+	   sequence="1"
+	   parent="stock.menu_traceability"
+	   action="action_report_ingresos"/>
+
+
+  </data>      
+</openerp>

@@ -1,0 +1,13 @@
+select * from hr_employee where name ='1400400535' id=220 wilson
+select * from stock_requisition where solicitant_id=220
+select * from stock_requisition_line where req_id in (select id from stock_requisition where solicitant_id=220) 
+select * from product_product where 
+id in (select product_id from stock_requisition_line where req_id in (select id from stock_requisition where solicitant_id=220) ) order by subcateg_id
+select * from product_product where 
+id in (select product_id from stock_requisition_line where req_id in (select id from stock_requisition where solicitant_id=220) ) order by name_template
+select * from product_subcategory order by id
+tendria que hacer que estan en la categoria 72 y77 y tengan la palabra aceite pero hice que inicie con aceite
+
+la tabla de requerimiento a bodega es stock_requisition y está en la carpeta gt_stock en el archivo stock_rqm
+---
+la tabla de solicitud de cajas chicas esta en la carpeta gt_requisition_ext

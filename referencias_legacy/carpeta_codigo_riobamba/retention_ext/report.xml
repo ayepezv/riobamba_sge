@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="poliza_report" model="obra.garantia"
+            name="obra.garantia" file="retention_ext/report/poliza.mako"
+            usage="default" string="Oficio Aseguradora" header="True" report_type="webkit" />
+
+    <report auto="False" id="poliza_renovacion_report" model="obra.garantia.renovacion"
+            name="obra.garantia.renovacion" file="retention_ext/report/renovacion.mako"
+            usage="default" string="Oficio Aseguradora" header="True" report_type="webkit" />
+
+    <report auto="False" id="obra_obra_report" model="obra.obra"
+            name="obra.obra" file="retention_ext/report/obra.mako"
+            usage="default" string="Liquidacion Obra" header="True" report_type="webkit" />
+
+  </data>
+</openerp>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+
+    <report auto="False" id="pac" model="purchase.pac"
+            name="purchase.pac" rml="gt_pac/report/pac.mako"
+            usage="default" string="PAC" header="True" report_type="webkit"/>
+    
+  </data>
+</openerp>

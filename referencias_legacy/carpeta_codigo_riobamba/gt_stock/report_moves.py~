@@ -1,0 +1,59 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+
+class reportMoveLine(osv.TransientModel):
+    _name = 'report.move.line'
+    _columns = {
+        'h_id':fields.many2one('report.move.head','Reporte'),
+        'product_id':fields.many2one('Producto'),
+        'udm_id':fields.many2one('product.uom','UdM'),
+        'qty':fields.float('Cantidad'),
+        'cu':fields.float('Costo Unitario'),
+        'ct':fields.float('Costo Total'),
+        'tot_cu':fields.float('Total Unitario'),
+        'tot_ct':fields.float('Total'),
+        }
+reportMoveLine()
+
+class reportMoveHead(osv.TransientModel):
+    _name = 'report.move.head'
+    _columns = {
+#        'name':fields.many2one('stock.location',required=True),
+        'date_start':fields.date('Desde'),
+        'date_end':fields.date('Hasta'),
+        'product_id':fields.many2one('product.product','Producto'),
+        'categ_id':fields.many2one('product.category','Categoria'),
+        'option':fields.selection([('Todos','Todos'),('Producto','Producto'),('Categoria','Categoria')],'Filtro Producto'),
+        'optionbg':fields.selection([('Todas','Todas'),('Bodega','Bodega')],'Filtro Bodega'),
+        'bodega_ids':fields.many2many('stock.location','h_id','b_id','Bodegas'),
+        'line_ids':fields.one2many('report.move.line','h_id','Detalle'),
+        }
+
+    _defaults = dict(
+        option = 'Todos',
+        date_start = time.strftime('%Y-%m-%d'),
+        date_end = time.strftime('%Y-%m-%d'),
+        )
+    
+reportMoveHead()

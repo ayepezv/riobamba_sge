@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_empleado_lista" model="ir.ui.view">
+        <field name="name">Lista Empleados</field>
+        <field name="model">empleado.lista</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Lista Empleados">
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="printListaEmpleado" type="object" icon="gtk-execute" string="Imprimir"/>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_lista_empleado" model="ir.actions.act_window">
+        <field name="name">Lista Empleados</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">empleado.lista</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_lista_empleado"
+		icon="STOCK_EXECUTE"
+		action="action_lista_empleado"
+		parent="hr.menu_hr_main"
+		sequence="13"
+		name="Lista Empleados"/>
+
+
+</data>
+</openerp>

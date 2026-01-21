@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="0">
+
+    <!--record model="ir.rule" id="project_department_rule">
+      <field name="name">Proyectos por Responsable</field>
+      <field name="model_id" ref="model_project_project"/>
+      <field name="domain_force">['|','|',('members','=',[user.id]),('user_id','=',user.id),'|',('department_id.coordinador_id','=',user.employee_id.id),'&amp;',('department_id.manager_id','=',user.employee_id.id),('department_id','child_of',user.context_department_id.id)]</field>
+      <field name="groups" eval="[(4,ref('project.group_project_user'))]"/>
+    </record-->
+
+    <record id="group_project_accountant" model="res.groups">
+        <field name="name">Contadores: Proyectos para contabilidad</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record model="ir.rule" id="project_accountant_all_rule">
+        <field name="name">Contadores: Todos los proyectos</field>
+        <field name="model_id" ref="model_project_project"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups" eval="[(4,ref('gt_project_project.group_project_accountant'))]"/>
+    </record>
+
+    <record id="group_project_infvial_report_ext" model="res.groups">
+        <field name="name">Infraestructura Vial Proyectos: Reporte Consolidado</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_infvial_report" model="res.groups">
+        <field name="name">Infraestructura Vial Proyectos</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_all_config" model="res.groups">
+        <field name="name">Configuración General de Proyectos</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>    
+
+    <record id="group_project_consult" model="res.groups">
+        <field name="name">Usuarios para Consulta Proyectos Anteriores</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>    
+    
+    <record id="group_project_planning" model="res.groups">
+        <field name="name">Usuarios de Planificacion (Aprobacion de Planificion)</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_executing" model="res.groups">
+        <field name="name">Usuarios de Ejecucion</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_replaning" model="res.groups">
+        <field name="name">Usuarios de Re-planificacion</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_exec_ok" model="res.groups">
+        <field name="name">Usuarios de Planificacion (Aprobacion de Ejecucion)</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_warning" model="res.groups">
+        <field name="name">Cambio de Pesos de Cumplimiento de Proyectos</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_project_planificacion" model="res.groups">
+        <field name="name">Equipo de planificacion</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+    <record id="group_close_project_manager" model="res.groups">
+        <field name="name">Grupo de Cierre de Proyectos</field>
+        <field name="category_id" ref="base.module_category_project_management"/>
+    </record>
+
+  </data>
+</openerp>

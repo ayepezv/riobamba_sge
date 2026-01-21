@@ -1,0 +1,65 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2011-2013 Gnuthink Software Labs Cia. Ltda.
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from lxml import etree
+
+from osv import osv, fields
+
+
+class WizardBudgetUpdate(osv.TransientModel):
+    _name = 'wizard.budget.update'
+
+    def action_update(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        obj = self.browse(cr, uid, ids, context)[0]
+        if obj.amount <= 0:
+            raise osv.except_osv('Error', 'No puede registrar un valor menor o igual a cero.')
+        line_id = context.get('active_id')
+        line_obj = self.pool.get('budget.certificate.line')
+        line = line_obj.browse(cr, uid, line_id)
+        f2write = context.get('certified') and 'amount_certified' or 'amount_compromised'
+        line_obj.write(cr, uid, line_id, {f2write: obj.amount})
+        return {'type':'ir.actions.act_window_close'}
+
+    _columns = {
+        'amount': fields.float('Monto', digits=(16,2), required=True),
+        }
+
+
+class WizardBudgetQuery(osv.TransientModel):
+    _name = 'wizard.budget.query'
+
+    _columns = {
+        'budget_id': fields.many2one('budget.budget',
+                                 required=True, string='Presupuesto')
+        }
+
+    def action_budgets(self, cr, uid, ids, context=None):
+        mod_obj = self.pool.get('ir.model.data')
+        act_obj = self.pool.get('ir.actions.act_window')        
+        wiz = self.browse(cr, uid, ids, context)[0]
+        result = mod_obj.get_object_reference(cr, uid, 'gt_budget', 'action_budget_budget_detail')
+        act_id = result and result[1]
+        result = act_obj.read(cr, uid, [act_id], context=context)[0]
+        result['domain'] = "[('budget_id','=',%s)]" % wiz.budget_id.id
+        return result        
+

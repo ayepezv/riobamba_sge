@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate='1'>
+        <record id="seq_type_sinister_mem_code" model="ir.sequence.type">
+            <field name="name">Siniestro</field>
+            <field name="code">gt.insurance.sinister.memory</field>
+        </record>
+        <record id="seq_sinister_mem_code" model="ir.sequence">
+            <field name="name">Siniestro</field>
+            <field name="code">gt.insurance.sinister.memory</field>
+            <field name="prefix">S</field>
+            <field name="padding">5</field>
+        </record>                      
+		<record id="seq_type_sinister_code" model="ir.sequence.type">
+            <field name="name">Siniestro</field>
+            <field name="code">gt.insurance.sinister.type</field>
+        </record>
+        <record id="seq_sinister_code" model="ir.sequence">
+            <field name="name">Siniestro</field>
+            <field name="code">gt.insurance.sinister.type</field>
+            <field name="prefix"></field>
+            <field name="padding">3</field>
+        </record> 
+        <record id="seq_inform_code_" model="ir.sequence.type">
+            <field name="name">Informe</field>
+            <field name="code">gt.insurance.informes</field>
+        </record>
+        <record id="seq_inform_code" model="ir.sequence">
+            <field name="name">Informe</field>
+            <field name="code">gt.insurance.informes</field>
+            <field name="prefix">I</field>
+            <field name="padding">7</field>
+        </record>    
+    </data>
+</openerp>

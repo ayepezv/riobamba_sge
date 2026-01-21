@@ -1,0 +1,143 @@
+{% extends "admin/base_site.html" %}
+
+{% block title %}Reporte de Validación | {{ site_title }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .report-table th,
+    .report-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .report-table th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    .error-row {
+        background-color: #fee2e2;
+    }
+
+    .nested-table {
+        width: 95%;
+        margin: 10px auto;
+        background: #fff;
+        border: 1px solid #ccc;
+        font-size: 0.9em;
+    }
+
+    .badge-diff {
+        background: #dc2626;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 10px 20px;
+        background: #666;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+
+    .btn-back:hover {
+        background: #444;
+    }
+</style>
+<script>
+    function toggleDetails(id) {
+        var row = document.getElementById('details-' + id);
+        if (row.style.display === 'none') { row.style.display = 'table-row'; }
+        else { row.style.display = 'none'; }
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h1>Reporte de Validación de Presupuesto - PAC {{ pac.anio }}</h1>
+
+    <a href="{% url 'admin:financiero_pac_change' pac.pk %}" class="btn-back">← Volver al PAC</a>
+
+    {% if errors %}
+    <div style="background: #fee2e2; border-left: 5px solid #dc2626; padding: 15px; margin-bottom: 20px;">
+        <h3 style="margin: 0; color: #b91c1c;">⚠️ Se encontraron {{ errors|length }} partidas con exceso de presupuesto
+        </h3>
+    </div>
+
+    <table class="report-table">
+        <thead>
+            <tr>
+                <th>Partida</th>
+                <th>Nombre</th>
+                <th>Presupuesto Codificado</th>
+                <th>Total PAC</th>
+                <th>Diferencia</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for error in errors %}
+            <tr class="error-row">
+                <td>{{ error.partida }}</td>
+                <td>{{ error.nombre }}</td>
+                <td>${{ error.codificado|floatformat:2 }}</td>
+                <td>${{ error.total_pac|floatformat:2 }}</td>
+                <td><span class="badge-diff">+ ${{ error.diferencia|floatformat:2 }}</span></td>
+                <td>
+                    <button onclick="toggleDetails('{{ forloop.counter }}')" style="cursor:pointer; padding: 5px;">
+                        Ver Líneas PAC
+                    </button>
+                </td>
+            </tr>
+            <tr id="details-{{ forloop.counter }}" style="display: none;">
+                <td colspan="6">
+                    <table class="nested-table">
+                        <thead>
+                            <tr>
+                                <th>CPC</th>
+                                <th>Detalle</th>
+                                <th>Monto Total</th>
+                                <th>Periodos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for linea in error.pac_lines %}
+                            <tr>
+                                <td>{{ linea.cpc }}</td>
+                                <td>{{ linea.detalle }}</td>
+                                <td>${{ linea.monto_total|floatformat:2 }}</td>
+                                <td>
+                                    {% if linea.c1 %}C1 {% endif %}
+                                    {% if linea.c2 %}C2 {% endif %}
+                                    {% if linea.c3 %}C3 {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="background: #d1fae5; border-left: 5px solid #10b981; padding: 15px;">
+        <h3 style="margin: 0; color: #065f46;">✅ Todo correcto. No se encontraron excesos.</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

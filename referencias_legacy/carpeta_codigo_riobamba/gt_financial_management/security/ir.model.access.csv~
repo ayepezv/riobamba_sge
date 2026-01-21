@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_payment_request_user fn,payment.request,gt_payment_request.model_payment_request,retention.group_director_financiero,1,0,0,0
+access_emp_user fn,hr.employee,hr.model_hr_employee,retention.group_director_financiero,1,0,0,0
+access_job_user fn,hr.job,hr.model_hr_job,retention.group_director_financiero,1,0,0,0

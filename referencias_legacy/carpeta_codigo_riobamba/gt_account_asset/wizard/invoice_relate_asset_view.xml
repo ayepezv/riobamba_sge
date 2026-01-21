@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+	  
+      <record id="relate_invoice_asset_form" model="ir.ui.view">
+        <field name="name">relate.invoice.asset.form</field>
+        <field name="model">relate.invoice.asset</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form>
+			<!--field name="name" required="1" colspan="4"/-->
+			<field name="partner_id" colspan="4" readonly="1"/>
+            <separator string="Activos" colspan="4" />
+			<field name="asset_ids" colspan="4" nolabel="1" domain="[('partner_id','=',partner_id),('state','in',['open','no_depreciate']),('invoice_id','=',False)]"/>
+            <separator string="" colspan="4" />
+            <label string="" colspan="2"/>
+            <group col="2" colspan="2">
+              <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+              <button name="relate_invoice_asset" string="Relacionar Activos" confirm="Esta acción no se podrá revertir. Esta seguro que desea relacionar"
+					  colspan="1" type="object" icon="gtk-ok" />
+              <!--button name="do_return_state" string="Regresar" confirm="Esta seguro que desea regresar???" colspan="1" type="object" icon="gtk-go-back" /-->
+                </group>
+          </form>
+        </field>
+      </record>
+	  
+<!-- BOTON EN LA FACTURA
+-->
+
+<record id="action_relate_asset" model="ir.actions.act_window">
+  <field name="name">Relacionar Activo(s)</field>
+  <field name="res_model">relate.invoice.asset</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<!--record id="view_contract_invoice_asset_form" model="ir.ui.view">
+  <field name="name">account.invoice.asset.form</field>
+  <field name="model">account.invoice</field>
+  <field name="inherit_id" ref="account.invoice_supplier_form"/>
+  <field name="arch" type="xml">
+	<xpath expr="//field[@name='fiscal_position']" position="after">
+	  <button name="%(action_relate_asset)d" 
+			  string="Relacionar Activo" type="action" icon="gtk-execute"/>
+	</xpath>
+  </field>
+</record-->
+
+    </data>
+</openerp>

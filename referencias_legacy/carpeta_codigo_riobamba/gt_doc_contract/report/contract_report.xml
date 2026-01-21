@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="contract_report3" model="doc_contract.contract" name="contract.report" rml="gt_doc_contract/report/contract_report.rml" string="Contratos"/>
+    </data>
+</openerp>

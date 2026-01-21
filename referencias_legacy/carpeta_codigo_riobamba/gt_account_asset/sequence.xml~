@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for product --> 
+        <record id="seq_asset_ingreso" model="ir.sequence.type">
+            <field name="name">Secuencia Ingreso Activo</field>
+            <field name="code">account.asset.asset</field>
+        </record>
+        <record id="seq_asset_ingreso" model="ir.sequence">
+            <field name="name">Secuencia Ingreso Activo</field>
+            <field name="code">account.asset.asset</field>
+            <field name="prefix"></field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</openerp>

@@ -1,0 +1,680 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Account Module - Ecuador
+#    Copyright (C) 2013 GnuThink Software All Rights Reserved
+#    info@gnuthink.com
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+from tools.translate import _
+import time
+import netsvc
+import decimal_precision as dp
+
+class contractPicking(osv.Model):
+    _inherit = 'doc_contract.contract'
+    _columns = dict(
+        pick_ids = fields.many2many('stock.picking','c_p_rel','c_id','p_id','Ingresos Bodega'),
+        #pick_ids = fields.char('Ingresos Bodega', size=50),
+        )
+contractPicking()
+
+class stockMove(osv.Model):
+    _inherit = 'stock.move'
+
+    def onchange_subtotal_move(self, cr, uid, ids, subtotal, product_qty):
+        """ On change of subtotal 
+        @param product_id: Product id
+        @return: Dictionary of values
+        """
+        result = {}
+        value = subtotal / product_qty
+        result['price_unit'] = value
+#        self.write(cr, uid, ids[0],{'price_unit':value,})
+        return {'value': result}
+
+    def onchange_product_line(self, cr, uid, ids, product_id):
+        """ On change of product 
+        @param product_id: Product id
+        @return: Dictionary of values
+        """
+        result = {}
+        if not product_id:
+            return {'value': result}
+        product_obj = self.pool.get('product.product')
+        product = product_obj.browse(cr, uid, product_id)
+        result['categ_id'] = product.categ_id.id
+        result['product_uom'] = product.uom_id.id
+        return {'value': result}
+
+    def _amount_line(self, cr, uid, ids, prop, unknow_none, unknow_dict):
+        res = {}
+        tax_obj = self.pool.get('account.tax')
+        cur_obj = self.pool.get('res.currency')
+        for line in self.browse(cr, uid, ids):
+            total = (line.subtot / line.product_qty)
+            res[line.id] = total
+        return res
+    def _amount_all_imp(self, cr, uid, ids, field_name, arg, context=None):
+        '''    Calcula el valor por unidad y los impuestos
+        '''
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'iva_value': 0.0,
+                'ice_value': 0.0,
+                'imp_verde': 0.0,
+            }
+            val = ice_line = iva_line=line_imp=ice_l=price_unit=0.0
+            for tax in order.product_id.supplier_taxes_id:
+                if tax.tax_group=="vat" or tax.tax_group=="ice":
+                    if tax.tax_group=="vat":
+                        vat_l=tax.porcentaje
+                        line_imp+=float(vat_l)
+                    else:
+                        if tax.tax_group=="ice":
+                            ice_l=tax.porcentaje
+                            line_imp+=float(ice_l)
+            impuesto_line=(order.total*line_imp/(100+line_imp))
+            if ice_l!=0:
+                ice_line=impuesto_line*(float(ice_l)/line_imp)
+                iva_line=impuesto_line-ice_line
+            else: 
+                iva_line=impuesto_line*(float(vat_l)/line_imp)
+            res[order.id]['imp_iva']=(iva_line)
+            res[order.id]['imp_ice']=(ice_line)
+            res[order.id]['price_unit']=(float(order.total)-impuesto_line)/order.product_qty
+            res[order.id]['subtot']=(float(order.total)-impuesto_line)
+        return res
+
+    _columns = dict(
+        amount_tax = fields.float('Imp.'),
+        total = fields.float('Total'),
+        subtot = fields.function(_amount_all_imp, digits_compute= dp.get_precision('Payroll Rate'), string='Subtotal',store=True,
+             multi="sums",help="Valor de Subtotal"), 
+        imp_iva = fields.function(_amount_all_imp, digits_compute= dp.get_precision('Payroll Rate'), string='IVA',store=True,
+             multi="sums",help="Valor de IVA"),
+        imp_ice = fields.function(_amount_all_imp, digits_compute= dp.get_precision('Payroll Rate'), string='ICE',store=True,
+             multi="sums",help="Valor de ICE"),
+        imp_verde = fields.function(_amount_all_imp, digits_compute= dp.get_precision('Payroll Rate'), string='Imp. Verde',store=True,
+             multi="sums",help="Valor de impuesto verde"),
+        price_unit = fields.function(_amount_all_imp, string='Precio Unitario', type="float",multi="sums",store=True,
+                                   digits_compute= dp.get_precision('Payroll Rate')),#fields.float('Subtotal'), #funcion
+        subtotal = fields.function(_amount_line, string='Subtotal', type="float",
+                                   digits_compute= dp.get_precision('Payroll Rate'), store=True),#fields.float('Subtotal'), #funcion
+        categ_id = fields.related('product_id', 'categ_id', type='many2one', relation='product.category',
+                                  string='Linea', store=True),
+        presp_ref = fields.related('picking_id', 'presp_ref', type='many2one', relation='crossovered.budget.certificate',
+                                  string='Cert. Presp.', store=True),
+        project_id = fields.related('presp_ref', 'project_id', type='many2one', relation='project.project',
+                                  string='Proyecto', store=True),
+        partner_id = fields.related('picking_id', 'partner_id', type='many2one', relation='res.partner',
+                                  string='Proveedor', store=True),
+        product_uom = fields.related('product_id', 'uom_id', type='many2one', relation='product.uom',
+                                  string='UDM', store=True),
+        )
+    
+#    _columns = dict(
+#        location_id = fields.related('picking_id', 'bodega_id', type='many2one', relation='stock.location',
+#                                         string='Bodega', store=True),
+#        )
+    def _get_location_dest(self, cr, uid, ids, context=None):
+        location_obj = self.pool.get('stock.location')
+        if context:
+            if not context['type']=='in':
+                location_ids = location_obj.search(cr, uid, [('usage','=','customer')],limit=1)
+                if not location_ids:
+                    raise osv.except_osv(('Error de configuración'), ('No tiene una ubicación tipo cliente definida, configure una por favor'))
+                return location_ids[0]
+
+    def create(self, cr, uid, vals, context=None):
+        picking_obj = self.pool.get('stock.picking')
+        location_obj = self.pool.get('stock.location')
+        picking = picking_obj.browse(cr, uid, vals['picking_id'])
+        if context:
+            if context.has_key('crear'):
+                if context['crear'] == True:
+                    return super(stockMove, self).create(cr, uid, vals, context=context)
+        if context:
+            if context['type']=='in':
+                vals['location_dest_id'] = picking.bodega_id.id     
+                location_ids = location_obj.search(cr, uid, [('usage','=','supplier')],limit=1)
+                if not location_ids:
+                    raise osv.except_osv(('Error de configuración'), ('No tiene una ubicación tipo proveedor definida, configure una por favor'))
+                vals['location_id'] = location_ids[0]
+            elif context['type']=='internal':
+                vals['location_dest_id'] = picking.bodega_dest_id.id
+                vals['location_id'] = picking.bodega_id.id 
+            elif context['type']=='out':
+                vals['location_id'] = picking.bodega_id.id     
+                location_ids = location_obj.search(cr, uid, [('usage','=','customer')],limit=1)
+                if not location_ids:
+                    raise osv.except_osv(('Error de configuración'), ('No tiene una ubicación tipo cliente definida, configure una por favor'))
+                vals['location_dest_id'] = location_ids[0]
+#        else:
+#            vals['location_id'] = picking.bodega_id.id     
+#            location_ids = location_obj.search(cr, uid, [('usage','=','customer')],limit=1)
+#            if not location_ids:
+#                raise osv.except_osv(('Error de configuración'), ('No tiene una ubicación tipo cliente definida, configure una por favor'))
+#            vals['location_dest_id'] = location_ids[0]
+        return super(stockMove, self).create(cr, uid, vals, context=context)
+    
+    _defaults = dict(
+        name = '/',
+        location_dest_id = _get_location_dest,
+        #        location_id  = _get_location,
+        )
+stockMove()
+
+class stockLocation(osv.Model):
+    _inherit = 'stock.location'
+    _columns = dict(
+        responsable_id = fields.many2one('res.users','Responsable',required=True),
+        usuario_ids = fields.many2many('res.users','bu_rel','b_id','u_id','Usuarios'),
+        is_general = fields.boolean('Es general'),
+        )
+
+stockLocation()
+
+class pickingDocType(osv.Model):
+    _name = 'picking.doc.type'
+    _columns = dict(
+        name = fields.char('Documento',size=16,required=True),
+        movimiento = fields.selection([('out', 'Egresos'), ('in', 'Ingresos'), ('internal', 'Transacciones')],'Movimiento',required=True),
+        )
+
+class stockPicking(osv.Model):
+    _inherit = 'stock.picking'
+    _order = 'date desc'
+
+    def print_req_bodega(self, cr, uid, ids, context=None):
+        '''
+        cr: cursor de la base de datos
+        uid: ID de usuario
+        ids: lista ID del objeto instanciado
+
+        Metodo para imprimir la solicitud de compra
+        '''        
+        if not context:
+            context = {}
+        req = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [req.id], 'model': 'stock.picking'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'pick.req',
+            'model': 'stock.picking',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    def do_partial(self, cr, uid, ids, partial_datas, context=None):
+        """ Makes partial picking and moves done.
+        @param partial_datas : Dictionary containing details of partial picking
+                          like partner_id, address_id, delivery_date,
+                          delivery moves with product_id, product_qty, uom
+        @return: Dictionary of values
+        """
+        if context is None:
+            context = {}
+        else:
+            context = dict(context)
+        res = {}
+        move_obj = self.pool.get('stock.move')
+        product_obj = self.pool.get('product.product')
+        currency_obj = self.pool.get('res.currency')
+        uom_obj = self.pool.get('product.uom')
+        sequence_obj = self.pool.get('ir.sequence')
+        wf_service = netsvc.LocalService("workflow")
+        for pick in self.browse(cr, uid, ids, context=context):
+            new_picking = None
+            complete, too_many, too_few = [], [], []
+            move_product_qty, prodlot_ids, product_avail, partial_qty, product_uoms = {}, {}, {}, {}, {}
+            for move in pick.move_lines:
+                if move.state in ('done', 'cancel'):
+                    continue
+                partial_data = partial_datas.get('move%s'%(move.id), {})
+                product_qty = partial_data.get('product_qty',0.0)
+                move_product_qty[move.id] = product_qty
+                product_uom = partial_data.get('product_uom',False)
+                product_price = partial_data.get('product_price',0.0)
+                product_currency = partial_data.get('product_currency',False)
+                prodlot_id = partial_data.get('prodlot_id')
+                prodlot_ids[move.id] = prodlot_id
+                product_uoms[move.id] = product_uom
+                partial_qty[move.id] = uom_obj._compute_qty(cr, uid, product_uoms[move.id], product_qty, move.product_uom.id)
+                if move.product_qty == partial_qty[move.id]:
+                    complete.append(move)
+                elif move.product_qty > partial_qty[move.id]:
+                    too_few.append(move)
+                else:
+                    too_many.append(move)
+
+                # Average price computation
+                if (pick.type == 'in') and (move.product_id.cost_method == 'average'):
+                    product = product_obj.browse(cr, uid, move.product_id.id)
+                    move_currency_id = move.company_id.currency_id.id
+                    context['currency_id'] = move_currency_id
+                    qty = uom_obj._compute_qty(cr, uid, product_uom, product_qty, product.uom_id.id)
+
+                    if product.id in product_avail:
+                        product_avail[product.id] += qty
+                    else:
+                        product_avail[product.id] = product.qty_available
+
+                    if qty > 0:
+                        new_price = currency_obj.compute(cr, uid, product_currency,
+                                move_currency_id, product_price)
+                        new_price = uom_obj._compute_price(cr, uid, product_uom, new_price,
+                                product.uom_id.id)
+                        if product.qty_available <= 0:
+                            new_std_price = new_price
+                        else:
+                            # Get the standard price
+                            amount_unit = product.price_get('standard_price', context=context)[product.id]
+                            new_std_price = ((amount_unit * product_avail[product.id])\
+                                + (new_price * qty))/(product_avail[product.id] + qty)
+                        # Write the field according to price type field
+                        product_obj.write(cr, uid, [product.id], {'standard_price': new_std_price})
+
+                        # Record the values that were chosen in the wizard, so they can be
+                        # used for inventory valuation if real-time valuation is enabled.
+                        move_obj.write(cr, uid, [move.id],
+                                {'price_unit': product_price,
+                                 'price_currency_id': product_currency})
+
+
+            for move in too_few:
+                product_qty = move_product_qty[move.id]
+                if not new_picking:
+                    new_picking = self.copy(cr, uid, pick.id,
+                            {
+                                'name': sequence_obj.get(cr, uid, 'stock.picking.%s'%(pick.type)),
+                                'move_lines' : [],
+                                'state':'draft',
+                            })
+                if product_qty != 0:
+                    defaults = {
+                            'product_qty' : product_qty,
+                            'product_uos_qty': product_qty, #TODO: put correct uos_qty
+                            'picking_id' : new_picking,
+                            'state': 'assigned',
+                            'move_dest_id': False,
+                            'price_unit': move.price_unit,
+                            'product_uom': product_uoms[move.id]
+                    }
+                    prodlot_id = prodlot_ids[move.id]
+                    if prodlot_id:
+                        defaults.update(prodlot_id=prodlot_id)
+                    context['type'] = pick.type
+                    move_obj.copy(cr, uid, move.id, defaults, context)
+                move_obj.write(cr, uid, [move.id],
+                        {
+                            'product_qty' : move.product_qty - partial_qty[move.id],
+                            'product_uos_qty': move.product_qty - partial_qty[move.id], #TODO: put correct uos_qty
+                            
+                        })
+
+            if new_picking:
+                move_obj.write(cr, uid, [c.id for c in complete], {'picking_id': new_picking})
+            for move in complete:
+                defaults = {'product_uom': product_uoms[move.id], 'product_qty': move_product_qty[move.id]}
+                if prodlot_ids.get(move.id):
+                    defaults.update({'prodlot_id': prodlot_ids[move.id]})
+                move_obj.write(cr, uid, [move.id], defaults)
+            for move in too_many:
+                product_qty = move_product_qty[move.id]
+                defaults = {
+                    'product_qty' : product_qty,
+                    'product_uos_qty': product_qty, #TODO: put correct uos_qty
+                    'product_uom': product_uoms[move.id]
+                }
+                prodlot_id = prodlot_ids.get(move.id)
+                if prodlot_ids.get(move.id):
+                    defaults.update(prodlot_id=prodlot_id)
+                if new_picking:
+                    defaults.update(picking_id=new_picking)
+                move_obj.write(cr, uid, [move.id], defaults)
+
+            # At first we confirm the new picking (if necessary)
+            if new_picking:
+                wf_service.trg_validate(uid, 'stock.picking', new_picking, 'button_confirm', cr)
+                # Then we finish the good picking
+                self.write(cr, uid, [pick.id], {'backorder_id': new_picking})
+                self.action_move(cr, uid, [new_picking])
+                wf_service.trg_validate(uid, 'stock.picking', new_picking, 'button_done', cr)
+                wf_service.trg_write(uid, 'stock.picking', pick.id, cr)
+                delivered_pack_id = new_picking
+            else:
+                self.action_move(cr, uid, [pick.id])
+                wf_service.trg_validate(uid, 'stock.picking', pick.id, 'button_done', cr)
+                delivered_pack_id = pick.id
+
+            delivered_pack = self.browse(cr, uid, delivered_pack_id, context=context)
+            res[pick.id] = {'delivered_picking': delivered_pack.id or False}
+
+        return res
+
+    def _get_taxes_invoice(self, cr, uid, move_line, type):
+        """ Gets taxes on invoice
+        @param move_line: Stock move lines
+        @param type: Type of invoice
+        @return: Taxes Ids for the move line
+        """
+        if type in ('in_invoice', 'in_refund'):
+            taxes = move_line.product_id.supplier_taxes_id
+        else:
+            taxes = move_line.product_id.taxes_id
+        context = {'budget_type':move_line.categ_id.budget}
+        if move_line.picking_id and move_line.picking_id.partner_id and move_line.picking_id.partner_id:
+            return self.pool.get('account.fiscal.position').map_tax(
+                cr,
+                uid,
+                move_line.picking_id.partner_id.property_account_position,
+                taxes,
+                context
+            )
+        else:
+            return map(lambda x: x.id, taxes)
+
+    def _prepare_invoice_line(self, cr, uid, group, picking, move_line, invoice_id,
+                              invoice_vals, context=None):
+        """ Builds the dict containing the values for the invoice line
+        @param group: True or False
+        @param picking: picking object
+        @param: move_line: move_line object
+        @param: invoice_id: ID of the related invoice
+        @param: invoice_vals: dict used to created the invoice
+        @return: dict that will be used to create the invoice line
+        """
+        if group:
+            name = (picking.name or '') + '-' + move_line.name
+        else:
+            name = move_line.name
+        origin = move_line.picking_id.name or ''
+        if move_line.picking_id.origin:
+            origin += ':' + move_line.picking_id.origin
+        if invoice_vals['type'] in ('out_invoice', 'out_refund'):
+            account_id = move_line.product_id.product_tmpl_id.\
+                    property_account_income.id
+            if not account_id:
+                account_id = move_line.product_id.categ_id.\
+                        property_account_income_categ.id
+        else:
+            #factura de proveedor
+            account_id = move_line.product_id.product_tmpl_id.\
+                    property_account_expense.id
+            if not account_id:
+                account_id = move_line.categ_id.\
+                        property_account_expense_categ.id
+        if invoice_vals['fiscal_position']:
+            fp_obj = self.pool.get('account.fiscal.position')
+            fiscal_position = fp_obj.browse(cr, uid, invoice_vals['fiscal_position'], context=context)
+            account_id = fp_obj.map_account(cr, uid, fiscal_position, account_id)
+        # set UoS if it's a sale and the picking doesn't have one
+        uos_id = move_line.product_uos and move_line.product_uos.id or False
+        if not uos_id and invoice_vals['type'] in ('out_invoice', 'out_refund'):
+            uos_id = move_line.product_uom.id
+        budget = ''
+        if picking.presp_ref:
+            budget = picking.presp_ref.line_ids[0].id 
+        return {
+            'budget_id':budget,
+            'categ_id':move_line.categ_id.id,
+            'name': name,
+            'origin': origin,
+            'invoice_id': invoice_id,
+            'uos_id': uos_id,
+            'product_id': move_line.product_id.id,
+            'account_id': account_id,
+            'price_unit': move_line.price_unit,#self._get_price_unit_invoice(cr, uid, move_line, invoice_vals['type']),
+            'discount': self._get_discount_invoice(cr, uid, move_line),
+            'quantity': move_line.product_uos_qty or move_line.product_qty,
+            'invoice_line_tax_id': [(6, 0, self._get_taxes_invoice(cr, uid, move_line, invoice_vals['type']))],
+            'account_analytic_id': self._get_account_analytic_invoice(cr, uid, picking, move_line),
+        }
+
+    def action_invoice_create(self, cr, uid, ids, journal_id=False,
+            group=False, type='out_invoice', context=None):
+        """ Creates invoice based on the invoice state selected for picking.
+        @param journal_id: Id of journal
+        @param group: Whether to create a group invoice or not
+        @param type: Type invoice to be created
+        @return: Ids of created invoices for the pickings
+        """
+        if context is None:
+            context = {}
+
+        invoice_obj = self.pool.get('account.invoice')
+        invoice_line_obj = self.pool.get('account.invoice.line')
+        picking_obj = self.pool.get('stock.picking')
+        invoices_group = {}
+        res = {}
+        inv_type = type
+        for picking in self.browse(cr, uid, ids, context=context):
+            if picking.invoice_state != '2binvoiced':
+                continue
+            partner = picking.partner_id#self._get_partner_to_invoice(cr, uid, picking, context=context)
+            if not partner:
+                raise osv.except_osv(_('Error, no partner !'),
+                    _('Please put a partner on the picking list if you want to generate invoice.'))
+
+            if not inv_type:
+                inv_type = self._get_invoice_type(picking)
+
+            #agregado creacion de solicitud de pago
+            payment_obj = self.pool.get('payment.request')
+            concepto = 'Solicitud de pago: ' + 'Orden de compra # ' + picking.purchase_id.name + 'Solicitud de compra #: ' + picking.purchase_id.requisition_select_id.name + 'Certif. Presupuestaria : '  +picking.purchase_id.requisition_select_id.presp_ref.name + 'Proyecto :' + picking.purchase_id.requisition_select_id.presp_ref.project_id.name
+            payment_id = payment_obj.create(cr, uid, {
+                    'user_id':picking.solicitant_id.id,
+                    'department_id':picking.solicitant_id.department_id.id,
+                    'partner_id':picking.partner_id.id,
+                    'date_invoice':time.strftime('%Y-%m-%d'),
+                    'num_invoice':picking.number,
+                    'amount_invoice':0,
+                    'concepto':concepto,
+                    'ref_budget_id':picking.purchase_id.requisition_select_id.presp_ref.id,
+                    'project_id':picking.purchase_id.requisition_select_id.presp_ref.project_id.id,
+                    'expedient_id':picking.tramite_id.id,
+                    },context)
+            if group and partner.id in invoices_group:
+                invoice_id = invoices_group[partner.id]
+                invoice = invoice_obj.browse(cr, uid, invoice_id)
+                invoice_vals_group = self._prepare_invoice_group(cr, uid, picking, partner, invoice, context=context)
+                invoice_obj.write(cr, uid, [invoice_id], invoice_vals_group, context=context)
+            else:
+                invoice_vals = self._prepare_invoice(cr, uid, picking, partner, inv_type, journal_id, context=context)
+                invoice_vals['reference'] = picking.number
+                invoice_vals['tramite_id'] = picking.tramite_id.id
+                invoice_vals['certificate_id'] = picking.presp_ref.id
+                invoice_vals['picking_id'] = picking.id
+                invoice_vals['payment_req_id'] = payment_id
+                invoice_id = invoice_obj.create(cr, uid, invoice_vals, context=context)
+                picking_obj.write(cr, uid, picking.id,{'invoice_id':invoice_id,})
+                invoices_group[partner.id] = invoice_id
+            res[picking.id] = invoice_id
+            for move_line in picking.move_lines:
+                if move_line.state == 'cancel':
+                    continue
+                if move_line.scrapped:
+                    # do no invoice scrapped products
+                    continue
+                vals = self._prepare_invoice_line(cr, uid, group, picking, move_line,
+                                invoice_id, invoice_vals, context=context)
+                if vals:
+                    invoice_line_id = invoice_line_obj.create(cr, uid, vals, context=context)
+                    self._invoice_line_hook(cr, uid, move_line, invoice_line_id)
+
+            invoice_obj.button_compute(cr, uid, [invoice_id], context=context,
+                    set_total=(inv_type in ('in_invoice', 'in_refund')))
+            self.write(cr, uid, [picking.id], {
+                'invoice_state': 'invoiced',
+                }, context=context)
+            self._invoice_hook(cr, uid, picking, invoice_id)
+        self.write(cr, uid, res.keys(), {
+            'invoice_state': 'invoiced',
+            }, context=context)
+        return res
+
+    def create(self, cr, user, vals, context=None):
+        if not vals['type']:
+            vals['type']='internal'
+        return super(stockPicking, self).create(cr, user, vals, context)
+
+    def print_comprobante_bodega(self, cr, uid, ids, context=None):
+        '''
+        cr: cursor de la base de datos
+        uid: ID de usuario
+        ids: lista ID del objeto instanciado
+
+        Metodo para imprimir la solicitud de compra
+        '''        
+        if not context:
+            context = {}
+        solicitud = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [solicitud.id], 'model': 'purchase.requisition'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'purchase.req',
+            'model': 'purchase.requisition',
+            'datas': datas,
+            'nodestroy': True,                        
+            }        
+
+    def draft_confirmed(self, cr, uid, ids, context=None):
+        """ Confirms picking.
+        @return: True
+        """
+        self.write(cr, uid, ids, {'state': 'confirmed'})
+        return True
+    
+    def draft_validate(self, cr, uid, ids, context=None):
+        """ Validates picking directly from draft state.
+        @return: True
+        """
+        wf_service = netsvc.LocalService("workflow")
+        self.draft_force_assign(cr, uid, ids)        
+        for pick in self.browse(cr, uid, ids, context=context):
+            for lines in  pick.move_lines:
+                if lines.price_unit <=0 or lines.total<=0:
+                    raise osv.except_osv(('Error'), ('Verifique el precios y total del producto:  '+lines.product_id.name))                    
+            move_ids = [x.id for x in pick.move_lines]            
+            self.pool.get('stock.move').force_assign(cr, uid, move_ids)
+            wf_service.trg_write(uid, 'stock.picking', pick.id, cr)
+        return self.action_process(
+            cr, uid, ids, context=context)
+        
+    def confirm_aprobe(self, cr, uid, ids, context=None):
+        """ Confirms picking.
+        @return: True
+        """
+        self.write(cr, uid, ids, {'state': 'assigned'})
+        return True
+
+    def _get_bodega(self, cr, uid, ids, context=None):
+        bodega_obj = self.pool.get('stock.location')
+        bodega_ids = bodega_obj.search(cr, uid, [])
+        if bodega_ids:
+            return bodega_ids[0]
+        else:
+            raise osv.except_osv(('Error de configuración'), ('No tiene bodegas definidas'))
+
+    def _get_user(self, cr, uid, ids, context=None):
+        return uid
+
+    def _get_department(self, cr, uid, ids, context=None):
+        user_obj = self.pool.get('res.users')
+        user = user_obj.browse(cr, uid, uid)
+        return user.context_department_id.id
+
+    _columns = dict(
+        state = fields.selection([
+                ('draft', 'Borrador'),
+                ('auto', 'Waiting Another Operation'),
+                ('confirmed', 'Solicitado'),
+                ('assigned', 'Aprobado'),
+                ('done', 'Realizado'),
+                ('cancel', 'Cancelado'),
+                ], 'State', readonly=True, select=True,
+                                 help="* Draft: not confirmed yet and will not be scheduled until confirmed\n"\
+                                     "* Confirmed: still waiting for the availability of products\n"\
+                                     "* Available: products reserved, simply waiting for confirmation.\n"\
+                                     "* Waiting: waiting for another move to proceed before it becomes automatically available (e.g. in Make-To-Order flows)\n"\
+                                     "* Done: has been processed, can't be modified or cancelled anymore\n"\
+                                     "* Cancelled: has been cancelled, can't be confirmed anymore"),
+        document_id = fields.many2one('picking.doc.type','Tipo Documento'),
+        number = fields.char('Num. documento',size=37),
+        document_date = fields.date('Fecha documento'),
+        invoice_id = fields.many2one('account.invoice','Factura Relacionada'),
+        #entrega_id = fields.many2one('hr.employee','Entrega'),
+        solicitant_id = fields.many2one('hr.employee','Solicitado por'),
+        solicitant_user_id = fields.many2one('res.users','Creado por'),
+        receptor_type = fields.boolean('Recibe empleado?', help="Activado si la persona que recibe es un empleado. Desactivado si es otra persona"),
+        receptor_id = fields.many2one('hr.employee','Recibe'),
+        receptor = fields.char('Recibe',size=256),
+        receptor_job = fields.char('Cargo (Recibe)', size=30),
+        receptor_ced = fields.char('Cedula o id (recibe)', size=13),
+        create_user_id = fields.many2one('res.users','Creado por',readonly=True),
+        ie_type = fields.many2one('ie.type','Tipo de transaccion'),
+        
+        presp_ref = fields.many2one('crossovered.budget.certificate','Pres. Referencial',help="Permite seleccionar los presupuestos referenciales certificados y que no esten siendo utilizados en otro proceso, al anular una solicitud de compra este presupuesto se libera y puede ser utilizado en un nuevo proceso"),
+        
+        #unidad_id = fields.many2one('hr.department','Unidad Req.'),
+        unidad_id = fields.related('solicitant_id', 'department_id', type="many2one", relation='hr.department', string="Unidad Req.", store=True),
+        objeto_id = fields.many2one('vehicle.vehicle','Objeto Receptor'),
+        project_id = fields.many2one('project.project','Proyecto'),
+        resp_obra_id = fields.many2one('hr.employee','Resp. de proyecto'),
+        #fields.related('presp_ref', 'project_id', type='many2one', relation='project.project',
+                                    #string='Proyecto', store=True),
+        bodega_id = fields.many2one('stock.location','Bodega',required=True),
+        bodega_dest_id = fields.many2one('stock.location','Bodega destino'),
+        responsable_id = fields.related('bodega_id','responsable_id', type="many2one", relation='res.users', string='Responsable'),
+        #responsable_id = fields.many2one('hr.employee','Responsable'),
+        partner_id = fields.many2one('res.partner','Proveedor'),
+        date_done = fields.date('Fecha de transaccion'),
+        tiene_contrato = fields.boolean('Tiene contrato?',help='Active la casilla para relacionar la transaccion a un contrato'),
+        contract_id = fields.many2one('doc_contract.contract','Contrato'),
+        destino = fields.selection([('proyecto', 'Proyecto'),
+                                    ('objeto', 'Objeto Receptor'),
+                                    ], 'Destino'),
+        invoice_state = fields.selection([('2binvoiced', 'Generar Factura'),
+                                          ('none', 'No aplicable'),
+                                          ], 'Control factura'),
+        tramite_id = fields.many2one('doc_expedient.expedient','Trámite',
+                                 help="Tramite relacionado al proceso si usted no lo selecciona este se crea automáticamente"),
+        )
+
+    _defaults = dict(
+        #entrega_id = lambda self, cr, uid, c: self.pool.get('res.users').browse(cr, uid, uid, c).id,
+        #esta mal, deberia buscar el empleado, no el usuario
+        unidad_id = _get_department,
+        solicitant_id = _get_user,
+        create_user_id = _get_user,
+        #bodega_id = _get_bodega,
+        destino = 'proyecto',
+        receptor_type = True,
+        )
+
+
+class ie_type(osv.Model):
+    _name = 'ie.type'
+    _columns = dict(
+        name = fields.char('Concepto',size=32,required=True),
+        movimiento = fields.selection([('out', 'Egresos'), ('in', 'Ingresos'), ('internal', 'Transacciones')],'Movimiento',required=True),
+        )
+ie_type()

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+   <report auto="False" id="activo_totalrev" model="activo.total"
+            name="activo_totalrev" rml="gt_account_asset/report/activo_total.mako"
+            usage="default" string="Total Activos" header="True" report_type="webkit"/>
+
+   <report auto="False" id="reval_categ" model="revaloriza.categoria"
+            name="reval_categ" rml="asset_reval/report/revaloriza_categoria.mako"
+            usage="default" string="Revalorizacion Categoria" header="True" report_type="webkit"/>
+
+   <report auto="False"
+	   id="report_activo_revaloriza"
+	   model="account.asset.reval"
+	   name="report_activo_revaloriza"
+	   file="asset_reval/report/report_revalorizacion.mako"
+	   string="Acta Revalorizacion"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   
+  </data>     
+</openerp>

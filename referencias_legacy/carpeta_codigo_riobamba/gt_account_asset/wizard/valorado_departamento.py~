@@ -1,0 +1,84 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import fields, osv
+
+class departamentoValorCateg(osv.Model):
+   _name = 'departamento.valor.categ'
+   _columns = dict(
+#      line_id = fields.many2one('departamento.valor.line','Valorado Departamento'),
+      category_id = fields.many2one('account.asset.category','Categoria'),
+      total_actual = fields.float('Total Actual'),
+      total_compra = fields.float('Total Adquisicion'),
+   )
+
+departamentoValorCateg()
+
+class departamentoValorLine(osv.TransientModel):
+   _name = 'departamento.valor.line'
+   _columns = dict(
+#      v_id = fields.many2one('departamento.valor','Valorado'),
+      department_id = fields.many2one('hr.department','Departamento'),
+      total_actual = fields.float('Total Actual'),
+      total_compra = fields.float('Total Adquisicion'),
+#      line_ids = fields.one2many('departamento.valor.categ','line_id','Detalle Categoria'),
+   )
+departamentoValorLine()
+
+class departamentoValor(osv.TransientModel):
+   _name = 'departamento.valor'
+   _columns = dict(
+      dept_ids = fields.many2many('hr.department','d_v_id','d_id','v_id','Departamentos'),
+      categ_ids = fields.many2many('account.asset.category','d_c_id','d_id','c_id','Categorias'),
+      tipo = fields.selection([('Todos','Todos'),('Seleccionar','Seleccionar')],'Opcion'),
+#      line_ids = fields.one2many('departamento.valor.line','v_id','Detalle Departamento'),
+   )
+
+   def computeActivoDepartamento(self, cr, uid, ids, context=None):
+      dept_ids = []
+      categ_ids = []
+      asset_obj = self.pool.get('account.asset.asset')
+      dept_obj = self.pool.get('hr.department')
+      categ_obj = self.pool.get('account.asset.category')
+      dept_valor_obj = self.pool.get('departamento.valor.line')
+      dept_valor_categ = self.pool.get('departamento.valor.categ')
+      for this in self.browse(cr, uid, ids):
+         if this.tipo=='Todos':
+            dept_ids = dept_obj.search(cr, uid, [])
+            categ_ids = categ_obj.search(cr, uid, [])
+         else:
+            for dept_id in this.dept_ids:
+               dept_ids.append(dept_id)
+            for categ_id in this.categ_ids:
+               categ_ids.append(categ_id)
+         if dept_ids:
+            for dept_id in dept_ids:
+               for categ_id in categ_ids:
+                  asset_ids = asset_obj.search(cr, uid, [('department_id','=',dept_id),('category_id','=',categ_id)])
+                  if asset_ids:
+                     dept_valor_obj_id = dept_valor_obj 
+      return True
+
+   def printActivoValorado(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'departamento.valor'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'activo_valorado',
+            'model': 'departamento.valor',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+   _defaults = dict(
+      tipo = 'Todos',
+   )
+
+departamentoValor()

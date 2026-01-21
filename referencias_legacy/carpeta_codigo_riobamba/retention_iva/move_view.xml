@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <record id="view_make_pay_anticipo_wizard_inherit" model="ir.ui.view">
+      <field name="name">Pagar</field>
+      <field name="model">make.pay</field>
+      <field name="inherit_id" ref="retention_ext.view_make_pay_wizard_inherit"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='genera_cxc']" position="replace">
+	  <field name="genera_cxc" invisible='1'/>
+	</xpath>
+	<xpath expr="//field[@name='amount_ord']" position="before">
+	  <field name="anticipo_id" colspan="4"/>
+	  <field name="monto_anticipo"/>
+	  <field name="anio_ant"/>
+	</xpath>
+      </field>
+    </record>
+
+
+    
+    <record id="move_iva_form" model="ir.ui.view">
+      <field name="name">account.move.iva</field>
+      <field name="model">account.move</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="retention.view_move_less_form_afectacion"/>
+      <field name="arch" type="xml">
+	<field name='type2_id' position='replace'/>
+	<field name="certificate_id" position="replace">
+	  <field name="type2_id" colspan="2"/>
+	  <field name="iva_id" colspan="2" domain="[('tax_group','=','ret_vat_b'),('type_tax_use','=','purchase')]"/>
+	  <field name="renta_id" colspan="2" domain="[('tax_group','=','ret_ir'),('type_tax_use','=','purchase')]"/>
+	  <field name="cta_inventario" colspan="2" domain="[('type','!=','view')]"/>
+	  <field name="iva_id2" colspan="2" domain="[('tax_group','=','ret_vat_srv'),('type_tax_use','=','purchase')]"/>
+	  <field name="renta_id2" colspan="2" domain="[('tax_group','=','ret_ir'),('type_tax_use','=','purchase')]"/>
+	  <field name="iva" colspan="2" required="1"/>
+	  <field name="certificate_id" colspan="4" domain="[('partner_id','=',partner_id),('state','=','commited')]"
+		 string="Doc. Presupuestario"
+		 attrs="{'readonly': [('state', 'in',('posted','anulado'))],'invisible':['|',('type','=','Impuestos'),('no_cp','=',True)],
+			'required':[('no_cp','=',False)],}" 
+		 on_change="onchange_cp(certificate_id,iva,iva_id,renta_id,cta_inventario,iva_id2,renta_id2,period_id,date,journal_id)"/>
+	</field>
+      </field>
+    </record>
+
+
+    </data>
+</openerp>

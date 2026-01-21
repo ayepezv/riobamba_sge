@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+  <menuitem id="menu_finance_roles" name="Roles de pago" parent="account.menu_finance"/>
+
+    <record id="wizard_clona_rubro" model="ir.ui.view">
+      <field name="name">Clona Rubro</field>
+      <field name="model">clona.rubro</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Seleccionar Rubros">
+	  <group colspan="4">
+	    <field name="rubro_o" colspan="4" required="1"/>
+	    <field name="rubro_d" colspan="4" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button name="clonaRubro" string="Clonar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_clona_rubro" model="ir.actions.act_window">
+      <field name="name">Clona Rubro</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">clona.rubro</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record id="wizard_param_rubro" model="ir.ui.view">
+      <field name="name">Param Rubro</field>
+      <field name="model">param.rubro</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Seleccionar Rubros">
+	  <group colspan="4">
+	    <field name="cgasto" colspan="2"/>
+	    <field name="cxc" colspan="2" required="1"/>
+	    <field name="tipo" colspan="2" required="1"/>
+	    <field name="otro" colspan="2"/>
+	    <field name="rol_id" colspan="4"/>
+	  </group>
+	  <group colspan="4">
+	    <button name="paramRubro" string="Parametrizar" type="object" icon="gtk-execute"/>
+	  </group>
+	  <field name='rubro_ids' colspan="4"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_param_rubro" model="ir.actions.act_window">
+      <field name="name">Param Rubro</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">param.rubro</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+   
+   <report auto="False" id="descuento_rol" model="rol.descuentos"
+            name="descuento_rol" rml="gt_hr_payroll_account/report/descuentor.mako"
+            usage="default" string="Descuentos Rol" header="True" report_type="webkit"/>
+
+ <report auto="False" id="descuento_rold" model="rol.descuentos"
+            name="descuento_rold" rml="gt_hr_payroll_account/report/descuentord.mako"
+            usage="default" string="Descuentos Rol Detalle" header="True" report_type="webkit"/>
+
+   <report auto="False" id="pagar_iess" model="pagar.iess"
+            name="pagar.iess" rml="gt_hr_payroll_account/report/pagar_iess.mako"
+            usage="default" string="Por pagar Iess" header="True" report_type="webkit"/>
+
+    <record id="wizard_paga_cxp" model="ir.ui.view">
+      <field name="name">Pagar CXP</field>
+      <field name="model">wizard.paga.cxp</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Seleccionar">
+	  <group colspan="4">
+	    <field name="opc" colspan="4" required="1"/>
+	    <field name="move_id" colspan="4" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button name="action_pagar_cxp" string="Pagar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="paga_cxp" model="ir.actions.act_window">
+      <field name="name">Pagar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.paga.cxp</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+      <record id="view_pagar_iess" model="ir.ui.view">
+        <field name="name">Por Pagar Iess</field>
+        <field name="model">pagar.iess</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cuentas por pagar iess">
+            <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="partner_id" colspan="4" readonly="1"/>
+                <field name="date_start" colspan="2" required="1"/>
+                <field name="date" colspan="2" required="1"/>
+		<newline/>
+		<field name="opc" colspan="2" required="1"/>
+		<field name="bank_id" colspan="2" domain="[('type','=','bank')]"/>
+		<field name="move_id" colspan="2" domain="[('partner_id','=',partner_id),('state','=','draft')]"
+		       attrs="{'invisible': [('opc','=','NuevoComprobante')],'required': [('opc','!=','NuevoComprobante')]}"/>
+	      </group>
+	      <field name="cp_id" colspan="4" domain="[('partner_id','=',partner_id)]"/>
+	      <group colspan="4">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="loadPagarIess" type="object" icon="gtk-execute"  string="Cargar CxP"/>
+		<button name="pagarIess" type="object" icon="gtk-execute"  string="Pagar CxP"/>
+		<button name="print_iess" type="object" icon="gtk-print"  string="Imprimir"/>
+	      </group>
+	      <field name="line_ids" nolabel="1" colspan="4">
+		<tree string="Detalle" editable='bottom'>
+		  <field name="move_id" readonly="1"/>
+		  <field name="account_id" readonly="1"/>
+		  <field name="budget_id" readonly="1"/>
+		  <field name="monto" sum="Total" readonly="1"/>
+		  <field name="saldo" sum="Total" readonly="1"/>
+		  <field name="monto_pago" sum="Total"/>
+		  <field name="pagar"/>
+		</tree>
+	      </field>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+<record model="ir.actions.act_window" id="action_pagar_iess">
+  <field name="name">Por pagar iess</field>
+  <field name="res_model">pagar.iess</field>
+  <field name="view_type">form</field>
+  <field name="target">new</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_mode">form</field>
+</record> 
+
+<menuitem name="Por Pagar IESS" id="menu_pagar_iess" parent="menu_finance_roles" action="action_pagar_iess"/>
+
+
+<!-- menu de rubros a conta -->
+
+<menuitem name="Rubros Roles" id="rubro_contabilidad" parent="menu_finance_roles" action="hr_payroll.action_salary_rule_form"/>
+
+<!-- JUDICIAL PAGO VARIO -->
+<record id="view_pago_judicial" model="ir.ui.view">
+  <field name="name">Genera Pago Judicial</field>
+  <field name="model">pago.judicial</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Genera Pago Judicial">
+      <group col="4" colspan="4">
+	<group colspan="4">
+	  <field name="period_id2" colspan="2" required="1"/>
+	  <newline/>
+	</group>
+	<group colspan="4">
+	  <button icon="gtk-cancel" special="cancel"
+	          string="Salir" />
+	  <button name="generarPagoJudicial" type="object" icon="gtk-execute"  string="Generar"/>
+	</group>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_pago_judicial">
+  <field name="name">Genera Pago Judicial</field>
+  <field name="res_model">pago.judicial</field>
+  <field name="view_type">form</field>
+  <field name="target">new</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_mode">form</field>
+</record> 
+
+<menuitem name="Genera Pago Judicial" id="menu_pago_judicial" parent="hr_payroll.menu_hr_root_payroll" action="action_pago_judicial"/>
+<!-- reporte de descuentos por mes y rol -->
+    	
+      <record id="view_rol_descuento" model="ir.ui.view">
+        <field name="name">Reporte Descuento Rubro</field>
+        <field name="model">rol.descuentos</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Reporte de descuentos Por Rubro">
+            <group col="4" colspan="4">
+	      <group colspan="4">
+                <field name="rubro_id" colspan="2" required="1"/>
+		<field name="period_id" colspan="2" required="1"  widget='selection'/>
+		<field name="rol_id" colspan="4" domain="[('period_id','=',period_id)]"/>
+		<newline/>
+		<field name="datas_fname" colspan="2" invisible="1"/>
+		<field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+	      </group>
+	      <group colspan="4" col="5">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="load_rol_descuento" type="object" icon="gtk-execute"  string="Generar"/>
+		<button name="print_rol_descuento" type="object" icon="gtk-print"  string="Imprimir"/>
+		<button name="print_rol_descuento_detalle" type="object" icon="gtk-print"  string="Imprimir Detalle"/>
+		<button name="exportaExcelRpDesc" type="object" icon="gtk-execute"  string="Exportar"/>
+		<!--button name="genera_pago" type="object" icon="gtk-execute" string="Genera Pago Judicial"/-->
+	      </group>
+	      <group>
+		<field name="is_renta" colspan="2"/>
+	      </group>
+	      <newline/>
+	      <field name="line_ids" nolabel="1" readonly="1">
+		<tree string="Detalle">
+		  <field name="employee_id"/>
+		  <field name="monto" sum="Total"/>
+		</tree>
+	      </field>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+<record model="ir.actions.act_window" id="action_rol_descuento">
+  <field name="name">Reporte Descuento Rubro</field>
+  <field name="res_model">rol.descuentos</field>
+  <field name="view_type">form</field>
+  <field name="target">new</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="view_mode">form</field>
+</record> 
+
+<menuitem name="Reporte Descuento Rubro" id="menu_rol_descuento" parent="menu_finance_roles" action="action_rol_descuento"/>
+<menuitem name="Reporte Descuento Rubro" id="menu_rol_descuento_tthh" 
+	  sequence="100"
+	  parent="hr_payroll.menu_hr_root_payroll" action="action_rol_descuento"/>
+<!-- MENU ROLES PARA CONTABILIDAD-->
+  
+  <record id="action_rol_financiero" model="ir.actions.act_window">
+    <field name="name">Roles</field>
+    <field name="res_model">hr.payslip.run</field>
+    <field name="view_type">form</field>
+    <field name="domain">[('state','in',('Aprobado','Autorizado','Pagado'))]</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+ <menuitem action="action_rol_financiero" icon="STOCK_JUSTIFY_FILL" sequence="12"
+            id="menu_action_rol_financiero"  parent="menu_finance_roles"/>
+
+ <record model="ir.actions.act_window" id="action_acchr_account_configuration">
+   <field name="name">Configuracion de Partida Rubro</field>
+   <field name="res_model">hr.account.configuration</field>
+   <field name="view_type">form</field>
+   <field name="view_mode">tree,form</field>
+ </record> 
+ <!--menuitem name="Partidas por Rubro" id="acc_menu_hr_account_configuration" parent="menu_finance_roles" action="action_acchr_account_configuration"/-->
+
+ <menuitem id="menu_account_configure_rol" parent="menu_finance_roles" name="Partidas rubro"/>
+ 
+ <menuitem name="Cuentas por Rubro" id="menu_hr_account_configuration_rol" parent="menu_account_configure_rol" 
+	   action="action_hr_account_configuration"/>
+ 
+ <menuitem name="Clona Rubro" id="menu_clona_rubro_rol" parent="menu_account_configure_rol" action="action_clona_rubro"/>    
+ 
+ <menuitem name="Param Rubro" id="menu_param_rubro_rol" parent="menu_account_configure_rol" action="action_param_rubro"/>    
+ 
+<!-- menu pagos varios Contabilidad -->
+
+<menuitem id="menu_hr_varios_contabilidad"
+	  action="gt_hr_pago.action_hr_varios"
+	  parent="menu_finance_roles"
+	  name="Pagos Varios (Judicial)"/>
+
+<!-- partida rubro para presupuestos -->
+
+ <menuitem name="Partidas por Rubro" id="acc_menu_hr_account_configuration_budget" 
+	   parent="gt_budget.menu_main_budget_gob" action="action_acchr_account_configuration"/>
+
+<!-- PAGO TERCEROs -->
+ <record model="ir.ui.view" id="view_tree_terceros">
+   <field name="name">hr.pago.terceros.tree</field>
+   <field name="model">hr.pago.terceros</field>
+   <field name="type">tree</field>
+   <field name="arch" type="xml">
+     <tree string="Pago Terceros">
+       <field name="name"/>
+       <field name="partner_id"/>
+       <field name="period_id"/>
+       <field name="bank_id"/>
+     </tree>
+   </field>
+ </record>
+ 
+ <record model="ir.ui.view" id="view_form_pago_terceros">
+   <field name="name">hr.pago.terceros.form</field>
+   <field name="model">hr.pago.terceros</field>
+   <field name="type">form</field>
+   <field name="arch" type="xml">
+     <form string="Pago Terceros">
+       <field name="name" colspan="2" required="1"/>
+       <field name="total_pago" colspan="2" readonly="1"/>
+       <field name="partner_id" colspan="2" required="1"/>
+       <field name="period_id" colspan="2" required="1" widget='selection'/>
+       <field name="bank_id" colspan="2" required="1"/>
+       <field name="date" colspan="2" required="1"/>
+       <group colspan="4" col='7'>
+	 <button name="load_cxp3" colspan="2" string="Cargar Cuentas" type="object" icon="gtk-execute"/>
+	 <button name="paid_cxp3" colspan="2" string="Pagar Cuentas" type="object" icon="gtk-execute"/>
+	 <button name="computeTotalCxp3" colspan="2" string="Ver Total" type="object" icon="gtk-execute"/>
+	 <button name="marca_cxp3" colspan="1" string="Marcar" type="object" icon="gtk-execute"/>
+       </group>
+       <!--group colspan="4" col='8'>
+	 <field name="datas_fname" colspan="2" invisible="1"/>
+	 <field name="datas" filename="datas_fname" colspan="2"/>
+	 <button name="exp_cxp3" colspan="2" string="Exportar" type="object" icon="gtk-execute"/>
+	 <button name="imp_cxp3" colspan="2" string="Importar" type="object" icon="gtk-execute"/>
+       </group-->
+       <group colspan="4" col='8'>
+	 <field name="varios_benef" colspan="2" required="1"/>
+	 <field name="move_id" colspan="2" readonly="1"/>
+	 <!--field name="period_id2" colspan="2"/>
+	 <field name="is_iess" colspan="2" required="1"/-->
+       </group>
+       <field name="name_ids" nolabel="1" colspan="4">
+	 <tree>
+	   <field name="name" string="Rubro"/>
+	 </tree>
+       </field>
+       <!--field name="line_ids" nolabel="1" colspan="4" readonly="1"-->
+       <field name="line_ids" nolabel="1" colspan="4">
+	 <form>
+	   <field name="budget_id" readonly="1"/>
+	   <newline/>
+	   <field name="ref" readonly="1"/>
+	   <field name="date" readonly="1"/>
+	   <field name="account_id" readonly="1"/>
+	   <field name="monto_inicial" required="1" readonly="1"/>
+	   <field name="monto" required="1"/>
+	   <field name="to_pay" required="1"/>
+	   <field name="line_ids" colspan="4">
+	     <tree editable='top'>
+	       <field name="partner_id" required="1"/>
+	       <field name="monto" required="1" sum="TOTAL"/>
+	       <field name="state"/>
+	     </tree>
+	   </field>
+	 </form>
+	 <tree>
+	   <field name="ref" readonly="1"/>
+	   <field name="date" readonly="1"/>
+	   <field name="account_id" readonly="1"/>
+	   <field name="budget_id" readonly="1"/>
+	   <field name="monto_inicial" sum="TOTAL"/>
+	   <field name="monto" sum="TOTAL"/>
+	   <field name="to_pay"/>
+	 </tree>
+       </field>
+     </form>
+   </field>
+ </record>
+ 
+ <record id="view_search_pago_terceros" model="ir.ui.view">
+   <field name="name">hr.pago.terceros.search</field>
+   <field name="model">hr.pago.terceros</field>
+   <field name="type">search</field>
+   <field name="arch" type="xml">
+     <search string="Pago Terceros">
+       <field name="name"/>
+       <field name="partner_id"/>
+       <field name="period_id"/>
+       <field name="bank_id"/>
+       <newline />
+       <group expand="1" string="Agrupar por...">
+	 <filter string="Rubro" icon="STOCK_INDENT" domain="[]" context="{'group_by':'name_id'}"/>
+	 <filter string="Proveedor" icon="STOCK_OPEN" domain="[]" context="{'group_by':'partner_id'}"/>
+	 <filter string="Periodo" icon="STOCK_EDIT" domain="[]" context="{'group_by':'period_id'}"/>
+	 <filter string="Banco" icon="STOCK_EDIT" domain="[]" context="{'group_by':'bank_id'}"/>
+       </group>
+     </search>
+   </field>
+ </record>
+ 
+ 
+ <record model="ir.actions.act_window" id="action_pago_terceros">
+   <field name="name">Pagos Terceros</field>
+   <field name="res_model">hr.pago.terceros</field>
+   <field name="view_type">form</field>
+   <field name="view_mode">tree,form</field>
+ </record> 
+ <menuitem name="Pago Terceros" id="acc_menu_hr_account_terceros" groups="account.group_account_manager"
+	   parent="menu_finance_roles" action="action_pago_terceros"/>
+ <!-- PAGO TERCEROs -->
+ <record model="ir.ui.view" id="view_tree_pago_rol">
+   <field name="name">hr.pago.rol.tree</field>
+   <field name="model">hr.pago.rol</field>
+   <field name="type">tree</field>
+   <field name="arch" type="xml">
+     <tree string="Pago Rol">
+       <field name="name"/>
+       <field name="rol_id"/>
+       <field name="period_id"/>
+       <field name="bank_id"/>
+     </tree>
+   </field>
+ </record>
+ 
+ <record model="ir.ui.view" id="view_form_pago_rol">
+   <field name="name">hr.pago.rol.form</field>
+   <field name="model">hr.pago.rol</field>
+   <field name="type">form</field>
+   <field name="arch" type="xml">
+     <form string="Pago Rol">
+       <field name="name" colspan="4" readonly="1"/>
+       <field name="rol_id" colspan="2" required="1" attrs="{'readonly': [('state','=','Pagado')]}"/>
+       <field name="bank_id" colspan="2" required="1" attrs="{'readonly': [('state','=','Pagado')]}"/>
+       <field name="move_id" colspan="4" readonly="1"/>
+       <group colspan="4" col="5">
+	 <button name="load_cxprol" colspan="1" string="Cargar Cuentas Por Pagar" type="object" icon="gtk-execute" states='Borrador'/>
+	 <button name="paid_cxprol" colspan="1" string="Pagar Cuentas" type="object" icon="gtk-ok" states='Borrador'/>
+	 <button name="finalizar_cxprol" colspan="1" string="Finalizar" type="object" icon="gtk-ok" states='Borrador'/>
+	 <field name='state' readonly="1" colspan="2"/>
+       </group>
+       <field name="line_ids" nolabel="1" colspan="4">
+	 <tree>
+	   <field name="cxp_id" required="1" readonly="1"/>
+	   <field name="partida_id" readonly="1"/>
+	   <field name="to_pay" readonly="1"/>
+	   <field name="monto" sum="TOTAL" readonly="1"/>
+	   <field name="monto_pay" sum="TOTAL"/>
+	 </tree>
+       </field>
+     </form>
+   </field>
+ </record>
+ 
+ <record id="view_search_pago_rol" model="ir.ui.view">
+   <field name="name">hr.pago.rol.search</field>
+   <field name="model">hr.pago.rol</field>
+   <field name="type">search</field>
+   <field name="arch" type="xml">
+     <search string="Pago Rol">
+       <field name="name"/>
+       <field name="rol_id"/>
+       <field name="period_id"/>
+       <field name="contract_type_id"/>
+       <newline />
+       <group expand="1" string="Agrupar por...">
+	 <filter string="Contrato" icon="STOCK_EDIT" domain="[]" context="{'group_by':'contract_type_id'}"/>
+       </group>
+     </search>
+   </field>
+ </record>
+ 
+ 
+ <record model="ir.actions.act_window" id="action_pago_rol">
+   <field name="name">Pagos Roles</field>
+   <field name="res_model">hr.pago.rol</field>
+   <field name="view_type">form</field>
+   <field name="view_mode">tree,form</field>
+ </record> 
+ <menuitem name="Pago Rol" id="acc_menu_hr_account_rol" groups="account.group_account_manager"
+	   parent="menu_finance_roles" action="action_pago_rol"/>
+<!-- -->
+
+    <record id="account.view_partner_property_form" model="ir.ui.view">
+      <field name="name">account.partner.cedruc.anticipo.form</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+          <page string="History" position="before">
+            <page string="Accounting">
+              <group col="2" colspan="2">
+                <separator string="Customer Accounting Properties" colspan="2"/>
+                <field name="property_account_receivable" groups="account.group_account_invoice" />
+                <field name="property_account_position" widget="selection"/>
+		<field name="address" invisible="1"/>
+                <field name="anticipo_id"/>
+                <field name="rendir_id"/>
+              </group>
+              <group col="2" colspan="2">
+                <separator string="Supplier Accounting Properties" colspan="2"/>
+                <field name="property_account_payable" groups="account.group_account_invoice"/>
+              </group>
+              <group col="2" colspan="2">
+                <separator string="Customer Credit" colspan="2"/>
+                <field name="credit"/>
+                <field name="credit_limit" groups="base.group_extended"/>
+              </group>
+              <group col="2" colspan="2">
+                <separator string="Supplier Debit" colspan="2"/>
+                <field name="debit"/>
+              </group>
+              <field colspan="4" context="{'address': address}" name="bank_ids" nolabel="1" 
+					 attrs="{'invisible': [('supplier','!=',True)]}">
+                <form string="Bank account">
+                  <field name="state"/>
+                  <newline/>
+				  <field name="bank" on_change="onchange_bank_id(bank)" groups="base.group_extended"/>
+                  <field name="bank_name"/>
+                  <field name="bank_bic"/>
+				  <field name="type_cta"/>
+                  <field name="acc_number"/>
+                  <newline/>
+                </form>
+              </field>
+            </page>
+          </page>
+        </field>
+    </record>
+	
+
+<!-- -->
+    	
+    	<record model="ir.ui.view" id="view_tree_account_configuration">
+		  <field name="name">hr.account.configuration.tree</field>
+		  <field name="model">hr.account.configuration</field>
+		  <field name="type">tree</field>
+		  <field name="arch" type="xml">
+			<tree string="Cuentas por Rubro">
+			  <field name="rule_id"/>
+			  <!--field name="project_id"/-->
+			  <field name="pay_account_id"/>
+			  <field name="expense_account_id"/>
+			  <field name="budget_id"/>
+			</tree>
+		  </field>
+		</record>
+		
+    		<record model="ir.ui.view" id="view_form_account_configuration">
+		  <field name="name">hr.account.configuration.form</field>
+		  <field name="model">hr.account.configuration</field>
+		  <field name="type">form</field>
+		  <field name="arch" type="xml">
+		    <form string="Cuentas por Rubro">
+		      <field name="rule_id" colspan="2" required="1"/>
+		      <!--field name="project_id" colspan="2" required="1"/-->
+		      <field name="pay_account_id" colspan="2" domain="[('type','!=','view')]"
+			     groups='account.group_account_manager'/>
+		      <field name="expense_account_id" colspan="2" 
+			     groups='account.group_account_manager' domain="[('type','!=','view')]"/>
+		      <field name="budget_id" colspan="2" required="1"/>
+		    </form>
+		  </field>
+		</record>
+		
+		<record id="view_search_account_configuration" model="ir.ui.view">
+		  <field name="name">hr.account.configuration.search</field>
+		  <field name="model">hr.account.configuration</field>
+		  <field name="type">search</field>
+		  <field name="arch" type="xml">
+		    <search string="Cuentas por Rubro">
+		      <field name="rule_id"/>
+			  <field name="budget_id"/>
+			  <field name="pay_account_id"/>
+			  <field name="expense_account_id"/>
+			  <!--field name="budget_line_id"/-->
+		      <newline />
+		      <group expand="1" string="Agrupar por...">
+		        <filter string="Rubro" icon="STOCK_INDENT" domain="[]" context="{'group_by':'rule_id'}"/>
+		        <filter string="Partida" icon="STOCK_OPEN" domain="[]" context="{'group_by':'budget_id'}"/>
+		        <filter string="Cuenta por Pagar" icon="STOCK_EDIT" domain="[]" context="{'group_by':'pay_account_id'}"/>
+		        <filter string="Cuenta de Gasto" icon="STOCK_EDIT" domain="[]" context="{'group_by':'expense_account_id'}"/>
+		        <!--filter string="Partida presupuestaria" icon="terp-dolar" domain="[]" context="{'group_by':'budget_line_id'}"/-->
+		      </group>
+		    </search>
+		  </field>
+		</record>
+    	
+    	<record model="ir.actions.act_window" id="action_hr_account_configuration">
+		  <field name="name">Configuracion de Cuentas</field>
+		  <field name="res_model">hr.account.configuration</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		</record> 
+    	
+    		<menuitem id="menu_account_configure" parent="hr.menu_hr_configuration" name="Financiero"/>
+		
+		<menuitem name="Cuentas por Rubro" id="menu_hr_account_configuration" parent="menu_account_configure" action="action_hr_account_configuration"/>
+		
+		<menuitem name="Clona Rubro" id="menu_clona_rubro" parent="menu_account_configure" action="action_clona_rubro"/>    
+
+		<menuitem name="Param Rubro" id="menu_param_rubro" parent="menu_account_configure" action="action_param_rubro"/>    
+
+		<!--  parametrizaicon en presupuestos -->
+		<menuitem id="menu_account_configure_budget" parent="gt_budget.menu_budget_configuration" name="Financiero"/>
+		
+		<menuitem name="Cuentas por Rubro" id="menu_hr_account_configuration_budget" parent="menu_account_configure_budget" 
+			  action="action_hr_account_configuration"/>
+		
+		<menuitem name="Clona Rubro" id="menu_clona_rubro_budget" parent="menu_account_configure_budget" action="action_clona_rubro"/>    
+
+		<menuitem name="Param Rubro" id="menu_param_rubro_budget" parent="menu_account_configure_budget" action="action_param_rubro"/>    
+
+		<!--
+        =======================
+        HR PAYSLIP RUN
+        =======================
+        -->
+        
+        <record id="view_payslip_account_form_gob" model="ir.ui.view">
+            <field name="name">Payslip.Run.Form</field>
+            <field name="model">hr.payslip.run</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="gt_hr_payroll_ec.view_payslip_run_form_ec"/>
+            <field name="arch" type="xml">
+              <xpath expr="/form/notebook/page[@string='Detalle de Roles']" position="after">
+		<page string="Verificacion Configuracion">
+		  <field name="verificado" colspan="3"/>
+		  <button name="verificarConfiguracion" string="Verificar Configuracion" type="object" icon="gtk-ok"/>
+		  <newline/>
+		  <field name="log_configuracion" nolabel="1" colspan="4" readonly="1"/>
+		</page>
+		<page string="Detalle Programa Rubro">
+		  <field name="detalle_ids" nolabel="1">
+		    <tree>
+		      <field name="programa_id" readonly="1"/>
+		      <field name="rubro_id" readonly="1"/>
+		      <field name="partida_id" readonly="1"/>
+		      <field name="monto" readonly="1"/>
+		    </tree>
+		  </field>
+		</page>
+              </xpath>
+            </field>
+        </record>
+    	
+	</data>
+</openerp>

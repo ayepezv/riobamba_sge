@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_tesorero" model="res.groups">
+      <field name="name">Contabilidad y Finanzas / Tesorero</field>
+    </record>
+
+    <record id="group_director_financiero" model="res.groups">
+      <field name="name">Contabilidad y Finanzas / Director Financiero</field>
+    </record>
+
+</data>
+</openerp>

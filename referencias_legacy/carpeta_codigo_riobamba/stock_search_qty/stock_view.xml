@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Add new filters to search by quantity -->
+        <record id="view_location_search" model="ir.ui.view">
+            <field name="name">stock_search_qty.location.search</field>
+            <field name="model">stock.location</field>
+            <field name="type">search</field>
+            <field name="inherit_id" ref="stock.view_location_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='supplier']" position='after'>
+                    <separator orientation="vertical"/>
+                    <filter string="In use"
+                        help="If a product is in the context, this selects the Locations where the Product is available. Otherwise, this selects all the Locations containing goods."
+                        name="filter_stock_real"
+                        icon="terp-accessories-archiver" 
+                        domain="[('stock_real','&gt;',0.0)]"/>
+                    <filter string="Empty"
+                        help="If a product is in the context, this selects the Locations where the Product is not available. Otherwise, it selects empty locations."
+                        name="filter_stock_empty" 
+                        icon="terp-dialog-close"
+                        domain="[('stock_real','=',0.0)]"/>
+                    <filter string="Negative Stock"
+                        help="If a product is in the context, this selects the Locations where the Available Quantity of the Product is less than zero. Otherwise, this selects all the Locations having a negative total stock quantity, regardless of the Units of measures - which may or may not be meaningful to you." 
+                        name="filter_stock_negative" 
+                        icon="terp-emblem-important" 
+                        domain="[('stock_real','&lt;',0.0)]"/>
+                    <filter string="Virtual Stock"
+                        help="If a product is in the context, this selects the Locations where the Virtual Quantity of the Product is more than zero. Otherwise, this selects all the Locations expected to contain goods at a later date."
+                        name="filter_stock_virtual"
+                        icon="terp-accessories-archiver"
+                        domain="[('stock_virtual','&gt;',0.0)]"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- By default, only display available products when listing the contents of a Location -->
+        <act_window
+            context="{'location': active_id, 'search_default_filter_available': 1}"
+            domain="[('type','&lt;&gt;','service')]"
+            id="stock.act_product_location_open"
+            name="Products"
+            res_model="product.product"
+            src_model="stock.location"/>
+            
+        
+        <!-- By default, only display available products in the report "Stock by Location" -->
+        <act_window
+            context="{'product_id': active_id, 'search_default_filter_stock_real': 1}"
+            id="stock.act_stock_product_location_open"
+            name="Stock by Location"
+            res_model="stock.location"
+            src_model="product.product"
+            groups="base.group_extended"/>
+    </data>
+</openerp>

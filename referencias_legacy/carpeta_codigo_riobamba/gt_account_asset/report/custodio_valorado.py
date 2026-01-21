@@ -1,0 +1,224 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+class custodio_valorado(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(custodio_valorado, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_categories_custodio': self.get_categories_custodio,
+            'get_activos_custodio':self.get_activos_custodio,
+        })
+
+    def get_activos_custodio(self, this, categ_id):
+        asset_obj = self.pool.get('account.asset.asset')
+        if this.estado=='Operativos':
+            if this.opc:
+                if this.date_start:
+                    if this.tipo=='Todos':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)])
+                    elif this.tipo=='Larga Duracion':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('type','=','Larga Duracion'),
+                                                                         ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)])
+                    else:
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('type','=','Sujeto a Control'),
+                                                                         ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)])
+                else:
+                    if this.tipo=='Todos':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)])
+                    elif this.tipo=='Larga Duracion':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('type','=','Larga Duracion'),
+                                                                         ('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)])
+                    else:
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('type','=','Sujeto a Control'),
+                                                                         ('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)])
+            else:
+                if this.tipo=='Todos':
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                     ('employee_id','=',this.employee_id.id)])
+                elif this.tipo=='Larga Duracion':
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                     ('type','=','Larga Duracion'),
+                                                                     ('employee_id','=',this.employee_id.id)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                     ('type','=','Sujeto a Control'),
+                                                                     ('employee_id','=',this.employee_id.id)])
+        else:
+            if this.opc:
+                if this.date_start:
+                    if this.tipo=='Todos':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    elif this.tipo=='Larga Duracion':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('type','=','Larga Duracion'),
+                                                                         ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    else:
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('type','=','Sujeto a Control'),
+                                                                         ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                else:
+                    if this.tipo=='Todos':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('purchase_date','<=',this.date_stop),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    elif this.tipo=='Larga Duracion':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('purchase_date','<=',this.date_stop),
+                                                                         ('type','=','Larga Duracion'),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    else:
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('purchase_date','<=',this.date_stop),
+                                                                         ('type','Sujeto a Control'),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+            else:
+                if this.tipo=='Todos':
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('employee_id','=',this.employee_id.id)],limit=1)
+                elif this.tipo=='Larga Duracion':
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('type','=','Larga Duracion'),
+                                                                     ('employee_id','=',this.employee_id.id)],limit=1)
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('type','=','Sujeto a Control'),
+                                                                     ('employee_id','=',this.employee_id.id)],limit=1)
+        return asset_obj.browse(self.cr, self.uid,asset_ids)
+
+    def get_categories_custodio(self,this):
+        categ_ids1 = []
+        asset_obj = self.pool.get('account.asset.asset')
+        categ_obj = self.pool.get('account.asset.category')
+        if this.categ_id:
+            categ_ids = [this.categ_id.id]
+        else:
+            categ_ids = categ_obj.search(self.cr, self.uid, [])
+        for categ_id in categ_ids:
+            if this.estado=='Operativos':
+                if this.opc:
+                    if this.date_start:
+                        if this.tipo=='Todos':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                             ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)
+                        elif this.tipo=='Larga Duracion':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                             ('type','=','Larga Duracion'),
+                                                                             ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)])
+                        else:
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                             ('type','=','Sujeto a Control'),
+                                                                             ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)])
+                    else:
+                        if this.tipo=='Todos':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                             ('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)
+                        elif this.tipo=='Larga Duracion':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                             ('type','=','Larga Duracion'),
+                                                                             ('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)])
+                        else:
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                             ('type','=','Sujeto a Control'),
+                                                                             ('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)])
+                else:
+                    if this.tipo=='Todos':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    elif this.tipo=='Larga Duracion':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('type','=','Larga Duracion'),
+                                                                         ('employee_id','=',this.employee_id.id)])
+                    else:
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                         ('type','=','Sujeto a Control'),
+                                                                         ('employee_id','=',this.employee_id.id)])
+            else:
+                if this.opc:
+                    if this.date_start:
+                        if this.tipo=='Todos':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                             ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)
+                        elif this.tipo=='Larga Duracion':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                             ('type','=','Larga Duracion'),
+                                                                             ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)
+                        else:
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                             ('type','=','Sujeto a Control'),
+                                                                             ('purchase_date','>=',this.date_start),('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)  
+                    else:
+                        if this.tipo=='Todos':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                             ('purchase_date','<=',this.date_stop),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)
+                        elif this.tipo=='Larga Duracion':
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                             ('purchase_date','<=',this.date_stop),
+                                                                             ('type','=','Larga Duracion'),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)
+                        else:
+                            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                             ('purchase_date','<=',this.date_stop),
+                                                                             ('type','Sujeto a Control'),
+                                                                             ('employee_id','=',this.employee_id.id)],limit=1)   
+                else:
+                    if this.tipo=='Todos':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    elif this.tipo=='Larga Duracion':
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('type','=','Larga Duracion'),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+                    else:
+                        asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                         ('type','=','Sujeto a Control'),
+                                                                         ('employee_id','=',this.employee_id.id)],limit=1)
+            if asset_ids:
+                if not categ_id in categ_ids1:
+                    categ_ids1.append(categ_id)
+        return categ_obj.browse(self.cr, self.uid,categ_ids1)
+       
+report_sxw.report_sxw('report.custodio_valorado',
+                       'custodio.valorado', 
+                       'addons/gt_account_asset/report/custodio_valorado.mako',
+                       parser=custodio_valorado,
+                       header=False)
+

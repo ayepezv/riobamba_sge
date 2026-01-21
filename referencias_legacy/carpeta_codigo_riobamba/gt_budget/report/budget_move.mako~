@@ -1,0 +1,62 @@
+<html>
+<head>
+    <style type="text/css">
+    </style>
+</head>
+ <body>
+   %for o in objects:
+   <h4 style="text-align:center;" align="center">DIRECCION FINANCIERA</h4>
+   <h5 style="text-align:center;" align="center">PRESUPUESTOS</h5>
+   <h6 style="text-align:center;" align="center">MOVIMIENTO DE PARTIDA PRESUPUESTARIA</h6>
+   <table class="table_basic table_title">
+     <tr>
+       <td>Partida: ${ o.budget_id.code } - ${ o.budget_id.name }</td>
+       <td>Desde: ${ o.date_start }</td>
+       <td>Hasta: ${ o.date_end }</td>
+     </tr>
+   </table>
+   <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:9px">
+    <thead style="display: table-header-group">
+     <tr>
+       <th width="4%">Num.</th>
+       <th width="5%">Fecha</th>
+       <th width="15%">Beneficiario</th>
+       <th width="10%">Num. Comprobante</th>
+       <th width="50%">Concepto</th>
+       <th width="8%">Devengado</th>
+       <th width="8%">Pagado</th>
+     </tr>
+    </thead>
+    <%
+       total_dev = total_pag = aux = 0
+       %>
+    %for line in o.line_ids:
+    <%
+       total_dev+=line.devengado
+       total_pag+=line.pagado
+       aux += 1
+       %>
+    <tr style="page-break-inside:avoid">
+      <td width="4%" style="font-size:9px;text-align:left">${aux}</td>
+      <td width="5%" style="font-size:9px;text-align:left">${line.date}</td>
+      <td width="15%" style="font-size:9px;text-align:right">${line.partner_id.name}</td>
+      <td width="10%" style="font-size:9px;text-align:right">${line.move_id}</td>
+      <td width="50%" style="font-size:9px;text-align:left">${line.desc}</td>
+      <td width="8%" style="font-size:9px;text-align:right">${line.devengado}</td>
+      <td width="8%" style="font-size:9px;text-align:right">${line.pagado}</td>
+    </tr>
+    %endfor   
+    <tr style="page-break-inside:avoid">
+      <td width="4%" style="font-size:11px;text-align:left">${}</td>
+      <td width="5%" style="font-size:11px;text-align:left">${}</td>
+      <td width="15%" style="font-size:11px;text-align:right">${}</td>
+      <td width="10%" style="font-size:11px;text-align:right"><b>${}</b></td>
+      <td width="50%" style="font-size:11px;text-align:right"><b>TOTALES</b></td>
+      <td width="8%" style="font-size:11px;text-align:right"><b>${total_dev}</b></td>
+      <td width="8%" style="font-size:11px;text-align:right"><b>${total_pag}</b></td>
+    </tr>
+   </table>
+   %endfor
+</table>
+</body>
+</html>

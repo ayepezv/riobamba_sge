@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+
+    <record id="view_account_tax_prf_type_form" model="ir.ui.view">
+      <field name="name">view.account.tax.prf.type.form</field>
+      <field name="model">account.tax</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="account.view_tax_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="/form/notebook/page[@string='Special Computation']" position="replace"></xpath>
+	<notebook position="inside">
+	  <page string="Cuentas Contables">
+	    <field name="account_id"/>
+	    <field name="tax_map_ids" nolabel="1" colspan="3">
+	      <tree editable="bottom">
+		<field name="budget" /> 
+		<field name="account_id" required="1" colspan="2" domain="[('type','not in',['view','consolidation'])]"/>
+	      </tree>
+	    </field>
+	  </page>
+	  <page string='Python' groups="base.group_erp_manager">
+	    <field name="python_compute"/>
+	  </page>
+	</notebook>
+      </field>
+    </record>
+    
+  </data>
+</openerp>

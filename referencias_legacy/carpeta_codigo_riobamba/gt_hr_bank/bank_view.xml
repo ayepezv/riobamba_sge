@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    	
+      <menuitem id="menu_cargar_hr" parent="hr.menu_hr_root" name="Beneficiarios y Bancos" groups="base.group_hr_manager,base.group_hr_user"/>
+      
+      <!-- MENU DE PROVEEDORES-->
+    <record id="action_partner_tthh" model="ir.actions.act_window">
+      <field name="name">Proveedores/Beneficiarios</field>
+      <field name="res_model">res.partner</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem
+        action="action_partner_tthh"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Proveedores/Beneficiarios"
+        id="menu_action_partner_tthh"
+        parent="menu_cargar_hr"
+        sequence="0"
+        />
+      
+      <!-- BANCOS - res.bank -->
+      
+      <record id="view_bank_employee_tree" model="ir.ui.view">
+	<field name="name">res.bank-modif.tree</field>
+	<field name="model">res.partner.bank</field>
+	<field name="type">tree</field>
+	<field eval="1" name="priority"/>
+	<field name="arch" type="xml">
+	  <tree string="Cuentas Bancarias">
+	    <field name="partner_id" required="1"/>
+	    <field name="bank"/>
+	    <field name="type_cta"/>
+	    <field name="acc_number"/>
+	    <field name="spi_pay"/>
+	  </tree>
+	</field>
+      </record>
+      
+      <record id="res_bank_form_redefined_view" model="ir.ui.view">
+	<field name="name">res.bank.redefined.form</field>
+	<field name="model">res.bank</field>
+	<field name="type">form</field>
+	<field eval="1" name="priority"/>
+	<field name="arch" type="xml">
+	  <form string="Banco">
+	    <field name="name" readonly="1"/>
+	    <field name="bic" readonly="1"/>
+	    <field name="desc" readonly="1"/>
+	  </form>
+	</field>
+      </record>
+
+      <record id="view_bank_filter" model="ir.ui.view">
+	<field name="name">res.bank.list.select</field>
+	<field name="model">res.bank</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Bancos">
+	    <group>
+              <field name="name"/>
+              <field name="bic"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+      
+      <record id="bank_form_redefined_view" model="ir.ui.view">
+	<field name="name">partner.bank.redefined.form</field>
+	<field name="model">res.partner.bank</field>
+	<field name="type">form</field>
+	<field eval="1" name="priority"/>
+	<field name="arch" type="xml">
+	  <form string="Cuentas Bancarias">
+	    <field name="partner_id" string="Proveedor/Funcionario" required="1"/>
+	    <field name="bank"/>
+	    <field name="type_cta"/>
+	    <field name="acc_number"/>
+	    <field name="spi_pay"/>
+	  </form>
+	</field>
+      </record>
+      
+      <record model="ir.ui.view" id="bank_modified_form">
+        <field name="name">bank.modified.form</field>
+          <field name="type">form</field>
+          <field name="model">res.partner.bank</field>
+          <field name="inherit_id" ref="base.view_partner_bank_form"/>
+          <field name="arch" type="xml">
+	    <field name="state" position="replace"></field>
+	    <field name="acc_number" position="before">
+	      <field name="type_cta"/>
+	    </field>
+          </field>
+      </record>
+      
+      
+      <record model="ir.actions.act_window" id="cargar_res_bank_action">
+	<field name="name">Bancos</field>
+	<field name="res_model">res.bank</field>
+	<field name="view_mode">tree,form</field>
+      </record> 
+      
+      <menuitem id="menu_cargar_res_bank" parent="menu_cargar_hr" name="Bancos" action="cargar_res_bank_action"/>
+      
+      
+      <!-- CUENTAS BANCARIAS - res.partner.bank -->
+    	
+      <record model="ir.actions.act_window" id="cargar_res_partner_bank_action">
+	<field name="name">Cuentas Bancarias</field>
+	<field name="res_model">res.partner.bank</field>
+	<field name="view_mode">tree,form</field>
+      </record> 
+      
+      <menuitem id="menu_cargar_res_partner_bank" parent="menu_cargar_hr" 
+		name="Cuentas Bancarias" action="cargar_res_partner_bank_action"/>
+		
+      
+      <!-- RECURSOS - resource.resource -->
+      
+      <!--record model="ir.actions.act_window" id="cargar_resource_resource_action">
+	  <field name="name">Recursos</field>
+	  <field name="res_model">resource.resource</field>
+		  <field name="view_mode">tree,form</field>
+		  </record> 
+		  
+		  <menuitem id="menu_cargar_resource_resource" parent="menu_cargar_hr" name="Recursos" action="cargar_resource_resource_action"/-->
+      
+    </data>
+</openerp>

@@ -1,0 +1,49 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_payroll_structure","hr.payroll.structure","hr_payroll.model_hr_payroll_structure","base.group_hr_manager",1,1,1,1
+"access_hr_contribution_register","hr.contribution.register","hr_payroll.model_hr_contribution_register","base.group_hr_manager",1,1,1,1
+"access_hr_salary_rule_category","hr.salary.rule.category","hr_payroll.model_hr_salary_rule_category","base.group_hr_manager",1,1,1,1
+"access_hr_payslip","hr.payslip","hr_payroll.model_hr_payslip","base.group_hr_manager",1,1,1,1
+"access_hr_payslip_line","hr.payslip.line","hr_payroll.model_hr_payslip_line","base.group_hr_manager",1,1,1,1
+"access_hr_payslip_input_user","hr.payslip.input.user","hr_payroll.model_hr_payslip_input","base.group_hr_manager",1,1,1,1
+"access_hr_salary_rule_user","hr.salary.rule.user","hr_payroll.model_hr_salary_rule","base.group_hr_manager",1,1,1,1
+"access_hr_holydays_status_user","hr.holidays.status user","hr_holidays.model_hr_holidays_status","base.group_hr_manager",1,1,1,1
+"access_hr_holidays_user","hr.holidays.user","hr_holidays.model_hr_holidays","base.group_hr_manager",1,1,1,1
+"access_hr_holidays_employee","hr.holidays.employee","hr_holidays.model_hr_holidays","base.group_hr_manager",1,1,1,1
+"access_hr_holydays_status_employee","hr.holidays.status employee","hr_holidays.model_hr_holidays_status","base.group_hr_manager",1,1,1,1
+"access_hr_holidays_remain_user","hr.holidays.ramain.user","hr_holidays.model_hr_holidays_remaining_leaves_user","base.group_hr_manager",1,1,1,1
+"access_resource_calendar_leaves_manager","resource_calendar_leaves_manager","resource.model_resource_calendar_leaves","base.group_hr_manager",1,1,1,1
+"access_hr_employee_category_user","hr.employee.category.user","hr.model_hr_employee_category","base.group_hr_manager",1,1,1,1
+"access_hr_employee_category_emp","hr.employee.category.emp","hr.model_hr_employee_category","base.group_hr_manager",1,1,1,1
+"access_hr_employee_user","hr.employee user","hr.model_hr_employee","base.group_hr_manager",1,1,1,1
+"access_hr_employee_system_user","hr.employee system user","hr.model_hr_employee","base.group_hr_manager",1,1,1,1
+"access_hr_employee_resource_user","resource.resource.user","resource.model_resource_resource","base.group_hr_manager",1,1,1,1
+"access_hr_department_user","hr.department.user","hr.model_hr_department","base.group_hr_manager",1,1,1,1
+"access_hr_department_employee","hr.department.employee","hr.model_hr_department","base.group_hr_manager",1,1,1,1
+"access_hr_job_user","hr.job user","hr.model_hr_job","base.group_hr_manager",1,1,1,1
+"access_hr_res_partner_address","res.partner.address","base.model_res_partner_address","base.group_hr_manager",1,1,1,1
+"access_ir_property_hr_user","ir_property hr_user","base.model_ir_property","base.group_hr_manager",1,1,1,1
+"access_hr_resource_manager","hr.employee.resource.manager","resource.model_resource_resource","base.group_hr_manager",1,1,1,1
+"access_hr_resource_calendar_user","hr.employee.resource.calendar.user","resource.model_resource_calendar","base.group_hr_manager",1,1,1,1
+"access_hr_contract_type_manager","hr.contract.type.manager","hr_contract.model_hr_contract_type","base.group_hr_manager",1,1,1,1
+"access_hr_contract_manager","hr.contract.manager","hr_contract.model_hr_contract","base.group_hr_manager",1,1,1,1
+"access_ir_sequence","ir.sequence","base.model_ir_sequence","base.group_hr_manager",1,1,1,1
+"access_ir_model_data","ir.model.data","base.model_ir_model_data","base.group_hr_manager",1,1,1,1
+"access_hr_payslip_employees","hr.payslip.employees","hr_payroll.model_hr_payslip_employees","base.group_hr_manager",1,1,1,1
+"access_hr_payslip_run","hr.payslip.run","hr_payroll.model_hr_payslip_run","base.group_hr_manager",1,1,1,1
+"access_hr_payslip_worked_days","hr.payslip.worked_days","hr_payroll.model_hr_payslip_worked_days","base.group_hr_manager",1,1,1,1
+"access_res_company","res.company","base.model_res_company","base.group_hr_manager",1,1,1,1
+"access_res_users","res.users","base.model_res_users","base.group_hr_manager",1,1,1,1
+"access_employee_acc","hr.employee","hr.model_hr_employee","account.group_account_user",1,1,1,1
+"access_contract_acc","hr.contract","hr_contract.model_hr_contract","account.group_account_user",1,1,1,1
+"access_payslip_input_acc","hr.payslipinput","hr_payroll.model_hr_payslip_input","account.group_account_user",1,1,1,1
+"access_workeddays_acc","hr.payslip.worked_days","hr_payroll.model_hr_payslip_worked_days","account.group_account_user",1,1,1,1
+"access_payline_acc","hr.payslip.line","hr_payroll.model_hr_payslip_line","account.group_account_user",1,1,1,1
+"access_salrule_acc","hr.salary.rule","hr_payroll.model_hr_salary_rule","account.group_account_user",1,1,1,1
+"access_salrule_acc_categ","hr.salary.rule.category","hr_payroll.model_hr_salary_rule_category","account.group_account_user",1,1,1,1
+"access_hr_no_cobro","hr.no.cobro","model_hr_no_cobro","base.group_hr_manager",1,1,1,1
+"access_no_descontado","no.descontado","model_no_descontado","base.group_hr_manager",1,1,1,1
+"access_rule_account_acc","rule.account","model_rule_account","account.group_account_user",1,1,1,1
+"access_rule_account_tthh","rule.account","model_rule_account","base.group_hr_manager",1,0,0,0
+"access_rubro_cxp_acc","rubro.cxp","model_rubro_cxp","account.group_account_user",1,1,1,1
+"access_rubro_cxp_tthh","rubro.cxp","model_rubro_cxp","base.group_hr_manager",1,0,0,0
+"access_hr_no_cobro acc","hr.no.cobro","model_hr_no_cobro","account.group_account_user",1,1,1,1

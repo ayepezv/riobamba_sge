@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+    <menuitem id="menu_finance_cashfund" name="Caja Chica" parent="account.menu_finance"/>
+
+    <record id="view_account_cashfund_form" model="ir.ui.view">
+      <field name="name">view.account.cashfund.form</field>
+      <field name="model">account.cashfund</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Caja Chica">
+          <group string="Información" colspan="6" col="4">
+            <field name="name"/>
+            <field name="date" on_change="onchange_date(date)"/>
+            <field name="partner_id" colspan="6"/>
+          </group>
+          <newline/>
+          <notebook>
+            <page string="Factura(s), Liq. Compra">
+              <field name="invoice_ids" 
+		     domain="[('state','=','open'),('type','in',['in_invoice','liq_purchase']),('cashfund_id','=',False),('responsable_id','=',partner_id)]" 
+                     nolabel="1" colspan="4" widget="many2many"/>
+            </page>
+            <page string="Egreso(s)">
+              <field name="voucher_ids" domain="[('state','=','posted'),('type','=','payment'),('extra_type','=','advances'),('cashfund_id','=',False)]"
+                     nolabel="1" colspan="4" widget="many2many"/>
+            </page>
+            <page string="Detalle Contable">
+              <field name="period_id" widget="selection" invisible="1"/>
+              <field name="line_ids" widget="one2many_list" nolabel="1" colspan="4">
+                <tree string="Detalle Contable">
+                  <field name="ref"/>
+                  <field name="partner_id"/>
+                  <field name="name"/>
+                  <field name="account_id"/>
+                  <field name="debit" sum="TOTAL DEBITO"/>
+                  <field name="credit" sum="TOTAL CREDITO"/>
+		  <field name="budget_id"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+          <group colspan="4" string="Notas">
+            <field name="notes" nolabel="1" colspan="4"/>
+          </group>          
+          <group colspan="8" col="8">
+            <field name="state"/>
+            <field name="invoice_total"/>
+            <field name="voucher_total"/>
+            <button name="action_compute" type="object" string="Calcular" icon="gtk-execute" states="draft"/>
+            <!-- button name="action_print_report" type="object" string="Comprobante" icon="gtk-print" states="draft"/ -->
+            <button name="action_reconcile" type="object" string="Validar" icon="gtk-go-forward" confirm="Seguro de Validar ?" states="draft"/>
+          </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_account_cashfund_tree" model="ir.ui.view">
+      <field name="name">view.account.cashfund.tree</field>
+      <field name="model">account.cashfund</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Documentos de Caja Chica">
+          <field name="name"/>
+          <field name="period_id"/>
+          <field name="partner_id"/>
+          <field name="date"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_account_cashfund_filter" model="ir.ui.view">
+      <field name="name">account.cashfund.select</field>
+      <field name="model">account.cashfund</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Documentos">
+          <field name="name"/>
+          <field name="period_id"/>
+          <field name="partner_id"/>
+          <field name="notes"/>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_account_cashfund" model="ir.actions.act_window">
+      <field name="name">Control de Caja Chica</field>
+      <field name="res_model">account.cashfund</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('type','=','caja')]</field>
+      <field name="context">{'type': 'caja'}</field>
+      <field name="view_id" eval="False"/>
+      <field name="search_view_id" ref="view_account_cashfund_filter"/>
+    </record>
+
+    <menuitem action="action_account_cashfund" 
+              id="menu_action_account_cashfund"  parent="account.menu_finance_payables"
+	          groups="account.group_account_invoice"/>
+
+
+    <record id="action_account_cashfund_fondo" model="ir.actions.act_window">
+      <field name="name">Fondos Rotativos</field>
+      <field name="res_model">account.cashfund</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('type','=','fondo')]</field>
+      <field name="context">{'type': 'fondo'}</field>
+      <field name="view_id" eval="False"/>
+      <field name="search_view_id" ref="view_account_cashfund_filter"/>
+    </record>
+
+    <menuitem action="action_account_cashfund_fondo" 
+              id="menu_action_account_cashfund_fondo" parent="account.menu_finance_payables"
+	          groups="account.group_account_invoice" sequence="30"/>
+    
+  </data>
+</openerp>

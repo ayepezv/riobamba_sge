@@ -1,0 +1,214 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Gestion de Obras - GobERP
+#    Copyright (C) 2013 Mario Chogllo
+#    mariofchogllo@gmail..com
+#    $Id$
+#
+##############################################################################
+
+from osv import osv, fields
+import time
+
+class ObraObraPago(osv.Model):
+    _name = 'obra.obra.pago'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra'),
+        name = fields.char('Descripcion',size=64,required=True),
+        date = fields.date('Fecha Pago'),
+        valor = fields.float('Monto'),
+    )
+ObraObraPago()
+
+class accountMoveObra(osv.Model):
+    _inherit = 'account.move'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra Relacionada'),
+    )
+accountMoveObra()
+
+class budgetCertificateObra(osv.Model):
+    _inherit = 'budget.certificate'
+    _columns = dict(
+        obra_id = fields.many2one('obra.obra','Obra Relacionada'),
+    )
+budgetCertificateObra()
+
+class garantia(osv.Model):
+    _description = 'Tipos de garantias'
+    _name='garantia.garantia'
+    _columns = dict(
+        name = fields.char('Nombre',size=32,required=1),
+        account_id = fields.many2one('account.account','Cuenta debe'),
+        account_id2 = fields.many2one('account.account','Cuenta Haber'),
+        porcentaje = fields.integer('Porcentaje'),
+    )
+garantia()
+
+class obraGarantiaRenovacion(osv.Model):
+    _name = 'obra.garantia.renovacion'
+    _columns = dict(
+        g_id = fields.many2one('obra.garantia','Garantia'),
+        date_start = fields.date('Desde'),
+        date_end = fields.date('Hasta'),
+    )
+obraGarantiaRenovacion()
+
+class obraGarantia(osv.Model):
+    _name = 'obra.garantia'
+    _columns = dict(
+        numero = fields.char('Numero',size=32),
+        renovacion_ids = fields.one2many('obra.garantia.renovacion','g_id','Renovaciones'),
+        name = fields.many2one('garantia.garantia','Garantia',required=True),
+        aseguradora_id = fields.many2one('res.partner','Aseguradora'),
+        fecha_inicio = fields.date('Fecha Inicio'),
+        fecha_fin = fields.date('Fecha Fin'),
+        porcentaje = fields.integer('Porcentaje'),
+        monto = fields.float('Valor Garantia'),
+        obra_id = fields.many2one('obra.obra','Obra'),
+        state = fields.selection([('En Tramite','En Tramite'),('Activa','Activa'),('Ejecutada','Ejecutada'),('Finalizada','Finalizada')],'Estado'),
+    )
+
+    _defaults = dict(
+        state = 'En Tramite',
+    )
+obraGarantia()
+
+
+class obraAnticipo(osv.TransientModel):
+    _name = 'wizard.create.anticipo'
+    _columns = dict(
+        date = fields.date('Fecha'),
+        account_id = fields.many2one('account.account','Cuenta Anticipo'),
+        bank_id = fields.many2one('account.journal','Banco'),
+        monto = fields.float('Monto'),
+    )
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        obra = self.pool.get('obra.obra').browse(cr, uid, record_id, context=context)
+        monto_aux = (obra.monto * obra.porcentaje_anticipo)/100
+        res.update({'partner_id':obra.partner_id.id,
+                    'monto':monto_aux,
+                    'date':time.strftime('%Y-%m-%d'),
+                })
+        return res
+
+    def action_create_anticipoObra(self, cr, uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move_line_obj = self.pool.get('account.move.line')
+        obra_obj = self.pool.get('obra.obra')
+        journal_obj = self.pool.get('account.journal')
+        period_obj = self.pool.get('account.period')
+        obra = obra_obj.browse(cr, uid, context['active_id'])
+        partner_id = obra.partner_id.id
+        journal_ids = journal_obj.search(cr, uid, [('name','=','EGRESOS')],limit=1)
+        if not journal_ids:
+            raise osv.except_osv('Error de configuracion', 'No existe diario de EGRESOS por favor cree uno')
+        this = self.browse(cr, uid, ids[0])
+        period_ids = period_obj.search(cr, uid, [('date_start','<=',this.date),('date_stop','>=',this.date)],limit=1)
+        if not period_ids:
+            raise osv.except_osv('Error de configuracion', 'No existe periodo contable definido para la fecha de anticipo')
+        desc_aux = 'Anticipo a ' + obra.partner_id.name + 'Por: ' + obra.name
+        move_id = move_obj.create(cr, uid, {
+            'journal_id':journal_ids[0],
+            'period_id':period_ids[0],
+            'date':this.date,
+            'partner_id':partner_id,
+            'type2_id':'Financiero',
+            'obra_id':obra.id,
+            'ref':desc_aux,
+            'narration':desc_aux,
+        })
+        move_line_obj.create(cr, uid, {
+            'move_id':move_id,
+            'partner_id':partner_id,
+            'name':'Banco',
+            'debit':this.monto,
+            'account_id':this.bank_id.default_debit_account_id.id,
+        })
+        move_line_obj.create(cr, uid, {
+            'move_id':move_id,
+            'partner_id':partner_id,
+            'name':'Anticipo',
+            'credit':this.monto,
+            'account_id':this.account_id.id,
+        })
+        return {'type':'ir.actions.act_window_close' }
+
+obraAnticipo()
+
+class relObra(osv.TransientModel):
+    _name = 'wizard.rel.obra'
+    _columns = dict(
+        partner_id = fields.many2one('res.partner','Proveedor'),
+        obra_id = fields.many2one('obra.obra','Obra'),
+    )
+
+    def action_relObra(self, cr,  uid, ids, context):
+        move_obj = self.pool.get('account.move')
+        move = invoice_obj.browse(cr, uid, context['active_id'])
+        wizard = self.browse(cr, uid, ids[0])
+        move_obj.write(cr, uid, move.id,{
+            'obra_id':wizard.obra_id.id,
+        })
+        return {'type':'ir.actions.act_window_close' }
+
+    def default_get(self, cr, uid, fields, context=None):
+        if context is None:
+            context = {}
+        res = {}
+        record_id = context and context.get('active_id', False) or False
+        move = self.pool.get('account.move').browse(cr, uid, record_id, context=context)
+        res.update({'partner_id':move.partner_id.id,
+                })
+        return res
+
+relObra()
+
+
+class ObraObra(osv.Model):
+    _description = 'Gestion De Obras y Contratos'
+    _name = 'obra.obra'
+    _columns = dict(
+        fiscalizador_id = fields.many2one('res.partner','Fiscalizador',required=True),
+        administrador_id = fields.many2one('res.partner','Administrador',required=True),
+        garantia_ids = fields.one2many('obra.garantia','obra_id','Garantias'),
+        state = fields.selection([('Borrador','Borrador'),('Ejecucion','Ejecucion'),('Finalizado','Finalizado')],'Estado',readonly=True),
+        name = fields.char('Nombre Obra/Contrato',size=128,required=True),
+        project_id = fields.many2one('project.project','Proyecto/Programa POA',required=True),
+        partner_id = fields.many2one('res.partner','Contratista',required=True),
+        porcentaje_anticipo = fields.integer('Porcentaje Anticipo'),
+        monto = fields.float('Monto Obra/Contrato'),
+        date_start = fields.date('Fecha Inicio'),
+        date_end = fields.date('Fecha Fin'),
+        pay_ids = fields.one2many('obra.obra.pago','obra_id','Terminos Pago'),
+        certificate_ids = fields.one2many('budget.certificate','obra_id','Certificados Presupuestarios'),
+        pago_ids = fields.one2many('account.move','obra_id','Pagos Realizados'),
+    )
+
+#    def crear_anticipoObra(self, cr, uid, ids, context=None):
+#        move_obj = self.pool.get('account.move')
+#        move_line_obj = self.pool.get('account.move.line')
+##        for this in self.browse(cr, uid, ids):
+            
+
+    def iniciar_obra(self, cr, uid, ids, context=None):
+        garantia_obj = self.pool.get('obra.garantia')
+        self.write(cr, uid, ids[0],{'state':'Ejecucion'})
+        for this in self.browse(cr, uid, ids):
+            if this.garantia_ids:
+                for garantia in this.garantia_ids:
+                    garantia_obj.write(cr, uid, garantia.id,{
+                        'state':'Activa',
+                    })
+        return True
+
+    _defaults = dict(
+        state = 'Borrador',
+    )
+ObraObra()

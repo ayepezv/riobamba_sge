@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_spi_voucher,account.spi.voucher,model_account_spi_voucher,retention.group_director_financiero,1,1,1,1
+access_spi_voucher_usr,account.spi.voucher,model_account_spi_voucher,retention.group_tesorero,1,1,0,0

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+<!-- Menu y vista de folder -->
+
+    <record model="ir.ui.view" id="view_folder_form">
+      <field name="name">account.folder.view.form</field>
+      <field name="model">account.folder</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name="name" colspan="4"/>
+	  <newline/>
+	  <notebook colspan="4">
+	    <page string="Comprobantes Contables">
+	      <field name="move_ids" nolabel="1">
+		<tree>
+		  <field name="name"/>
+		  <field name="date"/>
+		  <field name="partner_id"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_folder_tree">
+      <field name="name">account.folder.view.tree</field>
+      <field name="model">account.folder</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree>
+	  <field name="name"/>
+	  <field name="move_ids"/>
+	</tree>
+      </field>
+    </record>
+    
+	  
+    <record model="ir.actions.act_window" id="folder_action">
+      <field name="name">Carpetas</field>
+      <field name="res_model">account.folder</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record> 
+    
+    <menuitem name="Carpeta" 
+	      id="menu_folder" 
+	      parent="account.menu_finance" 
+	      action="folder_action"/>
+	  
+
+    </data>
+</openerp>

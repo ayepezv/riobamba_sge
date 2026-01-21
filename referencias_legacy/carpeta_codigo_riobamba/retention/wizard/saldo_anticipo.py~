@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import fields, osv
+
+
+class saldoAnticipoLine(osv.TransientModel):
+    _name = 'saldo.anticipo.line'
+    _columns = dict(
+        s_id = fields.many2one('saldo.anticipo','Saldo'),
+        employee_id = fields.many2one('hr.employee','Funcionario'),
+        total_anticipos = fields.float('Total Anticipos'),
+        total_devengado = fields.float('Total Devengado'),
+        saldo = fields.float('Saldo'),
+    )
+saldoAnticipoLine()
+
+class saldoAnticipo(osv.TransientModel):
+    _name = 'saldo.anticipo'
+
+    def load_saldo_anticipo(self, cr, uid, ids, context):
+        anticipo_obj = self.pool.get('account.voucher')
+        rule_obj = self.pool.get('hr.salary.rule')
+        for this in self.browse(cr, uid, ids):
+            
+        return True
+            
+
+    _columns = dict(
+        employee_id = fields.many2one('hr.employee','Funcionario'),
+        line_ids = fields.one2many('saldo.anticipo.line','s_id','Detalle'),
+    )
+
+saldoAnticipo()
+

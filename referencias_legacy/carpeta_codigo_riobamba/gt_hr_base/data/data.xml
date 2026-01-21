@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+      <!-- DEDUCCIONES -->
+      
+      <record id="ALIMENTACION" model="hr.deduction">
+        <field name="code">ALI</field>
+        <field name="name">ALIMENTACION</field>
+        <field name="descripcion">"Proyección de gastos por concepto de alimentación"</field>
+      </record> 
+
+      <record id="VIVIENDA" model="hr.deduction">
+        <field name="code">VIV</field>
+        <field name="name">VIVIENDA</field>
+        <field name="descripcion">Proyección de gastos por concepto de vivienda</field>
+      </record>
+
+       <record id="EDUCACION" model="hr.deduction">
+        <field name="code">EDU</field>
+        <field name="name">EDUCACION</field>
+        <field name="descripcion">Proyección de gastos por concepto de educación</field>
+      </record> 
+
+      <record id="SALUD" model="hr.deduction">
+        <field name="code">SAL</field>
+        <field name="name">SALUD</field>
+        <field name="descripcion">Proyección de gastos por concepto de salud</field>
+      </record>
+      
+      <!-- Tipos de contratos -->
+      
+        <record id="hr_contract.hr_contract_type_emp" model="hr.contract.type">
+            <field name="name">Empleados contratados</field>
+            <field name="formula_normales">result = 22</field>
+            <field name="formula_adicionales">result = 0</field>
+        </record>
+
+        <record id="hr_contract.hr_contract_type_wrkr" model="hr.contract.type">
+            <field name="name">Trabajadores contratados</field>
+            <field name="formula_normales">result = 11</field>
+            <field name="formula_adicionales">total = 0
+adicionales = 0
+if (date_time.today_year() - date_time.get_year(contract.date_start)) >= 6:
+    adicionales = date_time.today_year() - date_time.get_year(contract.date_start) - 5
+    if adicionales > 15:
+        adicionales = 15
+
+result = total + adicionales</field>
+        </record>
+
+        <record id="hr_contract.hr_contract_type_sub" model="hr.contract.type">
+            <field name="name">Contrato civil de servicios</field>
+            <field name="formula_normales">result=0</field>
+            <field name="formula_adicionales">result=0</field>
+        </record>
+        
+        <record id="hr_contract_type_emp_planta" model="hr.contract.type">
+            <field name="name">Empleados de planta</field>
+            <field name="formula_normales">result=22</field>
+            <field name="formula_adicionales">result=0</field>
+        </record>
+        
+        <record id="hr_contract_type_wrkr_planta" model="hr.contract.type">
+            <field name="name">Trabajadores de planta</field>
+            <field name="formula_normales">total = 11
+if (date_time.today_year() - date_time.get_year(contract.date_start)) >= 2:
+    total = 15
+
+result = total</field>
+            <field name="formula_adicionales">total = 0
+adicionales = 0
+dias_cc = 0
+
+if (date_time.today_year() - date_time.get_year(contract.date_start)) >= 6:
+    adicionales = date_time.today_year() - date_time.get_year(contract.date_start) - 5
+    if adicionales > 15:
+        adicionales = 15
+
+if (date_time.today_year() - date_time.get_year(contract.date_start)) >= 20:
+    dias_cc = 9
+elif (date_time.today_year() - date_time.get_year(contract.date_start)) >= 16:
+    dias_cc = 7
+elif (date_time.today_year() - date_time.get_year(contract.date_start)) >= 13:
+    dias_cc = 5
+elif (date_time.today_year() - date_time.get_year(contract.date_start)) >= 8:
+    dias_cc = 4
+elif (date_time.today_year() - date_time.get_year(contract.date_start)) >= 2:
+    dias_cc = 3
+
+result = total + adicionales + dias_cc</field>
+        </record>
+        
+        <!-- Subtipos de contrato - Tipo de relacion laboral -->
+      
+        <record id="hr_contract_type_type_eventual" model="hr.contract.type.type">
+            <field name="name">Eventual</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_wrkr"/>
+        </record>
+        
+        <record id="hr_contract_type_type_plazo_fijo" model="hr.contract.type.type">
+            <field name="name">Plazo fijo</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_wrkr"/>
+        </record>
+        
+        <record id="hr_contract_type_type_indefinido" model="hr.contract.type.type">
+            <field name="name">Indefinido</field>
+            <field name="type_id" ref="hr_contract_type_wrkr_planta"/>
+        </record>
+        
+        <record id="hr_contract_type_type_servicios_ocasionales" model="hr.contract.type.type">
+            <field name="name">Servicios ocasionales</field>
+            <field name="type_id" ref="hr_contract.hr_contract_type_emp"/>
+        </record>
+        
+        <record id="hr_contract_type_type_libre" model="hr.contract.type.type">
+            <field name="name">Libre nombramiento y remocion</field>
+            <field name="type_id" ref="hr_contract_type_emp_planta"/>
+        </record>
+
+    </data>
+</openerp>

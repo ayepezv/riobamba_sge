@@ -1,0 +1,52 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  <table WIDTH="100%">
+	<tr>
+	  <td width="100%" style="font-size:14;text-align:center;">DETALLE ANIOS ANTERIORES</td>	  	  
+    </tr>	
+  </table>
+  <p></p>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+    <thead style="display: table-header-group">
+      <tr>
+        <th style="font-size:11px" width="5%">Nro.</th>
+        <th style="font-size:11px" width="30%">PROVEEDOR/BENEFICIARIO</th>
+        <th style="font-size:11px" width="40%">REFERENCIA</th>
+        <th style="font-size:11px" width="10%">FECHA</th>
+        <th style="font-size:11px" width="10%">FECHA TRANSF.</th>
+        <th style="font-size:11px" width="5%">NUM.COMPRO.</th>
+        <th style="font-size:11px" width="10%">MONTO</th>
+      </tr>
+    </thead>
+	<%
+	   a=0
+	   total=0
+	   %>
+    %for inv in objects:
+	<%
+	   a+=1
+	   total+=inv.amount
+	   %>
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center">${a}</td>
+      <td width="30%" style="font-size:11px;text-align:center">${inv.partner_id}</td>
+      <td width="40%" style="font-size:11px;text-align:center">${inv.name}</td>
+      <td width="10%" style="font-size:11px;text-align:left">${inv.date or ''}</td>
+      <td width="10%" style="font-size:11px;text-align:left">${inv.date_transfer or ''}</td>
+      <td width="5%" style="font-size:11px;text-align:right">${inv.comprobante}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${inv.amount}</td>
+    </tr>
+    %endfor
+  </table>
+    <table>
+      <tr style="page-break-inside:avoid">
+	<td width="90%" style="font-size:11px;text-align:right">TOTAL</td>
+	<td width="10%" style="font-size:11px;text-align:right">${total}</td>
+      </tr>
+    </table>
+</html>

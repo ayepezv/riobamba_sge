@@ -1,0 +1,18 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+import time
+from time import strftime, strptime
+import decimal_precision as dp
+from osv import osv, fields
+
+class convenioConvenio(osv.Model):
+    _name = 'convenio.convenio'
+    _description = 'Convenios'
+    _columns = dict(
+        name = fields.char('Numero',size=10),
+    )
+convenioConvenio()

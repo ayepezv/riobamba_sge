@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <!--  Make Pay -->
+
+        <record id="view_make_pay_wizard" model="ir.ui.view">
+            <field name="name">Pagar</field>
+            <field name="model">make.pay</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Pagar">
+                <label string="Este asistente realiza el pago automatico del comprobante." colspan="4"/>
+                <field name="bank_id" colspan="4"/>
+		<field name="other" colspan="4"/>
+                <newline/>
+		<group string="Detalle a pagar" colspan="4">
+		  <field name="line_ids" nolabel="1">
+		    <tree editable="top">
+		      <field name="account_id" readonly="1"/>
+		      <field name="monto"/>
+		      <field name="to_pay"/>
+		    </tree>
+		  </field>
+		</group>
+                <separator colspan="4"/>
+                <group col="2" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" />
+                  <button name="make_pay" string="Pagar"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Pagar"
+            res_model="make.pay"
+            src_model="account.move"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_make_pay"/>
+
+    </data>
+</openerp>

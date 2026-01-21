@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="indefinidow" model="imprime.contrato"
+            name="indefinidow" rml="gt_hr_base/report/indefinidow.mako"
+            usage="default" string="Contrato Indefinido" header="True" report_type="webkit"/>
+
+    <report auto="False" id="ocacionalesw" model="imprime.contrato"
+            name="ocacionalesw" rml="gt_hr_base/report/ocacionalesw.mako"
+            usage="default" string="Srv. Ocacionales" header="True" report_type="webkit"/>
+
+    <report auto="False" id="codtrabajow" model="imprime.contrato"
+            name="codtrabajow" rml="gt_hr_base/report/codtrabajow.mako"
+            usage="default" string="Cod.Trabajo" header="True" report_type="webkit"/>
+
+    <report auto="False" id="lista_empleado" model="empleado.lista"
+            name="lista_empleado" rml="gt_hr_base/report/lista_empleado.mako"
+            usage="default" string="Listado Empleados" header="True" report_type="webkit"/>
+
+    <report auto="False" id="liquidavacaciones" model="hr.employee"
+            name="liquidavacaciones" rml="gt_hr_base/report/liquidavacaciones.mako"
+            usage="default" string="Saldo Vacaciones" header="True" report_type="webkit"/>
+
+    <report auto="False" id="hr_accion_personal_report" model="hr.accion.personal"
+            name="hr.accion.personal.report" rml="gt_hr_base/report/accion.mako"
+            usage="default" string="Accion Personal" header="True" report_type="webkit"/>
+
+    <report auto="False" id="hr_certificado_laboral" model="hr.contract"
+            name="certificado_laboral" rml="gt_hr_base/report/certificado_laboral.mako"
+            usage="default" string="Certificado Laboral" header="True" report_type="webkit"/>
+
+    <report auto="False" id="hr_indefinido" model="hr.contract"
+            name="indefinido" rml="gt_hr_base/report/indefinido.mako"
+            usage="default" string="Contrato Indefinido" header="True" report_type="webkit"/>
+
+    <report auto="False" id="ocacionales" model="hr.contract"
+            name="ocacionales" rml="gt_hr_base/report/ocacionales.mako"
+            usage="default" string="Srv. Ocacionales" header="True" report_type="webkit"/>
+
+    <report auto="False" id="hr_codtrabajo" model="hr.contract"
+            name="CodTrabajo" rml="gt_hr_base/report/codtrabajo.mako"
+            usage="default" string="Cod.Trabajo" header="True" report_type="webkit"/>
+
+    <report auto="False" id="dias_contrato" model="dias.contrato"
+            name="dias.contrato" rml="gt_hr_base/report/dias_contrato.mako"
+            usage="default" string="Dias Contrato" header="True" report_type="webkit"/>
+
+    
+  </data>
+</openerp>

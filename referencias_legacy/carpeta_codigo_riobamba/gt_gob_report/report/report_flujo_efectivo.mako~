@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style type="text/css">
+      .line {
+      border-bottom:1pt solid black;
+      }
+      .title {
+      font-size: 9px;
+      }
+      .lines {
+      font-size: 10px;
+      }
+    </style>  
+  </head>
+<body>
+%for o in objects:
+<table cellspacing="0" cellpadding="3" WIDTH="120%">
+	 <tr>
+    <th colspan="2" style="font-size:19px" align="center">PRESUPUESTO REFERENCIAL No.</th>
+  </tr>
+</table>
+
+%endfor
+</body>
+</html>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="vehicle_km_start_form" model="ir.ui.view">
+            <field name="name">vehicle.km.start.form</field>
+            <field name="model">vehicle.km.start</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form>
+                <separator colspan="4" string="Km Inicial"/>
+                <field name="km" required="1"/>
+                <group col="2" colspan="2">
+                  <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+                    <button name="do_start_km" string="Ejecutar" colspan="1" type="object" icon="gtk-go-forward" />
+                </group>
+              </form>
+            </field>
+        </record>
+		
+    </data>
+</openerp>

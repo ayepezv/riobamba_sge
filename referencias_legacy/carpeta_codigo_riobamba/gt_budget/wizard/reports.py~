@@ -1,0 +1,79 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+from time import strftime
+import netsvc
+
+class bugdetMoveLine(osv.TransientModel):
+   _name = 'budget.move.line'
+   _columns = dict(
+      b_id = fields.many2one('budget.move','Movimiento'),
+      date = fields.date('Fecha Compromiso'),
+      partner_id = fields.many2one('res.partner','Beneficiario'),
+      move_id = fields.char('Comprobante Contable',size=32),
+      desc = fields.text('Concepto'),
+      comprometido = fields.float('Comprometido'),
+      devengado = fields.float('Devengado'),
+      pagado = fields.float('Pagado'),
+   )
+budgetMoveLine()
+
+class budgetMove(osv.TransientModel):
+   _name = 'budget.move'
+   _columns = dict(
+      partner_id = fields.many2one('res.partner','Beneficiario'),
+      budget_id = fields.many2one('budget.item','Partida'),
+      date_start = fields.date('Fecha desde'),
+      date_end = fields.date('Fecha Hasta'),
+      inicial = fields.float('Inicial'),
+      disponible = fields.float('Disponible'),
+      reformas = fields.float('Reformas'),
+      line_ids = fields.one2many('budget.move.line','b_id','Detalle'),
+   )
+
+   def computeBudgetMove(self, cr, uid, ids, context):
+      #busco lineas de asiento contable entre las fechas y con certificado que tenga el budget
+      move_line_obj = self.pool.get('account.move.line')
+      move_obj = self.pool.get('account.move')
+      budget_move_line_obj = self.pool.get('budget.move.line')
+      data = self.read(cr, uid, ids[0])
+      if data['partner_id']:
+         move_ids = move_obj.search(cr, uid, [('partner_id','=',data['partner_id']),('date','>=',data['date_start']),('date','<=',data['date_end'])],order='date')
+      else:
+         move_ids = move_obj.search(cr, uid, [('date','>=',data['date_start']),('date','<=',data['date_end'])],order='date')
+      if move_ids:
+         for move_id in move_ids:
+            accrued = paid = 0
+            move = move_obj.browse(cr, uid, move_id)
+            move_line_ids = move_line_obj.search(cr, uid, [('move_id','=',move_id),('budget_id','=',data['budget_id'])])
+            for move_line_id in move_line_ids:
+               move_line = move_line_obj.browse(cr, uid, move_line_id)
+               if move_line.budget_accrued:
+                  if move_line.debit != 0:
+                     accrued += move_line.debit
+                  else:
+                     accrued += move_line.credit
+               elif move_line.budget_paid:
+                  if move_line.debit != 0:
+                     paid += move_line.debit
+                  else:
+                     paid += move_line.credit
+            line_id = budget_move_line_obj.create(cr, uid, {
+               'b_id':ids[0],
+               'date':move.date,
+               'partner_id':move.partner_id.id,
+               'move_id':move.name,
+               'desc':move.narration,
+               'devengado':accrued,
+               'pagado':paid,
+            })
+      return True
+budgetMove()
+

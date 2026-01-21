@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <!-- CATALOGO DE CONCEPTO DE GASTOS -->
+    <record model="ir.ui.view" id="view_spi_concepto_form">
+      <field name="name">Concepto Egresos</field>
+      <field name="model">spi.concepto</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+	<form string="Concepto Egresos">
+	  <group  colspan="3">
+	    <field name="name" colspan="2"/>
+	    <field name="code" colspan="2"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+<record model="ir.ui.view" id="view_spi_concepto_tree">
+  <field name="name">spi.concepto.tree</field>
+  <field name="type">tree</field>
+  <field name="model">spi.concepto</field>
+  <field name="arch" type="xml">
+    <tree> 
+      <field name="name"/>
+      <field name="code"/>
+    </tree>
+  </field>
+</record>
+
+<record id="view_spi_concepto_filter" model="ir.ui.view">
+  <field name="name">spi.concepto.search.view</field>
+  <field name="model">spi.concepto</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Buscar">
+      <group>
+	<field name="name"/>
+	<field name="code"/>
+      </group>
+    </search>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_concepto_egresos_form">
+  <field name="name">Concepto Egresos</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">spi.concepto</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem
+   id="menu_spi_concepto_egresos"
+   sequence="25"
+   parent="gt_spi.menu_finance_tesoreria_pagos"
+   action="action_concepto_egresos_form"
+   groups="retention.group_tesorero,retention.group_director_financiero"/>
+<!-- -->
+<record model="ir.ui.view" id="view_spi_modified_form">
+  <field name="name">spi.modified.form</field>
+  <field name="model">account.spi.voucher</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="gt_spi.view_spi_form"/>
+  <field name="arch" type="xml">
+    <field name='journal_id' position='after'>
+      <field name="directo"/>
+      <field name="archivoDirecto" attrs="{'required': [('directo', '=',True)],
+					  'invisible': [('directo', '=',False)]}"/>
+      <field name="date_aux"/>
+    </field>
+    <xpath expr="/form/notebook/page[@string='Detalle']/field[@name='line_ids']/tree/field[@name='ref']" position="replace">
+      <field name="bank_id" domain="[('partner_id','=',partner_id)]"/>
+      <field name="concepto_id" widget="selection"/>
+    </xpath>
+  </field>
+</record>
+
+  </data>      
+</openerp>

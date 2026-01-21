@@ -1,0 +1,14 @@
+-
+  Reporte de Egresos de Voucher
+-
+  !record {model: ir.actions.report.xml, id: account_voucher.report_account_voucher_print}:
+    name: 'Comprobante'
+    type: 'ir.actions.report.xml'
+    model: 'account.voucher'
+    report_name: 'voucher.print'
+    report_type: 'aeroo'
+    in_format: 'oo-odt'
+    out_format: 'report_aeroo_ooo.report_mimetypes_pdf_odt'
+    report_rml: 'account_advances/report/report_voucher.odt'
+    parser_state: 'default'
+    tml_source: 'file'

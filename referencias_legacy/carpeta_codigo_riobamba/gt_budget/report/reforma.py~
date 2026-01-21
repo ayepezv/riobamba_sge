@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+from tools import ustr
+import operator
+
+class reforma_programa(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(reforma_programa, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_programa_reforma': self.get_programa_reforma,
+        })
+
+
+    def get_programa_name(self, p_id):
+        program_obj = self.pool.get('project.program')
+        aux = ''
+        programa = program_obj.browse(self.cr, self.uid, p_id)
+        aux = programa.sequence + ' - ' + programa.name
+        return aux
+
+
+    def get_programa_reforma(self, reforma):
+        programa_list = []
+        for line in reforma.line_ids:
+            if not line.program_id.id in programa_list:
+                programa_list.append(line.program_id.id)
+        return programa_list
+
+report_sxw.report_sxw('report.reforma_programa',
+                       'mass.reform', 
+                       'addons/gt_budget/report/reforma_programa.mako',
+                       parser=reforma_programa,
+                       header=True)
+

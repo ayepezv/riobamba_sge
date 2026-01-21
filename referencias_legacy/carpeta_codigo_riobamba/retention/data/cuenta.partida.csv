@@ -1,0 +1,1580 @@
+id,name,code,budget_debe/id,budget_haber/id
+11311,Cuentas por Cobrar Impuestos,113.11,gt_budget.11,gt_budget.11
+11313,Cuentas por Cobrar Tasas y Contribuciones,113.13,gt_budget.13,gt_budget.13
+11314,Cuentas por Cobrar Venta de Bienes y Servicios,113.14,gt_budget.14,gt_budget.14
+11317,Cuentas por Cobrar Rentas de Inversiones y Multas,113.17,gt_budget.17,gt_budget.17
+11318,Cuentas por Cobrar Transferencias y Donaciones Corrientes,113.18,gt_budget.18,gt_budget.18
+11319,Cuentas por Cobrar Otros Ingresos,113.19,gt_budget.19,gt_budget.19
+11324,Cuentas por Cobrar Venta de Activos no Financieros,113.24,gt_budget.24,gt_budget.24
+11327,Cuentas por Cobrar Recuperaci�n de Inversiones,113.27,gt_budget.27,gt_budget.27
+11328,Cuentas por Cobrar Transferencias y Donaciones de Capital e Inversi�n,113.28,gt_budget.28,gt_budget.28
+11336,Cuentas por Cobrar Financiamiento P�blico,113.36,gt_budget.36,gt_budget.36
+11397,Cuentas por Cobrar Anticipos de Fondos de A�os Anteriores,113.97,gt_budget.38,gt_budget.38
+11398,Cuentas por Cobrar de A�os Anteriores,113.98,gt_budget.38,gt_budget.38
+1210103,Dep�sitos a Plazo,121.01.03,gt_budget.870103,gt_budget.270103
+1210501,Certificados del tesoro nacional,121.05.01,gt_budget.870101,gt_budget.270101
+1210502,Bonos del estado ,121.05.02,gt_budget.870102,gt_budget.270102
+1210599,Otras inversiones,121.05.99,gt_budget.870199,gt_budget.270199
+1210704,Acciones,121.07.04,gt_budget.870104,gt_budget.270104
+1210707,Participaciones Fiduciarias,121.07.07,gt_budget.870107,gt_budget.270107
+1210799,Otras Inversiones en Valores,121.07.99,gt_budget.870199,gt_budget.270199
+1220504,Acciones,122.05.04,gt_budget.870304,gt_budget.270304
+1220598,Otras inversiones en titulos,122.05.98,gt_budget.870398,gt_budget.270398
+1220599,Otras inversiones en valores,122.05.99,gt_budget.870399,gt_budget.270399
+1230101,Pr�stamos al Gobierno Central,123.01.01,gt_budget.870201,gt_budget.270201
+1230102,Pr�stamos a Entidades Descentralizadas y Aut�nomas,123.01.02,gt_budget.870202,gt_budget.270202
+1230103,Pr�stamos a Empresas P�blicas,123.01.03,gt_budget.870203,gt_budget.270203
+1230104,Pr�stamos a Entidades del Gobierno Aut�nomo Descentralizado,123.01.04,gt_budget.870204,gt_budget.270204
+1230105,Pr�stamos a la Seguridad Social,123.01.05,gt_budget.870205,gt_budget.270205
+1230106,Pr�stamos a Entidades Financieras P�blicas,123.01.06,gt_budget.870206,gt_budget.270206
+1230107,Pr�stamos al Sector Privado,123.01.07,gt_budget.870207,gt_budget.270207
+1230111,Anticipos a Servidores P�blicos,123.01.11,gt_budget.870211,gt_budget.270211
+1240101,Cr�dito Fiscal por Compras y Consumo,124.01.01,gt_budget.530901,gt_budget.180101
+1240103,Cr�dito Fiscal por Compras y Producci�n,124.01.03,gt_budget.630901,gt_budget.180101
+1240105,Cr�dito Fiscal por Compras y Inversi�n,124.01.05,gt_budget.730901,gt_budget.180101
+1240301,Cr�dito Fiscal por Compras,124.03.01,gt_budget.840901,gt_budget.280101
+1249702,De Anticipos de Fondos por Devengar de Entidades que Conforman el Presupuesto General del Estado (PGE).,124.97.02,,gt_budget.380102
+1249703,Anticipos por  Devengar de Ejercicios Anteriores - Construcci�n de Obras,124.97.03,,gt_budget.380103
+1249705,Anticipos por Devengar de Ejercicios Anteriores - Compra de Bienes y/o Servicios,124.97.05,,gt_budget.380105
+1249707,Anticipos por Devengar de Ejercicios Anteriores de GAD's y Empresas P�blicas  - Compra de Bienes y/o Servicios,124.97.07,,gt_budget.380107
+1249708,De Anticipos por Devengar de Ejercicios Anteriores de GADs y Empresas P�blicas Construcci�n de Obras.,124.97.08,,gt_budget.380108
+1249801,Cuentas por Cobrar de A�os Anteriores,124.98.01,,gt_budget.380101
+1250204,"Prepagos por Edici�n, Impresi�n, Reproducci�n y Publicaciones",125.02.04,gt_budget.530204,
+1250205,Prepago de Telecomunicaciones,125.02.05,gt_budget.530105,
+1250301,Prepagos por Arrendamiento de Terrenos,125.03.01,gt_budget.530501,
+1250302,"Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",125.03.02,gt_budget.530502,
+1250303,Prepagos por Arrendamiento de Mobiliarios,125.03.03,gt_budget.530503,
+1250304,Prepagos por Arrendamiento de Maquinarias y Equipos,125.03.04,gt_budget.530504,
+1250305,Prepagos por Arrendamiento de Veh�culos,125.03.05,gt_budget.530505,
+1250306,Prepagos por Arrendamiento de Herramientas,125.03.06,gt_budget.530506,
+1250501,Cargos Diferidos por Asesor�a e Investigaci�n Especializada,125.05.01,gt_budget.530601,
+1250505,Cargos Diferidos por Estudio y Dise�o de Proyectos,125.05.05,gt_budget.530605,
+1250701,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",125.07.01,gt_budget.530701,
+1250803,Prepago de Combustibles y Lubricantes,125.08.03,gt_budget.530803,
+1250807,"Prepagos Materiales Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",125.08.07,gt_budget.530807,
+1251004,"Prepagos por Edici�n, Impresi�n, Reproducci�n y Publicaciones",125.10.04,gt_budget.630204,
+1251101,Prepagos por Arrendamiento  de Terrenos,125.11.01,gt_budget.630501,
+1251102,"Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",125.11.02,gt_budget.630502,
+1251103,Prepagos por Arrendamiento de Mobiliarios,125.11.03,gt_budget.630503,
+1251104,Prepagos por Arrendamiento de Maquinarias y Equipos,125.11.04,gt_budget.630504,
+1251105,Prepagos por Arrendamiento de Veh�culos,125.11.05,gt_budget.630505,
+1251106,Prepagos por Arrendamiento de Herramientas,125.11.06,gt_budget.630506,
+1251301,Cargos Diferidos por Asesor�a e Investigaci�n Especializada,125.13.01,gt_budget.630601,
+1251305,Cargos Diferidos por Estudio y Dise�o de Proyectos,125.13.05,gt_budget.630605,
+1251501,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",125.15.01,gt_budget.630701,
+1251603,Prepago de Combustibles y Lubricantes,125.16.03,gt_budget.630803,
+1251607,"Prepagos Materiales Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",125.16.07,gt_budget.630807,
+1251804,"Prepagos por Edici�n, Impresi�n, Reproducci�n y Publicaciones",125.18.04,gt_budget.730204,
+1251901,Prepagos por Arrendamiento de Terrenos,125.19.01,gt_budget.730501,
+1251902,"Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",125.19.02,gt_budget.730502,
+1251903,Prepagos por Arrendamiento de Mobiliarios,125.19.03,gt_budget.730503,
+1251904,Prepagos por Arrendamiento de Maquinarias y Equipos,125.19.04,gt_budget.730504,
+1251905,Prepagos por Arrendamiento de Veh�culos,125.19.05,gt_budget.730505,
+1251906,Prepagos por Arrendamiento de Herramientas,125.19.06,gt_budget.730506,
+1252101,Cargos Diferidos por Asesor�a e Investigaci�n Especializada,125.21.01,gt_budget.730601,
+1252105,Cargos Diferidos por Estudio y Dise�o de Proyectos,125.21.05,gt_budget.730605,
+1252301,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",125.23.01,gt_budget.730701,
+1252403,Prepago de Combustibles y Lubricantes,125.24.03,gt_budget.730803,
+1252407,"Prepagos Materiales Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",125.24.07,gt_budget.730807,
+1252502,"Tasas Generales, Impuestos, Contribuciones, Permisos, Licencias y Patentes",125.25.02,gt_budget.570102,
+1252503,Prepagos por Tasas Portuarias,125.25.03,gt_budget.570103,
+1253101,Prepagos de Seguros,125.31.01,gt_budget.570201,
+1253102,Prepagos de Seguros de Desgravamen y de Saldos,125.31.02,gt_budget.570202,
+1253104,Prepagos de Reajustes de Inversiones,125.31.04,gt_budget.570204,
+1253106,Costas Judiciales,125.31.06,gt_budget.570206,
+1253301,Prepagos de Seguros,125.33.01,gt_budget.670201,
+1253501,Prepagos de Seguros,125.35.01,gt_budget.770201,
+1254701,Intangibles,125.47.01,gt_budget.840401,
+1310101,Existencias de Alimentos y Bebidas,131.01.01,gt_budget.530801,
+1310102,"Existencias de Vestuario, Lencer�a, Prendas de Protecci�n  y Accesorios para Uniformes Militares y Polic�as",131.01.02,gt_budget.530802,
+1310103,Existencias de Combustibles y Lubricantes,131.01.03,gt_budget.530803,
+1310104,Existencias de Materiales de Oficina,131.01.04,gt_budget.530804,
+1310105,Existencias de Materiales de Aseo,131.01.05,gt_budget.530805,
+1310106,Existencias de Herramientas (Bienes de Uso y Consumo Corriente),131.01.06,gt_budget.530806,
+1310107,"Existencias de Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",131.01.07,gt_budget.530807,
+1310108,Existencias de Instrumental M�dico Menor,131.01.08,gt_budget.530808,
+1310109,Existencias de Medicinas y Productos Farmac�uticos,131.01.09,gt_budget.530809,
+1310110,Existencias de Materiales e Insumos para Laboratorio y Uso M�dico,131.01.10,gt_budget.530810,
+1310111,"Materiales de Insumos, Bienes, Materiales y Suministros para la
+Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial,",131.01.11,gt_budget.530811,
+1310112,Existencias de Materiales Did�cticos,131.01.12,gt_budget.530812,
+1310113,Existencias de Repuestos y Accesorios,131.01.13,gt_budget.530813,
+1310114,"Existencias para Actividades Agropecuarias, Pesca y Caza",131.01.14,gt_budget.530814,
+1310121,Gastos para Situaciones de Emergencia,131.01.21,gt_budget.530821,
+1310199,Existencias de Otros de Uso y Consumo Corriente,131.01.99,gt_budget.530899,
+1310501,Existencias de Materiales para Log�stica,131.05.01,gt_budget.531001,
+1310502,Existencias de Suministros para la Defensa y Seguridad P�blica,131.05.02,gt_budget.531002,
+1320101,Existencias de Productos Agropecuarios,132.01.01,gt_budget.631001,
+1320102,Existencias de Productos Qu�micos e Industriales,132.01.02,gt_budget.631002,
+1320103,Existencias de Productos Mineros,132.01.03,gt_budget.631003,
+1320199,Existencias de Otras Materias Primas,132.01.99,gt_budget.631099,
+1320301,Existencias de Productos Agropecuarios,132.03.01,gt_budget.631101,
+1320302,Existencias de Productos Qu�micos e Industriales,132.03.02,gt_budget.631102,
+1320399,Existencias de Otros Productos Semiterminados,132.03.99,gt_budget.631199,
+1320501,Existencias de Productos Agropecuarios,132.05.01,gt_budget.631201,
+1320502,Existencias de Productos Qu�micos e Industriales,132.05.02,gt_budget.631202,
+1320599,Existencias de Otros Productos Terminados,132.05.99,gt_budget.631299,
+1320801,Existencias de Alimentos y Bebidas,132.08.01,gt_budget.630801,
+1320802,"Existencias de Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes Militares y Policiales",132.08.02,gt_budget.630802,
+1320803,Existencias de Combustibles y Lubricantes,132.08.03,gt_budget.630803,
+1320804,Existencias de Materiales de Oficina,132.08.04,gt_budget.630804,
+1320805,Existencias de Materiales de Aseo,132.08.05,gt_budget.630805,
+1320806,Existencias de Herramientas (Bienes de Uso y Consumo Corriente),132.08.06,gt_budget.630806,
+1320807,"Existencias de Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",132.08.07,gt_budget.630807,
+1320808,Existencias de Instrumental M�dico Menor,132.08.08,gt_budget.630808,
+1320809,Existencias de Medicinas y Productos Farmac�uticos,132.08.09,gt_budget.630809,
+1320810,Existencias de Materiales e Insumos para Laboratorio y Uso M�dico,132.08.10,gt_budget.630810,
+1320811,"Existencias de Insumos, Bienes Materiales y Suministros de Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial, Navegaci�n y Contra Incendios",132.08.11,gt_budget.630811,
+1320812,Existencias de Materiales Did�cticos,132.08.12,gt_budget.630812,
+1320813,Existencias de Repuestos y Accesorios,132.08.13,gt_budget.630813,
+1320899,Existencias de Otros Bienes de Uso y Consumo de Producci�n,132.08.99,gt_budget.630899,
+1331101,Sueldos,133.11.01,gt_budget.610101,
+1331102,Salarios,133.11.02,gt_budget.610102,
+1331103,Jornales,133.11.03,gt_budget.610103,
+1331105,Remuneraciones Unificadas,133.11.05,gt_budget.610105,
+1331106,Salarios Unificados,133.11.06,gt_budget.610106,
+1331201,Bonificaci�n por A�os de Servicio,133.12.01,gt_budget.610201,
+1331202,Bonificaci�n por Responsabilidad,133.12.02,gt_budget.610202,
+1331203,Decimotercer Sueldo,133.12.03,gt_budget.610203,
+1331204,Decimocuarto Sueldo,133.12.04,gt_budget.610204,
+1331207,Bonificaci�n Complementaria,133.12.07,gt_budget.610205,
+1331208,"Bonificaci�n T�tulo Acad�mico, Especializaci�n y Capacitaci�n Adicional",133.12.08,gt_budget.610206,
+1331209,Gastos de Representaci�n,133.12.09,gt_budget.610207,
+1331210,Sobresueldos y Bonificaciones Adicionales,133.12.10,gt_budget.610208,
+1331211,Estimulo Pecuniario,133.12.11,gt_budget.610209,
+1331213,Aguinaldo Navide�o,133.12.13,gt_budget.610213,
+1331217,Bonificaci�n por Millaje,133.12.17,gt_budget.610217,
+1331218,Bonificaci�n Mensual Gal�pagos,133.12.18,gt_budget.610218,
+1331220,Bonificaci�n Fronteriza,133.12.20,gt_budget.610220,
+1331223,Bonificaci�n por el D�a del M�dico,133.12.23,gt_budget.610223,
+1331224,Bonificaci�n por el D�a Mundial de la Salud,133.12.24,gt_budget.610224,
+1331225,Bonificaci�n para los Profesionales de la Salud,133.12.25,gt_budget.610225,
+1331227,Adicional Regi�n Amaz�nica,133.12.27,gt_budget.610227,
+1331228,Remuneraci�n Suplementaria Gal�pagos,133.12.28,gt_budget.610228,
+1331229,Actividad Extracurricular Gal�pagos,133.12.29,gt_budget.610229,
+1331230,Bonificaci�n por el D�a del Maestro,133.12.30,gt_budget.610230,
+1331231,Bonificaci�n por el D�a del Servidor P�blico,133.12.31,gt_budget.610231,
+1331232,"Bonificaci�n para Educadores Comunitarios, Alfabetizadores",133.12.32,gt_budget.610232,
+1331233,Bonificaci�n para Profesionales Amparados o no por Leyes de Escalaf�n,133.12.33,gt_budget.610233,
+1331301,Gastos de Residencia,133.13.01,gt_budget.610301,
+1331302,Bonificaci�n Geogr�fica,133.13.02,gt_budget.610302,
+1331303,Compensaci�n por Costo de Vida,133.13.03,gt_budget.610303,
+1331304,Compensaci�n por Transporte,133.13.04,gt_budget.610304,
+1331305,Compensaci�n en el Exterior,133.13.05,gt_budget.610305,
+1331306,Alimentaci�n,133.13.06,gt_budget.610306,
+1331307,Comisariato,133.13.07,gt_budget.610307,
+1331309,Compensaci�n por Trabajo de Alto Riesgo,133.13.09,gt_budget.610309,
+1331401,Por Cargas Familiares,133.14.01,gt_budget.610401,
+1331402,De Educaci�n,133.14.02,gt_budget.610402,
+1331403,Por Maternidad,133.14.03,gt_budget.610403,
+1331404,Por Fallecimiento,133.14.04,gt_budget.610404,
+1331405,Por Guarder�a,133.14.05,gt_budget.610405,
+1331406,Por Vacaciones,133.14.06,gt_budget.610406,
+1331499,Otros Subsidios,133.14.99,gt_budget.610499,
+1331501,Sueldos,133.15.01,gt_budget.610501,
+1331503,Jornales,133.15.03,gt_budget.610503,
+1331506,Licencia Remunerada,133.15.06,gt_budget.610506,
+1331507,Honorarios,133.15.07,gt_budget.610507,
+1331509,Horas Extraordinarias y Suplementarias,133.15.09,gt_budget.610509,
+1331510,Servicios Personales por Contrato,133.15.10,gt_budget.610510,
+1331513,Encargos,133.15.13,gt_budget.610513,
+1331601,Aporte Patronal,133.16.01,gt_budget.610601,
+1331602,Fondo de Reserva,133.16.02,gt_budget.610602,
+1331603,Jubilaci�n Patronal,133.16.03,gt_budget.610603,
+1331604,Cesant�a Privada,133.16.04,gt_budget.610604,
+1331605,Jubilaci�n Complementaria,133.16.05,gt_budget.610605,
+1331802,Supresi�n de Puesto,133.18.02,gt_budget.610702,
+1331803,Despido Intempestivo,133.18.03,gt_budget.610703,
+1331804,Compensaci�n por Desahucio,133.18.04,gt_budget.610704,
+1331805,Restituci�n de Puesto,133.18.05,gt_budget.610705,
+1331806,Beneficio por Jubilaci�n,133.18.06,gt_budget.610706,
+1331807,Compensaci�n por Vacaciones no Gozadas por Cesaci�n de Funciones,133.18.07,gt_budget.610707,
+1331808,Por Accidente de Trabajo o Enfermedad,133.18.08,gt_budget.610708,
+1331809,Por Renuncia Voluntaria,133.18.09,gt_budget.610709,
+1331810,Por Compra de Renuncia,133.18.10,gt_budget.610710,
+1331811,Indemnizaciones Laborales,133.18.11,gt_budget.610711,
+1331899,Otras Indemnizaciones Laborales,133.18.99,gt_budget.610799,
+1332101,Productos Agropecuarios,133.21.01,gt_budget.631001,
+1332102,Productos Qu�micos e Industriales,133.21.02,gt_budget.631002,
+1332103,Productos Mineros,133.21.03,gt_budget.631003,
+1332199,Otras Materias Primas,133.21.99,gt_budget.631099,
+1333101,Agua Potable,133.31.01,gt_budget.630101,
+1333102,Agua de Riego,133.31.02,gt_budget.630102,
+1333104,Energ�a El�ctrica,133.31.04,gt_budget.630104,
+1333105,Telecomunicaciones,133.31.05,gt_budget.630105,
+1333106,Servicios de Correo,133.31.06,gt_budget.630106,
+1333201,Transporte de Personal,133.32.01,gt_budget.630201,
+1333202,Fletes y Maniobras,133.32.02,gt_budget.630202,
+1333203,"Almacenamiento, Embalaje, Envase y Recarga de Extintores",133.32.03,gt_budget.630203,
+1333204,"Edici�n, Impresi�n, Reproducci�n, Publicaciones, Suscripciones, Fotocopiado, Traducci�n, Empastado, Enmarcaci�n, Serigraf�a, Fotograf�a, Carnetizaci�n, Filmaci�n e  Im�genes Satelitales",133.32.04,gt_budget.630204,
+1333207,Difusion Informacion y publicidad,133.32.07,gt_budget.630207,
+1333208,Servicio de Vigilancia,133.32.08,gt_budget.630208,
+1333209,"Servicios de Aseo; Vestimenta de Trabajo; Fumigaci�n, Desinfecci�n y Limpieza de las Instalaciones del Sector P�blico.",133.32.09,gt_budget.630209,
+1333210,Servicios de Guarder�a,133.32.10,gt_budget.630210,
+1333212,Investigaciones Profesionales y Ex�menes de Laboratorio,133.32.12,gt_budget.630212,
+1333217,Difusi�n e Informaci�n,133.32.17,gt_budget.630217,
+1333218,Publicidad y Propaganda en Medios de Comunicaci�n Masiva,133.32.18,gt_budget.630218,
+1333219,Publicidad y Propaganda Usando Otros Medios,133.32.19,gt_budget.630219,
+1333299,Otros Servicios Generales,133.32.99,gt_budget.630299,
+1333301,Pasajes al Interior,133.33.01,gt_budget.630301,
+1333302,Pasajes al Exterior,133.33.02,gt_budget.630302,
+1333303,Vi�ticos y Subsistencias en el Interior,133.33.03,gt_budget.630303,
+1333304,Vi�ticos y Subsistencias en el Exterior,133.33.04,gt_budget.630304,
+1333305,Mudanzas e Instalaciones,133.33.05,gt_budget.630305,
+1333306,Vi�tico por Gastos de Residencia,133.33.06,gt_budget.630306,
+1333401,Gastos en Terrenos,133.34.01,gt_budget.630401,
+1333402,"Gastos en Edificios, Locales, Residencias y Cableado Estructurado. (Instalaci�n, Mantenimiento y Reparaci�n)",133.34.02,gt_budget.630402,
+1333403,"Gastos en Mobiliarios  (Instalaci�n, Mantenimiento y Reparaci�n)",133.34.03,gt_budget.630403,
+1333404,"Gastos en Maquinarias y Equipos  (Instalaci�n, Mantenimiento y Reparaci�n)",133.34.04,gt_budget.630404,
+1333405,"Gastos en Veh�culos  (Instalaci�n, Mantenimiento y Reparaci�n)",133.34.05,gt_budget.630405,
+1333406,"Gastos en Herramientas (Instalaci�n, Mantenimiento y Reparaci�n)",133.34.06,gt_budget.630406,
+1333417,Gastos en Infraestructura,133.34.17,gt_budget.630417,
+1333418,Gastos en Mantenimiento de �reas Verdes y Arreglo de V�as Internas,133.34.18,gt_budget.630418,
+1333419,"Instalaci�n, Mantenimiento y Reparaci�n de Bienes Deportivos",133.34.19,gt_budget.630419,
+1333499,"Otras Gastos en Instalaciones, Mantenimientos y Reparaciones",133.34.99,gt_budget.630499,
+1333501,Arrendamiento de Terrenos,133.35.01,gt_budget.630501,
+1333502,"Arrendamiento de Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",133.35.02,gt_budget.630502,
+1333503,Arrendamiento de Mobiliarios,133.35.03,gt_budget.630503,
+1333504,Arrendamiento de Maquinarias y Equipos,133.35.04,gt_budget.630504,
+1333505,Arrendamiento de Veh�culos,133.35.05,gt_budget.630505,
+1333506,Arrendamiento de Herramientas,133.35.06,gt_budget.630506,
+1333599,Otros Arrendamientos de Bienes,133.35.99,gt_budget.630599,
+1333601,"Consultor�a, Asesor�a e Investigaci�n Especializada",133.36.01,gt_budget.630601,
+1333602,Servicios de Auditoria,133.36.02,gt_budget.630602,
+1333603,Servicios de Capacitaci�n,133.36.03,gt_budget.630603,
+1333604,Fiscalizaci�n e Inspecciones T�cnicas,133.36.04,gt_budget.630604,
+1333605,Estudio y Dise�o de Proyectos,133.36.05,gt_budget.630605,
+1333606,Honorarios por Contratos Civiles de Servicios,133.36.06,gt_budget.630606,
+1333607,Servicios T�cnicos Especializados,133.36.07,gt_budget.630607,
+1333701,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",133.37.01,gt_budget.630701,
+1333702,Arrendamiento y Licencias de Uso de Paquetes Inform�ticos,133.37.02,gt_budget.630702,
+1333703,Arrendamiento de Equipos Inform�ticos,133.37.03,gt_budget.630703,
+1333704,Mantenimiento y Reparaci�n de Equipos y Sistemas Inform�ticos,133.37.04,gt_budget.630704,
+1333801,Alimentos y Bebidas,133.38.01,gt_budget.630801,
+1333802,"Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes Militares y Policiales y Carpas",133.38.02,gt_budget.630802,
+1333803,Combustibles y Lubricantes,133.38.03,gt_budget.630803,
+1333804,Materiales de Oficina,133.38.04,gt_budget.630804,
+1333805,Materiales de Aseo,133.38.05,gt_budget.630805,
+1333806,Herramientas (Bienes de Uso y Consumo Corriente),133.38.06,gt_budget.630806,
+1333807,"Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",133.38.07,gt_budget.630807,
+1333808,Instrumental M�dico Menor,133.38.08,gt_budget.630808,
+1333809,Medicinas y Productos Farmac�uticos,133.38.09,gt_budget.630809,
+1333810,Existencias de Materiales e Insumos para Laboratorio y Uso M�dico,133.38.10,gt_budget.630810,
+1333811,"Insumos, Bienes Materiales y Suministros para la Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial, Navegaci�n y Contra Incendios",133.38.11,gt_budget.630811,
+1333812,Materiales Did�cticos,133.38.12,gt_budget.630812,
+1333813,Repuestos y Accesorios,133.38.13,gt_budget.630813,
+1333899,Otros Bienes de Uso y Consumo de Producci�n,133.38.99,gt_budget.630899,
+1333901,Impuesto al Valor Agregado,133.39.01,gt_budget.670101,
+1333902,"Tasas Generales, Impuestos, Contribuciones, Permisos, Licencias y Patentes",133.39.02,gt_budget.670102,
+1333903,Tasas Portuarias,133.39.03,gt_budget.670103,
+1333904,Contribuciones Especiales y de Mejora,133.39.04,gt_budget.670104,
+1333999,"Otros Impuestos, Tasas y Contribuciones",133.39.99,gt_budget.670199,
+1334001,Seguros,133.40.01,gt_budget.670201,
+1334099,Otros Gastos Financieros,133.40.99,gt_budget.670299,
+1340801,Existencias de Alimentos y Bebidas,134.08.01,gt_budget.730801,
+1340802,"Existencias de Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes Militares y Policiales",134.08.02,gt_budget.730802,
+1340803,Existencias de Combustibles y Lubricantes,134.08.03,gt_budget.730803,
+1340804,Existencias de Materiales de Oficina,134.08.04,gt_budget.730804,
+1340805,Existencias de Materiales de Aseo,134.08.05,gt_budget.730805,
+1340806,Existencias de Herramientas (Bienes de Uso y Consumo Corriente),134.08.06,gt_budget.730806,
+1340807,"Existencias de Materiales de Impresi�n, Fotograf�a, Reproducci�n y
+Publicaciones",134.08.07,gt_budget.730807,
+1340808,Existencias de Instrumental M�dico Menor,134.08.08,gt_budget.730808,
+1340809,Existencias de Medicamentos y Productos Farmac�uticos,134.08.09,gt_budget.730809,
+1340810,Existencias de Materiales para Laboratorio y Uso M�dico,134.08.10,gt_budget.730810,
+1340811,"Existencias de Insumos, Bienes, Materiales y Suministros para la Construcci�n, El�ctricos, Plomer�a, Carpinter�a y Se�alizaci�n Vial, Navegaci�n y Contra Incendios",134.08.11,gt_budget.730811,
+1340812,Existencias de Materiales Did�cticos,134.08.12,gt_budget.730812,
+1340813,Existencias de Repuestos y Accesorios,134.08.13,gt_budget.730813,
+1340814,"Existencias de Suministros para Actividades Agropecuarias, Pesca y Caza",134.08.14,gt_budget.730814,
+1340821,Gastos para Situaciones de Emergencia,134.08.21,gt_budget.730821,
+1340899,Existencias de Otros de Uso y Consumo para Inversi�n,134.08.99,gt_budget.730899,
+1350101,Existencias de Productos Agropecuarios,135.01.01,gt_budget.631001,
+1350102,Existencias de Productos Qu�micos e Industriales,135.01.02,gt_budget.631002,
+1350103,Existencias de Productos Mineros,135.01.03,gt_budget.631003,
+1350199,Existencias de Otras Materias Primas,135.01.99,gt_budget.631099,
+1350301,Existencias de Productos Agropecuarios,135.03.01,gt_budget.631101,
+1350302,Existencias de Productos Qu�micos e Industriales,135.03.02,gt_budget.631102,
+1350399,Existencias de Otros Productos Semiterminados,135.03.99,gt_budget.631199,
+1350501,Existencias de Productos Agropecuarios,135.05.01,gt_budget.631201,
+1350502,Existencias de Productos Qu�micos e Industriales no Petroleros,135.05.02,gt_budget.631202,
+1350508,Existencias de Instrumental M�dico Menor,135.05.08,gt_budget.631208,
+1350599,Existencias de Otros Productos Terminados,135.05.99,gt_budget.631299,
+1350701,Existencias de Terrenos (Bienes Inmuebles),135.07.01,gt_budget.840201,
+1350702,"Existencias de Edificios, Locales y Residencias (Bienes Inmuebles)",135.07.02,gt_budget.840202,
+1350799,Existencias de Otros Bienes Inmuebles,135.07.99,gt_budget.840299,
+1351101,Sueldos,135.11.01,gt_budget.610101,
+1351102,Salarios,135.11.02,gt_budget.610102,
+1351103,Jornales,135.11.03,gt_budget.610103,
+1351105,Remuneraciones Unificadas,135.11.05,gt_budget.610105,
+1351109,Remuneraci�n Mensual Unificada para Pasant�as,135.11.09,gt_budget.610109,
+1351201,Bonificaci�n por A�os de Servicio,135.12.01,gt_budget.610201,
+1351202,Bonificaci�n por Responsabilidad,135.12.02,gt_budget.610202,
+1351203,Decimotercer Sueldo,135.12.03,gt_budget.610203,
+1351204,Decimocuarto Sueldo,135.12.04,gt_budget.610204,
+1351210,Sobresueldos y Bonificaciones Adicionales,135.12.10,gt_budget.610210,
+1351213,Aguinaldo Navide�o,135.12.13,gt_budget.610213,
+1351217,Bonificaci�n por Millaje,135.12.17,gt_budget.610217,
+1351218,Bonificaci�n Mensual Gal�pagos,135.12.18,gt_budget.610218,
+1351220,Bonificaci�n Fronteriza,135.12.20,gt_budget.610220,
+1351223,Bonificaci�n por el D�a del M�dico,135.12.23,gt_budget.610223,
+1351224,Bonificaci�n por el D�a Mundial de la Salud,135.12.24,gt_budget.610224,
+1351235,Remuneraci�n Variable por Eficiencia,135.12.35,gt_budget.610235,
+1351302,Bonificaci�n Geogr�fica,135.13.02,gt_budget.610302,
+1351304,Compensaci�n por Transporte,135.13.04,gt_budget.610304,
+1351306,Alimentaci�n,135.13.06,gt_budget.610306,
+1351307,Comisariato,135.13.07,gt_budget.610307,
+1351309,Compensaci�n por Trabajo de Alto Riesgo,135.13.09,gt_budget.610309,
+1351313,Compensaci�n por Cesaci�n de Funciones,135.13.13,gt_budget.610313,
+1351402,De Educaci�n,135.14.02,gt_budget.610402,
+1351403,Por Maternidad,135.14.03,gt_budget.610403,
+1351404,Por Fallecimiento,135.14.04,gt_budget.610404,
+1351405,Por Guarder�a,135.14.05,gt_budget.610405,
+1351406,Por Vacaciones,135.14.06,gt_budget.610406,
+1351408,Subsidio de Antig�edad,135.14.08,gt_budget.610408,
+1351499,Otros Subsidios,135.14.99,gt_budget.610499,
+1351509,Horas Extraordinarias y Suplementarias,135.15.09,gt_budget.610509,
+1351510,Servicios Personales por Contrato,135.15.10,gt_budget.610510,
+1351512,Subrogaci�n,135.15.12,gt_budget.610512,
+1351513,Encargos,135.15.13,gt_budget.610513,
+1351601,Aporte Patronal,135.16.01,gt_budget.610601,
+1351602,Fondo de Reserva,135.16.02,gt_budget.610602,
+1351603,Jubilaci�n Patronal,135.16.03,gt_budget.610603,
+1351604,Cesant�a Privada,135.16.04,gt_budget.610604,
+1351605,Jubilaci�n Complementaria,135.16.05,gt_budget.610605,
+1351606,Fondo Global de Jubilaci�n Patronal para trabajadores amparados por el C�digo de Trabajo,135.16.06,gt_budget.610606,
+1351802,Supresi�n de Puesto,135.18.02,gt_budget.610702,
+1351803,Despido Intempestivo,135.18.03,gt_budget.610703,
+1351804,Compensaci�n por Desahucio,135.18.04,gt_budget.610704,
+1351805,Restituci�n de Puesto,135.18.05,gt_budget.610705,
+1351806,Beneficio por Jubilaci�n,135.18.06,gt_budget.610706,
+1351807,Compensaci�n por Vacaciones no Gozadas por Cesaci�n de Funciones,135.18.07,gt_budget.610707,
+1351808,Por Accidente de Trabajo o Enfermedad,135.18.08,gt_budget.610708,
+1351809,Por Renuncia Voluntaria,135.18.09,gt_budget.610709,
+1351810,Por Compra de Renuncia,135.18.10,gt_budget.610710,
+1351811,Indemnizaciones Laborales,135.18.11,gt_budget.610711,
+1351899,Otras Indemnizaciones Laborales,135.18.99,gt_budget.610799,
+1353101,Agua Potable,135.31.01,gt_budget.630101,
+1353102,Agua de Riego,135.31.02,gt_budget.630102,
+1353104,Energ�a El�ctrica,135.31.04,gt_budget.630104,
+1353105,Telecomunicaciones,135.31.05,gt_budget.630105,
+1353106,Servicios de Correo,135.31.06,gt_budget.630106,
+1353201,Transporte de Personal,135.32.01,gt_budget.630201,
+1353202,Fletes y Maniobras,135.32.02,gt_budget.630202,
+1353203,"Almacenamiento, Embalaje, Envase y Recarga de Extintores",135.32.03,gt_budget.630203,
+1353204,"Edici�n, Impresi�n, Reproducci�n, Publicaciones, Suscripciones, Fotocopiado, Traducci�n, Empastado, Enmarcaci�n, Serigraf�a, Fotograf�a, Carnetizaci�n, Filmaci�n e  Im�genes Satelitales",135.32.04,gt_budget.630204,
+1353208,Servicio de Vigilancia,135.32.08,gt_budget.630208,
+1353209,"Servicios de Aseo; Vestimenta de Trabajo; Fumigaci�n, Desinfecci�n y Limpieza de las Instalaciones del Sector P�blico.",135.32.09,gt_budget.630209,
+1353210,Servicios de Guarder�a,135.32.10,gt_budget.630210,
+1353212,Investigaciones Profesionales y Ex�menes de Laboratorio,135.32.12,gt_budget.630212,
+1353217,Difusi�n e Informaci�n,135.32.17,gt_budget.630217,
+1353218,Publicidad y Propaganda en Medios de Comunicaci�n Masiva,135.32.18,gt_budget.630218,
+1353219,Publicidad y Propaganda Usando Otros Medios,135.32.19,gt_budget.630219,
+1353220,"Servicios para Actividades Agropecuarias, Pesca y Caza � Fumigaci�n",135.32.20,gt_budget.630220,
+1353221,Servicios Personales Eventuales sin Relaci�n de Dependencia,135.32.21,gt_budget.630221,
+1353223,Servicios de Cartograf�a,135.32.23,gt_budget.630223,
+1353224,Servicios de Implementaci�n y Administraci�n de Bancos de Informaci�n,135.32.24,gt_budget.630224,
+1353299,Otros Servicios Generales,135.32.99,gt_budget.630299,
+1353301,Pasajes al Interior,135.33.01,gt_budget.630301,
+1353302,Pasajes al Exterior,135.33.02,gt_budget.630302,
+1353303,Vi�ticos y Subsistencias en el Interior,135.33.03,gt_budget.630303,
+1353304,Vi�ticos y Subsistencias en el Exterior,135.33.04,gt_budget.630304,
+1353305,Mudanzas e Instalaciones,135.33.05,gt_budget.630305,
+1353306,Vi�tico por Gastos de Residencia,135.33.06,gt_budget.630306,
+1353401,"Gastos en Terrenos (Instalaci�n, Mantenimiento y Reparaciones)",135.34.01,gt_budget.630401,
+1353402,"Gastos en Edificios, Locales, Residencias y Cableado Estructurado (Instalaci�n, Mantenimiento y Reparaciones)",135.34.02,gt_budget.630402,
+1353403,"Gastos en Mobiliarios (Instalaci�n, Mantenimiento y Reparaciones)",135.34.03,gt_budget.630403,
+1353404,"Gastos en Maquinarias y Equipos  (Instalaci�n, Mantenimiento y Reparaciones)",135.34.04,gt_budget.630404,
+1353405,"Gastos en Veh�culos  (Instalaci�n, Mantenimiento y Reparaci�n)",135.34.05,gt_budget.630405,
+1353406,"Gastos en Herramientas  (Instalaci�n, Mantenimiento y Reparaci�n)",135.34.06,gt_budget.630406,
+1353418,Gastos en Mantenimiento de �reas Verdes y Arreglo de V�as Internas,135.34.18,gt_budget.630418,
+1353419,"Instalaci�n, Mantenimiento y Reparaci�n de Bienes Deportivos",135.34.19,gt_budget.630419,
+1353499,"Otras Gastos en Instalaciones, Mantenimientos y Reparaciones",135.34.99,gt_budget.630499,
+1353501,Arrendamiento de Terrenos,135.35.01,gt_budget.630501,
+1353502,"Arrendamiento de Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",135.35.02,gt_budget.630502,
+1353503,Arrendamiento de Mobiliarios,135.35.03,gt_budget.630503,
+1353504,Arrendamiento de Maquinarias y Equipos,135.35.04,gt_budget.630504,
+1353505,Arrendamiento de Veh�culos,135.35.05,gt_budget.630505,
+1353506,Arrendamiento de Herramientas,135.35.06,gt_budget.630506,
+1353599,Otros Arrendamientos de Bienes,135.35.99,gt_budget.630599,
+1353601,"Consultor�a, Asesor�a e Investigaci�n Especializada",135.36.01,gt_budget.630601,
+1353602,Servicios de Auditoria,135.36.02,gt_budget.630602,
+1353603,Servicios de Capacitaci�n,135.36.03,gt_budget.630603,
+1353604,Fiscalizaci�n e Inspecciones T�cnicas,135.36.04,gt_budget.630604,
+1353605,Estudio y Dise�o de Proyectos,135.36.05,gt_budget.630605,
+1353606,Honorarios por Contratos Civiles de Servicios,135.36.06,gt_budget.630606,
+1353607,Servicios T�cnicos Especializados,135.36.07,gt_budget.630607,
+1353701,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",135.37.01,gt_budget.630701,
+1353702,Arrendamiento y Licencias de Uso de Paquetes Inform�ticos,135.37.02,gt_budget.630702,
+1353703,Arrendamiento de Equipos Inform�ticos,135.37.03,gt_budget.630703,
+1353704,Mantenimiento y Reparaci�n de Equipos y Sistemas Inform�ticos,135.37.04,gt_budget.630704,
+1353801,Alimentos y Bebidas,135.38.01,gt_budget.630801,
+1353802,"Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes Militares y Policiales",135.38.02,gt_budget.630802,
+1353803,Combustibles y Lubricantes,135.38.03,gt_budget.630803,
+1353804,Materiales de Oficina,135.38.04,gt_budget.630804,
+1353805,Materiales de Aseo,135.38.05,gt_budget.630805,
+1353806,Herramientas (Bienes de Uso y Consumo Corriente),135.38.06,gt_budget.630806,
+1353807,"Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",135.38.07,gt_budget.630807,
+1353808,Instrumental M�dico Menor,135.38.08,gt_budget.630808,
+1353809,Medicinas y Productos Farmac�uticos,135.38.09,gt_budget.630809,
+1353810,Existencias de Materiales e Insumos para Laboratorio y Uso M�dico,135.38.10,gt_budget.630810,
+1353811,"Insumos, Bienes Materiales y Suministros para la Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial, Navegaci�n y Contra Incendios",135.38.11,gt_budget.630811,
+1353812,Materiales Did�cticos,135.38.12,gt_budget.630812,
+1353813,Repuestos y Accesorios,135.38.13,gt_budget.630813,
+1353821,Gastos para Situaciones de Emergencia,135.38.21,gt_budget.630821,
+1353825,"Ayudas, Insumos y Accesorios para Compensar Discapacidades",135.38.25,gt_budget.630825,
+1353826,Insumos para Procedimientos M�dicos,135.38.26,gt_budget.630826,
+1353827,Uniformes Deportivos,135.38.27,gt_budget.630827,
+1353830,Dispositivos M�dicos para Odontolog�a e Imagen,135.38.30,gt_budget.630830,
+1353899,Otros Bienes de Uso y Consumo de Producci�n,135.38.99,gt_budget.630899,
+1353999,"Otros Impuestos, Tasas y Contribuciones",135.39.99,gt_budget.670199,
+1354001,Seguros,135.40.01,gt_budget.670201,
+1354099,Otros Gastos Financieros,135.40.99,gt_budget.670299,
+1354503,Mobiliarios (Bienes Muebles no Depreciables),135.45.03,gt_budget.631403,
+1354504,Maquinarias y Equipos (Bienes Muebles no Depreciables),135.45.04,gt_budget.631404,
+1354506,Herramientas (Bienes Muebles no Depreciables),135.45.06,gt_budget.631406,
+1354507,"Equipos, Sistemas y Paquetes Inform�ticos",135.45.07,gt_budget.631407,
+1354511,Partes y Repuestos,135.45.11,gt_budget.631411,
+1410103,Mobiliarios (Bienes de Larga Duraci�n),141.01.03,gt_budget.840103,
+1410104,Maquinarias y Equipos (Bienes de Larga Duraci�n),141.01.04,gt_budget.840104,
+1410105,Veh�culos (Bienes de Larga Duraci�n),141.01.05,gt_budget.840105,
+1410106,Herramientas (Bienes de Larga Duraci�n),141.01.06,gt_budget.840106,
+1410107,"Equipos, Sistemas y Paquetes Inform�ticos",141.01.07,gt_budget.840107,
+1410108,Bienes Art�sticos y Culturales,141.01.08,gt_budget.840108,
+1410109,Libros y Colecciones,141.01.09,gt_budget.840109,
+1410110,Pertrechos para la Defensa y Seguridad P�blica,141.01.10,gt_budget.840110,
+1410111,Partes y Repuestos,141.01.11,gt_budget.840111,
+1410301,Terrenos (Bienes Inmuebles),141.03.01,gt_budget.840201,
+1410302,"Edificios, Locales y Residencias (Bienes Inmuebles)",141.03.02,gt_budget.840202,
+1410303,Bienes Prefabricados,141.03.03,gt_budget.840203,
+1410399,Otros Bienes Inmuebles,141.03.99,gt_budget.840299,
+1410512,Semovientes,141.05.12,gt_budget.840512,
+1410513,Bosques,141.05.13,gt_budget.840513,
+1410514,Acu�ticos,141.05.14,gt_budget.840514,
+1410515,Plantas,141.05.15,gt_budget.840515,
+1410599,Otros Bienes Biol�gicos,141.05.99,gt_budget.840599,
+1420103,Mobiliarios (Bienes de Larga Duraci�n),142.01.03,gt_budget.840103,
+1420104,Maquinarias y Equipos (Bienes de Larga Duraci�n),142.01.04,gt_budget.840104,
+1420105,Veh�culos (Bienes de Larga Duraci�n),142.01.05,gt_budget.840105,
+1420106,Herramientas (Bienes de Larga Duraci�n),142.01.06,gt_budget.840106,
+1420107,"Equipos, Sistemas y Paquetes Inform�ticos",142.01.07,gt_budget.840107,
+1420108,Bienes Art�sticos y Culturales,142.01.08,gt_budget.840108,
+1420109,Libros y Colecciones,142.01.09,gt_budget.840109,
+1420111,Partes y Repuestos,142.01.11,gt_budget.840111,
+1420301,Terrenos,142.03.01,gt_budget.840201,
+1420302,"Edificios, Locales y Residencias",142.03.02,gt_budget.840202,
+1420399,Otros Bienes Inmuebles,142.03.99,gt_budget.840299,
+1420512,Semovientes,142.05.12,gt_budget.840512,
+1420513,Bosques,142.05.13,gt_budget.840513,
+1420514,Acu�ticos,142.05.14,gt_budget.840514,
+1420515,Plantas,142.05.15,gt_budget.840515,
+1420599,Otros Bienes Biol�gicos,142.05.99,gt_budget.840599,
+1440103,Mobiliarios (Bienes de Larga Duraci�n),144.01.03,gt_budget.840103,
+1440104,Maquinarias y Equipos (Bienes de Larga Duraci�n),144.01.04,gt_budget.840104,
+1440105,Veh�culos (Bienes de Larga Duraci�n),144.01.05,gt_budget.840105,
+1440106,Herramientas (Bienes de Larga Duraci�n),144.01.06,gt_budget.840106,
+1440107,"Equipos, Sistemas y Paquetes Inform�ticos",144.01.07,gt_budget.840107,
+1440108,Bienes Art�sticos y Culturales,144.01.08,gt_budget.840108,
+1440109,Libros y Colecciones,144.01.09,gt_budget.840109,
+1440110,Pertrechos para la Defensa y Seguridad P�blica,144.01.10,gt_budget.840110,
+1440111,Partes y Repuestos,144.01.11,gt_budget.840111,
+1440301,Terrenos,144.03.01,gt_budget.840201,
+1440302,"Edificios, Locales y Residencias",144.03.02,gt_budget.840202,
+1440399,Otros Bienes Inmuebles,144.03.99,gt_budget.840299,
+1440512,Semovientes,144.05.12,gt_budget.840512,
+1440513,Bosques,144.05.13,gt_budget.840513,
+1440514,Acu�ticos,144.05.14,gt_budget.840514,
+1440515,Plantas,144.05.15,gt_budget.840515,
+1440599,Otros Bienes Biol�gicos,144.05.99,gt_budget.840599,
+1450103,Mobiliarios (Bienes de Larga Duraci�n),145.01.03,gt_budget.840103,
+1450104,Maquinarias y Equipos (Bienes de Larga Duraci�n),145.01.04,gt_budget.840104,
+1450105,Veh�culos (Bienes de Larga Duraci�n),145.01.05,gt_budget.840105,
+1450106,Herramientas (Bienes de Larga Duraci�n),145.01.06,gt_budget.840106,
+1450107,"Equipos, Sistemas y Paquetes Inform�ticos",145.01.07,gt_budget.840107,
+1450108,Bienes Art�sticos y Culturales,145.01.08,gt_budget.840108,
+1450109,Libros y Colecciones,145.01.09,gt_budget.840109,
+1450110,Pertrechos para la Defensa y Seguridad P�blica,145.01.10,gt_budget.840110,
+1450111,Partes y Repuestos,145.01.11,gt_budget.840111,
+1450301,Terrenos (Bienes Inmuebles),145.03.01,gt_budget.840201,
+1450302,"Edificios, Locales y Residencias (Bienes Inmuebles)",145.03.02,gt_budget.840202,
+1450399,Otros Bienes Inmuebles,145.03.99,gt_budget.840299,
+1450512,Semovientes,145.05.12,gt_budget.840512,
+1450513,Bosques,145.05.13,gt_budget.840513,
+1450514,Acu�ticos,145.05.14,gt_budget.840514,
+1450515,Plantas,145.05.15,gt_budget.840515,
+1450599,Otros Bienes Biol�gicos,145.05.99,gt_budget.840599,
+1511101,Sueldos,151.11.01,gt_budget.710101,
+1511102,Salarios,151.11.02,gt_budget.710102,
+1511103,Jornales,151.11.03,gt_budget.710103,
+1511105,Remuneraciones Unificadas,151.11.05,gt_budget.710105,
+1511106,Salarios Unificados,151.11.06,gt_budget.710106,
+1511108,Remuneraci�n Mensual Unificada de Docentes del Magisterio y Docentes e Investigadores Universitarios.,151.11.08,gt_budget.710108,
+1511109,Remuneraci�n Mensual Unificada para Pasant�as,151.11.09,gt_budget.710109,
+1511201,Bonificaci�n por A�os de Servicio,151.12.01,gt_budget.710201,
+1511202,Bonificaci�n por Responsabilidad,151.12.02,gt_budget.710202,
+1511203,Decimotercer Sueldo,151.12.03,gt_budget.710203,
+1511204,Decimocuarto Sueldo,151.12.04,gt_budget.710204,
+1511205,Decimoquinto Sueldo,151.12.05,gt_budget.710205,
+1511206,Decimosexto Sueldo,151.12.06,gt_budget.710206,
+1511207,Bonificaci�n Complementaria,151.12.07,gt_budget.710207,
+1511208,"Bonificaci�n T�tulos Acad�micos, Especializaciones y Capacitaci�n Adicional",151.12.08,gt_budget.710208,
+1511209,Gastos de Representaci�n,151.12.09,gt_budget.710209,
+1511210,Sobresueldos y Bonificaciones Adicionales,151.12.10,gt_budget.710210,
+1511211,Est�mulo Pecuniario,151.12.11,gt_budget.710211,
+1511213,Aguinaldo Navide�o,151.12.13,gt_budget.710213,
+1511218,Bonificaci�n Mensual Gal�pagos,151.12.18,gt_budget.710218,
+1511220,Bonificaci�n Fronteriza,151.12.20,gt_budget.710220,
+1511223,Bonificaci�n por el D�a del M�dico,151.12.23,gt_budget.710223,
+1511224,Bonificaci�n por el D�a Mundial de la Salud,151.12.24,gt_budget.710224,
+1511225,Bonificaci�n para los Profesionales de la Salud,151.12.25,gt_budget.710225,
+1511227,Adicional Regi�n Amaz�nica,151.12.27,gt_budget.710227,
+1511228,Remuneraci�n Suplementaria Gal�pagos,151.12.28,gt_budget.710228,
+1511229,Actividad Extracurricular Gal�pagos,151.12.29,gt_budget.710229,
+1511230,Bonificaci�n por el D�a del Maestro,151.12.30,gt_budget.710230,
+1511231,Bonificaci�n por el D�a del Servidor P�blico,151.12.31,gt_budget.710231,
+1511232,"Bonificaci�n para Educadores Comunitarios, Alfabetizadores",151.12.32,gt_budget.710232,
+1511233,Bonificaci�n para Profesionales Amparados o no por Leyes de Escalaf�n,151.12.33,gt_budget.710233,
+1511235,Remuneraci�n Variable por Eficiencia,151.12.35,gt_budget.710235,
+1511301,Gastos de Residencia,151.13.01,gt_budget.710301,
+1511302,Bonificaci�n Geogr�fica,151.13.02,gt_budget.710302,
+1511303,Compensaci�n por Costo de Vida,151.13.03,gt_budget.710303,
+1511304,Compensaci�n por Transporte,151.13.04,gt_budget.710304,
+1511305,Compensaci�n en el Exterior,151.13.05,gt_budget.710305,
+1511306,Alimentaci�n,151.13.06,gt_budget.710306,
+1511307,Comisariato,151.13.07,gt_budget.710307,
+1511308,Compensaci�n Pedag�gica,151.13.08,gt_budget.710308,
+1511309,Compensaci�n por Trabajo de Alto Riesgo,151.13.09,gt_budget.710309,
+1511310,"Subsidio Profesores de Escuelas Fiscales, Misionales y Fiscomisionales de las Regiones Amaz�nica e Insular",151.13.10,gt_budget.710310,
+1511313,Compensaci�n por Cesaci�n de Funciones,151.13.13,gt_budget.710313,
+1511401,Por Cargas Familiares,151.14.01,gt_budget.710401,
+1511402,De Educaci�n,151.14.02,gt_budget.710402,
+1511403,Por Maternidad,151.14.03,gt_budget.710403,
+1511404,Por Fallecimiento,151.14.04,gt_budget.710404,
+1511405,Por Guarder�a,151.14.05,gt_budget.710405,
+1511406,Por Vacaciones,151.14.06,gt_budget.710406,
+1511408,Subsidio de Antig�edad,151.14.08,gt_budget.710408,
+1511499,Otros Subsidios,151.14.99,gt_budget.710499,
+1511501,Sueldos,151.15.01,gt_budget.710501,
+1511503,Jornales,151.15.03,gt_budget.710503,
+1511505,Sustituciones de Personal,151.15.05,gt_budget.710505,
+1511506,Licencia Remunerada,151.15.06,gt_budget.710506,
+1511507,Honorarios,151.15.07,gt_budget.710507,
+1511509,Horas Extraordinarias y Suplementarias,151.15.09,gt_budget.710509,
+1511510,Servicios Personales por Contrato,151.15.10,gt_budget.710510,
+1511511,Remuneraciones Especiales Secci�n Nocturna,151.15.11,gt_budget.710511,
+1511512,Subrogaci�n,151.15.12,gt_budget.710512,
+1511513,Encargos,151.15.13,gt_budget.710513,
+1511601,Aporte Patronal,151.16.01,gt_budget.710601,
+1511602,Fondo de Reserva,151.16.02,gt_budget.710602,
+1511603,Jubilaci�n Patronal,151.16.03,gt_budget.710603,
+1511604,Cesant�a Privada,151.16.04,gt_budget.710604,
+1511605,Jubilaci�n Complementaria,151.16.05,gt_budget.710605,
+1511606,Fondo Global de Jubilaci�n Patronal para trabajadores amparados por el C�digo de Trabajo,151.16.06,gt_budget.710606,
+1511802,Supresi�n de Puesto,151.18.02,gt_budget.710702,
+1511803,Despido Intempestivo,151.18.03,gt_budget.710703,
+1511804,Compensaci�n por Desahucio,151.18.04,gt_budget.710704,
+1511805,Restituci�n de Puestos,151.18.05,gt_budget.710705,
+1511806,Beneficio por Jubilaci�n,151.18.06,gt_budget.710706,
+1511807,Compensaci�n por Vacaciones no Gozadas por Cesaci�n de Funciones,151.18.07,gt_budget.710707,
+1511808,Por Accidente de Trabajo o Enfermedad,151.18.08,gt_budget.710708,
+1511809,Por Renuncia Voluntaria,151.18.09,gt_budget.710709,
+1511810,Por Compra de Renuncia,151.18.10,gt_budget.710710,
+1511811,Indemnizaciones Laborales,151.18.11,gt_budget.710711,
+1511899,Otras Indemnizaciones Laborales,151.18.99,gt_budget.710799,
+1513101,Agua Potable,151.31.01,gt_budget.730101,
+1513102,Agua de Riego,151.31.02,gt_budget.730102,
+1513104,Energ�a El�ctrica,151.31.04,gt_budget.730104,
+1513105,Telecomunicaciones,151.31.05,gt_budget.730105,
+1513106,Servicios de Correo,151.31.06,gt_budget.730106,
+1513201,Transporte de Personal,151.32.01,gt_budget.730201,
+1513202,Fletes y Maniobras,151.32.02,gt_budget.730202,
+1513203,"Almacenamiento, Embalaje, Envase y Recarga de Extintores",151.32.03,gt_budget.730203,
+1513204,"Edici�n, Impresi�n, Reproducci�n, Publicaciones, Suscripciones, Fotocopiado, Traducci�n, Empastado, Enmarcaci�n, Serigraf�a, Fotograf�a, Carnetizaci�n, Filmaci�n e  Im�genes Satelitales",151.32.04,gt_budget.730204,
+1513205,Espect�culos Culturales y Sociales,151.32.05,gt_budget.730205,
+1513206,Eventos P�blicos y Oficiales,151.32.06,gt_budget.730206,
+1513208,Servicio de Vigilancia,151.32.08,gt_budget.730208,
+1513209,"Servicios de Aseo; Vestimenta de Trabajo; Fumigaci�n, Desinfecci�n y Limpieza de las Instalaciones del Sector P�blico",151.32.09,gt_budget.730209,
+1513210,Servicios de Guarder�a,151.32.10,gt_budget.730210,
+1513212,Investigaciones Profesionales y Ex�menes de Laboratorio,151.32.12,gt_budget.730212,
+1513216,Servicios de Voluntariado,151.32.16,gt_budget.730216,
+1513217,Difusi�n e Informaci�n,151.32.17,gt_budget.730217,
+1513218,Publicidad y Propaganda en Medios de Comunicaci�n Masiva,151.32.18,gt_budget.730218,
+1513219,Publicidad y Propaganda Usando Otros Medios,151.32.19,gt_budget.730219,
+1513221,Servicios Personales Eventuales sin Relaci�n de Dependencia,151.32.21,gt_budget.730221,
+1513223,Servicios de Cartograf�a,151.32.23,gt_budget.730223,
+1513224,Servicios de Implementaci�n y Administraci�n de Bancos de Informaci�n,151.32.24,gt_budget.730224,
+1513235,Servicio de Alimentaci�n,151.32.35,gt_budget.730235,
+1513299,Otros Servicios Generales,151.32.99,gt_budget.730299,
+1513301,Pasajes al Interior,151.33.01,gt_budget.730301,
+1513302,Pasajes al Exterior,151.33.02,gt_budget.730302,
+1513303,Vi�ticos y Subsistencias en el Interior,151.33.03,gt_budget.730303,
+1513304,Vi�ticos y Subsistencias en el Exterior,151.33.04,gt_budget.730304,
+1513305,Mudanzas e Instalaciones,151.33.05,gt_budget.730305,
+1513306,Vi�tico por Gastos de Residencia,151.33.06,gt_budget.730306,
+1513401,"Gastos en Terrenos (Instalaci�n, Mantenimiento y Reparaciones)",151.34.01,gt_budget.730401,
+1513402,"Gastos en Edificios, Locales, Residencias y Cableado Estructurado (Instalaci�n, Mantenimiento y Reparaciones)",151.34.02,gt_budget.730402,
+1513403,"Gastos en Mobiliarios (Instalaci�n, Mantenimiento y Reparaciones)",151.34.03,gt_budget.730403,
+1513404,"Gastos en Maquinarias y Equipos (Instalaci�n, Mantenimiento y Reparaciones)",151.34.04,gt_budget.730404,
+1513405,"Gastos en Veh�culos (Instalaci�n, Mantenimiento y Reparaciones)",151.34.05,gt_budget.730405,
+1513406,"Gastos en Herramientas (Instalaci�n, Mantenimiento y Reparaciones)",151.34.06,gt_budget.730406,
+1513417,Gastos en Infraestructura,151.34.17,gt_budget.730417,
+1513418,Mantenimiento de �reas Verdes y Arreglo de V�as Internas,151.34.18,gt_budget.730418,
+1513419,"Instalaci�n, Mantenimiento y Reparaci�n de Bienes Deportivos",151.34.19,gt_budget.730419,
+1513499,"Otros Gastos en Instalaciones, Mantenimientos y Reparaciones",151.34.99,gt_budget.730499,
+1513501,Arrendamientos de Terrenos,151.35.01,gt_budget.730501,
+1513502,"Arrendamiento de Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",151.35.02,gt_budget.730502,
+1513503,Arrendamientos de Mobiliarios,151.35.03,gt_budget.730503,
+1513504,Arrendamientos de Maquinarias y Equipos,151.35.04,gt_budget.730504,
+1513505,Arrendamientos de Veh�culos,151.35.05,gt_budget.730505,
+1513506,Arrendamientos de Herramientas,151.35.06,gt_budget.730506,
+1513515,Arrendamientos de Bienes Biol�gicos,151.35.15,gt_budget.730515,
+1513599,Otros Arrendamientos de Bienes,151.35.99,gt_budget.730599,
+1513601,"Consultor�a, Asesor�a e Investigaci�n Especializada",151.36.01,gt_budget.730601,
+1513602,Servicios de Auditoria,151.36.02,gt_budget.730602,
+1513603,Servicios de Capacitaci�n,151.36.03,gt_budget.730603,
+1513604,Fiscalizaci�n e Inspecciones T�cnicas,151.36.04,gt_budget.730604,
+1513605,Estudio y Dise�o de Proyectos,151.36.05,gt_budget.730605,
+1513606,Honorarios por Contratos Civiles de Servicios,151.36.06,gt_budget.730606,
+1513607,Servicios T�cnicos Especializados,151.36.07,gt_budget.730607,
+1513701,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",151.37.01,gt_budget.730701,
+1513702,Arrendamiento y Licencias de Uso de Paquetes Inform�ticos,151.37.02,gt_budget.730702,
+1513703,Arrendamiento de Equipos Inform�ticos,151.37.03,gt_budget.730703,
+1513704,Mantenimiento y Reparaci�n de Equipos y Sistemas Inform�ticos,151.37.04,gt_budget.730704,
+1513801,Existencia de Alimentos y Bebidas,151.38.01,gt_budget.730801,
+1513802,"Existencia de Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes",151.38.02,gt_budget.730802,
+1513803,Existencia de Combustibles y Lubricantes,151.38.03,gt_budget.730803,
+1513804,Existencia de Materiales de Oficina,151.38.04,gt_budget.730804,
+1513805,Existencia de Materiales de Aseo,151.38.05,gt_budget.730805,
+1513806,Existencia de Herramientas,151.38.06,gt_budget.730806,
+1513807,"Existencia de Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",151.38.07,gt_budget.730807,
+1513808,Existencia de Instrumental M�dico Menor,151.38.08,gt_budget.730808,
+1513809,Existencia de Medicinas y Productos Farmac�uticos,151.38.09,gt_budget.730809,
+1513810,Existencias de Materiales e Insumos para Laboratorio y Uso M�dico,151.38.10,gt_budget.730810,
+1513811,"Existencias de Insumos, Bienes, Materiales y Suministros para la Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial, Navegaci�n y Contra Incendios",151.38.11,gt_budget.730811,
+1513812,Existencia de Materiales Did�cticos,151.38.12,gt_budget.730812,
+1513813,Existencia de Repuestos y Accesorios,151.38.13,gt_budget.730813,
+1513814,"Existencia de Suministros para Actividades Agropecuarias, Pesca y Caza",151.38.14,gt_budget.730814,
+1513821,Existencia de Gastos para Situaciones de Emergencia,151.38.21,gt_budget.730821,
+1513826,Existencia de Insumos para Procedimientos M�dicos,151.38.26,gt_budget.730826,
+1513827,Existencia de Uniformes Deportivos,151.38.27,gt_budget.730827,
+1513899,Existencia de Otros Bienes de Uso y Consumo de Inversi�n,151.38.99,gt_budget.730899,
+1513901,Impuesto al Valor Agregado,151.39.01,gt_budget.770101,
+1513902,"Tasas Generales, Impuestos, Contribuciones, Permisos, Licencias y Patentes",151.39.02,gt_budget.770102,
+1513903,Tasas Portuarias,151.39.03,gt_budget.770103,
+1513904,Contribuciones Especiales y de Mejora,151.39.04,gt_budget.770104,
+1513999,"Otros Impuestos, Tasas y Contribuciones",151.39.99,gt_budget.770199,
+1514001,Seguros,151.40.01,gt_budget.770201,
+1514003,Comisiones Bancarias,151.40.03,gt_budget.770203,
+1514004,Reajustes de Inversiones,151.40.04,gt_budget.770204,
+1514005,Diferencial Cambiario,151.40.05,gt_budget.770205,
+1514006,Costas Judiciales  Tr�mites Notariales y Legalizaci�n de Documentos,151.40.06,gt_budget.770206,
+1514013,Devoluci�n de Garant�as,151.40.13,gt_budget.770213,
+1514016,Obligaciones con el IESS por Responsabilidad Patronal,151.40.16,gt_budget.770216,
+1514017,Obligaciones con el IESS por Coactivas Interpuestas por el IESS,151.40.17,gt_budget.770217,
+1514018,Intereses por Mora Patronal al IESS,151.40.18,gt_budget.770218,
+1514099,Otros Gastos Financieros,151.40.99,gt_budget.770299,
+1514103,Mobiliarios (Bienes de Larga Duraci�n),151.41.03,gt_budget.840103,
+1514104,Maquinarias y Equipos (Bienes de Larga Duraci�n),151.41.04,gt_budget.840104,
+1514105,Veh�culos (Bienes de Larga Duraci�n),151.41.05,gt_budget.840105,
+1514106,Herramientas (Bienes de Larga Duraci�n),151.41.06,gt_budget.840106,
+1514107,"Equipos, Sistemas y Paquetes Inform�ticos",151.41.07,gt_budget.840107,
+1514108,Bienes Art�sticos y Culturales,151.41.08,gt_budget.840108,
+1514109,Libros y Colecciones,151.41.09,gt_budget.840109,
+1514110,Pertrechos para la Defensa y Seguridad P�blica,151.41.10,gt_budget.840110,
+1514111,Partes y Repuestos,151.41.11,gt_budget.840111,
+1514201,Terrenos (Bienes Inmuebles),151.42.01,gt_budget.840201,
+1514202,"Edificios, Locales y Residencias (Bienes Inmuebles)",151.42.02,gt_budget.840202,
+1514203,Bienes Prefabricados,151.42.03,gt_budget.840203,
+1514299,Otros Bienes Inmuebles,151.42.99,gt_budget.840299,
+1514301,Terrenos (Expropiaci�n de Bienes),151.43.01,gt_budget.840301,
+1514302,"Edificios, Locales y Residencias (Expropiaci�n de Bienes)",151.43.02,gt_budget.840302,
+1514399,Otros Bienes de Expropiaciones,151.43.99,gt_budget.840399,
+1514412,Semovientes,151.44.12,gt_budget.840512,
+1514413,Bosques,151.44.13,gt_budget.840513,
+1514414,Acu�ticos,151.44.14,gt_budget.840514,
+1514415,Plantas,151.44.15,gt_budget.840515,
+1514499,Otros Bienes Biol�gicos,151.44.99,gt_budget.840599,
+1514503,Mobiliarios (Bienes Muebles no Depreciables),151.45.03,gt_budget.731403,
+1514504,Maquinarias y Equipos (Bienes Muebles no Depreciables),151.45.04,gt_budget.731404,
+1514506,Herramientas (Bienes Muebles no Depreciables),151.45.06,gt_budget.731406,
+1514507,"Equipos, Sistemas y Paquetes Inform�ticos",151.45.07,gt_budget.731407,
+1514508,"Bienes Art�sticos, Culturales y Bienes Deportivos y S�mbolos Patrios",151.45.08,gt_budget.731408,
+1514509,Libros y Colecciones,151.45.09,gt_budget.731409,
+1514511,Partes y Repuestos,151.45.11,gt_budget.731411,
+1515101,Infraestructura de Agua Potable,151.51.01,gt_budget.750101,
+1515102,Infraestructura de Riego y Manejo de Aguas,151.51.02,gt_budget.750102,
+1515103,Infraestructura de Alcantarillado,151.51.03,gt_budget.750103,
+1515104,Infraestructura de Urbanizaci�n y Embellecimiento,151.51.04,gt_budget.750104,
+1515105,Obras P�blicas de Transporte y V�as,151.51.05,gt_budget.750105,
+1515106,Obras P�blicas para Telecomunicaciones,151.51.06,gt_budget.750106,
+1515107,Construcciones y Edificaciones,151.51.07,gt_budget.750107,
+1515108,Hospitales y Centros de Asistencias Social y Salud,151.51.08,gt_budget.750108,
+1515109,Construcciones Agropecuarias,151.51.09,gt_budget.750109,
+1515110,Plantas Industriales,151.51.10,gt_budget.750110,
+1515111,"Habilitamiento y Protecci�n de Suelo, Subsuelo y �reas Ecol�gicas",151.51.11,gt_budget.750111,
+1515112,Formaci�n de Plantaciones,151.51.12,gt_budget.750112,
+1515113,Explotaci�n de Aguas Subterr�neas,151.51.13,gt_budget.750113,
+1515114,Obras de Infraestructura para el Control de Inundaciones y Estabilizaci�n de Cauces,151.51.14,gt_budget.750114,
+1515199,Otras Obras de Infraestructura,151.51.99,gt_budget.750199,
+1515201,Obras para Generaci�n El�ctrica Hidr�ulica,151.52.01,gt_budget.750201,
+1515202,Obras para Generaci�n El�ctrica T�rmica,151.52.02,gt_budget.750202,
+1515299,Otros Sistemas de Generaci�n de Energ�a,151.52.99,gt_budget.750299,
+1515301,En Obras de Extracci�n,151.53.01,gt_budget.750301,
+1515302,En Obras de Refinaci�n,151.53.02,gt_budget.750302,
+1515303,En Obras de Almacenamiento,151.53.03,gt_budget.750303,
+1515304,En Obras de Comercializaci�n,151.53.04,gt_budget.750304,
+1515305,En Obras de Transporte de Materias Primas y Derivados,151.53.05,gt_budget.750305,
+1515399,Otras Obras para el Sector Hidrocarbur�fero y Minero,151.53.99,gt_budget.750399,
+1515401,"L�neas, Redes e Instalaciones El�ctricas",151.54.01,gt_budget.750401,
+1515402,"L�neas, Redes e Instalaciones de Telecomunicaciones",151.54.02,gt_budget.750402,
+1515499,Otras Obras El�ctricas y de Telecomunicaciones,151.54.99,gt_budget.750499,
+1515501,En Obras de Infraestructura,151.55.01,gt_budget.750501,
+1515502,En Obras para Generaci�n de Energ�a,151.55.02,gt_budget.750502,
+1515503,En Obras Hidrocarbur�feras y Mineras,151.55.03,gt_budget.750503,
+1515504,"En Obras de L�neas, Redes e Instalaciones El�ctricas y de Telecomunicaciones",151.55.04,gt_budget.750504,
+1515599,Otros Mantenimientos y Reparaciones de Obras,151.55.99,gt_budget.750599,
+1515801,Al Gobierno Central,151.58.01,gt_budget.780101,
+1515802,A Entidades Descentralizadas y Aut�nomas,151.58.02,gt_budget.780102,
+1515803,A Empresas P�blicas,151.58.03,gt_budget.780103,
+1515804,A Gobiernos Aut�nomos Descentralizados,151.58.04,gt_budget.780104,
+1515806,A Entidades Financieras P�blicas,151.58.06,gt_budget.780106,
+1515808,A Cuentas o Fondos Especiales,151.58.08,gt_budget.780108,
+1515903,Al Sector Privado Financiero,151.59.03,gt_budget.780203,
+1515904,Al Sector Privado no Financiero,151.59.04,gt_budget.780204,
+1515906,Becas y Ayudas Econ�micas,151.59.06,gt_budget.780206,
+1516001,Intereses de Certificados del Tesoro,151.60.01,gt_budget.560101,
+1516002,Intereses de Bonos del Estado,151.60.02,gt_budget.560102,
+1516006,"Descuentos, Comisiones y Otros Cargos en T�tulos y Valores",151.60.06,gt_budget.560106,
+1516099,Intereses Otros T�tulos y Valores,151.60.99,gt_budget.560199,
+1516101,Intereses al Sector P�blico Financiero,151.61.01,gt_budget.560201,
+1516102,Intereses al Sector P�blico no Financiero,151.61.02,gt_budget.560202,
+1516103,Intereses al Sector Privado Financiero,151.61.03,gt_budget.560203,
+1516104,Intereses al Sector Privado no Financiero,151.61.04,gt_budget.560204,
+1516105,Intereses a la Seguridad Social,151.61.05,gt_budget.560205,
+1516106,Comisiones y Otros Cargos,151.61.06,gt_budget.560206,
+1516201,Intereses a Organismos Multilaterales,151.62.01,gt_budget.560301,
+1516202,Intereses a Gobiernos y Organismos Gubernamentales,151.62.02,gt_budget.560302,
+1516203,Intereses al Sector Privado Financiero,151.62.03,gt_budget.560303,
+1516204,Intereses al Sector Privado no Financiero,151.62.04,gt_budget.560304,
+1516206,Comisiones y Otros Cargos,151.62.06,gt_budget.560306,
+1521101,Sueldos,152.11.01,gt_budget.710101,
+1521102,Salarios,152.11.02,gt_budget.710102,
+1521103,Jornales,152.11.03,gt_budget.710103,
+1521105,Remuneraciones Unificadas,152.11.05,gt_budget.710105,
+1521106,Salarios Unificados,152.11.06,gt_budget.710106,
+1521108,Remuneraci�n Mensual Unificada de Docentes del Magisterio y Docentes e Investigadores Universitarios,152.11.08,gt_budget.710108,
+1521109,Remuneraci�n Mensual Unificada para Pasant�as,152.11.09,gt_budget.710109,
+1521201,Bonificaci�n por A�os de Servicio,152.12.01,gt_budget.710201,
+1521202,Bonificaci�n por Responsabilidad,152.12.02,gt_budget.710202,
+1521203,Decimotercer Sueldo,152.12.03,gt_budget.710203,
+1521204,Decimocuarto Sueldo,152.12.04,gt_budget.710204,
+1521205,Decimoquinto Sueldo,152.12.05,gt_budget.710205,
+1521206,Decimosexto Sueldo,152.12.06,gt_budget.710206,
+1521207,Bonificaci�n Complementaria,152.12.07,gt_budget.710207,
+1521208,"Bonificaci�n T�tulos Acad�micos, Especializaciones y Capacitaci�n Adicional",152.12.08,gt_budget.710208,
+1521209,Gastos de Representaci�n,152.12.09,gt_budget.710209,
+1521210,Sobresueldos y Bonificaciones Adicionales,152.12.10,gt_budget.710210,
+1521211,Est�mulo Pecuniario,152.12.11,gt_budget.710211,
+1521213,Aguinaldo Navide�o,152.12.13,gt_budget.710213,
+1521218,Bonificaci�n Mensual Gal�pagos,152.12.18,gt_budget.710218,
+1521220,Bonificaci�n Fronteriza,152.12.20,gt_budget.710220,
+1521223,Bonificaci�n por el D�a del M�dico,152.12.23,gt_budget.710223,
+1521224,Bonificaci�n por el D�a Mundial de la Salud,152.12.24,gt_budget.710224,
+1521225,Bonificaci�n para los Profesionales de la Salud,152.12.25,gt_budget.710225,
+1521227,Adicional Regi�n Amaz�nica,152.12.27,gt_budget.710227,
+1521228,Remuneraci�n Suplementaria Gal�pagos,152.12.28,gt_budget.710228,
+1521229,Actividad Extracurricular Gal�pagos,152.12.29,gt_budget.710229,
+1521230,Bonificaci�n por el D�a del Maestro,152.12.30,gt_budget.710230,
+1521231,Bonificaci�n por el D�a del Servidor P�blico,152.12.31,gt_budget.710231,
+1521232,"Bonificaci�n para Educadores Comunitarios, Alfabetizadores",152.12.32,gt_budget.710232,
+1521233,Bonificaci�n para Profesionales Amparados o no por Leyes de Escalaf�n,152.12.33,gt_budget.710233,
+1521235,Remuneraci�n Variable por Eficiencia,152.12.35,gt_budget.710235,
+1521301,Gastos de Residencia,152.13.01,gt_budget.710301,
+1521302,Bonificaci�n Geogr�fica,152.13.02,gt_budget.710302,
+1521303,Compensaci�n por Costo de Vida,152.13.03,gt_budget.710303,
+1521304,Compensaci�n por Transporte,152.13.04,gt_budget.710304,
+1521305,Compensaci�n en el Exterior,152.13.05,gt_budget.710305,
+1521306,Alimentaci�n,152.13.06,gt_budget.710306,
+1521307,Comisariato,152.13.07,gt_budget.710307,
+1521308,Compensaci�n Pedag�gica,152.13.08,gt_budget.710308,
+1521309,Compensaci�n por Trabajo de Alto Riesgo,152.13.09,gt_budget.710309,
+1521310,"Subsidio Profesores de Escuelas Fiscales, Misionales y Fiscomisionales de las Regiones Amaz�nica e Insular",152.13.10,gt_budget.710310,
+1521313,Compensaci�n por Cesaci�n de Funciones,152.13.13,gt_budget.710313,
+1521401,Por Cargas Familiares,152.14.01,gt_budget.710401,
+1521402,De Educaci�n,152.14.02,gt_budget.710402,
+1521403,Por Maternidad,152.14.03,gt_budget.710403,
+1521404,Por Fallecimiento,152.14.04,gt_budget.710404,
+1521405,Por Guarder�a,152.14.05,gt_budget.710405,
+1521406,Por Vacaciones,152.14.06,gt_budget.710406,
+1521408,Subsidio de Antig�edad,152.14.08,gt_budget.710408,
+1521499,Otros Subsidios,152.14.99,gt_budget.710499,
+1521501,Sueldos,152.15.01,gt_budget.710501,
+1521503,Jornales,152.15.03,gt_budget.710503,
+1521505,Sustituciones de Personal,152.15.05,gt_budget.710505,
+1521506,Licencia Remunerada,152.15.06,gt_budget.710506,
+1521507,Honorarios,152.15.07,gt_budget.710507,
+1521509,Horas Extraordinarias y Suplementarias,152.15.09,gt_budget.710509,
+1521510,Servicios Personales por Contrato,152.15.10,gt_budget.710510,
+1521511,Remuneraciones Especiales Secci�n Nocturna,152.15.11,gt_budget.710511,
+1521512,Subrogaci�n,152.15.12,gt_budget.710512,
+1521513,Encargos,152.15.13,gt_budget.710513,
+1521601,Aporte Patronal,152.16.01,gt_budget.710601,
+1521602,Fondo de Reserva,152.16.02,gt_budget.710602,
+1521603,Jubilaci�n Patronal,152.16.03,gt_budget.710603,
+1521604,Cesant�a Privada,152.16.04,gt_budget.710604,
+1521605,Jubilaci�n Complementaria,152.16.05,gt_budget.710605,
+1521606,Fondo Global de Jubilaci�n Patronal para trabajadores amparados por el C�digo de Trabajo,152.16.06,gt_budget.710606,
+1521802,Supresi�n de Puesto,152.18.02,gt_budget.710702,
+1521803,Despido Intempestivo,152.18.03,gt_budget.710703,
+1521804,Compensaci�n por Desahucio,152.18.04,gt_budget.710704,
+1521805,Restituci�n de Puestos,152.18.05,gt_budget.710705,
+1521806,Beneficio por Jubilaci�n,152.18.06,gt_budget.710706,
+1521807,Compensaci�n por Vacaciones no Gozadas por Cesaci�n de Funciones,152.18.07,gt_budget.710707,
+1521808,Por Accidente de Trabajo o Enfermedad,152.18.08,gt_budget.710708,
+1521809,Por Renuncia Voluntaria,152.18.09,gt_budget.710709,
+1521810,Por Compra de Renuncia,152.18.10,gt_budget.710710,
+1521811,Indemnizaciones Laborales,152.18.11,gt_budget.710711,
+1521899,Otras Indemnizaciones Laborales,152.18.99,gt_budget.710799,
+1523101,Agua Potable,152.31.01,gt_budget.730101,
+1523102,Agua de Riego,152.31.02,gt_budget.730102,
+1523104,Energ�a El�ctrica,152.31.04,gt_budget.730104,
+1523105,Telecomunicaciones,152.31.05,gt_budget.730105,
+1523106,Servicios de Correo,152.31.06,gt_budget.730106,
+1523201,Transporte de Personal,152.32.01,gt_budget.730201,
+1523202,Fletes y Maniobras,152.32.02,gt_budget.730202,
+1523203,"Almacenamiento, Embalaje, Envase y Recarga de Extintores",152.32.03,gt_budget.730203,
+1523204,"Edici�n, Impresi�n, Reproducci�n, Publicaciones, Suscripciones, Fotocopiado, Traducci�n, Empastado, Enmarcaci�n, Serigraf�a, Fotograf�a, Carnetizaci�n, Filmaci�n e  Im�genes Satelitales",152.32.04,gt_budget.730204,
+1523205,Espect�culos Culturales y Sociales,152.32.05,gt_budget.730205,
+1523206,Eventos P�blicos y Oficiales,152.32.06,gt_budget.730206,
+1523208,Servicio de Vigilancia,152.32.08,gt_budget.730208,
+1523209,"Servicios de Aseo; Vestimenta de Trabajo; Fumigaci�n, Desinfecci�n y Limpieza de las Instalaciones del Sector P�blico",152.32.09,gt_budget.730209,
+1523210,Servicios de Guarder�a,152.32.10,gt_budget.730210,
+1523212,Investigaciones Profesionales y Ex�menes de Laboratorio,152.32.12,gt_budget.730212,
+1523216,Servicios de Voluntariado,152.32.16,gt_budget.730216,
+1523217,Difusi�n e Informaci�n,152.32.17,gt_budget.730217,
+1523218,Publicidad y Propaganda en Medios de Comunicaci�n Masiva,152.32.18,gt_budget.730218,
+1523219,Publicidad y Propaganda Usando Otros Medios,152.32.19,gt_budget.730219,
+1523221,Servicios Personales Eventuales sin Relaci�n de Dependencia,152.32.21,gt_budget.730221,
+1523223,Servicios de Cartograf�a,152.32.23,gt_budget.730223,
+1523224,Servicios de Implementaci�n y Administraci�n de Bancos de Informaci�n,152.32.24,gt_budget.730224,
+1523235,Servicio de Alimentaci�n,152.32.35,gt_budget.730235,
+1523299,Otros Servicios Generales,152.32.99,gt_budget.730299,
+1523301,Pasajes al Interior,152.33.01,gt_budget.730301,
+1523302,Pasajes al Exterior,152.33.02,gt_budget.730302,
+1523303,Vi�ticos y Subsistencias en el Interior,152.33.03,gt_budget.730303,
+1523304,Vi�ticos y Subsistencias en el Exterior,152.33.04,gt_budget.730304,
+1523305,Mudanzas e Instalaciones,152.33.05,gt_budget.730305,
+1523306,Vi�tico por Gastos de Residencia,152.33.06,gt_budget.730306,
+1523401,"Gastos en Terrenos (Instalaci�n, Mantenimiento y Reparaciones)",152.34.01,gt_budget.730401,
+1523402,"Gastos en Edificios, Locales, Residencias y Cableado Estructurado (Instalaci�n, Mantenimiento y Reparaciones)",152.34.02,gt_budget.730402,
+1523403,"Gastos en Mobiliarios (Instalaci�n, Mantenimiento y Reparaciones)",152.34.03,gt_budget.730403,
+1523404,"Gastos en Maquinaria y Equipos (Instalaci�n, Mantenimiento y Reparaciones)",152.34.04,gt_budget.730404,
+1523405,"Gastos en Veh�culos (Instalaci�n, Mantenimiento y Reparaciones)",152.34.05,gt_budget.730405,
+1523406,"Gastos en Herramientas (Instalaci�n, Mantenimiento y Reparaciones)",152.34.06,gt_budget.730406,
+1523417,Gastos en Infraestructura,152.34.17,gt_budget.730417,
+1523418,Mantenimiento de �reas Verdes y Arreglo de V�as Internas,152.34.18,gt_budget.730418,
+1523419,"Instalaci�n, Mantenimiento y Reparaci�n de Bienes Deportivos",152.34.19,gt_budget.730419,
+1523499,"Otros Gastos en Instalaciones, Mantenimientos y Reparaciones",152.34.99,gt_budget.730499,
+1523501,Arrendamiento de Terrenos,152.35.01,gt_budget.730501,
+1523502,"Arrendamiento de Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",152.35.02,gt_budget.730502,
+1523503,Arrendamiento de Mobiliarios,152.35.03,gt_budget.730503,
+1523504,Arrendamiento de Maquinaria y Equipos,152.35.04,gt_budget.730504,
+1523505,Arrendamiento de Veh�culos,152.35.05,gt_budget.730505,
+1523506,Arrendamiento de Herramientas,152.35.06,gt_budget.730506,
+1523515,Arrendamiento de Bienes Biol�gicos,152.35.15,gt_budget.730515,
+1523599,Otros Arrendamientos de Bienes,152.35.99,gt_budget.730599,
+1523601,"Consultor�a, Asesor�a e Investigaci�n Especializada",152.36.01,gt_budget.730601,
+1523602,Servicios de Auditoria,152.36.02,gt_budget.730602,
+1523603,Servicios de Capacitaci�n,152.36.03,gt_budget.730603,
+1523604,Fiscalizaci�n e Inspecciones T�cnicas,152.36.04,gt_budget.730604,
+1523605,Estudio y Dise�o de Proyectos,152.36.05,gt_budget.730605,
+1523606,Honorarios por Contratos Civiles de Servicios,152.36.06,gt_budget.730606,
+1523607,Servicios T�cnicos Especializados,152.36.07,gt_budget.730607,
+1523701,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",152.37.01,gt_budget.730701,
+1523702,Arrendamiento y Licencias de Uso de Paquetes Inform�ticos,152.37.02,gt_budget.730702,
+1523703,Arrendamiento de Equipos Inform�ticos,152.37.03,gt_budget.730703,
+1523704,Mantenimiento y Reparaci�n de Equipos y Sistemas Inform�ticos,152.37.04,gt_budget.730704,
+1523801,Existencia de Alimentos y Bebidas,152.38.01,gt_budget.730801,
+1523802,"Existencia de Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes Militares, Polic�as y Carpas",152.38.02,gt_budget.730802,
+1523803,Existencia de Combustibles y Lubricantes,152.38.03,gt_budget.730803,
+1523804,Existencia de Materiales de Oficina,152.38.04,gt_budget.730804,
+1523805,Existencia de Materiales de Aseo,152.38.05,gt_budget.730805,
+1523806,Existencia de Herramientas (Bienes de Uso y Consumo de Inversi�n),152.38.06,gt_budget.730806,
+1523807,"Existencia de Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",152.38.07,gt_budget.730807,
+1523808,Existencia de Instrumental M�dico Menor,152.38.08,gt_budget.730808,
+1523809,Existencia de Medicinas y Productos Farmac�uticos,152.38.09,gt_budget.730809,
+1523810,Existencias de Materiales e Insumos para Laboratorio y Uso M�dico,152.38.10,gt_budget.730810,
+1523811,"Insumos, Bienes, Materiales y Suministros para la Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial, Navegaci�n y Contra Incendios",152.38.11,gt_budget.730811,
+1523812,Existencia de Materiales Did�cticos,152.38.12,gt_budget.730812,
+1523813,Existencia de Repuestos y Accesorios,152.38.13,gt_budget.730813,
+1523814,"Existencia de Suministros para Actividades Agropecuarias, Pesca y Caza",152.38.14,gt_budget.730814,
+1523821,Existencias de Gastos para Situaciones de Emergencia,152.38.21,gt_budget.730821,
+1523826,Existencias de Insumos para Procedimientos M�dicos,152.38.26,gt_budget.730826,
+1523827,Existencias de Uniformes Deportivos,152.38.27,gt_budget.730827,
+1523899,Existencia de Otros Bienes de Uso y Consumo de Inversi�n,152.38.99,gt_budget.730899,
+1523901,Impuesto al Valor Agregado,152.39.01,gt_budget.770101,
+1523902,"Tasas Generales, Impuestos, Contribuciones, Permisos, Licencias y Patentes",152.39.02,gt_budget.770102,
+1523903,Tasas Portuarias,152.39.03,gt_budget.770103,
+1523904,Contribuciones Especiales y de Mejora,152.39.04,gt_budget.770104,
+1523999,"Otros Impuestos, Tasas y Contribuciones",152.39.99,gt_budget.770199,
+1524001,Seguros,152.40.01,gt_budget.770201,
+1524003,Comisiones Bancarias,152.40.03,gt_budget.770203,
+1524004,Reajustes de Inversiones,152.40.04,gt_budget.770204,
+1524005,Diferencial Cambiario,152.40.05,gt_budget.770205,
+1524006,Costas Judiciales  Tr�mites Notariales y Legalizaci�n de Documentos,152.40.06,gt_budget.770206,
+1524013,Devoluci�n de Garant�as,152.40.13,gt_budget.770213,
+1524016,Obligaciones con el IESS por Responsabilidad Patronal,152.40.16,gt_budget.770216,
+1524017,Obligaciones con el IESS por Coactivas Interpuestas por el IESS,152.40.17,gt_budget.770217,
+1524018,Intereses por Mora Patronal al IESS,152.40.18,gt_budget.770218,
+1524099,Otros Gastos Financieros,152.40.99,gt_budget.770299,
+1524103,Mobiliarios (Bienes de Larga Duraci�n),152.41.03,gt_budget.840103,
+1524104,Maquinarias y Equipos (Bienes de Larga Duraci�n),152.41.04,gt_budget.840104,
+1524105,Veh�culos (Bienes de Larga Duraci�n),152.41.05,gt_budget.840105,
+1524106,Herramientas (Bienes de Larga Duraci�n),152.41.06,gt_budget.840106,
+1524107,"Equipos, Sistemas y Paquetes Inform�ticos",152.41.07,gt_budget.840107,
+1524108,Bienes Art�sticos y Culturales,152.41.08,gt_budget.840108,
+1524109,Libros y Colecciones,152.41.09,gt_budget.840109,
+1524110,Pertrechos para la Defensa y Seguridad P�blica,152.41.10,gt_budget.840110,
+1524111,Partes y Repuestos,152.41.11,gt_budget.840111,
+1524201,Terrenos (Bienes Inmuebles),152.42.01,gt_budget.840201,
+1524202,"Edificios, Locales y Residencias (Bienes Inmuebles)",152.42.02,gt_budget.840202,
+1524203,Bienes Prefabricados,152.42.03,gt_budget.840203,
+1524299,Otros Bienes Inmuebles,152.42.99,gt_budget.840299,
+1524301,Terrenos (Expropiaci�n de Bienes),152.43.01,gt_budget.840301,
+1524302,"Edificios, Locales y Residencias (Expropiaci�n de Bienes)",152.43.02,gt_budget.840302,
+1524399,Otros Bienes de Expropiaciones,152.43.99,gt_budget.840399,
+1524412,Semovientes,152.44.12,gt_budget.840512,
+1524413,Bosques,152.44.13,gt_budget.840513,
+1524414,Acu�ticos,152.44.14,gt_budget.840514,
+1524415,Plantas,152.44.15,gt_budget.840515,
+1524499,Otros Bienes Biol�gicos,152.44.99,gt_budget.840599,
+1524503,Mobiliarios (Bienes Muebles no Depreciables),152.45.03,gt_budget.731403,
+1524504,Maquinarias y Equipos (Bienes Muebles no Depreciables),152.45.04,gt_budget.731404,
+1524506,Herramientas (Bienes Muebles no Depreciables),152.45.06,gt_budget.731406,
+1524507,"Equipos, Sistemas y Paquetes Inform�ticos",152.45.07,gt_budget.731407,
+1524508,"Bienes Art�sticos, Culturales, Bienes Deportivos y S�mbolos Patrios",152.45.08,gt_budget.731408,
+1524509,Libros y Colecciones,152.45.09,gt_budget.731409,
+1524511,Partes y Repuestos,152.45.11,gt_budget.731411,
+1525801,Al Gobierno Central,152.58.01,gt_budget.780101,
+1525802,A Entidades Descentralizadas y Aut�nomas,152.58.02,gt_budget.780102,
+1525803,A Empresas P�blicas,152.58.03,gt_budget.780103,
+1525804,A Gobiernos Aut�nomos Descentralizados,152.58.04,gt_budget.780104,
+1525806,A Entidades Financieras P�blicas,152.58.06,gt_budget.780106,
+1525808,A Cuentas o Fondos Especiales,152.58.08,gt_budget.780108,
+1525903,Al Sector Privado Financiero,152.59.03,gt_budget.780203,
+1525904,Al Sector Privado no Financiero,152.59.04,gt_budget.780204,
+1525906,Becas y Ayudas Econ�micas,152.59.06,gt_budget.780206,
+1526001,Intereses de Certificados del Tesoro Nacional,152.60.01,gt_budget.560101,
+1526002,Intereses de Bonos del Estado,152.60.02,gt_budget.560102,
+1526006,"Descuentos, Comisiones y Otros Cargos en T�tulos y Valores",152.60.06,gt_budget.560106,
+1526099,Intereses Otros T�tulos y Valores,152.60.99,gt_budget.560199,
+1526101,Intereses al Sector P�blico Financiero,152.61.01,gt_budget.560201,
+1526102,Intereses al Sector P�blico no Financiero,152.61.02,gt_budget.560202,
+1526103,Intereses al Sector Privado Financiero,152.61.03,gt_budget.560203,
+1526104,Intereses al Sector Privado no Financiero,152.61.04,gt_budget.560204,
+1526105,Intereses a la Seguridad Social,152.61.05,gt_budget.560205,
+1526106,Comisiones y Otros Cargos,152.61.06,gt_budget.560206,
+1526201,Intereses a Organismos Multilaterales,152.62.01,gt_budget.560301,
+1526202,Intereses a Gobiernos y Organismos Gubernamentales,152.62.02,gt_budget.560302,
+1526203,Intereses al Sector Privado Financiero,152.62.03,gt_budget.560303,
+1526204,Intereses al Sector Privado no Financiero,152.62.04,gt_budget.560304,
+1526206,Comisiones y Otros Cargos,152.62.06,gt_budget.560306,
+21351,Cuentas por Pagar Gastos en Personal,213.51,gt_budget.51,gt_budget.51
+21353,Cuentas por Pagar Bienes y Servicios de Consumo,213.53,gt_budget.53,gt_budget.53
+21356,Cuentas por Pagar Gastos Financieros,213.56,gt_budget.56,gt_budget.56
+21357,Cuentas por Pagar Otros Gastos,213.57,gt_budget.57,gt_budget.57
+21358,Cuentas por Pagar Transferencias y Donaciones Corrientes,213.58,gt_budget.58,gt_budget.58
+21361,Cuentas por Pagar Gastos en Personal para Producci�n,213.61,gt_budget.61,gt_budget.61
+21363,Cuentas por Pagar Bienes y Servicios para Producci�n,213.63,gt_budget.63,gt_budget.63
+21367,Cuentas por Pagar Otros Gastos de Producci�n,213.67,gt_budget.67,gt_budget.67
+21371,Cuentas por Pagar Gastos en Personal para Inversi�n,213.71,gt_budget.71,gt_budget.71
+21373,Cuentas por Pagar Bienes y Servicios para Inversi�n,213.73,gt_budget.73,gt_budget.73
+21375,Cuentas por Pagar Obras P�blicas,213.75,gt_budget.75,gt_budget.75
+21377,Cuentas por Pagar Otros Gastos de Inversi�n,213.77,gt_budget.77,gt_budget.77
+21378,Cuentas por Pagar Transferencias y Donaciones para Inversi�n,213.78,gt_budget.78,gt_budget.78
+21384,Cuentas por Pagar Inversiones en Bienes de Larga Duraci�n,213.84,gt_budget.84,gt_budget.84
+21387,Cuentas por Pagar Inversiones Financieras,213.87,gt_budget.87,gt_budget.87
+21388,Cuentas por Pagar Transferencias y Donaciones de Capital,213.88,gt_budget.88,gt_budget.88
+21396,Cuentas por Pagar Amortizaci�n de la Deuda P�blica,213.96,gt_budget.96,gt_budget.96
+21397,Cuentas por Pagar Dep�sitos y Fondos de Terceros de A�os Anteriores,213.97,gt_budget.97,gt_budget.97
+21398,Cuentas por Pagar de A�os Anteriores,213.98,gt_budget.97,gt_budget.97
+21399,Cuentas por Pagar por Obligaciones no Reconocidas ni Pagadas en A�os Anteriores,213.99,gt_budget.99,gt_budget.99
+2220101,Certificados del Tesoro Nacional,222.01.01,gt_budget.960101,gt_budget.360101
+2220102,Bonos del Estado,222.01.02,gt_budget.960102,gt_budget.360102
+2220198,Otros T�tulos,222.01.98,gt_budget.960198,gt_budget.360198
+2220399,Otros Valores,222.03.99,gt_budget.960199,gt_budget.360199
+2220401,(-) Descuentos en Certificados de Tesorer�a,222.04.01,,gt_budget.360401
+2220402,(-) Descuentos en Bonos del Estado,222.04.02,,gt_budget.360402
+2230101,Cr�ditos del Sector P�blico Financiero,223.01.01,gt_budget.960201,gt_budget.360201
+2230102,Cr�ditos del Sector P�blico no Financiero,223.01.02,gt_budget.960202,gt_budget.360202
+2230103,Cr�ditos del Sector Privado Financiero,223.01.03,gt_budget.960203,gt_budget.360203
+2230104,Cr�ditos del Sector Privado no Financiero,223.01.04,gt_budget.960204,gt_budget.360204
+2230105,Cr�ditos de la Seguridad Social,223.01.05,gt_budget.960205,gt_budget.360205
+2230301,Cr�ditos de Organismos Multilaterales,223.03.01,gt_budget.960301,gt_budget.360301
+2230302,Cr�ditos de Gobiernos y Organismos Gubernamentales,223.03.02,gt_budget.960302,gt_budget.360302
+2230303,Cr�ditos del Sector Privado Financiero,223.03.03,gt_budget.960303,gt_budget.360303
+2230304,Cr�ditos del Sector Privado no Financiero,223.03.04,gt_budget.960304,gt_budget.360304
+2230502,Cr�ditos del Sector P�blico no Financiero,223.05.02,gt_budget.960502,gt_budget.360502
+2230504,Cr�ditos del Sector Privado no Financiero,223.05.04,gt_budget.960504,gt_budget.360504
+2230604,Cr�ditos del Sector Privado no Financiero,223.06.04,gt_budget.960604,gt_budget.360604
+2240101,Cr�ditos por Impuesto Provisional,224.01.01,gt_budget.110802,gt_budget.110801
+2240913,Fondos de Estabilizaci�n Petrolera,224.09.13,gt_budget.880402,gt_budget.140113
+2241108,Cuentas y Fondos Especiales,224.11.08,gt_budget.580408,gt_budget.180408
+2241308,Cuentas y Fondos Especiales,224.13.08,gt_budget.880408,gt_budget.280408
+2241507,Fondos Ajenos,224.15.07,gt_budget.580407,gt_budget.180407
+2241713,Acreedores de Garant�as,224.17.13,gt_budget.570213,gt_budget.190101
+2241714,Acreedores de Fianzas,224.17.14,gt_budget.570214,gt_budget.190102
+2241901,D�bito Fiscal por Ventas,224.19.01,gt_budget.570101,gt_budget.140901
+2249702,Dep�sitos y Fondos de Terceros de A�os Anteriores,224.97.02,gt_budget.970102,
+2249801,Cuentas por Pagar de A�os Anteriores,224.98.01,gt_budget.970101,
+2250106,Dividendos Anticipados de Sociedades y Empresas P�blicas,225.01.06,,gt_budget.170106
+2250107,Dividendos Anticipados de Sociedades y Empresas Privadas,225.01.07,,gt_budget.170107
+2250108,Utilidades Anticipadas de Empresas y Entidades Financieras P�blicas,225.01.08,,gt_budget.170108
+2250301,Rentas Anticipadas de Terrenos,225.03.01,,gt_budget.170201
+2250302,"Rentas Anticipadas de Edificios, Locales y Residencias",225.03.02,,gt_budget.170202
+2250303,Rentas Anticipadas de Mobiliarios,225.03.03,,gt_budget.170203
+2250304,Rentas Anticipadas de Maquinarias y Equipos,225.03.04,,gt_budget.170204
+2250305,Rentas Anticipadas de Veh�culos,225.03.05,,gt_budget.170205
+2259102,Fondo de Reserva,225.91.02,gt_budget.510602,
+2259103,Decimotercer Sueldo,225.91.03,gt_budget.510603,
+2259104,Decimocuarto Sueldo,225.91.04,gt_budget.510604,
+2259110,Sobresueldos y Bonificaciones Adicionales,225.91.10,gt_budget.510610,
+2259202,Fondo de Reserva,225.92.02,gt_budget.610602,
+2259203,Decimotercer Sueldo,225.92.03,gt_budget.610203,
+2259204,Decimocuarto Sueldo,225.92.04,gt_budget.610204,
+2259205,Jubilaci�n Patronal,225.92.05,gt_budget.610603,
+2259206,Vacaciones,225.92.06,gt_budget.610606,
+2259211,Est�mulo Pecuniario,225.92.11,gt_budget.610211,
+2259302,Fondo de Reserva,225.93.02,gt_budget.710602,
+2259303,Decimotercer Sueldo,225.93.03,gt_budget.710203,
+2259304,Decimocuarto Sueldo,225.93.04,gt_budget.710204,
+2259311,Est�mulo Pecuniario,225.93.11,gt_budget.710211,
+2259313,Aguinaldo Navide�o,225.93.13,gt_budget.710212,
+6210101,A la Renta Global,621.01.01,,gt_budget.110102
+6210102,A la Utilidad por la Venta de Predios Urbanos,621.01.02,,gt_budget.110103
+6210103,A la Utilidad por la Venta de Predios Rurales,621.01.03,,gt_budget.110104
+6210199,"A Otras Rentas, Utilidades y Beneficios del Capital",621.01.99,,gt_budget.110199
+6210201,A los Predios Urbanos,621.02.01,,gt_budget.110201
+6210202,A los Predios R�sticos,621.02.02,,gt_budget.110202
+6210203,A la Inscripci�n en el Registro de la Propiedad o Mercantil,621.02.03,,gt_budget.110203
+6210204,A las Transmisiones de Dominio,621.02.04,,gt_budget.110204
+6210205,De Veh�culos Motorizados de Transporte Terrestre,621.02.05,,gt_budget.110205
+6210206,De Alcabalas,621.02.06,,gt_budget.110206
+6210207,A los Activos Totales,621.02.07,,gt_budget.110207
+6210208,De Veh�culos Motorizados de Transporte A�reo y Acu�tico,621.02.08,,gt_budget.110208
+6210210,A la Propiedad de Inmuebles Urbanos para Vivienda de Inter�s Social,621.02.10,,gt_budget.110210
+6210211,Impuesto a las Tierras Rurales,621.02.11,,gt_budget.110211
+6210212,Impuesto a los Activos en el Exterior,621.02.12,,gt_budget.110212
+6210299,Otros Impuestos Sobre la Propiedad,621.02.99,,gt_budget.110299
+6210301,Al Consumo de Cigarrillos,621.03.01,,gt_budget.110301
+6210302,Al Consumo de Cerveza,621.03.02,,gt_budget.110302
+6210303,Al Consumo de Bebidas Gaseosas,621.03.03,,gt_budget.110303
+6210304,Al Consumo de Alcohol y Productos Alcoh�licos,621.03.04,,gt_budget.110304
+6210305,Al Consumo de Bienes Suntuarios,621.03.05,,gt_budget.110305
+6210311,A las Telecomunicaciones,621.03.11,,gt_budget.110311
+6210312,A los Espect�culos P�blicos,621.03.12,,gt_budget.110312
+6210315,"Al Consumo de Cigarrillos, recaudados por el SRI",621.03.15,,gt_budget.110315
+6210316,"Al Consumo de Cerveza, recaudados por el SRI",621.03.16,,gt_budget.110316
+6210317,"Al Consumo de Bebidas Gaseosas, recaudados por el SRI",621.03.17,,gt_budget.110317
+6210318,"Al Consumo de Alcohol y Productos Alcoh�licos, recaudados por el SRI",621.03.18,,gt_budget.110318
+6210319,"A los Veh�culos, recaudados por el SRI",621.03.19,,gt_budget.110319
+6210320,"A los Aviones, Tricares y Otros NEP, recaudados por el SRI",621.03.20,,gt_budget.110320
+6210321,"A los Perfumes y Aguas de Tocador, recaudados por el SRI",621.03.21,,gt_budget.110321
+6210323,"A las Armas de Fuego, recaudados por el SRI",621.03.23,,gt_budget.110323
+6210325,"A las Cuotas y Membrec�as de Clubes, recaudados por el SRI",621.03.25,,gt_budget.110325
+6210326,"A Otros Servicios de Televisi�n Prepagada, recaudados por el SRI",621.03.26,,gt_budget.110326
+6210327,"Otros Impuestos al Consumo de Bienes y Servicios, recaudados por el SRI",621.03.27,,gt_budget.110327
+6210335,"Al Consumo de Cigarrillos, Recaudados por el SENAE",621.03.35,,gt_budget.110335
+6210336,"Al Consumo de Cerveza, Recaudados por el SENAE",621.03.36,,gt_budget.110336
+6210337,"Al Consumo de Bebidas Gaseosas, Recaudados por el SENAE",621.03.37,,gt_budget.110337
+6210338,"Al Consumo de Alcohol y Productos Alcoh�licos, Recaudados por el SENAE",621.03.38,,gt_budget.110338
+6210339,"A los Veh�culos, Recaudados por el SENAE",621.03.39,,gt_budget.110339
+6210340,"A los Aviones, Tricares y Otros NEP, Recaudados por el SENAE",621.03.40,,gt_budget.110340
+6210341,"A los Perfumes y Aguas de Tocador, Recaudados por el SENAE",621.03.41,,gt_budget.110341
+6210342,"A los Focos Incandescentes, recaudados por el SENAE",621.03.42,,gt_budget.110342
+6210343,"A las Armas de Fuego, Recaudados por el SENAE",621.03.43,,gt_budget.110343
+6210344,"A los Videojuegos, recaudados por el SENAE",621.03.44,,gt_budget.110344
+6210347,"Otros Impuestos al Consumo de Bienes y Servicios, recaudados por el SENAE",621.03.47,,gt_budget.110347
+6210399,Otros Impuestos al Consumo de Bienes y Servicios,621.03.99,,gt_budget.110399
+6210401,Impuesto al Valor Agregado Neto,621.04.01,,gt_budget.110401
+6210403,"Al Valor Agregado, recaudado por el SRI",621.04.03,,gt_budget.110403
+6210404,"Al Valor Agregado, Recaudado por el SENAE",621.04.04,,gt_budget.110404
+6210501,Arancelarios a la Importaci�n,621.05.01,,gt_budget.110501
+6210503,Tarifa de Salvaguardia,621.05.03,,gt_budget.110503
+6210510,0.7% de Exportaciones de Banano,621.05.10,,gt_budget.110510
+6210599,Otros Impuestos al Comercio Exterior,621.05.99,,gt_budget.110599
+6210601,A la Rentas de Empresas Petroleras,621.06.01,,gt_budget.110601
+6210602,A la Renta de Empresas Petroleras de Prestaci�n de Servicios,621.06.02,,gt_budget.110602
+6210603,A la Renta de Empresas Petroleras Contratos de Servicios Espec�ficos,621.06.03,,gt_budget.110603
+6210604,A la Renta por Ventas Internas de Derivados del Petr�leo,621.06.04,,gt_budget.110604
+6210605,Adicional por Barril de Crudo Exportado,621.06.05,,gt_budget.110605
+6210606,Gravamen a la Tarifa del Oleoducto,621.06.06,,gt_budget.110606
+6210699,Otros Impuestos a la Actividad Hidrocarbur�fera,621.06.99,,gt_budget.110699
+6210702,A las Tarjetas de Cr�dito,621.07.02,,gt_budget.110702
+6210703,A las Operaciones de Cr�dito,621.07.03,,gt_budget.110703
+6210704,"Patentes Comerciales, Industriales y de Servicios",621.07.04,,gt_budget.110704
+6210705,A la Salida del Pa�s,621.07.05,,gt_budget.110705
+6210706,Contratos de Construcci�n o Estudios celebrados con el Sector P�blico,621.07.06,,gt_budget.110706
+6210708,Al Desposte de Ganado,621.07.08,,gt_budget.110708
+6210709,Reajuste de Precios en la Contrataci�n P�blica,621.07.09,,gt_budget.110709
+6210710,Loter�a y Juegos de Azar,621.07.10,,gt_budget.110710
+6210712,Ingreso al Parque Nacional Gal�pagos y su Reserva,621.07.12,,gt_budget.110712
+6210799,Otros Impuestos,621.07.99,,gt_budget.110799
+6230101,Peaje,623.01.01,,gt_budget.130101
+6230102,Acceso a Lugares P�blicos,623.01.02,,gt_budget.130102
+6230103,Ocupaci�n de Lugares P�blicos,623.01.03,,gt_budget.130103
+6230104,Tasas Aduaneras,623.01.04,,gt_budget.130104
+6230106,Especies Fiscales,623.01.06,,gt_budget.130106
+6230107,Venta de Bases,623.01.07,,gt_budget.130107
+6230108,Prestaci�n de Servicios,623.01.08,,gt_budget.130108
+6230109,Rodaje de Veh�culos Motorizados,623.01.09,,gt_budget.130109
+6230110,Control y Vigilancia Municipal,623.01.10,,gt_budget.130110
+6230111,"Inscripciones, Registros y Matr�culas",623.01.11,,gt_budget.130111
+6230112,"Permisos, Licencias y Patentes",623.01.12,,gt_budget.130112
+6230113,Registro Sanitario y Toxicolog�a,623.01.13,,gt_budget.130113
+6230114,Servicios de Camales,623.01.14,,gt_budget.130114
+6230115,Fiscalizaci�n de Obras,623.01.15,,gt_budget.130115
+6230116,Recolecci�n de Basura,623.01.16,,gt_budget.130116
+6230118,Aprobaci�n de Planos e Inspecci�n de Construcciones,623.01.18,,gt_budget.130118
+6230120,Conexi�n y Reconexi�n del Servicio de Alcantarillado y Canalizaci�n,623.01.20,,gt_budget.130120
+6230121,Conexi�n y Reconexi�n del Servicio de Agua Potable,623.01.21,,gt_budget.130121
+6230124,Alumbrado P�blico,623.01.24,,gt_budget.130124
+6230129,Emisi�n Certificados de Origen,623.01.29,,gt_budget.130129
+6230130,Tasas por Servicios Notariales,623.01.30,,gt_budget.130130
+6230131,Contribuci�n Predial a favor de los Cuerpos de Bomberos,623.01.31,,gt_budget.130131
+6230132,Tasas de Servicio por el Registro de Datos P�blicos,623.01.32,,gt_budget.130132
+6230133,Tasas de Servicios por la Ocupaci�n de la Zona de Playa y Bah�a para la Cr�a y Cultivo de Especies Bioacu�ticas,623.01.33,,gt_budget.130133
+6230134,Emisi�n de Documentos de Ciudadan�a e Identificaci�n,623.01.34,,gt_budget.130134
+6230199,Otras Tasas Generales,623.01.99,,gt_budget.130199
+6230201,Recepci�n y Despacho de Naves,623.02.01,,gt_budget.130201
+6230202,Uso de Fondeadero,623.02.02,,gt_budget.130202
+6230203,Uso de Infraestructura Portuaria y Aeroportuaria,623.02.03,,gt_budget.130203
+6230204,Servicios de Cabotaje,623.02.04,,gt_budget.130204
+6230205,Servicios y Suministros Varios,623.02.05,,gt_budget.130205
+6230299,Otras Tasas Portuarias y Aeroportuarias,623.02.99,,gt_budget.130299
+6230301,Sector Financiero,623.03.01,,gt_budget.130301
+6230302,Sector Industrial y Comercial,623.03.02,,gt_budget.130302
+6230303,Sector Agropecuario,623.03.03,,gt_budget.130303
+6230304,Sector Tur�stico y Hotelero,623.03.04,,gt_budget.130304
+6230305,Superficiarios  Hidrocarbur�feros,623.03.05,,gt_budget.130305
+6230307,Superficiarios Mineros,623.03.07,,gt_budget.130307
+6230308,Regal�as Mineras,623.03.08,,gt_budget.130308
+6230309,Derechos Consulares,623.03.09,,gt_budget.130309
+6230310,Concesiones A�reas,623.03.10,,gt_budget.130310
+6230311,Concesiones Portuarias,623.03.11,,gt_budget.130311
+6230312,Concesiones en el Sector de las Telecomunicaciones,623.03.12,,gt_budget.130312
+6230313,Concesiones en el Sector El�ctrico,623.03.13,,gt_budget.130313
+6230314,Concesiones Viales,623.03.14,,gt_budget.130314
+6230315,Concesiones Hidrocarbur�feras,623.03.15,,gt_budget.130315
+6230399,Otras Concesiones,623.03.99,,gt_budget.130399
+6230401,N�minas de Empresas Privadas y P�blicas,623.04.01,,gt_budget.130401
+6230403,Contribuciones de las Compa��as y Entidades Financieras,623.04.03,,gt_budget.130403
+6230404,Contribuci�n en Contratos Sujetos a Licitaciones,623.04.04,,gt_budget.130404
+6230405,Sobre Contratos de Consultor�a,623.04.05,,gt_budget.130405
+6230406,"Apertura, Pavimentaci�n, Ensanche y Construcci�n de V�as de Toda Clase",623.04.06,,gt_budget.130406
+6230407,Repavimentaci�n Urbana,623.04.07,,gt_budget.130407
+6230408,"Aceras, Bordillos y Cercas",623.04.08,,gt_budget.130408
+6230409,Obras de Alcantarillado y Canalizaci�n,623.04.09,,gt_budget.130409
+6230410,Obras de Alumbrado P�blico,623.04.10,,gt_budget.130410
+6230411,Construcci�n y Ampliaci�n de Obras y Sistemas de Agua Potable,623.04.11,,gt_budget.130411
+6230413,Obras de Regeneraci�n Urbana,623.04.13,,gt_budget.130413
+6230414,Contribuci�n Adicional para los Cuerpos de Bomberos Proveniente de los Servicios de Alumbrado El�ctrico,623.04.14,,gt_budget.130414
+6230499,Otras Contribuciones,623.04.99,,gt_budget.130499
+6240106,Exportaciones de Derivados del Petr�leo,624.01.06,,gt_budget.140106
+6240107,Ventas Internas de Derivados del Petr�leo,624.01.07,,gt_budget.140107
+6240108,Tarifa de Transporte de Petr�leo por el SOTE,624.01.08,,gt_budget.140108
+6240110,Fondo de Inversi�n Petrolera,624.01.10,,gt_budget.140110
+6240113,Cuenta de Estabilizaci�n Petrolera,624.01.13,,gt_budget.140113
+6240199,Otros no Especificados,624.01.99,,gt_budget.140199
+6240201,Productos Agropecuarios y Forestales,624.02.01,,gt_budget.140201
+6240202,Industriales,624.02.02,,gt_budget.140202
+6240203,Productos del Mar,624.02.03,,gt_budget.140203
+6240204,"Productos de Oficina, Did�cticos y Publicaciones",624.02.04,,gt_budget.140204
+6240205,"Instrumental M�dico Menor, Insumos M�dicos y Medicinas",624.02.05,,gt_budget.140205
+6240206,Materiales y Accesorios de Instalaciones de Agua Potable,624.02.06,,gt_budget.140206
+6240207,Materiales y Accesorios de Alcantarillado y Canalizaci�n,624.02.07,,gt_budget.140207
+6240210,Materiales de Construcci�n,624.02.10,,gt_budget.140210
+6240299,Productos y Materiales Varios,624.02.99,,gt_budget.140299
+6240301,Agua Potable,624.03.01,,gt_budget.140301
+6240302,Agua de Riego,624.03.02,,gt_budget.140302
+6240303,Alcantarillado,624.03.03,,gt_budget.140303
+6240304,Energ�a El�ctrica,624.03.04,,gt_budget.140304
+6240305,Telecomunicaciones,624.03.05,,gt_budget.140305
+6240306,Servicio de Correos,624.03.06,,gt_budget.140306
+6240307,Transporte Nacional de Pasajeros y Carga,624.03.07,,gt_budget.140307
+6240308,Transporte Internacional de Pasajeros y Carga,624.03.08,,gt_budget.140308
+6240309,Operaciones Interlineales,624.03.09,,gt_budget.140309
+6240310,Espect�culos P�blicos,624.03.10,,gt_budget.140310
+6240311,Financieros,624.03.11,,gt_budget.140311
+6240312,Tarjetas VIP,624.03.12,,gt_budget.140312
+6240399,Otros Servicios T�cnicos y Especializados,624.03.99,,gt_budget.140399
+6240401,Ventas de Desechos y Residuos Agropecuarios y Forestales,624.04.01,,gt_budget.140401
+6240402,Ventas de Desechos y Residuos Industriales,624.04.02,,gt_budget.140402
+6240403,Ventas de Desechos y Residuos de Productos del Mar,624.04.03,,gt_budget.140403
+6240701,Ventas de Existencias de Terrenos,624.07.01,,gt_budget.240201
+6240702,"Ventas de Edificios, Locales y Residencias",624.07.02,,gt_budget.240202
+6240799,Ventas de Otros Bienes Inmuebles,624.07.99,,gt_budget.240299
+6242103,Ventas de Mobiliarios,624.21.03,,gt_budget.240103
+6242104,Ventas de Maquinarias y Equipos,624.21.04,,gt_budget.240104
+6242105,Ventas de Veh�culos,624.21.05,,gt_budget.240105
+6242106,Ventas de Herramientas,624.21.06,,gt_budget.240106
+6242107,"Ventas de Equipos, Sistemas y Paquetes Inform�ticos",624.21.07,,gt_budget.240107
+6242108,Ventas de Bienes Art�sticos y Culturales,624.21.08,,gt_budget.240108
+6242109,Ventas de Libros y Colecciones,624.21.09,,gt_budget.240109
+6242203,Ventas de Mobiliarios,624.22.03,,gt_budget.240103
+6242204,Ventas de Maquinarias y Equipos,624.22.04,,gt_budget.240104
+6242205,Ventas de Veh�culos,624.22.05,,gt_budget.240105
+6242206,Ventas de Herramientas,624.22.06,,gt_budget.240106
+6242207,"Ventas de Equipos, Sistemas y Paquetes Inform�ticos",624.22.07,,gt_budget.240107
+6242208,Ventas de Bienes Art�sticos y Culturales,624.22.08,,gt_budget.240108
+6242209,Ventas de Libros y Colecciones,624.22.09,,gt_budget.240109
+6242301,Ventas de Terrenos,624.23.01,,gt_budget.240201
+6242302,"Ventas de Edificios, Locales y Residencias",624.23.02,,gt_budget.240202
+6242399,Ventas de Otros Bienes Inmuebles,624.23.99,,gt_budget.240299
+6242401,Ventas de Terrenos,624.24.01,,gt_budget.240201
+6242402,"Ventas de Edificios, Locales y Residencias",624.24.02,,gt_budget.240202
+6242499,Ventas de Otros Bienes Inmuebles,624.24.99,,gt_budget.240299
+6242712,Ventas de Intangibles,624.27.12,,gt_budget.240401
+6243501,Exportaciones de Petr�leo de PETROECUADOR Ex Consorcio,624.35.01,,gt_budget.240501
+6243502,Exportaciones de Petr�leo de PETROECUADOR  de Nororiente,624.35.02,,gt_budget.240502
+6243503,Exportaciones de Petr�leo de Contratos de Prestaci�n de Servicios,624.35.03,,gt_budget.240503
+6243504,Exportaciones de Petr�leo de Regal�as,624.35.04,,gt_budget.240504
+6243506,Exportaciones de Petr�leo de Contratos de Participaci�n,624.35.06,,gt_budget.240506
+6243507,Exportaciones de Petr�leo de Contratos de Campos Marginales,624.35.07,,gt_budget.240507
+6243508,Exportaciones de Petr�leo de Contratos de Alianzas Operativas,624.35.08,,gt_budget.240508
+6243509,Exportaciones de Petr�leo de Diferencial de Calidad,624.35.09,,gt_budget.240509
+6243511,Exportaciones de Petr�leo de Contratos de Servicios Espec�ficos,624.35.11,,gt_budget.240511
+6243599,Otros no Especificados,624.35.99,,gt_budget.240599
+6250101,Intereses por Dep�sitos a Plazo,625.01.01,,gt_budget.170101
+6250102,Intereses y Comisiones de T�tulos y Valores,625.01.02,,gt_budget.170102
+6250103,Intereses y Comisiones de Riesgo,625.01.03,,gt_budget.170103
+6250104,Reajustes de Inversiones,625.01.04,,gt_budget.170104
+6250105,Diferencial Cambiario,625.01.05,,gt_budget.170105
+6250106,Dividendos de Sociedades y Empresas P�blicas,625.01.06,,gt_budget.170106
+6250107,Dividendos de Sociedades y Empresas Privadas,625.01.07,,gt_budget.170107
+6250108,Utilidades de Empresas y Entidades Financieras P�blicas,625.01.08,,gt_budget.170108
+6250109,Comisiones por Servicios Financieros,625.01.09,,gt_budget.170109
+6250110,Abonos por Operaciones Financieras,625.01.10,,gt_budget.170110
+6250111,Primas por Seguros de Desgravamen y de Saldos,625.01.11,,gt_budget.170111
+6250112,Descuentos Obtenidos en Inversiones Financieras,625.01.12,,gt_budget.170112
+6250199,Intereses por Otras Operaciones,625.01.99,,gt_budget.170199
+6250201,Rentas de Terrenos,625.02.01,,gt_budget.170201
+6250202,"Rentas de Edificios, Locales y Residencias",625.02.02,,gt_budget.170202
+6250203,Rentas de Mobiliarios,625.02.03,,gt_budget.170203
+6250204,Rentas de Maquinarias y Equipos,625.02.04,,gt_budget.170204
+6250205,Rentas de Veh�culos,625.02.05,,gt_budget.170205
+6250206,Rentas de Herramientas,625.02.06,,gt_budget.170206
+6250207,"Rentas de Equipos, Sistemas y Paquetes Inform�ticos",625.02.07,,gt_budget.170207
+6250299,Otras Rentas de Arrendamientos de Bienes,625.02.99,,gt_budget.170299
+6250301,Tributarias,625.03.01,,gt_budget.170301
+6250302,Ordenanzas Municipales,625.03.02,,gt_budget.170302
+6250303,Ordenanzas Provinciales,625.03.03,,gt_budget.170303
+6250305,Obligaciones a la Seguridad Social,625.03.05,,gt_budget.170305
+6250306,Transacciones Comerciales,625.03.06,,gt_budget.170306
+6250399,Otros Intereses por Mora,625.03.99,,gt_budget.170399
+6250401,Tributarias,625.04.01,,gt_budget.170401
+6250402,Infracciones a Ordenanzas Municipales,625.04.02,,gt_budget.170402
+6250403,Infracciones a Ordenanzas Provinciales,625.04.03,,gt_budget.170403
+6250404,Incumplimientos de Contratos,625.04.04,,gt_budget.170404
+6250405,Infracciones a la Seguridad Social,625.04.05,,gt_budget.170405
+6250406,Cheques Protestados,625.04.06,,gt_budget.170406
+6250407,Infracciones a la Ley Org�nica de Defensa del Consumidor,625.04.07,,gt_budget.170407
+6250499,Otras Multas,625.04.99,,gt_budget.170499
+6252101,Ejecuci�n de Garant�as,625.21.01,,gt_budget.190101
+6252102,Ejecuci�n de Fianzas,625.21.02,,gt_budget.190102
+6252201,Indemnizaciones por Siniestros,625.22.01,,gt_budget.190201
+6252202,Premios no Reclamados de Sorteos,625.22.02,,gt_budget.190202
+6252299,Otras Indemnizaciones y Valores no Reclamados,625.22.99,,gt_budget.190299
+6252301,Bienes y Especies Decomisadas,625.23.01,,gt_budget.190301
+6252401,Comisiones,625.24.01,,gt_budget.190401
+6252403,Prima de Riesgo de Instituciones Financieras,625.24.03,,gt_budget.190403
+6252499,Otros no Especificados,625.24.99,,gt_budget.190499
+6252501,Bienes Provenientes de Chatarrizaci�n,625.25.01,,gt_budget.190405
+6260101,Del Gobierno Central,626.01.01,,gt_budget.180101
+6260102,De Entidades Descentralizadas y Aut�nomas,626.01.02,,gt_budget.180102
+6260103,De Empresas P�blicas,626.01.03,,gt_budget.180103
+6260104,De Gobiernos Aut�nomos Descentralizados,626.01.04,,gt_budget.180104
+6260105,De la Seguridad Social,626.01.05,,gt_budget.180105
+6260106,De Entidades Financieras P�blicas,626.01.06,,gt_budget.180106
+6260108,De Cuentas o Fondos Especiales,626.01.08,,gt_budget.180108
+6260109,De Fondos de Uso Reservado,626.01.09,,gt_budget.180109
+6260110,De Fondos de Contingencia,626.01.10,,gt_budget.180110
+6260203,Del Sector Privado Financiero,626.02.03,,gt_budget.180203
+6260204,Del sector Privado no Financiero,626.02.04,,gt_budget.180204
+6260301,De Organismos Multilaterales,626.03.01,,gt_budget.180301
+6260302,De Gobiernos y Organismos Gubernamentales,626.03.02,,gt_budget.180302
+6260303,Del Sector Privado Financiero,626.03.03,,gt_budget.180303
+6260304,Del Sector Privado no Financiero,626.03.04,,gt_budget.180304
+6260401,De la Actividad Hidrocarbur�fera Excepto para Universidades y Polit�cnicas,626.04.01,,gt_budget.180301
+6260402,De Impuestos y Exportaciones de Crudo para las Universidades y Escuelas   Polit�cnicas,626.04.02,,gt_budget.180302
+6260403,De Empresas P�blicas,626.04.03,,gt_budget.180303
+6260404,De Participaci�n en Impuestos no Petroleros,626.04.04,,gt_budget.180304
+6260501,De Precios del Sector P�blico,626.05.01,,gt_budget.180501
+6260503,De Tarifas del Sector P�blico,626.05.03,,gt_budget.180503
+6260616,Del Fondo de Descentralizaci�n a Municipios,626.06.16,,gt_budget.180616
+6262101,Del Gobierno Central,626.21.01,,gt_budget.280101
+6262102,De Entidades Descentralizadas y Aut�nomas,626.21.02,,gt_budget.280102
+6262103,De Empresas P�blicas,626.21.03,,gt_budget.280103
+6262104,De Entidades del Gobierno Aut�nomo Descentralizado,626.21.04,,gt_budget.280104
+6262105,De la Seguridad Social,626.21.05,,gt_budget.280105
+6262106,De Entidades Financieras P�blicas,626.21.06,,gt_budget.280106
+6262108,De Cuentas o Fondos Especiales,626.21.08,,gt_budget.280108
+6262110,De Fondos de Contingencias,626.21.10,,gt_budget.280110
+6262203,Del Sector Privado Financiero,626.22.03,,gt_budget.280203
+6262204,Del Sector Privado no Financiero,626.22.04,,gt_budget.280204
+6262301,De Organismos Multilaterales,626.23.01,,gt_budget.280301
+6262302,De Gobiernos y Organismos Gubernamentales,626.23.02,,gt_budget.280302
+6262303,Del Sector Privado Financiero,626.23.03,,gt_budget.280303
+6262304,Del Sector Privado no Financiero,626.23.04,,gt_budget.280304
+6262401,Del Fondo de Inversi�n Petrolera,626.24.01,,gt_budget.280401
+6262402,De Exportaciones de Hidrocarburos y Derivados,626.24.02,,gt_budget.280402
+6262408,De Cuentas y Fondos Especiales,626.24.08,,gt_budget.280408
+6262499,Otras Participaciones y Aportes de Capital,626.24.99,,gt_budget.280499
+6262616,Del Fondo de Descentralizaci�n a Municipios,626.26.16,,gt_budget.280616
+6263002,Del Presupuesto General del Estado a Gobiernos Aut�nomos Descentralizados Municipales.,626.30.02,,gt_budget.281002
+6330101,Sueldos,633.01.01,gt_budget.510101,
+6330102,Salarios,633.01.02,gt_budget.510102,
+6330103,Jornales,633.01.03,gt_budget.510103,
+6330105,Remuneraciones Unificadas,633.01.05,gt_budget.510105,
+6330106,Salarios Unificados,633.01.06,gt_budget.510106,
+6330201,Bonificaci�n por A�os de Servicio,633.02.01,gt_budget.510201,
+6330202,Bonificaci�n por Responsabilidad a Dignatarios Universitarios,633.02.02,gt_budget.510202,
+6330203,Decimotercer Sueldo,633.02.03,gt_budget.510203,
+6330204,Decimocuarto Sueldo,633.02.04,gt_budget.510204,
+6330205,Decimoquinto Sueldo,633.02.05,gt_budget.510205,
+6330206,Decimosexto Sueldo,633.02.06,gt_budget.510206,
+6330207,Bonificaci�n Complementaria,633.02.07,gt_budget.510207,
+6330208,"Bonificaci�n por T�tulos Acad�micos, Especializaciones y Capacitaci�n Adicional",633.02.08,gt_budget.510208,
+6330209,Gastos de Representaci�n,633.02.09,gt_budget.510209,
+6330210,Sobresueldos y Bonificaciones Adicionales,633.02.10,gt_budget.510210,
+6330211,Est�mulo Pecuniario,633.02.11,gt_budget.510211,
+6330213,Aguinaldo Navide�o,633.02.13,gt_budget.510213,
+6330214,Porcentaje Funcional,633.02.14,gt_budget.510214,
+6330215,Adicional Sobre la D�cima Categor�a,633.02.15,gt_budget.510215,
+6330216,Estimulo Econ�mico Magisterio,633.02.16,gt_budget.510216,
+6330218,Bonificaci�n Mensual Gal�pagos,633.02.18,gt_budget.510218,
+6330219,Adicional R�gimen Especial Gal�pagos,633.02.19,gt_budget.510219,
+6330220,Bonificaci�n Fronteriza,633.02.20,gt_budget.510220,
+6330223,Bonificaci�n por el D�a del M�dico,633.02.23,gt_budget.510223,
+6330224,Bonificaci�n por el D�a Mundial de la Salud,633.02.24,gt_budget.510224,
+6330225,Bonificaci�n para los Profesionales de la Salud,633.02.25,gt_budget.510225,
+6330227,Adicional Regi�n Amaz�nica,633.02.27,gt_budget.510227,
+6330228,Remuneraci�n Suplementaria Gal�pagos,633.02.28,gt_budget.510228,
+6330229,Actividad Extracurricular Gal�pagos,633.02.29,gt_budget.510229,
+6330230,Bonificaci�n por el D�a del Maestro,633.02.30,gt_budget.510230,
+6330231,Bonificaci�n por el D�a del Servidor P�blico,633.02.31,gt_budget.510231,
+6330232,"Bonificaci�n para Educadores Comunitarios, Alfabetizadores",633.02.32,gt_budget.510232,
+6330233,Bonificaci�n para Profesionales Amparados o no por Leyes de Escalaf�n,633.02.33,gt_budget.510233,
+6330235,Remuneraci�n Variable por Eficiencia,633.02.35,gt_budget.510235,
+6330301,Gastos de Residencia,633.03.01,gt_budget.510301,
+6330302,Bonificaci�n Geogr�fica,633.03.02,gt_budget.510302,
+6330303,Compensaci�n por Costo de Vida,633.03.03,gt_budget.510303,
+6330304,Compensaci�n por Transporte,633.03.04,gt_budget.510304,
+6330305,Compensaci�n en el Exterior,633.03.05,gt_budget.510305,
+6330306,Alimentaci�n,633.03.06,gt_budget.510306,
+6330307,Comisariato,633.03.07,gt_budget.510307,
+6330308,Compensaci�n Pedag�gica,633.03.08,gt_budget.510308,
+6330309,Compensaci�n por Trabajo de Alto Riesgo,633.03.09,gt_budget.510309,
+6330310,"Subsidio Profesores de Escuelas Fiscales, Misionales y Fiscomisionales de las Regiones Amaz�nica e Insular",633.03.10,gt_budget.510310,
+6330313,Compensaci�n por Cesaci�n de Funciones,633.03.13,gt_budget.510313,
+6330401,Por Cargas Familiares,633.04.01,gt_budget.510401,
+6330402,De Educaci�n,633.04.02,gt_budget.510402,
+6330403,Por Maternidad,633.04.03,gt_budget.510403,
+6330404,Por Fallecimiento,633.04.04,gt_budget.510404,
+6330405,Por Guarder�a,633.04.05,gt_budget.510405,
+6330406,Por Vacaciones,633.04.06,gt_budget.510406,
+6330408,Subsidio de Antig�edad,633.04.08,gt_budget.510408,
+6330409,Beneficios Sociales,633.04.09,gt_budget.510409,
+6330499,Otros Subsidios,633.04.99,gt_budget.510499,
+6330501,Sueldos,633.05.01,gt_budget.510501,
+6330503,Jornales,633.05.03,gt_budget.510503,
+6330505,Sustituciones de Personal,633.05.05,gt_budget.510505,
+6330506,Licencia Remunerada,633.05.06,gt_budget.510506,
+6330507,Honorarios,633.05.07,gt_budget.510507,
+6330509,Horas Extraordinarias y Suplementarias,633.05.09,gt_budget.510509,
+6330510,Servicios Personales por Contrato,633.05.10,gt_budget.510510,
+6330511,Remuneraciones Especiales Secci�n Nocturna,633.05.11,gt_budget.510511,
+6330512,Subrogaci�n,633.05.12,gt_budget.510512,
+6330513,Encargos,633.05.13,gt_budget.510513,
+6330601,Aporte Patronal,633.06.01,gt_budget.510601,
+6330602,Fondo de Reserva,633.06.02,gt_budget.510602,
+6330603,Jubilaci�n Patronal,633.06.03,gt_budget.510603,
+6330604,Cesant�a Privada,633.06.04,gt_budget.510604,
+6330605,Jubilaci�n Complementaria,633.06.05,gt_budget.510605,
+6330702,Supresi�n de Puesto,633.07.02,gt_budget.510702,
+6330703,Despido Intempestivo,633.07.03,gt_budget.510703,
+6330704,Compensaci�n por Desahucio,633.07.04,gt_budget.510704,
+6330705,Restituci�n de Puestos,633.07.05,gt_budget.510705,
+6330706,Beneficio por Jubilaci�n,633.07.06,gt_budget.510706,
+6330707,Compensaci�n por Vacaciones no Gozadas por Cesaci�n de Funciones,633.07.07,gt_budget.510707,
+6330708,Por Accidente de Trabajo o Enfermedad,633.07.08,gt_budget.510708,
+6330709,Por Renuncia Voluntaria,633.07.09,gt_budget.510709,
+6330710,Por Compra de Renuncia,633.07.10,gt_budget.510710,
+6330711,Indemnizaciones Laborales,633.07.11,gt_budget.510711,
+6330799,Otras Indemnizaciones Laborales,633.07.99,gt_budget.510799,
+6340101,Agua Potable,634.01.01,gt_budget.530101,
+6340102,Agua de Riego,634.01.02,gt_budget.530102,
+6340104,Energ�a El�ctrica,634.01.04,gt_budget.530104,
+6340105,Telecomunicaciones,634.01.05,gt_budget.530105,
+6340106,Servicios de Correo,634.01.06,gt_budget.530106,
+6340201,Transporte de Personal,634.02.01,gt_budget.530201,
+6340202,Fletes y Maniobras,634.02.02,gt_budget.530202,
+6340203,"Almacenamiento, Embalaje, Envase y Recarga de Extintores",634.02.03,gt_budget.530203,
+6340204,"Edici�n, Impresi�n, Reproducci�n, Publicaciones, Suscripciones, Fotocopiado, Traducci�n, Empastado, Enmarcaci�n, Serigraf�a, Fotograf�a, Carnetizaci�n, Filmaci�n e  Im�genes Satelitales",634.02.04,gt_budget.530204,
+6340205,Espect�culos Culturales y Sociales,634.02.05,gt_budget.530205,
+6340206,Eventos P�blicos y Oficiales,634.02.06,gt_budget.530206,
+6340208,Servicios de Seguridad y Vigilancia,634.02.08,gt_budget.530208,
+6340209,"Servicios de Aseo; Vestimenta de Trabajo; Fumigaci�n, Desinfecci�n y Limpieza de las Instalaciones del Sector P�blico",634.02.09,gt_budget.530209,
+6340210,Servicios de Guarder�a,634.02.10,gt_budget.530210,
+6340217,Difusi�n e Informaci�n,634.02.17,gt_budget.530217,
+6340218,Publicidad y Propaganda en Medios de Comunicaci�n Masiva,634.02.18,gt_budget.530218,
+6340219,Publicidad y Propaganda Usando Otros Medios,634.02.19,gt_budget.530219,
+6340235,Servicio de Alimentaci�n,634.02.35,gt_budget.530235,
+6340299,Otros Servicios Generales,634.02.99,gt_budget.530299,
+6340301,Pasajes al Interior,634.03.01,gt_budget.530301,
+6340302,Pasajes al Exterior,634.03.02,gt_budget.530302,
+6340303,Vi�ticos y Subsistencias en el Interior,634.03.03,gt_budget.530303,
+6340304,Vi�ticos y Subsistencias en el Exterior,634.03.04,gt_budget.530304,
+6340305,Mudanzas e Instalaci�n,634.03.05,gt_budget.530305,
+73080301,"Gastos en Terrenos (Instalaci�n, Mantenimiento y Reparaciones)",634.04.01,gt_budget.530401,
+73080302,"Edificios, Locales, Residencias y Cableado Estructurado (Instalaci�n, Mantenimiento y Reparaciones)",634.04.02,gt_budget.530402,
+73080303,"Gastos en Mobiliarios (Instalaci�n, Mantenimiento y Reparaciones)",634.04.03,gt_budget.530403,
+73080304,"Gastos en Maquinarias y Equipos (Instalaci�n, Mantenimiento y Reparaciones)",634.04.04,gt_budget.530404,
+73080305,"Gastos en Veh�culos  (Instalaci�n, Mantenimiento y Reparaciones)",634.04.05,gt_budget.530405,
+73080306,"Gastos en Herramientas  (Instalaci�n, Mantenimiento y Reparaciones)",634.04.06,gt_budget.530406,
+73080308,"Bienes Art�sticos, Culturales y Accesorios de la Escolta Presidencial",634.04.08,gt_budget.530408,
+73080309,Gastos en Libros y Colecciones,634.04.09,gt_budget.530409,
+73080310,Gastos en Bienes de Uso B�lico y de Seguridad P�blica,634.04.10,gt_budget.530410,
+73080317,Gastos en Obras de Infraestructura,634.04.17,gt_budget.530417,
+73080318,Gastos en Mantenimiento de �reas Verdes y Arreglo de V�as Internas,634.04.18,gt_budget.530418,
+73080399,"Otros Gastos en Instalaciones, Mantenimientos y Reparaciones",634.04.99,gt_budget.530499,
+6340501,Arrendamientos de Terrenos,634.05.01,gt_budget.530501,
+6340502,"Arrendamiento de Edificios, Locales, Residencias, Parqueaderos, Casilleros Judiciales y Bancarios",634.05.02,gt_budget.530502,
+6340503,Arrendamientos de Mobiliarios,634.05.03,gt_budget.530503,
+6340504,Arrendamientos de Maquinarias y Equipos,634.05.04,gt_budget.530504,
+6340505,Arrendamientos de Veh�culos,634.05.05,gt_budget.530505,
+6340506,Arrendamientos de Herramientas,634.05.06,gt_budget.530506,
+6340599,Otros Arrendamientos de Bienes,634.05.99,gt_budget.530599,
+6340601,"Consultor�a, Asesor�a e Investigaci�n Especializada",634.06.01,gt_budget.530601,
+6340602,Servicios de Auditoria,634.06.02,gt_budget.530602,
+6340603,Servicios de Capacitaci�n,634.06.03,gt_budget.530603,
+6340604,Fiscalizaci�n e Inspecciones T�cnicas,634.06.04,gt_budget.530604,
+6340605,Estudio y Dise�o de Proyectos,634.06.05,gt_budget.530605,
+6340606,Honorarios por Contratos Civiles de Servicios,634.06.06,gt_budget.530606,
+6340701,"Desarrollo, Actualizaci�n, Asistencia T�cnica y Soporte de Sistemas Inform�ticos",634.07.01,gt_budget.530701,
+6340702,Arrendamiento y Licencias de Uso de Paquetes Inform�ticos,634.07.02,gt_budget.530702,
+6340703,Arrendamiento de Equipos Inform�ticos,634.07.03,gt_budget.530703,
+6340704,Mantenimiento y Reparaci�n de Equipos y Sistemas Inform�ticos,634.07.04,gt_budget.530704,
+73080701,Alimentos y Bebidas,634.08.01,gt_budget.530801,
+73080702,"Vestuario, Lencer�a, Prendas de Protecci�n y Accesorios para Uniformes Militares y Polic�as",634.08.02,gt_budget.530802,
+73080703,Combustibles y Lubricantes,634.08.03,gt_budget.530803,
+73080704,Materiales de Oficina,634.08.04,gt_budget.530804,
+73080705,Materiales de Aseo,634.08.05,gt_budget.530805,
+73080706,Herramientas (Bienes de Uso y Consumo Corriente),634.08.06,gt_budget.530806,
+73080707,"Materiales de Impresi�n, Fotograf�a, Reproducci�n y Publicaciones",634.08.07,gt_budget.530807,
+73080708,Instrumental M�dico Menor,634.08.08,gt_budget.530808,
+73080709,Medicinas y Productos Farmac�uticos,634.08.09,gt_budget.530809,
+73080710,Materiales para Laboratorio y Uso M�dico,634.08.10,gt_budget.530810,
+73080711,"Insumos, Bienes, Materiales y Suministros para la Construcci�n, El�ctricos, Plomer�a, Carpinter�a, Se�alizaci�n Vial, Navegaci�n y Contra Incendios",634.08.11,gt_budget.530811,
+73080712,Materiales Did�cticos,634.08.12,gt_budget.530812,
+73080713,Repuestos y Accesorios,634.08.13,gt_budget.530813,
+73080714,"Suministros para Actividades Agropecuarias, Pesca y Caza",634.08.14,gt_budget.530814,
+73080799,Otros Bienes de Uso y Consumo Corriente,634.08.99,gt_budget.530899,
+6341001,Materiales para Log�stica,634.10.01,gt_budget.531001,
+6341002,Suministros para la Defensa y Seguridad P�blica,634.10.02,gt_budget.531002,
+6341113,Devoluci�n de Garant�as,634.11.13,gt_budget.570213,
+6341114,Devoluci�n de Fianzas,634.11.14,gt_budget.570214,
+6344503,Mobiliarios (Bienes Muebles no Depreciables),634.45.03,gt_budget.531403,
+6344504,Maquinarias y Equipos (Bienes Muebles no Depreciables),634.45.04,gt_budget.531404,
+6344701,Intangibles,634.47.01,gt_budget.840401,
+6350101,Impuesto al Valor Agregado,635.01.01,gt_budget.570101,
+6350102,"Tasas Generales, Impuestos, Contribuciones, Permisos, Licencias y Patentes",635.01.02,gt_budget.570102,
+6350103,Tasas Portuarias,635.01.03,gt_budget.570103,
+6350104,Contribuciones Especiales y de Mejora,635.01.04,gt_budget.570104,
+6350199,"Otros Impuestos, Tasas y Contribuciones",635.01.99,gt_budget.570199,
+6350201,Intereses al Sector P�blico Financiero,635.02.01,gt_budget.560201,
+6350202,Intereses al Sector P�blico no Financiero,635.02.02,gt_budget.560202,
+6350203,Intereses al Sector Privado Financiero,635.02.03,gt_budget.560203,
+6350204,Intereses al Sector Privado no Financiero,635.02.04,gt_budget.560204,
+6350205,Intereses a la Seguridad Social,635.02.05,gt_budget.560205,
+6350206,Comisiones y Otros Cargos,635.02.06,gt_budget.560206,
+6350301,Intereses a Organismos Multilaterales,635.03.01,gt_budget.560301,
+6350302,Intereses a Gobiernos y Organismos Gubernamentales,635.03.02,gt_budget.560302,
+6350303,Intereses al Sector Privado Financiero,635.03.03,gt_budget.560303,
+6350304,Intereses al Sector Privado no Financiero,635.03.04,gt_budget.560304,
+6350306,Comisiones y Otros Cargos,635.03.06,gt_budget.560306,
+6350401,Seguros,635.04.01,gt_budget.570201,
+6350402,Seguros de Desgravamen y de Saldos,635.04.02,gt_budget.570202,
+6350403,Comisiones Bancarias,635.04.03,gt_budget.570203,
+6350404,Reajustes de Inversiones,635.04.04,gt_budget.570204,
+6350405,Diferencial Cambiario,635.04.05,gt_budget.570205,
+6350406,Costas Judiciales  Tr�mites Notariales y Legalizaci�n de Documentos,635.04.06,gt_budget.570206,
+6350407,Comisiones y Participaciones por Denuncias,635.04.07,gt_budget.570207,
+6350411,Prima de Riesgo de Instituciones Financieras,635.04.11,gt_budget.570211,
+6350413,Devoluci�n de Garant�as,635.04.13,gt_budget.570213,
+6350414,Devoluci�n de Fianzas,635.04.14,gt_budget.570214,
+6350499,Otros Gastos Financieros,635.04.99,gt_budget.570299,
+6350501,Dietas,635.05.01,gt_budget.570301,
+6350701,Intereses de Certificados del Tesoro,635.07.01,gt_budget.560101,
+6350702,Intereses de Bonos del Estado,635.07.02,gt_budget.560102,
+6350706,"Descuentos, Comisiones y Otros Cargos en T�tulos y Valores",635.07.06,gt_budget.560106,
+6350799,Intereses Otros T�tulos y Valores,635.07.99,gt_budget.560199,
+6360101,Al Gobierno Central,636.01.01,gt_budget.580101,
+6360102,A Entidades Descentralizadas y Aut�nomas (Transferencias Corrientes al Sector P�blico),636.01.02,gt_budget.580102,
+6360103,A Empresas P�blicas,636.01.03,gt_budget.580103,
+6360104,A Gobiernos Aut�nomos Descentralizados,636.01.04,gt_budget.580104,
+6360105,A la Seguridad Social,636.01.05,gt_budget.580105,
+6360106,A Entidades Financieras P�blicas,636.01.06,gt_budget.580106,
+6360110,Fondo de Contingencias,636.01.10,gt_budget.580110,
+6360203,Al Sector Privado Financiero,636.02.03,gt_budget.580203,
+6360204,Al Sector Privado no Financiero,636.02.04,gt_budget.580204,
+6360205,Indemnizaciones por Afectaciones a los Derechos Humanos,636.02.05,gt_budget.580205,
+6360206,Aporte a Favor de los Alumnos Maestros de los Institutos Pedag�gicos Hispanos y Biling�es,636.02.06,gt_budget.580206,
+6360301,A Organismos Multilaterales,636.03.01,gt_budget.580301,
+6360302,A Gobiernos y Organismos Gubernamentales,636.03.02,gt_budget.580302,
+6360303,Al Sector Privado Financiero,636.03.03,gt_budget.580303,
+6360304,Al Sector Privado no Financiero,636.03.04,gt_budget.580304,
+6360401,Por Exportaci�n de Hidrocarburos y Derivados,636.04.01,gt_budget.580401,
+6360402,Por Impuestos y Exportaciones de Crudo para Universidades y Escuelas Polit�cnicas,636.04.02,gt_budget.580402,
+6360403,Para Empresas P�blicas,636.04.03,gt_budget.580403,
+6360404,Por Planillas de Telecomunicaciones,636.04.04,gt_budget.580404,
+6360405,Para Financiamiento de la Administraci�n de la Seguridad Social,636.04.05,gt_budget.580405,
+6360407,Por Aplicaci�n de Fondos Ajenos,636.04.07,gt_budget.580407,
+6360408,Por Aplicaci�n de Cuentas y Fondos Especiales,636.04.08,gt_budget.580408,
+6360411,Por Rendimientos de los Sistemas Contables del Banco Central,636.04.11,gt_budget.580411,
+6360414,Aportes Sobre Dep�sitos de Instituciones Financieras,636.04.14,gt_budget.580414,
+6360415,Entrega de Dep�sitos Inmovilizados,636.04.15,gt_budget.580415,
+6360499,Otras Participaciones Corrientes (Aportes y Participaciones al Sector Publico),636.04.99,gt_budget.580499,
+6360501,De Precios a Entes P�blicos,636.05.01,gt_budget.580501,
+6360502,De Precios a Entes Privados,636.05.02,gt_budget.580502,
+6360503,De Tarifas a Entes P�blicos,636.05.03,gt_budget.580503,
+6360504,De Tarifas a Entes Privados,636.05.04,gt_budget.580504,
+6360505,Subsidio a la Vivienda,636.05.05,gt_budget.580505,
+6360506,Bono de Desarrollo Humano,636.05.06,gt_budget.580506,
+6360599,Otros Subsidios,636.05.99,gt_budget.580599,
+6361001,Al Gobierno Central,636.10.01,gt_budget.780101,
+6361002,A Entidades Descentralizadas y Aut�nomas,636.10.02,gt_budget.780102,
+6361003,A Empresas P�blicas,636.10.03,gt_budget.780103,
+6361004,A Gobiernos Aut�nomos Descentralizados,636.10.04,gt_budget.780104,
+6361005,A la Seguridad Social,636.10.05,gt_budget.780105,
+6361006,A Entidades Financieras P�blicas,636.10.06,gt_budget.780106,
+6361008,A Cuentas o Fondos Especiales,636.10.08,gt_budget.780108,
+6361103,Al Sector Privado Financiero,636.11.03,gt_budget.780203,
+6361104,Al Sector Privado no Financiero,636.11.04,gt_budget.780204,
+6361106,Becas,636.11.06,gt_budget.780206,
+6362101,Al Gobierno Central,636.21.01,gt_budget.880101,
+6362102,A Entidades Descentralizadas y Aut�nomas,636.21.02,gt_budget.880102,
+6362103,A Empresas P�blicas,636.21.03,gt_budget.880103,
+6362104,A Gobiernos Aut�nomos Descentralizados,636.21.04,gt_budget.880104,
+6362105,A la Seguridad Social,636.21.05,gt_budget.880105,
+6362106,A Entidades Financieras P�blicas,636.21.06,gt_budget.880106,
+6362108,A Fondos y Cuentas Especiales,636.21.08,gt_budget.880108,
+6362110,Al Fondo de Contingencias,636.21.10,gt_budget.880110,
+6362111,A Gobiernos Aut�nomos Descentralizados,636.21.11,gt_budget.880111,
+6362203,Al Sector Privado Financiero,636.22.03,gt_budget.880203,
+6362204,Al Sector Privado no Financiero,636.22.04,gt_budget.880204,
+6362401,Por Exportaci�n de Hidrocarburos y Derivados,636.24.01,gt_budget.880401,
+6362402,Por Aplicaci�n del Fondo de Inversi�n Petrolera,636.24.02,gt_budget.880402,
+6362499,Por Otras Participaciones y Aportes,636.24.99,gt_budget.880499,
+6379901,Obligaciones de Ejercicios Anteriores por Gastos en Personal,637.99.01,gt_budget.990101,
+6379902,Obligaciones de Ejercicios Anteriores por Gastos de Bienes y Servicios,637.99.02,gt_budget.990102,
+6379903,Obligaciones de Ejercicios Anteriores por Otros Gastos,637.99.03,gt_budget.990103,

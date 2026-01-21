@@ -1,0 +1,340 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- -->
+      
+      <record id="view_regla_cierre_search" model="ir.ui.view">
+	<field name="name">Reglas Cierre</field>
+	<field name="model">regla.cierre</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Reglas Cierre">
+	    <group>
+              <field name="name"/>
+	      <field name="fiscal_id"/>
+	      <field name="origen"/>
+	      <field name="destino_account"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+
+    <record model="ir.ui.view" id="retention.view_regla_cierre_tree">
+      <field name="name">Regla Cierre</field>
+      <field name="model">regla.cierre</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree>
+	  <field name="name"/>
+	  <field name="fiscal_id"/>
+	  <field name="origen"/>
+	  <field name="destino_account"/>
+	</tree>
+      </field>
+    </record>
+    
+      <record model="ir.ui.view" id="view_regla_cierre_inherit_form1">
+	<field name="name">Regla Cierre</field>
+	<field name="model">regla.cierre</field>
+	<field name="type">form</field>
+	<field name="inherit_id" ref="retention.view_regla_cierre_form1"/>
+	<field name="arch" type="xml">
+	  <xpath expr="/form/group/notebook/page/field[@name='origen_ids']" position="replace">
+	    <field name="origen_ids" nolabel="1">
+	      <form>
+		<field name="origen_id" required="1" domain="[('type','!=','view')]"/>
+		<field name="destino_id" required="1" domain="[('type','!=','view')]"/>
+		<notebook colspan="4">
+		  <page string="Detalle Beneficiario">
+		    <field name="partner_ids" nolabel="1">
+		      <tree editable="top">
+			<field name="name" required="1"/>
+			<field name="debit" required="1" sum="Total"/>
+			<field name="credit" required="1" sum="Total"/>
+		      </tree>
+		    </field>
+		  </page>
+		</notebook>
+	      </form>
+	      <tree>
+		<field name="origen_id" required="1" domain="[('type','!=','view')]"/>
+		<field name="destino_id" required="1" domain="[('type','!=','view')]"/>
+		<field name="saldo" readonly="1"/>
+	      </tree>
+	    </field>
+	  </xpath>
+	</field>
+      </record>
+
+      <!--  -->
+      <record id="wizard_detalle_apertura_form" model="ir.ui.view">
+	<field name="name">Detalle Apertura Esigef</field>
+	<field name="model">detalle.apertura</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+          <form string="Reportes">
+	    <group col="4" colspan="4" fill="0">
+	      <field name="fiscalyear_id" required="1" colspan="2"/>
+	      <field name="total_124" readonly="1" colspan="2"/>
+	      <field name="filename_balance" invisible="1"/>
+	      <field name="data_balance" filename="filename_balance" colspan="4"/>
+	    </group>
+            <group colspan="4">
+              <button icon="terp-sale" name="calcular_detalle_apertura_esigef" string="Calcular" type="object" 
+		      confirm="Esta seguro que desea generar las lineas de los saldos de las cuentas contables, esto eliminara la informacion que antes haya cargado."/>
+              <button icon="gtk-execute" name="genera_detalle_apertura_esigef" string="Generar Archivo TXT" type="object"/>
+            </group>                   
+	    <notebook>
+	      <page string="Detalle">
+		<field name='line_ids' nolabel="1">
+		  <tree>
+		    <field name='cuenta_id'/>
+		    <field name='debe'/>
+		    <field name='haber'/>
+		  </tree>
+		  <form>
+		    <field name='cuenta_id' readonly="1" colspan="4"/>
+		    <group colspan="4" col="6">
+		      <field name='debe' readonly="1"/>
+		      <field name='haber' readonly="1"/>
+		      <button icon="terp-sale" name="calcular_detalle_cxc" string="Calcular Cuentas Cobrar" type="object" 
+			      confirm="Seguro que desea generar las lineas de las cuentas por cobrar,esto eliminara la informacion que antes haya cargado."/>
+		      <button icon="terp-sale" name="calcular_detalle_cuenta" string="Cargar saldos movimiento" type="object" 
+			      confirm="Seguro que desea generar las lineas de los saldos de las cuentas contables,esto eliminara la informacion que antes haya cargado."/>
+		    </group>
+		    <field name="partner_ids" colspan="4">
+		      <tree editable='top'>
+			<field name="account_id" readonly="1"/>
+			<field name="cedula"/>
+ 			<field name="name"/>
+			<field name="partner_id" required="1"/> 
+			<field name="monto" sum="Total"/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+	      </page>
+	    </notebook>
+          </form>
+	</field>
+      </record>
+
+
+      <record id="view_detalle_apertura_tree" model="ir.ui.view">
+	<field name="name">Detalle Apertura</field>
+	<field name="model">detalle.apertura</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Detalle Apertura">
+	    <field name="fiscalyear_id"/>
+	  </tree>
+	</field>
+      </record>      
+      
+      <record id="view_detalle_apertura_filter" model="ir.ui.view">
+	<field name="name">Detalle Apertura</field>
+	<field name="model">detalle.apertura</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Detalle Apertura">
+	    <field name="fiscalyear_id"/>
+	  </search>
+	</field>
+      </record>
+
+      <record id="action_detalle_apertura_1" model="ir.actions.act_window">
+	<field name="name">Detalle Apertura Esigef</field>
+	<field name="res_model">detalle.apertura</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+      
+    <menuitem
+	icon="STOCK_INDENT"
+	action="action_detalle_apertura_1"
+	id="menu_detalle_aperura"
+	parent="gt_gob_report.menu_gob_report"
+	groups="account.group_account_user,account.group_account_manager"
+	sequence="8"/>
+
+
+      <!--  -->
+      <record id="view_reciproca_form" model="ir.ui.view">
+	<field name="name">Detalle Transacciones Reciprocas Esigef</field>
+	<field name="model">transaccion.reciproca</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+          <form string="Reportes">
+	    <group col="4" colspan="4" fill="0">
+	      <field name="fiscalyear_id" required="1"/>
+	      <field name="mes_id" required="1" domain="[('fiscalyear_id','=',fiscalyear_id)]"/>
+	      <field name="filename_balance" invisible="1"/>
+	      <field name="data_balance" filename="filename_balance" colspan="4"/>
+	      <field name="is_final"/>
+	    </group>
+            <group colspan="4">
+	      <button icon="terp-sale" name="calcularReciprocaEsigef" string="Calcular" type="object"/>
+              <button icon="gtk-execute" name="generaReciprocaEsigef" string="Generar Archivo" type="object"/>
+            </group>                    
+	    <notebook>
+	      <page string="Detalle Transacciones Reciprocas(Devengado)">
+		<field name="line_ids" nolabel="1">
+		  <tree editable="top">
+		    <field name="period_id" widget="selection" readonly="1" invisible="1"/>
+		    <field name="move_id" required="1" readonly="1"/>
+		    <field name="referencia"/>
+		    <field name="budget_id"/>
+		    <field name="account_id" required="1" readonly="1"/>
+		    <field name="debe" required="1" readonly="1"/>
+		    <field name="haber" required="1" readonly="1"/>
+		    <field name="account_id2" required="1"/>
+		    <field name="debe1" required="1" readonly="1"/>
+		    <field name="haber1" required="1" readonly="1"/>
+		    <field name="fecha_aprobacion" required="1" readonly="1"/>
+		    <field name="fecha_vencimiento" required="1" readonly="1"/>
+		  </tree>
+		</field>
+	      </page>
+	      <page string="Otros Detalles Transacciones">
+		<field name="line2_ids" nolabel="1">
+		  <tree editable="top">
+		    <field name="period_id" widget="selection"/>
+		    <field name="move_id" required="1" domain="[('fiscalyear_id','=',parent.fiscalyear_id)]"/>
+		    <field name="referencia"/>
+		    <field name="budget_id"/>
+		    <field name="account_id" required="1"/>
+		    <field name="debe" required="1"/>
+		    <field name="haber" required="1"/>
+		    <field name="account_id2" required="1"/>
+		    <field name="debe1" required="1"/>
+		    <field name="haber1" required="1"/>
+		    <field name="fecha_aprobacion" required="1"/>
+		    <field name="fecha_vencimiento" required="1"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+          </form>
+	</field>
+      </record>
+      
+      <record id="view_transaccion_reciproca_tree" model="ir.ui.view">
+	<field name="name">Transaccines Reciprocas</field>
+	<field name="model">transaccion.reciproca</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Transacciones Reciprocas">
+	    <field name="fiscalyear_id"/>
+	    <field name="mes_id"/>
+	  </tree>
+	</field>
+      </record>      
+      
+      <record id="view_transaccion_reciproca_filter" model="ir.ui.view">
+	<field name="name">Transacciones Reciprocas</field>
+	<field name="model">transaccion.reciproca</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Transacciones Reciprocas">
+	    <field name="fiscalyear_id"/>
+	    <field name="mes_id"/>
+	  </search>
+	</field>
+      </record>
+
+      <record id="action_transacciones_reciproca" model="ir.actions.act_window">
+	<field name="name">Transacciones Reciprocas Esigef</field>
+	<field name="res_model">transaccion.reciproca</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+      
+    <menuitem
+	icon="STOCK_INDENT"
+	action="action_transacciones_reciproca"
+	id="menu_transaccion_reciproca"
+	parent="gt_gob_report.menu_gob_report"
+	groups="account.group_account_user,account.group_account_manager"
+	sequence="8"/>
+
+    <!-- vista de line -->
+
+      
+      <record id="view_reciproca_line_form" model="ir.ui.view">
+	<field name="name">Detalle Transacciones Reciprocas Esigef</field>
+	<field name="model">reciproca.line</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+          <form string="Linea">
+	    <field name="move_id"/>
+          </form>
+	</field>
+      </record>
+
+      <record id="view_transaccion_reciproca_line_tree" model="ir.ui.view">
+	<field name="name">Transaccines Reciprocas Detalle</field>
+	<field name="model">reciproca.line</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Transacciones Reciprocas Detalle">
+	    <field name="period_id" widget="selection"/>
+	    <field name="move_id" required="1"/>
+	    <field name="budget_id" required="1"/>
+	    <field name="account_id" required="1"/>
+	    <field name="debe" required="1" sum="Total"/>
+	    <field name="haber" required="1" sum="Total"/>
+	    <field name="account_id2" required="1"/>
+	    <field name="debe1" required="1" sum="Total"/>
+	    <field name="haber1" required="1" sum="Total"/>
+	    <field name="fecha_aprobacion" required="1"/>
+	    <field name="fecha_vencimiento" required="1"/>
+	  </tree>
+	</field>
+      </record>      
+      
+      <record id="view_transaccion_reciproca_line_filter" model="ir.ui.view">
+	<field name="name">Transacciones Reciprocas Detalle</field>
+	<field name="model">reciproca.line</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Transacciones Reciprocas Detalle">
+	    <field name="period_id" widget="selection"/>
+	    <field name="move_id" required="1"/>
+	    <field name="budget_id" required="1"/>
+	    <field name="account_id" required="1"/>
+	    <field name="debe" required="1" sum="Total"/>
+	    <field name="haber" required="1" sum="Total"/>
+	    <field name="account_id2" required="1"/>
+	    <field name="debe1" required="1" sum="Total"/>
+	    <field name="haber1" required="1" sum="Total"/>
+	    <field name="fecha_aprobacion" required="1"/>
+	    <field name="fecha_vencimiento" required="1"/>
+	    <newline/>
+	    <group expand="1" string="Agrupar por...">
+              <filter string="Mes" domain="[]" context="{'group_by':'period_id'}"/>
+	      <filter string="Comprobante Contable" domain="[]" context="{'group_by': 'move_id'}"/>
+	      <filter string="Fecha" domain="[]" context="{'group_by': 'fecha_aprobacion'}"/>
+          </group>
+	  </search>
+	</field>
+      </record>
+
+      <record id="action_transacciones_reciproca_line_line" model="ir.actions.act_window">
+	<field name="name">Detalle Transacciones Reciprocas Esigef</field>
+	<field name="res_model">reciproca.line</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+      
+    <menuitem
+	icon="STOCK_INDENT"
+	action="action_transacciones_reciproca_line_line"
+	id="menu_transaccion_reciproca_line_line"
+	parent="gt_gob_report.menu_gob_report"
+	groups="base.group_erp_manager"
+	sequence="9"/>
+    
+      
+    </data>
+</openerp>

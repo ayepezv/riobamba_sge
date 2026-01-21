@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+	<data>
+
+		<!--
+        =======================
+        Summary Assistance
+        =======================
+        -->
+        
+        <record id="view_summary_assistance_form" model="ir.ui.view">
+            <field name="name">Resumen de Asistencia - Form</field>
+            <field name="model">assistance.summary</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Resumen de Asistencia">
+                	<group colspan="4">
+                    	<field name="name" colspan="2" required="1"/>
+                    	<!--field name="date_report" colspan="2" readonly="1"/-->
+                    	<field name="date_start" colspan="2" required="1"/>
+                    	<field name="date_stop" colspan="2" required="1"/>
+                    	<newline/>
+                    	<separator string="Beneficios de Ley" colspan="3"/>
+                    	<button name="generar_resumen" colspan="1" string="Generar" type="object" icon="gtk-go-forward"/>
+                    	<newline/>
+                    	<field name="line_ids" colspan="4" readonly="1" nolabel="1">
+                    		<tree string="Detalle de Asistencia">
+                    			<field name="cedula"/>
+			                	<field name="name"/>
+			                	<field name="tiempo_normal"/>
+			                	<field name="tiempo_real"/>			                	
+			                	<field name="atrasos"/>
+			                	<field name="hextra"/>
+			                	<field name="tiempo_trabajado"/>
+			                	<!--field name="faltas"/-->
+                    		</tree>
+                    		<!--form string="Detalle de Asistencia">
+                    			<field name="cedula"/>
+			                	<field name="name"/>
+			                	<field name="tiempo_normal"/>
+			                	<field name="tiempo_trabajado"/>
+			                	<field name="atrasos"/>
+			                	<field name="hextra"/>
+			                	<field name="faltas"/>
+                    		</form-->
+                    	</field>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_summary_assistance_tree" model="ir.ui.view">
+            <field name="name">Resumen de Asistencia - Tree</field>
+            <field name="model">assistance.summary</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Resumen de Asistencia">
+                	<field name="name"/>
+                	<field name="date_start"/>
+                	<field name="date_stop"/>
+                </tree>
+            </field>
+        </record>
+
+		<record id="action_summary_assistance" model="ir.actions.act_window">
+	    	<field name="name">Resumen de Asistencia</field>             
+	        <field name="res_model">assistance.summary</field>
+	        <field name="view_type">form</field>
+	        <field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem name="Resumen de Asistencia"
+			sequence="10"
+			parent="menu_registro_marcaciones" 
+			id="attendance_report_summary" 
+			action="action_summary_assistance"/>
+	
+	
+	</data>
+</openerp>

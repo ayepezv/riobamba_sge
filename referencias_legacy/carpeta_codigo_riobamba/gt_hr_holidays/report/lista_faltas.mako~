@@ -1,0 +1,95 @@
+<html>
+<head>
+    <style type="text/css">
+    </style>
+</head>
+ <body>
+   %for o in objects:
+   <h2 style="text-align:center;" align="center">DIRECCION FINANCIERA</h2>
+   <h2 style="text-align:center;" align="center">ACTA DE BIENES POR CUSTODIO : ${o.estado or ''|entity}</h2>
+   <h5 style="text-align:center;" align="center">FECHA CORTE : ${o.date_stop or ''|entity}</h5>
+   <%
+      total_todo=total_categoria=total_todo_ac=0
+      %>
+  <%import time%>
+  <p style="border-collapse:collapse;font-size:12px;text-align: justify;">En el cant&oacute;n de ${user.company_id.city or ''|entity}, Provincia de/del ${user.company_id.state_id.name or ''|entity}, el ${time.strftime('%Y-%m-%d') or ''|entity}, en las oficinas de ${user.context_department_id.name or ''|entity}, de el ${user.company_id.name or ''|entity}, se re&uacute;nen por una parte ${user.context_department_id.coordinador_id.complete_name or ''|entity}, en calidad de ${user.context_department_id.coordinador_id.job_id.name or ''|entity}, y por otra, ${objects[0].employee_id.complete_name or ''|entity}, con el fin de realizar el acta de entrega recepci&oacute;n de los bienes que se detallan a continuaci&oacute;n, conforme lo indica el reglamento General Sustitutivo para el manejo y Administraci&oacute;n de Bienes del Sector P&uacute;blico en su capitulo VII, Art. 64</p>
+   %for categoria in get_categories_custodio(o):
+   <tr>
+     <th width="60%" style="text-align:left;" > CATEGORIA: ${categoria.name}</th>
+   </tr>
+   <table WIDTH="100%" border="1" cellpadding="2" bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+	 <thead>
+	   <tr>
+	     <th width="25%" style="text-align:left;">C&oacute;digo</th>
+	     <th width="55%">Descripci&oacute;n</th>
+	     <th width="10%">Valor Compra</th>
+	     <th width="10%">Valor Actual</th>
+	   </tr>
+	 </thead>
+        <%
+      total_categoria=total_actual=0
+      %>
+     %for activo in get_activos_custodio(o,categoria.id):
+     <%
+	total_categoria+=activo.purchase_value
+	total_actual+=activo.valor_actual
+	%>
+     <table WIDTH="100%" border="1" cellpadding="2" bordercolor="#000000" style="border-collapse:collapse;font-size:12px;page-break-inside:avoid">
+       <tr>
+	 <td width="25%" style="font-size:11px;text-align:left">${ activo.code }</td>
+	 <td width="55%" style="font-size:11px;text-align:left">${ activo.name }</td>
+	 <td width="10%" style="font-size:11px;text-align:right">${ '{:,.2f}'.format(activo.purchase_value) }</td>
+	 <td width="10%" style="font-size:11px;text-align:right">${ '{:,.2f}'.format(activo.valor_actual) }</td>
+       </tr>
+     </table>
+     %endfor
+      <table WIDTH="100%" border="1" cellpadding="2" bordercolor="#000000" style="border-collapse:collapse;font-size:12px;page-break-inside:avoidx">
+       <tr>
+	 <!--td width="35%" style="font-size:11px;text-align:left">${}</td>
+	 <td width="35%" style="font-size:11px;text-align:right">${}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${}</td-->
+	 <td width="80%" style="font-size:11px;text-align:right"><b>TOTAL CATEGORIA</b></td>
+	 <td width="10%" style="font-size:11px;text-align:right"><b>${total_categoria}</b></td>
+	 <td width="10%" style="font-size:11px;text-align:right"><b>${  '{:,.2f}'.format(total_actual) }</b></td>
+       </tr>
+     </table>
+     <%
+	total_todo_ac+=total_actual
+	total_todo+=total_categoria
+	%>
+     %endfor   
+   </table>
+      <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px;page-break-inside:avoidx">
+       <tr>
+	 <!--td width="35%" style="font-size:11px;text-align:left">${}</td>
+	 <td width="35%" style="font-size:11px;text-align:right">${}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${}</td>
+	 <td width="7%" style="font-size:11px;text-align:right">${}</td-->
+	 <td width="80%" style="font-size:11px;text-align:right"><b>TOTAL</b></td>
+	 <td width="10%" style="font-size:11px;text-align:right"><b>${  '{:,.2f}'.format(total_todo) }</b></td>
+	 <td width="10%" style="font-size:11px;text-align:right"><b>${ '{:,.2f}'.format(total_todo_ac) }</b></td>
+       </tr>
+     </table>
+</table>
+   %endfor
+    <table width="100%" style="page-break-inside:avoid">
+<p style="border-collapse:collapse;font-size:12px;page-break-inside:avoid">La presente acta de entrega y recepción se la suscribe y se la firma en 2 ejemplares del mismo tenor amparado a lo que dispone el Artículo 11 del Reglamento General de Bienes del Sector Público, señalando además, que a partir de la presente fecha  dicho bien quedará bajo su responsabilidad y cuidado según lo estipula  el Art. 3 con los  incisos 2 y 4, así como también el artículo 92  del mismo Reglamento, hasta que sea devuelta a ésta Sección</p>
+      <tr>
+	<th width="33%" style="text-align:center;font-size:10px">________________________</th>
+	<th width="33%" style="text-align:center;font-size:10px">________________________</th>
+	<th width="33%" style="text-align:center;font-size:10px">________________________</th>
+      </tr>
+      <tr>
+	<th width="33%" style="text-align:center;font-size:10px">ELABORADO</th>
+	<th width="33%" style="text-align:center;font-size:10px">RECIBI CONFORME</th>
+	<th width="33%" style="text-align:center;font-size:10px">REVISADO/AUTORIZADO</th>
+      </tr>
+      <tr>
+	<td width="33%" style="text-align:center;font-size:10px">${user.employee_id.complete_name or ''|entity}</td>
+	<td width="33%" style="text-align:center;font-size:10px">${objects[0].employee_id.complete_name or ''|entity}</td>
+	<td width="33%" style="text-align:center;font-size:10px">${user.context_department_id.coordinador_id.complete_name or ''|entity}</td>
+      </tr>
+    </table>
+</body>
+</html>

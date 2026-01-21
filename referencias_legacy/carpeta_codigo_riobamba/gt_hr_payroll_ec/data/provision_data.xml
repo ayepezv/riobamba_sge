@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+      	<!-- SALARY RULE CATEGORY -->
+      
+		<record id="hr_payroll.COMP" model="hr.salary.rule.category">
+			<field name="name">Extra Rol</field>
+			<field name="code">COMP</field>
+		</record>
+		
+		<!-- SALARY RULE -->
+      
+		<!--record id="provision_decimo13" model="hr.salary.rule">
+			<field name="name">Extra Rol - Decimo Tercero</field>
+			<field name="code">EXTRA_13</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="501"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (categories.BASIC + categories.APT)/12</field>
+		</record>
+		
+		<record id="provision_decimo14" model="hr.salary.rule">
+			<field name="name">Extra Rol - Decimo Cuarto</field>
+			<field name="code">EXTRA_14</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="502"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">dias = worked_days.WORK100.number_of_days
+if worked_days.VAC:
+    dias = dias + worked_days.VAC.number_of_days
+
+if worked_days.ENF:
+    dias = dias + worked_days.ENF.number_of_days
+
+if worked_days.MAT:
+    dias = dias + worked_days.MAT.number_of_days
+    
+diario = (318.0/360.0)
+result = diario*dias</field>
+		</record-->
+		
+		<!--record id="provision_vacaciones" model="hr.salary.rule">
+			<field name="name">Extra Rol - Vacaciones</field>
+			<field name="code">EXTRA_VAC</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="503"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (categories.BASIC + categories.APT)/24</field>
+		</record-->
+		
+		<record id="provision_iess_patronal" model="hr.salary.rule">
+			<field name="name">Extra Rol - Aporte Patronal IESS</field>
+			<field name="code">EXTRA_IESS</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="504"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (categories.BASIC + categories.APT)*0.1115</field>
+		</record>
+		
+		<record id="provision_cesantia" model="hr.salary.rule">
+			<field name="name">Extra Rol - Cesantia</field>
+			<field name="code">EXTRA_CESANTIA</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="505"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (categories.BASIC + categories.APT)*0.02</field>
+		</record>
+		
+		<record id="provision_iece" model="hr.salary.rule">
+			<field name="name">Extra Rol - IECE</field>
+			<field name="code">EXTRA_IECE</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="506"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (categories.BASIC + categories.APT)*0.005</field>
+		</record>
+		
+		<record id="provision_secap" model="hr.salary.rule">
+			<field name="name">Extra Rol - SETEC</field>
+			<field name="code">EXTRA_SETEC</field>
+			<field name="category_id" ref="hr_payroll.COMP"/>
+			<field name="sequence" eval="507"/>
+			<field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result = (categories.BASIC + categories.APT)*0.005</field>
+		</record>
+		
+		<!-- REGLA SALARIAL PARA OTRAS PROVISIONES -->
+        <!--record id="regla_provisiones" model="hr.salary.rule">
+			<field name="name">Provisiones Varias</field>
+			<field name="code">PROV_VARIAS</field>
+            <field name="category_id" ref="hr_payroll.COMP"/>
+            <field name="sequence" eval="109"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = inputs.PROV</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">valor = 0
+
+if inputs.PROV:
+    valor = inputs.PROV.amount
+
+result = valor</field>
+        </record-->
+
+    </data>
+</openerp>

@@ -1,0 +1,469 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      <menuitem id="menu_finance_recaudacion" name="Recaudacion" parent="account.menu_finance" groups="account.group_account_manager"/>
+      <!-- BAJAS -->
+      <record id="view_baja_form" model="ir.ui.view">
+	<field name="name">baja.form</field>
+        <field name="model">baja</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Baja" col='1'>
+            <group colspan="4" col="4">
+              <field name="name" select="1" required="1" colspan="2"/>
+              <field name="date" select="1" required="1" colspan="2"/>
+	    </group>
+            <group colspan="4" col="5">
+              <field name="move_id" select="1" readonly="1" colspan="2"/>
+	      <button name="generarBaja" 
+		      string="Generar Baja" type="object" icon="gtk-execute"/>
+	    </group>
+	    <field name="baja_line">
+	      <tree editable="top">
+		<field name="budget_id"/>
+		<field name="anios"/>
+		<field name="amount"/>
+	      </tree>
+	    </field>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_baja_tree" model="ir.ui.view">
+	<field name="name">baja.tree</field>
+	<field name="model">baja</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Baja">
+	    <field name="name"/>
+	    <field name="date"/>
+	  </tree>
+	</field>
+      </record>
+<record id="action_baja" model="ir.actions.act_window">
+  <field name="name">Bajas</field>
+  <field name="res_model">baja</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_baja" icon="STOCK_JUSTIFY_FILL" sequence="3"
+	  id="menu_action_baja"  parent="menu_finance_recaudacion" groups="account.group_account_manager"/>
+
+      <!-- EMISIONES -->
+      <record id="view_emision_form" model="ir.ui.view">
+	<field name="name">emision.form</field>
+        <field name="model">emision</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Emision" col='1'>
+            <group colspan="4" col="4">
+              <field name="name" select="1" required="1" colspan="4"/>
+	    </group>
+            <group colspan="4" col="5">
+              <field name="date" select="1" required="1" colspan="2"/>
+              <field name="move_id" select="1" readonly="1" colspan="2"/>
+	      <button name="generarEmision" 
+		      string="Generar Emision" type="object" icon="gtk-execute"/>
+	    </group>
+	    <field name="line_ids">
+	      <tree editable="top">
+		<field name="budget_id"/>
+		<field name="monto"/>
+	      </tree>
+	    </field>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_emision_tree" model="ir.ui.view">
+	<field name="name">emision.tree</field>
+	<field name="model">emision</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Cobro Tercero">
+	    <field name="name"/>
+	    <field name="date"/>
+	  </tree>
+	</field>
+      </record>
+<record id="action_emision" model="ir.actions.act_window">
+  <field name="name">Emisiones</field>
+  <field name="res_model">emision</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_emision" icon="STOCK_JUSTIFY_FILL" sequence="3"
+	  id="menu_action_emision"  parent="menu_finance_recaudacion" groups="account.group_account_manager"/>
+
+
+      <!-- DEVOLUCIONES -->
+      <record id="view_devoluciones_form" model="ir.ui.view">
+	<field name="name">devolucion.form</field>
+        <field name="model">devolucion</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Devolucion" col='1'>
+            <group colspan="5" col="6">
+              <field name="desc" select="1"/>
+              <field name="name" select="1"/>
+              <field name="date" select="1"/>
+              <field name="move_id" select="1" readonly="1"/>
+	      <button name="devolverEfectivo" 
+		      string="Devolver" type="object" icon="gtk-execute"/>
+	    </group>
+	    <field name="line_ids">
+	      <tree editable="top">
+		<field name="budget_id" required="1"/>
+		<field name="monto"/>
+	      </tree>
+	    </field>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_devolucion_tree" model="ir.ui.view">
+	<field name="name">devolucion.tree</field>
+	<field name="model">devolucion</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Devolucion">
+	    <field name="desc"/>
+	    <field name="date"/>
+	  </tree>
+	</field>
+      </record>
+      <record id="action_devolucion" model="ir.actions.act_window">
+	<field name="name">Devolucion</field>
+	<field name="res_model">devolucion</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_devolucion" icon="STOCK_JUSTIFY_FILL" sequence="2"
+	  id="menu_action_devolucion"  parent="menu_finance_recaudacion" groups="account.group_account_manager"/>
+
+      <!-- COBRO TERCERO -->
+      <record id="view_cobro_tercero_form" model="ir.ui.view">
+	<field name="name">cobro.tercero.form</field>
+        <field name="model">cobro.tercero</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Recaudacion" col='1'>
+            <group colspan="5" col="6">
+              <field name="desc" select="1"/>
+              <field name="name" select="1"/>
+	      <newline/>
+              <field name="date" select="1"/>
+              <field name="move_id" select="1" readonly="1"/>
+	    </group>
+	    <group colspan="4">
+	      <button name="cobrarTercero" 
+		      string="Cobrar" type="object" icon="gtk-execute"/>
+	    </group>
+	    <field name="line_ids">
+	      <tree editable="top">
+		<field name="budget_id" required="1"/>
+		<field name="monto"/>
+	      </tree>
+	    </field>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_cobro_tercero_tree" model="ir.ui.view">
+	<field name="name">cobro.tercero.tree</field>
+	<field name="model">cobro.tercero</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Cobro Tercero">
+	    <field name="desc"/>
+	    <field name="date"/>
+	  </tree>
+	</field>
+      </record>
+<record id="action_cobro3" model="ir.actions.act_window">
+  <field name="name">Cobros Terceros</field>
+  <field name="res_model">cobro.tercero</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_cobro3" icon="STOCK_JUSTIFY_FILL" sequence="2"
+	  id="menu_action_cobro3"  parent="menu_finance_recaudacion" groups="account.group_account_manager"/>
+
+<!-- -->
+
+      <act_window
+          context="{'default_afectacion':'True'}"
+          domain="[('id', '=', move_id)]"
+          id="move_rec_ir_a"
+          name="Asiento contable"
+          res_model="account.move.line"
+          src_model="account.recaudacion"
+          />
+
+      <record id="view_account_recaudacion_form" model="ir.ui.view">
+        <field name="name">account.recaudacion.form</field>
+        <field name="model">account.recaudacion</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Recaudacion" col='1'>
+            <group colspan="5" col="6">
+              <field name="name" select="1" readonly="1"/>
+	      <field name="journal_id" readonly="1"/>
+	      <field name="partida_anterior" readonly="1"/>
+	      <!--field name="tipo"/>
+	      <field name="archivo" colspan="4"/-->
+	    </group>
+	    <group colspan="4">
+ 	      <field name="acc_ant_id" colspan="4" readonly="1"/>
+            </group>
+	    <group colspan="4">
+ 	      <field name="date" colspan="2" attrs="{'readonly': [('state','!=','Borrador')]}"/>
+ 	      <field name="date_end" colspan="2" invisible="1"/>
+	    </group>
+	    <group  colspan="3" string="EXCEL">
+	      <field name="file_namexls" invisible="1"/>
+	      <field name="archivoxls" filename="file_namexls"/>
+	    </group>
+	    <group colspan="4" col="6">
+	      <field name="state" readonly="1"/>
+	      <!--button name="cargar_recaudado_xls" states="Borrador" 
+		      string="Cargar Recaudado" type="object" icon="gtk-execute"/-->
+	      <button name="cargar_recaudado" states="Borrador" 
+		      string="Cargar Recaudado" type="object" icon="gtk-execute"/>
+	      <!--button name="exportRecaudoAnterior" states="Borrador" 
+		      string="Excel Anios Anteriores" type="object" icon="gtk-execute"/>
+	      <button name="resumen_recaudado" states="Borrador" 
+		      string="Consolidar/Resumir" type="object" icon="gtk-execute"/-->
+	      <button name="contabilizar_recaudado" states="Borrador" 
+		      string="Contabilizar Recaudado" type="object" icon="gtk-ok"/>
+	    </group>
+
+            <notebook colspan="4">
+	      <page string="Detalle Recaudacion">
+		<field name="line_det_ids" nolabel="1" readonly="1">
+		  <tree>
+		    <field name="modulo"/>
+		    <field name="partida_id"/>
+		    <field name="partida_id2"/>
+		    <field name="account_id"/>
+		    <field name="name"/>
+		    <field name="anio"/>
+		    <field name="date_emi"/>
+		    <field name="date"/>
+		    <field name="monto" sum="TOTAL RECAUDADO"/>
+		  </tree>
+		</field>
+	      </page>
+              <page string="Resumen Recaudacion">
+		<field name="recaudacion_ids" nolabel="1">
+		  <tree>
+		    <!--field name="modulo"/-->
+		    <field name="is_venta"/>
+		    <field name="partida_id" required="1"/>
+		    <field name="account_id" required="1"/>
+		    <field name="desc" readonly="1"/>
+		    <field name="anterior_value" sum="TOTAL ANIO ANTERIOR" />
+		    <field name="actual_value" sum="TOTAL ANIO ACTUAL" />
+		    <field name="valor" sum="TOTAL RECAUDADO" />  
+		  </tree>
+		  <form>		    
+		    <field name="partida_id" required="1"/>
+		    <field name="account_id" required="1"/>
+		    <field name="desc" />
+		    <field name="anterior_value" sum="TOTAL ANTERIOR" />
+		    <field name="actual_value" sum="TOTAL ACTUAL" />
+		    <field name="valor" sum="TOTAL RECAUDADO" />
+		    <newline/>
+		    <field name="line_ids" nolabel="1" >
+		      <tree>
+			<field name="anio"/>
+			<field name="valor" sum="TOTAL RUBRO"/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+              </page>
+	       <page string="Detalle Pago/Recaudo">
+		<field name="formapago_ids" nolabel="1">
+		  <tree  editable="bottom">
+		    <field name="journal_id" domain="[('type','=','sale')]"/>
+		    <field name="monto" sum="TOTAL"/>
+		  </tree>
+		</field>
+              </page>
+              <page string="Asiento Contable">
+		<field name="move_id" colspan="3"/>
+		<button name="irAsientoRec" colspan="1"
+		      string="Ir al asiento" type="object" icon="gtk-execute"/>
+		<field colspan="4" name="move_ids" nolabel="1" select="1" height="260">
+		  <tree string="Detalle asiento">
+                    <field name="name"/>
+                    <field name="budget_id"/>
+                    <field name="account_id"/>
+                    <field name="debit" sum="DEBE"/>
+                    <field name="credit" sum="HABER"/>
+                    <field name="state"/>
+                  </tree>
+		  </field>
+	      </page>
+	      <page string="Totales">
+		<field name="valor_detalle"/>
+		<newline/>
+		<field name="valor_resumen"/>
+		<newline/>
+		<field name="valor_dinero"/>
+	      </page>
+	    </notebook>
+	   
+          </form>
+        </field>
+      </record>
+      
+      <record id="view_account_recaudacion_tree" model="ir.ui.view">
+	<field name="name">account.recaudacion.tree</field>
+	<field name="model">account.recaudacion</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Recaudaciones">
+	    <field name="name"/>
+	    <field name="date"/>
+	  </tree>
+	</field>
+      </record>
+      <record id="action_recaudacion" model="ir.actions.act_window">
+	<field name="name">Recaudaciones</field>
+	<field name="res_model">account.recaudacion</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+
+      <menuitem action="action_recaudacion" icon="STOCK_JUSTIFY_FILL" sequence="1"
+		id="menu_action_recaudacion"  parent="menu_finance_recaudacion" groups="account.group_account_manager"/>
+      
+      <!-- Rubros -->
+
+      <record id="view_recaudacion_rubro_form" model="ir.ui.view">
+        <field name="name">recaudacion.rubro.form</field>
+        <field name="model">recaudacion.rubro</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Rubros">
+	    <field name="name"/>
+	    <field name="partida_id" domain="[('tipo','=','i'),('internal_type','!=','view')]" on_change="onchange_partida_rubro(partida_id)"/>
+	    <field name="account_id" domain="[('type','!=','view')]"/>
+	    <field name="modulo_id" widget="selection"/>
+	    <field name="iva"/>
+	    <field name="estado"/>
+	    <field name="calculable"/>
+	    <field name="valor"/>
+	    <field name="tipo"/>
+	    <field name="es_iva"/>
+	    <field name="es_debito"/>
+	  </form>
+	</field>
+      </record>
+
+      <record id="view_account_recaudacion_rubro_tree" model="ir.ui.view">
+	<field name="name">recaudacion.rubro.tree</field>
+	<field name="model">recaudacion.rubro</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Rubros">
+	    <field name="name"/>
+	    <field name="partida_id"/>
+	    <field name="account_id"/>
+	    <field name="modulo_id"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_recaudacion_rubro_search" model="ir.ui.view">
+	<field name="name">recaudacion.rubro.search</field>
+	<field name="model">recaudacion.rubro</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Rubro">
+	    <group>
+	      <separator orientation="vertical"/>
+	      <field name="name"/>
+	      <field name="partida_id"/>
+	      <field name="account_id"/>
+	      <field name="modulo_id"/>
+	    </group>
+	    <newline/>
+	    <group expand="1" string="Group By...">
+	      <separator orientation="vertical" />
+	      <filter string="Partida" icon="terp-folder-orange" domain="[]" 
+					context="{'group_by':'partida_id'}"/>
+	      <filter string="Cuenta" icon="terp-folder-orange" domain="[]" 
+					context="{'group_by':'account_id'}"/>
+	      <separator orientation="vertical" />
+	      <filter string="Modulo" icon="terp-folder-orange" domain="[]" 
+					context="{'group_by':'modulo_id'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+
+
+      <record id="action_rubro" model="ir.actions.act_window">
+	<field name="name">Rubros</field>
+	<field name="res_model">recaudacion.rubro</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem action="action_rubro" icon="STOCK_JUSTIFY_FILL" sequence="0"
+		id="menu_action_recaudacion_rubro"  parent="menu_finance_recaudacion" groups="account.group_account_manager"/>
+
+<!-- modulos -->
+
+      <record id="view_modulo_form" model="ir.ui.view">
+	<field name="name">siim.modulo.form</field>
+        <field name="model">siim.modulo</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Baja" col='1'>
+            <group colspan="4" col="4">
+              <field name="id_ext" select="1" required="1" colspan="2"/>
+              <field name="name" select="1" required="1" colspan="2"/>
+	    </group>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_modulo_tree" model="ir.ui.view">
+	<field name="name">siim.modulo.tree</field>
+	<field name="model">siim.modulo</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Modulo">
+	    <field name="id_ext" select="1"/>
+	    <field name="name" select="1"/>
+	  </tree>
+	</field>
+      </record>
+
+
+      <record id="action_modulo" model="ir.actions.act_window">
+	<field name="name">Modulos SIIM</field>
+	<field name="res_model">siim.modulo</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem action="action_modulo" icon="STOCK_JUSTIFY_FILL" sequence="5"
+		id="menu_action_modulo"  parent="base.menu_management"/>
+
+
+    </data>
+</openerp>

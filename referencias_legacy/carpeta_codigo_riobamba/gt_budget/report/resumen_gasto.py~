@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+class resumen_gasto(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(resumen_gasto, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_budget_gp': self.get_budget_gp,
+            'get_programa_gp': self.get_programa_gp,
+        })
+
+    def get_programa_gp(self, poa):
+        programa_list = []
+        project_obj = self.pool.get('project.project')
+        project_ids = project_obj.search(self.cr, self.uid, [('poa_id','=',poa.id)])
+        for project_id in project_ids:
+            project = project_obj.browse(self.cr, self.uid, project_id)
+            if not project.program_id.id in programa_list:
+                programa_list.append(project.program_id.id)
+        return programa_list
+
+    def get_budget_gp(self, program_id,text):
+        return '5252525'
+
+report_sxw.report_sxw('report.resumen_gasto',
+                       'resumen.gasto.wizard', 
+                       'addons/gt_budget/report/resumen_gasto.mako',
+                       parser=resumen_gasto,
+                       header=True)
+

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+
+    <!--record id="view_purchase_contract_form" model="ir.ui.view">
+      <field name="name">view.purchase.contract.form</field>
+      <field name="model">purchase.contract</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Contrato de Compra de Bienes o Servicios">
+          <field name="name"/>
+          <field name="purchase_id"/>
+          <field name="partner_id"/>
+          <field name="date"/>
+          <field name="term_contract"/>
+          <field name="amount"/>
+          <field name="payment_term_id"/>
+          <group string="Cláusulas de Contrato" colspan="4">
+            <field name="clauses" nolabel="1"/>
+          </group>
+          <group string="Garantías de Contrato" colspan="4">
+            <field name="warranty_id" widget="one2many_list" nolabel="1">
+              <form string="Garantía de Contrato">
+                <field name="type"/>
+                <field name="contact_id"/>
+                <field name="amount"/>
+                <field name="date_close"/>
+                <group string="Observaciones" colspan="4">
+                  <field name="notes" nolabel="1" colspan="4"/>
+                </group>
+              </form>
+              <tree string="Garantías de Contrato">
+                <field name="type"/>
+                <field name="contact_id"/>
+                <field name="amount"/>
+                <field name="date_close"/>
+              </tree>
+            </field>
+          </group>
+        </form>
+      </field>
+    </record>
+    <record id="view_purchase_contract_tree" model="ir.ui.view">
+      <field name="name">view.purchase.contract.tree</field>
+      <field name="model">purchase.contract</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Contratos de Compra Bienes y Servicios">
+          <field name="name" />
+          <field name="partner_id" />
+          <field name="date"/>
+          <field name="term_contract"/>
+          <field name="amount"/>
+          <field name="payment_term_id"/>
+          <field name="clauses"/>
+          <field name="warranty_id"/>
+        </tree>
+      </field>
+    </record>
+    <record id="view_purchase_contract_filter" model="ir.ui.view">
+      <field name="name">purchase.contract.select</field>
+      <field name="model">purchase.contract</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Contratos">
+          <group>
+            <filter icon="terp-emblem-important" name="exception" string="Exception" domain="[('state','=','exception')]"/>
+            <separator orientation="vertical"/>
+            <field name="name"/>
+            <field name="partner_id"/>
+            <field name="warranty_id"/>
+            <field name="date"/>
+            <field name="amount"/>
+          </group>
+          <newline/>
+          <group expand="1" string="Agrupar por...">
+            <filter string="Proveedor" icon="terp-partner" domain="[]" context="{'group_by':'partner_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_purchase_contract" model="ir.actions.act_window">
+      <field name="name">Contratos de Compras Públicas</field>
+      <field name="res_model">purchase.contract</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_purchase_contract_filter"/>
+    </record-->
+
+    <record id="view_purchase_public_process_form" model="ir.ui.view">
+      <field name="name">view.purchase.public.process.form</field>
+      <field name="model">purchase.public.process</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Proceso de Compra Pública">
+          <group colspan="4" col="8">
+            <group colspan="4" col="2">
+	      <group string="Proceso de Compra Pública" col="2">
+			<field name="create_user" readonly="1"/>
+			<field name="create_date_cp" readonly="1"/>
+			<field name="tramite_id" required="1" domain="[('state','=','created')]"
+				   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+			<field name="type_process" 
+				   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+			<field name="code" required="1" 
+				   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+			<field name="date" required="1" 
+				   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+			<field name="responsable_p_id" required="1" 
+				   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+			<field name="folder_number" required="1" 
+				   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+			<field name="c_user" invisible="1"/>
+	      </group>
+	    </group>
+            <group colspan="4" col="2">
+	      <group string="Términos Referencia" col="2">
+		<field name="partner_id" required="1" 
+			   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+		<field name="presp_ref" string="Doc. Presupuestario" domain="[('state','=','certified'),('is_lock','=',False)]" 
+			   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+		<field name="amount" required="1" on_change="onchange_amount_cp(amount,presp_ref)" 
+		       attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+		<field name="deadline" required="1" 
+			   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+		<field name="deadline_quotation" required="1" 
+			   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+		<!--field name="responsable_id" required="1" attrs="{'readonly':[('internal_state','!=','draft')]}"/-->
+		<field name="coordination_dept" required="1" 
+			   attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+	      </group>
+	    </group>
+	  </group>
+	  <field name="actual_state" readonly="1" invisible="1"/>
+	  <field name="internal_state" readonly="1" invisible="1"/>
+	  <notebook colspan="4">
+            <page string="Descripción">
+	      <group string="Objeto de Proceso" col="2">
+		<field name="name" nolabel="1" required="1" attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+	      </group>
+	      <group string="Términos de pago" col="2">
+		<field name="payment_term_id" nolabel="1" required="1" attrs="{'readonly':[('internal_state','!=','draft')]}"/>
+	      </group>
+            </page>
+            <page string="Delegados Calificación">
+	      <field name="delegado_ids" nolabel="1" colspan="4" attrs="{'readonly':[('internal_state','!=','draft')]}">
+		<tree>
+		  <field name="name"/>
+		  <field name="complete_name"/>
+		  <field name="department_id"/>
+		</tree>
+	      </field>
+            </page>
+	    <page string="Historial">
+	      <field name="log_ids" colspan="4" readonly="1" nolabel="1">
+		<tree>
+		  <field name="date"/>
+		  <field name="user_id"/>
+		  <field name="state_to"/>
+		  <field name="state_from"/>
+		</tree>
+	      </field>
+	    </page>
+          </notebook>
+	  <group colspan="4" col="7">
+	    <field name="internal_state" readonly="1" widget="statusbar" 
+		   statusbar_visible="draft,Cancelado,Desierto,Adjudicado,anulated,Finalizado,c_anulado"/>
+	    <button name="%(action_cancel_process_cp)d" string="Desierto" type="action" icon="gtk-cancel"
+		    groups="gt_government_procedure.group_cp"
+		    attrs="{'readonly':[('internal_state','not in',['draft'])]}" 
+		    context="{'state':'Desierto'}"/>
+	    <button name="%(action_cancel_process_cp)d" string="Cancelado" type="action" icon="gtk-cancel"
+		    groups="gt_government_procedure.group_cp"
+		    attrs="{'readonly':[('internal_state','not in',['draft'])]}" 
+		    context="{'state':'Cancelado'}"/>
+	    <button name="%(action_cancel_process_cp)d" string="Anular" type="action" icon="gtk-cancel"
+		    groups="gt_government_procedure.group_cp" 
+		    attrs="{'readonly':[('internal_state','not in',['draft'])]}" 
+		    context="{'state':'Anulado'}"/>
+	    <button name="adjudication" string="Adjudicar" type="object" icon="gtk-ok"
+				groups="gt_government_procedure.group_cp"
+				attrs="{'readonly':[('internal_state','not in',['draft'])]}" 
+				confirm="Esta seguro que desea adjudicar"/>
+	    <button name="finalization" string="Finalizar" type="object" icon="gtk-ok"
+				groups="gt_government_procedure.group_cp"
+				attrs="{'readonly':[('internal_state','not in',['draft','adjudicated'])]}" 
+				confirm="Esta seguro que desea finalizar"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+    
+    <record id="view_purchase_public_process_tree" model="ir.ui.view">
+      <field name="name">view.purchase.public.process.tree</field>
+      <field name="model">purchase.public.process</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree colors="grey:internal_state in ('anulated','Cancelado','Desierto');black:internal_state=='draft';blue:internal_state=='adjudicated';green:internal_state=='Finalizado'" string="Procesos de Compras Públicas">
+          <field name="date"/>
+		  <field name="create_user"/>
+		  <field name="responsable_p_id"/>
+          <field name="code"/>
+          <field name="name"/>
+          <field name="type_process"/>
+          <field name="amount"/>
+          <!--field name="type_contract_id"/-->
+          <field name="partner_id"/>
+		  <field name="coordination_dept"/>
+		  <field name="internal_state"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_purchase_public_process_search" model="ir.ui.view">
+      <field name="name">view.purchase.public.process.search</field>
+      <field name="model">purchase.public.process</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Proceso de Compras Públicas">
+          <group>
+            <field name="internal_state" string="Estado"/>
+            <separator orientation="vertical"/>
+            <field name="date"/>
+	    <field name="create_user"/>
+	    <field name="responsable_p_id"/>
+            <field name="code"/>
+            <field name="name"/>
+            <field name="type_process"/>
+            <field name="amount"/>
+            <!--field name="type_contract_id"/-->
+            <field name="partner_id"/>
+            <field name="coordination_dept"/>
+	  </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Creador" icon="terp-partner" domain="[]" context="{'group_by':'create_user'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Responsable" icon="terp-partner" domain="[]" context="{'group_by':'responsable_p_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Tipo de Contratación" icon="terp-partner" domain="[]" context="{'group_by':'type_process'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Proveedor" icon="terp-partner" context="{'group_by': 'partner_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Area Requirente" icon="terp-partner" domain="[]" context="{'group_by':'coordination_dept'}"/>
+            <filter string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_purchase_public_process" model="ir.actions.act_window">
+      <field name="name">Procesos de Compras Públicas</field>
+      <field name="res_model">purchase.public.process</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_purchase_public_process_search"/>
+    </record>
+
+    <record id="view_purchase_process_state_form" model="ir.ui.view">
+      <field name="name">view.purchase.process.state.form</field>
+      <field name="model">purchase.process.state</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Estatus para Procesos de Compra">
+          <field name="sequence" readonly="1"/>
+          <field name="code"/>
+          <field name="name"/>
+        </form>
+      </field>
+    </record>
+    <record id="view_purchase_process_state_tree" model="ir.ui.view">
+      <field name="name">view.purchase.process.state.tree</field>
+      <field name="model">purchase.process.state</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Estatus para Procesos de Compra">
+          <field name="sequence" readonly="1"/>
+          <field name="code" select="1"/>
+          <field name="name" select="1"/>
+        </tree>
+      </field>
+    </record>
+    <record id="action_purchase_process_state" model="ir.actions.act_window">
+      <field name="name">Estados</field>
+      <field name="res_model">purchase.process.state</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_purchase_contract_type_form" model="ir.ui.view">
+      <field name="name">view.purchase.contract.type.form</field>
+      <field name="model">purchase.contract.type</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tipo de Contratación">
+          <field name="code" readonly="1"/>
+          <field name="name"/>
+		  <!--field name="seq_id" required="1"/-->
+		  <notebook colspan="4">
+			<page string="Estados">
+			  <field name="state_ids" nolabel="1" colspan="4">
+				<tree editable="bottom">
+				  <field name="sequence" readonly="1"/>
+				  <field name="name"/>
+				</tree>
+			  </field>
+			</page>
+		  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_purchase_contract_type_tree" model="ir.ui.view">
+      <field name="name">view.purchase.contract.type.tree</field>
+      <field name="model">purchase.contract.type</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Procedimiento de Contratación">
+          <field name="code" select="1"/>
+          <field name="name" select="1"/>
+		  <field name="contract_type" select="1"/>
+        </tree>
+      </field>
+    </record>
+    <record id="action_purchase_contract_type" model="ir.actions.act_window">
+      <field name="name">Procedimiento de Contratación Pública</field>
+      <field name="res_model">purchase.contract.type</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>        
+
+    <menuitem id="menu_purchase_process_config" parent="purchase.menu_purchase_config_purchase" name="Compras Públicas"
+			  groups="gt_government_procedure.group_cp"
+			  web_icon="images/cpsincolor_100.png"
+			  web_icon_hover="images/cpcolor_100.png"/>
+    <menuitem id="menu_purchase_contract_type" parent="menu_purchase_process_config" action="action_purchase_contract_type"/>
+	<!--menuitem id="menu_purchase_process_state" action="action_purchase_process_state" parent="menu_purchase_process_config"/-->
+	
+    <!--menuitem id="menu_base_purchase_contract" groups="gt_government_procedure.group_cp" 
+				 parent="base.menu_purchase_root" name="Compras Públicas" sequence="2"/-->
+    <menuitem id="menu_base_purchase_contract" groups="gt_government_procedure.group_cp" 
+			  name="Compras Públicas" sequence="2"
+			  web_icon="images/cpsincolor_100.png"
+			  web_icon_hover="images/cpcolor_100.png"
+			  />
+    
+    <!--menuitem id="menu_purchase_contract1" 
+              action="action_purchase_contract" parent="menu_base_purchase_contract" sequence="1"/-->
+    <menuitem id="menu_purchase_public_process" parent="menu_base_purchase_contract"
+              action="action_purchase_public_process" sequence="2" groups="gt_government_procedure.group_cp"/>
+  </data>
+</openerp>

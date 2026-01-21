@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+	  
+	  <report auto="False" id="resumen_recaudacion" model="account.recaudacion"
+		  name="account.recaudacion" rml="siim_integration/report/resumen.mako"
+		  usage="default" string="Resumen" report_type="webkit"/>
+
+    </data>
+</openerp>

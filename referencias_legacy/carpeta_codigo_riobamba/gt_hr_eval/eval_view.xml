@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- Envio de invitaciones -->
+      <record id="survey_send_invitation_view_modified" model="ir.ui.view">
+	<field name="name">Envio Invitacion</field>
+	<field name="model">survey.send.invitation</field>
+	<field name="type">form</field>
+	<field name="inherit_id" ref="survey.view_survey_send_invitation"/>
+	<field name="arch" type="xml">
+	  <field name="partner_ids" position="after">
+	    <separator string="Seleccionar Usuarios/Funcionarios" colspan="4"/>
+	    <field name="user_ids" nolabel="1" colspan="4"/>
+	  </field>
+	</field>
+      </record>
+      <!-- -->
+      <menuitem id="menu_hr_eval_root" 
+		parent="hr_evaluation.menu_eval_hr" 
+		name="Evaluacion"
+		groups="base.group_hr_manager" sequence="100"/>
+
+      <!-- Submenus Sur-->
+      
+      <menuitem name="Definir Encuestas" id="menu_define_survey_eval"
+                groups="base.group_hr_manager"
+                parent="menu_hr_eval_root"/>
+
+      <menuitem id="menu_answer_surveys_eval" name="Responder Encuesta" parent="menu_hr_eval_root" 
+		groups="base.group_tool_user,base.group_tool_manager,base.group_survey_user"/>
+
+      <menuitem name="Reportes" parent="menu_hr_eval_root"
+                id="menu_lunch_reporting_eval" sequence="6"/>
+      <menuitem name="Encuestas" id="menu_reporting_eval" parent="menu_lunch_reporting_eval" sequence="2"/>
+      
+      <menuitem name="Encuestas" id="menu_survey_form"
+		action="survey.action_survey_form1" parent="menu_define_survey_eval"
+		groups="base.group_hr_manager"/>
+      
+      <menuitem name="Paginas de Encuesta" id="menu_survey_page_form1_eval"
+		action="survey.action_survey_page_form" parent='menu_define_survey_eval'
+		groups="base.group_hr_manager"/>
+      
+      <menuitem name="Solicitud Encuesta" id="menu_survey_type_form1_eval"
+		action="survey.action_survey_request_tree" parent='menu_answer_surveys_eval'
+		groups="base.group_hr_manager"/>
+      
+      <menuitem name="Responder Encuesta" id="menu_run_survey_form_eval" sequence="2"
+		action="survey.action_view_survey_name" parent="menu_answer_surveys_eval"            
+		groups="base.group_hr_manager" icon="STOCK_INDEX"/>      
+
+      <!-- -->
+      <menuitem name="Reportes" parent="menu_hr_eval_root"
+                id="menu_lunch_eval_reporting" sequence="100"/>
+      <menuitem name="Evaluacion" id="menu_reporting_eval" parent="menu_lunch_eval_reporting" sequence="2"/>
+      <menuitem name="Evaluaciones" id="menu_print_survey_eval_form" sequence="1"
+		action="survey.action_view_survey_print" parent="menu_reporting_eval"
+		groups="base.group_hr_manager" icon="STOCK_PRINT"/>
+      <menuitem name="Estadisticas" action="survey.action_view_survey_print_statistics" id="menu_print_survey_statistics_eval"
+		parent="menu_reporting_eval" icon="STOCK_PRINT" groups="base.group_hr_manager"/>
+      <menuitem name="Respuestas" action="survey.action_view_survey_print_answer" id="menu_print_survey_answer_eval"
+		parent="menu_reporting_eval" icon="STOCK_PRINT" groups="base.group_hr_manager"/>
+      <menuitem name="Buscar Respuestas" id="menu_browse_survey_response_eval"
+		action="survey.action_browse_survey_response" parent="menu_reporting_eval"
+		groups="base.group_hr_manager" icon="STOCK_PRINT_PREVIEW"/>
+
+    </data>
+</openerp>

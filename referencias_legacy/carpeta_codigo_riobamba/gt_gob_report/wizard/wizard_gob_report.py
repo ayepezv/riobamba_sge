@@ -1,0 +1,1975 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Author :  Mario Chogllo
+#
+#
+##############################################################################
+import tools
+import time
+from osv import osv
+from osv import fields
+import operator
+import csv
+import base64
+import StringIO
+import datetime
+from dateutil.relativedelta import relativedelta
+from datetime import date, timedelta
+from gt_tool import XLSWriter
+from more_itertools import chunked
+
+class cedulaAuxiliarLine(osv.TransientModel):
+    _name = 'cedula.auxiliar.line'
+    _columns = dict(
+        p_id = fields.many2one('cedula.auxp','Detalle'),
+        partida = fields.many2one('budget.item','Partida'),
+        code = fields.char('Codigo',size=64),
+        planned_amount = fields.float('Asignacion Inicial'),
+        reform = fields.float('Reformas'),
+        codificado = fields.float('Codificado'),
+        compromiso = fields.float('Compromiso'),
+        saldo_comprometer = fields.float('Saldo Comprometer'),
+        devengado = fields.float('Devengado'),
+        pagado = fields.float('Pagado'),
+        saldo_devengar = fields.float('Saldo Devengar'),
+    )
+cedulaAuxiliarLine()
+class cedulaAuxP(osv.TransientModel):
+    _name = 'cedula.auxp'
+    _order = 'code asc'
+    _columns = dict(
+        c_id = fields.many2one('cedula.auxiliar','Detalle'),
+        line_ids = fields.one2many('cedula.auxiliar.line','p_id','Detalle'),
+        code = fields.char('Codigo',size=5),
+        program_id = fields.many2one('project.program','Programa'),
+    )
+cedulaAuxP()
+class cedulaAuxiliar(osv.TransientModel):
+    _name = 'cedula.auxiliar'
+    
+    def printCedulaAuxiliar(self, cr, uid, ids, context=None):
+        self.computeCedulaAuxiliar(cr, uid, ids)
+        if not context:
+            context = {}
+        solicitud = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [solicitud.id], 'model': 'cedula.auxiliar'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'cedulauxiliar',
+            'model': 'cedula.auxiliar',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+
+    def exportCedulaAuxiliar(self, cr, uid, ids, context):
+        self.computeCedulaAuxiliar(cr, uid, ids)
+        datas = self.read(cr, uid, ids, [], context=context)[0]
+        date_inicial_reporte = datas['date_start']
+        date_final_reporte = datas['date_end']
+        result = {}
+        writer = XLSWriter.XLSWriter()
+        cabecera_ini = ['','CEDULA AUXILIAR',date_inicial_reporte,date_final_reporte]
+        writer.append(cabecera_ini)
+        tsc1=tsd1=ti1=tr1=tcodif1=tcomp1=td1=te1=0
+        for o in self.browse(cr, uid, ids):
+            for programa in o.line_ids: 
+                programac = ['PROGRAMA',programa.program_id.sequence,programa.program_id.name]
+                writer.append(programac)
+                cabecera_all = ['PARTIDA','DENOMINACION','INICIAL','REFORMA','CODIFICADO','COMPROMETIDO','SALDO COMP.','DEVENGADO','EJECUTADO','SALDO DEVENG.']
+                writer.append(cabecera_all)
+                tsc=tsd=ti=tr=tcodif=tcomp=td=te=0
+                for line in programa.line_ids:
+                    ti+=line.planned_amount
+                    tr+=line.reform
+                    tcodif+=line.codificado
+                    tcomp+=line.compromiso
+                    td+=line.devengado
+                    te+=line.pagado
+                    tsc+=line.saldo_comprometer
+                    tsd+=line.saldo_devengar
+                    ti1+=line.planned_amount
+                    tr1+=line.reform
+                    tcodif1+=line.codificado
+                    tcomp1+=line.compromiso
+                    td1+=line.devengado
+                    te1+=line.pagado
+                    tsc1+=line.saldo_comprometer
+                    tsd1+=line.saldo_devengar
+                    writer.append([line.code,line.partida.budget_post_id.name,line.planned_amount,line.reform,line.codificado,line.compromiso,line.saldo_comprometer,line.devengado,line.pagado,line.saldo_devengar])
+                writer.append(['','TOTAL PROGRAMA',ti,tr,tcodif,tcomp,tsc,td,te,tsd])
+        writer.append(['','TOTAL GENERAL',ti1,tr1,tcodif1,tcomp1,tsc1,td1,te1,tsd1])
+        writer.save("CedulaAuxiliar"+date_inicial_reporte+".xls")
+        out = open("CedulaAuxiliar"+date_inicial_reporte+".xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'data': out, 'filename': "CedulaAuxiliar"+date_inicial_reporte+".xls"})
+        return True
+
+    def computeCedulaAuxiliar(self, cr, uid, ids, context=None):
+        item_obj = self.pool.get('budget.item')
+        line_obj = self.pool.get('cedula.auxiliar.line')
+        p_obj = self.pool.get('cedula.auxp')
+        program_obj = self.pool.get('project.program')
+        for this in self.browse(cr, uid, ids):
+            lines_antes = p_obj.search(cr, uid, [('c_id','=',this.id)])
+            if lines_antes:
+                line_obj.unlink(cr, uid, lines_antes)
+            context = {'by_date':True,'date_start': this.date_start, 'date_end': this.date_end,'poa_id':this.poa_id.id}            
+            program_ids = program_obj.search(cr, uid, [])
+            if program_ids:
+                for program_id in program_ids:
+                    programa = program_obj.browse(cr, uid, program_id)
+                    item_ids = item_obj.search(cr, uid, [('program_id','=',program_id),('poa_id','=',this.poa_id.id),('type_budget','=','gasto')])
+                    if item_ids:
+                        p_id = p_obj.create(cr, uid, {
+                            'c_id':this.id,
+                            'program_id':program_id,
+                            'code':programa.sequence,
+                        })
+                        for line in item_obj.browse(cr,uid,item_ids, context):
+                            line_obj.create(cr, uid, {
+                                'p_id':p_id,
+                                'partida':line.id,
+                                'code':line.code,
+                                'planned_amount':line.planned_amount,
+                                'reform':line.reform_amount,
+                                'codificado':line.codif_amount,
+                                'compromiso':line.commited_amount,
+                                'saldo_comprometer':line.commited_balance,
+                                'devengado':line.devengado_amount,
+                                'pagado':line.paid_amount,
+                                'saldo_devengar':line.devengado_balance,
+                            })
+        return True
+
+    _columns = dict(
+        poa_id = fields.many2one('budget.poa','Presupuesto'),
+        date_start = fields.date('Fecha Desde'),
+        date_end = fields.date('Fecha Hasta'),
+        tipo = fields.selection([('ingreso','ingreso'),('gasto','gasto')],'Tipo'),
+        line_ids = fields.one2many('cedula.auxp','c_id','Detalle Programa'),
+        data = fields.binary('Archivo Excel',readonly=True),
+        filename = fields.char('Filename', size=128,readonly=True),
+    )
+    _defaults = dict(
+        tipo = 'gasto',
+    )
+cedulaAuxiliar()
+
+class BalanceInicialEsigef(osv.TransientModel):
+    _name = 'balance.inicial.esigef'
+    _columns = dict(
+        fiscalyear_id = fields.many2one('account.fiscalyear','Anio Fiscal'),
+        data_balance = fields.binary('Archivo Inicial Esigef', filters="*.txt",readonly=True),
+        filename_balance = fields.char('Archivo Balance', size=128),
+    )
+
+    def gen_esigef_files(self, cr, uid, ids, context):
+      global balance
+      formulario=self.browse(cr, uid, ids[0],context)
+      result_dic = balance.values()
+      dic_ord=sorted(result_dic, key=operator.itemgetter('code'))
+      datas = []
+      mes = '01'#str(datetime.datetime.strptime(formulario.fiscalyear_id.date_start, '%Y-%m-%d').month)
+      for line in dic_ord:
+          if line['code']!=0 and line['esigef']:
+              if len(line['code']) < 7:
+                  code = line['code']+(7-len(line['code']))*"0"
+              else:
+                  code = line['code']
+              if line['debe_inicial'] or line['haber_inicial']:
+                  datas.append([mes,code[0:3],code[3:5],code[5:7],'%.2f'%line['debe_inicial'],'%.2f'%line['haber_inicial']])
+      budget_buf = StringIO.StringIO() 
+      writer = csv.writer(budget_buf, delimiter='|')
+      writer.writerows(datas)
+      out_balance = base64.encodestring(budget_buf.getvalue())
+      budget_buf.close()
+      name_balance = 'BALANCE INICIAL COMPROBACION %s.txt' % (mes)
+      #recorrer las lineas de validacion de esigef
+      self.write(cr, uid, ids, {
+          'data_balance': out_balance,
+          'filename_balance': name_balance})              
+      return True
+
+    def get_balance_data(self, cr, uid, ids, context):
+        move_line_obj = self.pool.get('account.move.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        anio_obj = self.pool.get('account.fiscalyear')
+        anio = anio_obj.browse(cr, uid, context['fiscalyear_id'][0])
+        date_inicial_reporte = anio.date_start
+        date_final_reporte = anio.date_stop
+        result = {}
+        fiscalyear_id = context['fiscalyear_id']
+        account_ids = context['account_ids']
+        sql_move_inicio = """
+        select account_move.id,date from account_move,account_period
+        where account_move.period_id=account_period.id and account_period.fiscalyear_id=%s and is_start=True """%(fiscalyear_id[0],)
+        cr.execute(sql_move_inicio)
+        move_inicial = cr.fetchall()
+        if move_inicial:
+            move_id_inicio = move_inicial[0][0]
+            fecha_inicio = move_inicial[0][1]
+        else:
+            texto = ustr("No se ha marcado un asiento como de inicio para el periodo fiscal ") + ustr(fiscalyear_id[1])
+            raise osv.except_osv('Error', texto)
+
+        if fecha_inicio == date_inicial_reporte:
+            date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+            date_aux = date_aux + timedelta(days=1)
+            date_inicial_reporte_aux = date_inicial_reporte
+            date_inicial_reporte = date_aux.strftime('%Y-%m-%d')
+        else:
+            date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+            date_aux = date_aux - timedelta(days=1)
+            date_inicial_reporte_aux = date_aux.strftime('%Y-%m-%d')
+        ctx = {}
+        ctx.update({'fiscalyear': fiscalyear_id[0]})
+        ctx.update({'state': 'posted'})
+        ctx.update({'date_from': fecha_inicio,
+                    'date_to': date_inicial_reporte_aux})
+        accounts_inicial = account_obj.read(cr, uid, account_ids, ['code','name','debit','credit', 'balance','level','esigef'], ctx)
+        accounts_inicial_dict = {}
+        for account_data in accounts_inicial:
+            debe_inicial = 0
+            haber_inicial = 0
+            saldo = account_data['debit'] - account_data['credit']
+            if saldo >= 0:
+                debe_inicial = saldo
+            else:
+                haber_inicial = saldo * - 1
+            accounts_inicial_dict[account_data['code']] = {
+                'code': account_data['code'],
+                'desc': account_data['name'],
+                'nivel': account_data['level'],
+                'debit': round(debe_inicial,2),
+                'credit': round(haber_inicial,2),
+                'esigef': account_data['esigef'],
+            }
+        accounts_final_dict = {}
+        for code in accounts_inicial_dict:
+            accounts_final_dict[code] = {
+                'esigef': accounts_inicial_dict[code]['esigef'],
+                'code': accounts_inicial_dict[code]['code'],
+                'desc': accounts_inicial_dict[code]['desc'],
+                'nivel': accounts_inicial_dict[code]['nivel'],
+                'debe_inicial': accounts_inicial_dict[code]['debit'],
+                'haber_inicial': accounts_inicial_dict[code]['credit'],
+            }
+        return accounts_final_dict
+    
+    def genera_balance_inicial_esigef(self, cr, uid, ids, context={}):
+        account_obj = self.pool.get('account.account')
+        anio_obj = self.pool.get('account.fiscalyear')
+        for formulario in self.read(cr, uid, ids, ['id','fiscalyear_id']):
+            #account_ids = account_obj.search(cr, uid, [])
+            account_ids = account_obj.search(cr, uid, [('level','<=',5)])
+#            account_ids = account_obj.search(cr, uid, [])
+            anio = anio_obj.browse(cr, uid, formulario['fiscalyear_id'][0])
+            context1 = context.copy()
+            context1.update({'fiscalyear_id': formulario['fiscalyear_id'],'account_ids': account_ids})
+            global balance
+            balance = self.get_balance_data(cr, uid, ids, context1)
+            self.gen_esigef_files(cr, uid, ids, context)
+        return True
+
+BalanceInicialEsigef()
+
+
+class presupuestoInicialEsigef(osv.TransientModel):
+    _name = 'presupuesto.inicial.esigef'
+
+    def crear_padre(self, data, data_suma, res):
+        if data['post'].parent_id:
+            data['padre'] = data['post'].parent_id
+            if res.get(data['post'].parent_id.code,False):
+                res[data['post'].parent_id.code]['planned_amount'] += data_suma['planned_amount']
+            else:
+                res[data['post'].parent_id.code] = {
+                    'post': data['post'].parent_id,
+                    'padre': False, 
+                    'code':data['post'].parent_id.code,
+                    'general_budget_name':data['post'].parent_id.name,
+                    'planned_amount':data['planned_amount'],
+                    'final': False,
+                    'tipo': data['tipo'],
+                    
+                }
+            self.crear_padre(res[data['post'].parent_id.code], data_suma,res)
+
+    def gen_esigef_inicial(self, cr, uid, ids, context):
+      global cedula
+      formulario=self.browse(cr, uid, ids[0],context)
+      result_dic = cedula.values()
+      dic_ord=sorted(result_dic, key=operator.itemgetter('code'))
+      datas_ing = []
+      mes = '01'
+      for line in dic_ord:
+         if line['code']!= '0' and line['code']!= 'total' and line['final'] and line['tipo']=='ingreso':
+            if line['planned_amount']!=0:
+               datas_ing.append([mes,'I',line['code'][0:2],line['code'][2:4],line['code'][4:6],'%.2f'%line['planned_amount']])
+      budget_buf = StringIO.StringIO() 
+      writer = csv.writer(budget_buf, delimiter='|')
+      writer.writerows(datas_ing)
+      datas_gas = []
+      for line in dic_ord:
+         if line['code']!='0' and line['code']!= 'total' and line['final'] and line['tipo']=='gasto':
+            if line['planned_amount']!=0:
+               datas_gas.append([mes,'G',line['code'][0:2],line['code'][2:4],line['code'][4:6],'000',line['orientacion'],'%.2f'%line['planned_amount']])
+      writer.writerows(datas_gas)
+      out_cedulas = base64.encodestring(budget_buf.getvalue())
+      budget_buf.close()
+      filename_cedulas = "ESIGEF INICIAL" + '.txt' 
+      self.write(cr, uid, ids, {
+          'data_cedulas': out_cedulas,
+          'filename_cedulas': filename_cedulas})
+      return True
+
+    def get_cedula_data_inicial(self,cr, uid, ids, context):
+        res = { }
+        res_line = { }
+        result = []
+        orientacion_obj = self.pool.get('budget.estrategy')
+        c_b_lines_obj = self.pool.get('budget.item')
+        poa_obj = self.pool.get('budget.poa')
+        ids_lines = context['budget_ids']
+        contexto = {'poa_id':context['poa_id']}            
+        planned_total=0
+        for line in c_b_lines_obj.browse(cr,uid,ids_lines, context=contexto):
+            if res_line.has_key(line.code_aux[0:6])==False:
+                #sacar la orientacion del gasto
+                orientacion_aux = '99999999'
+                #orientacion_ids = orientacion_obj.search(cr, uid, [('budget_id','=',line.id)])
+                #if orientacion_ids:
+                #    orientacion = orientacion_obj.browse(cr, uid, orientacion_ids[0])
+                #    orientacion_aux = orientacion.estrategy_id.sequence[0:6] + '00'
+#                res_line[line.code_aux[0:6]]={
+#                    'post': line.budget_post_id,
+#                    'program': line.program_id.id,
+#                    'padre': False, 
+#                    'code':line.code_aux[0:6],
+#                    'general_budget_name':line.budget_post_id.name,
+#                    'planned_amount':line.planned_amount,
+#                    #'final': False,
+#                    'final': True,
+#                    'orientacion':orientacion_aux,
+#                    'tipo': line.type_budget,
+#                }
+                if res_line.has_key(line.budget_post_id.code[0:6])==False:
+                    res_line[line.budget_post_id.code[0:6]]={
+                        'post': line.budget_post_id,
+                        'program': line.program_id.id,
+                        'padre': False, 
+                        'code': line.budget_post_id.code[0:6],
+                        'general_budget_name':line.budget_post_id.name,
+                        'planned_amount':line.planned_amount,
+                        'final': True,
+                        'orientacion':orientacion_aux,
+                        'tipo': line.type_budget,
+                    }
+                else:
+                    res_line[line.budget_post_id.code[0:6]]['planned_amount']+=line.planned_amount
+            else:              
+                #if res_line[line.budget_post_id.code[0:6]]['orientacion']=='99999999':
+                #    orientacion_ids = orientacion_obj.search(cr, uid, [('budget_id','=',line.id)])
+                #    if orientacion_ids:
+                #        orientacion = orientacion_obj.browse(cr, uid, orientacion_ids[0])
+                #        orientacion_aux = orientacion.estrategy_id.sequence[0:6] + '00'
+                #        res_line[line.budget_post_id.code[0:6]]['orientacion']=orientacion_aux
+                res_line[line.budget_post_id.code[0:6]]['planned_amount']+=line.planned_amount
+        return res_line
+
+    def genera_inicial_esigef(self, cr, uid, ids, context={}):
+        cedulaline_obj = self.pool.get('cedula.line')
+        balanceline_obj = self.pool.get('balance.line')
+        account_obj = self.pool.get('account.account')
+        budget_post_obj = self.pool.get('budget.post')
+        budget_item_obj = self.pool.get('budget.item')
+        poa_obj = self.pool.get('budget.poa')
+        anio_obj = self.pool.get('account.fiscalyear')
+        #ojo aqui considera item del poa
+        for formulario in self.read(cr, uid, ids, ['budget_id']):
+            account_ids = []
+            budget_ids = budget_item_obj.search(cr, uid, [('poa_id','=',formulario['budget_id'][0])])
+            context2 = context.copy()
+            context2.update({'poa_id':formulario['budget_id'][0],'budget_ids': budget_ids})
+            global cedula
+            cedula = self.get_cedula_data_inicial(cr, uid, ids, context2)
+            self.gen_esigef_inicial(cr, uid, ids, context)
+        return True
+
+    _columns = dict(
+        budget_id = fields.many2one('budget.poa','Presupuesto'),
+        data_cedulas = fields.binary('Archivo Inicial Esigef', filters="*.txt",readonly=True),
+        filename_cedulas = fields.char('Archivo Cedulas', size=128),
+    )
+presupuestoInicialEsigef()
+
+class situacionAuxiliarLine(osv.TransientModel):
+    _name = 'situacion.auxiliar.line'
+    _columns = dict(
+        ax_id = fields.many2one('situacion.auxiliar','Situacion'),
+        account_id = fields.many2one('account.account','Cuenta'),
+        actual = fields.float('Actual'),
+        anterior = fields.float('Anterior'),
+    )
+situacionAuxiliarLine()
+class situacionAuxiliar(osv.TransientModel):
+    _name = 'situacion.auxiliar'
+    _columns = dict(
+        date_from = fields.date('Fecha desde'),
+        date_end = fields.date('Fecha Hasta'),
+        fiscalyear_id = fields.many2one('account.fiscalyear','Periodo'),
+        line_ids = fields.one2many('situacion.auxiliar.line','ax_id','Detalle'),
+    )
+
+    def print_situacion_auxiliar(self, cr, uid, ids, context):
+        if context is None:
+            context = {}     
+        picking = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids' : [picking.id],
+                 'model': 'situacion.auxiliar'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'situacion_auxiliar',
+            'model': 'situacion.auxiliar',
+            'datas': datas,
+            'nodestroy': True,            
+        }
+
+    def load_situacion_auxiliar(self, cr, uid, ids, context=None):
+        account_obj = self.pool.get('account.account')
+        line_obj = self.pool.get('situacion.auxiliar.line')
+        ctx = {}
+        ctx2 = {}
+        for this in self.browse(cr, uid, ids):
+            antes_ids = line_obj.search(cr,uid, [('ax_id','=',this.id)])
+            if antes_ids:
+                line_obj.unlink(cr, uid, antes_ids)
+            ctx['fiscalyear'] = this.fiscalyear_id.id
+            ctx['date_from'] = this.date_from
+            ctx['date_to'] =  this.date_end
+            date_aux = datetime.datetime.strptime(this.date_from, '%Y-%m-%d').date()
+            date_inicial_aux = date_aux - relativedelta(years=1)
+            date_inicial_reporte = date_inicial_aux.strftime('%Y-%m-%d')
+            date_aux = datetime.datetime.strptime(this.date_end, '%Y-%m-%d').date()
+            date_final_aux = date_aux - relativedelta(years=1)
+            date_final_reporte = date_final_aux.strftime('%Y-%m-%d')
+            fiscalyear_ids = self.pool.get('account.fiscalyear').search(cr, uid, [('date_start','<=', date_inicial_reporte),
+                                                                                              ('date_stop','>=',date_final_reporte)])
+            if fiscalyear_ids:
+                fiscalyear_id_ant = fiscalyear_ids[0]
+            ctx2['fiscalyear'] = fiscalyear_ids[0]
+            ctx2['date_from'] = date_inicial_reporte
+            ctx2['date_to'] =  date_final_reporte
+            account_ids = account_obj.search(cr, uid, [('type','!=','view')])
+            if account_ids:
+                account_ids = list(chunked(account_ids, 1000))
+                for accounts_ in account_ids:
+                    accounts = account_obj.read(cr, uid, accounts_, ['id','type','code','name','debit','credit','balance','parent_id','level'], ctx)
+                    for account in accounts:
+                        if account['balance']!=0:
+                            #anterior
+                            account_ant = account_obj.read(cr, uid, account['id'], ['id','type','code','name','debit','credit','balance','parent_id','level'], ctx2)
+                            line_obj.create(cr, uid,{
+                                'ax_id':this.id,
+                                'account_id':account['id'],
+                                'actual':abs(account['balance']),
+                                'anterior':abs(account_ant['balance']),
+                            })
+situacionAuxiliar()
+
+class reportGobLine(osv.osv_memory):
+    _name = 'report.gob.line'
+    _columns = dict(
+        g_id = fields.many2one('report.gob.wizard','Reporte'),
+        dia = fields.date('Dia'),
+        comprobante = fields.char('Comprobante',size=64),
+        diferencia = fields.float('Diferencia'),
+        cuadra = fields.boolean('Cuadra'),
+    )
+reportGobLine()
+class reportGobWizard(osv.osv_memory):
+
+    _name = 'report.gob.wizard'
+    _description = 'Reportes Gobiernos Autonomos'
+
+    def _get_activeyear(self, cr, uid, context):
+        fiscalyear_obj = self.pool.get('account.fiscalyear')
+        import datetime
+        aux_date = datetime.date.today()
+        fiscalyear_ids = fiscalyear_obj.search(cr, uid, [('date_start','<=',aux_date),('date_stop','>=',aux_date)])
+        res = {}
+        if fiscalyear_ids:
+            return fiscalyear_ids[0]
+        else:
+            raise osv.except_osv('Error !', 'No existe un año fiscal abierto')
+    
+    def _get_nivel(self, cr, uid, context):
+        return 5
+
+    _defaults = {
+        'fiscalyear': _get_activeyear,
+        'nivel': _get_nivel,
+        'all_accounts':True,
+        'auxiliar':True,
+        'notes':'Verifique que hasta el mes previo a su revision el flujo de efectivo este cuadrado, ya que el reporte para la verificacion por dia solo toma en cuenta los dias del mes en revision, y se basa en que el flujo al mes previo a sido revisado y esta cuadrado',
+    }
+    
+    def gen_balance_excel(self, cr, uid, ids, context):
+        if context is None:
+            context = {}
+        if 'default_type' in context:               
+            type_report = context['default_type']
+            #aqui debe mandar el reporte correcto siempre manda el mismo
+        if type_report == "BalanceComprobacion":
+            lineas = self._get_totales_balance_comprobacion(cr, uid, ids, context)
+        elif type_report == "EstadoResultados":
+            lineas = self._get_totales_estado_resultados(cr, uid, ids, context)
+        elif type_report == "FlujoEfectivo":
+            lineas = self._get_totales_flujo_efectivo(cr, uid, ids, context)
+        elif type_report == "EstadoSituacion":
+            lineas = self._get_totales_estado_situacion(cr, uid, ids, context)
+
+    ####METODOS DE EXPORTAR EL ESTADOS DE SITUACION FINANCIERA
+    
+    def _get_saldo_situacion(self, cr, uid, ids, context, code,desde,hasta,date_inicial_reporte,date_final_reporte,fiscalyear_id):
+        account_obj = self.pool.get('account.account')
+        account_parent_ids = account_obj.search(cr, uid, [('code','=',code)])
+        res= []
+        ctx = {}
+        ctx_ant = {}
+        ctx['fiscalyear'] = fiscalyear_id[0]
+        ctx['state'] = 'posted'
+        ctx['date_from'] = date_inicial_reporte
+        ctx['date_to'] = date_final_reporte
+        #sacar anio anterior
+        date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+        date_inicial_aux = date_aux - relativedelta(years=1)
+        date_inicial_reporte_ant = date_inicial_aux.strftime('%Y-%m-%d')
+        date_aux = datetime.datetime.strptime(date_final_reporte, '%Y-%m-%d').date()
+        date_final_aux = date_aux - relativedelta(years=1)
+        date_final_reporte_ant = date_final_aux.strftime('%Y-%m-%d')
+        fiscalyear_ids = self.pool.get('account.fiscalyear').search(cr,uid, [('date_start','<=', date_inicial_reporte_ant),('date_stop','>=',date_final_reporte_ant)])
+        if fiscalyear_ids:
+            fiscalyear_id_ant = fiscalyear_ids[0]
+        ctx_ant['fiscalyear'] = fiscalyear_id_ant
+        ctx_ant['state'] = 'posted'
+        ctx_ant['date_from'] = date_inicial_reporte_ant
+        ctx_ant['date_to'] = date_final_reporte_ant
+        if account_parent_ids:
+            aux_parent = []
+            account_parent = account_obj.read(cr,uid, account_parent_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx)
+            account_parent_ant = account_obj.read(cr,uid, account_parent_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx_ant)
+            if abs(account_parent[0]['balance'])>0:
+                aux_parent.append(account_parent[0]['code_aux'])
+                aux_parent.append(account_parent[0]['name'])
+                aux_parent.append(abs(account_parent[0]['balance']))
+                aux_parent.append(abs(account_parent_ant[0]['balance']))
+                res.append(aux_parent)
+                account_hijas_ids = account_obj.search(cr,uid, [('parent_id','=',account_parent_ids[0]),('code','>=',desde),('code','<=',hasta)])
+                if account_hijas_ids:
+                    for account_hija in account_obj.read(cr,uid, account_hijas_ids,['id','code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx):
+                        account_hija_ant = account_obj.read(cr,uid, account_hija['id'],['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx_ant)
+                        if abs(account_hija['balance'])>0:
+                            aux_hija = []
+                            aux_hija.append(account_hija['code_aux'])
+                            aux_hija.append(account_hija['name'])
+                            aux_hija.append(abs(account_hija['balance']))
+                            aux_hija.append(abs(account_hija_ant['balance']))
+                            res.append(aux_hija)
+        return res    
+
+    def lineasSit(self, cr, uid, ids, context=None):
+        result = {}
+        context1={}
+        context1['tipo']='act'
+        context2={}
+        context2['tipo']='ant'
+        result['act'] = self.lineas_individual_sitAct(cr, uid, ids,context1)
+        result['ant'] = self.lineas_individual_sitAct(cr, uid, ids,context1)
+        return result
+
+    def lineasSitAnt(self, cr, uid, ids, context=None):
+        result = {}
+        context1={}
+        context1['tipo']='ant'
+        result['ant'] = self.lineas_individual_sitAct(cr, uid, ids,context1)
+        return result
+
+    def lineas_individual_sitAct(self, cr, uid, ids, context):
+#        context = {}
+#        tipo = 'act'
+        tipo = context['tipo']
+        for this in self.browse(cr, uid, ids):
+            date_inicial_reporte = this.date_from
+            date_final_reporte = this.date_end
+            if tipo!='act':
+                date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+                date_inicial_aux = date_aux - relativedelta(years=1)
+                date_inicial_reporte = date_inicial_aux.strftime('%Y-%m-%d')
+                date_aux = datetime.datetime.strptime(date_final_reporte, '%Y-%m-%d').date()
+                date_final_aux = date_aux - relativedelta(years=1)
+                date_final_reporte = date_final_aux.strftime('%Y-%m-%d')
+            result = {}
+            fiscalyear_id = this.fiscalyear.id
+            if tipo=='ant':
+                fiscalyear_ids = self.pool.get('account.fiscalyear').search(cr, uid, [('date_start','<=', date_inicial_reporte),('date_stop','>=',date_final_reporte)])
+                if fiscalyear_ids:
+                    fiscalyear_id = fiscalyear_ids[0]
+            move_line_obj = self.pool.get('account.move.line')
+            account_obj = self.pool.get('account.account')
+            move_obj = self.pool.get('account.move')
+            ctx = context.copy()
+            codes = ['1','111','112','113','121','122','123','124','132','134','135','141','14199','142','14299','144','14499','145','14599','151','15198',
+                     '152','15298','125','12599','126','12699','131','133','212','213','221','222','223','224','225','226','611','612','61801','619','618','911',
+                     '921','62','63','6']
+            account_ids = account_obj.search(cr, uid, [('code','in', codes)])
+            ctx.update({'fiscalyear': fiscalyear_id})
+            ctx.update({'state': 'posted'})
+            ctx.update({'date_from': date_inicial_reporte,
+                        'date_to': date_final_reporte})
+            accounts = account_obj.read(cr, uid, account_ids, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], ctx)
+            accounts_by_id = {}
+            for account in accounts:
+                accounts_by_id[account['code']] = account
+            for code in codes:
+                if accounts_by_id.get(code,False) == False:
+                    accounts_by_id.update({code: {'code': code, 'balance': 0} })
+            ######################33
+            corriente = accounts_by_id['111']['balance']+accounts_by_id['112']['balance']+accounts_by_id['113']['balance']+accounts_by_id['121']['balance']+accounts_by_id['122']['balance']+accounts_by_id['123']['balance']+accounts_by_id['124']['balance']+accounts_by_id['132']['balance']+accounts_by_id['134']['balance']+accounts_by_id['135']['balance']
+            accounts_by_id.update({'corriente': {'corriente': 'corriente', 'balance': corriente}})
+            largo_plazo = 0#accounts_by_id['122']['balance']+accounts_by_id['123']['balance']+accounts_by_id['124']['balance']
+            accounts_by_id.update({'largo_plazo': {'largo_plazo': 'largo_plazo', 'balance': largo_plazo}})
+    #        activos_fijos = accounts_by_id['141']['balance']+accounts_by_id['14199']['balance']+accounts_by_id['142']['balance']+accounts_by_id['14299']['balance']+accounts_by_id['144']['balance']+accounts_by_id['14499']['balance']+accounts_by_id['145']['balance']+accounts_by_id['14599']['balance']
+            activos_fijos = accounts_by_id['141']['balance']+accounts_by_id['142']['balance']+accounts_by_id['144']['balance']+accounts_by_id['145']['balance']
+            accounts_by_id.update({'activos_fijos': {'activos_fijos': 'activos_fijos', 'balance': activos_fijos}})
+    #        inversiones = accounts_by_id['151']['balance']+accounts_by_id['15198']['balance']+accounts_by_id['152']['balance']+accounts_by_id['15298']['balance']
+            inversiones = accounts_by_id['151']['balance']+accounts_by_id['152']['balance']
+            accounts_by_id.update({'inversiones': {'inversiones': 'inversiones', 'balance': inversiones}})
+            otros = accounts_by_id['125']['balance']+accounts_by_id['12599']['balance']+accounts_by_id['126']['balance']+accounts_by_id['12699']['balance']+accounts_by_id['131']['balance']+accounts_by_id['133']['balance']
+            accounts_by_id.update({'otros': {'otros': 'otros', 'balance': otros}})
+            activo = accounts_by_id['1']['balance']#corriente + largo_plazo + activos_fijos + inversiones + otros
+            accounts_by_id.update({'activo': {'activo': 'activo', 'balance': activo}})
+            #####################
+            pcorrientes = accounts_by_id['212']['balance']+accounts_by_id['213']['balance']
+            accounts_by_id.update({'pcorrientes': {'pcorrientes': 'pcorrientes', 'balance': pcorrientes}})
+            plargo_plazo = accounts_by_id['222']['balance']+accounts_by_id['223']['balance']+accounts_by_id['224']['balance']
+            accounts_by_id.update({'plargo_plazo': {'plargo_plazo': 'plargo_plazo', 'balance': plargo_plazo}})
+            potros = accounts_by_id['225']['balance']+accounts_by_id['226']['balance']
+            accounts_by_id.update({'potros': {'potros': 'potros', 'balance': potros}})
+            pasivo = pcorrientes + plargo_plazo + potros
+            accounts_by_id.update({'pasivo': {'pasivo': 'pasivo', 'balance': pasivo}})
+            ######################
+            aux_vigente = (abs(accounts_by_id['62']['balance'])-abs(accounts_by_id['63']['balance'])) * (-1)
+            patrimonio = accounts_by_id['6']['balance']
+    #        patrimonio = accounts_by_id['611']['balance']+accounts_by_id['612']['balance']+aux_vigente+accounts_by_id['619']['balance']
+    #        patrimonio = accounts_by_id['611']['balance']+accounts_by_id['612']['balance']+accounts_by_id['618']['balance']+accounts_by_id['61801']['balance']+accounts_by_id['619']['balance']
+            accounts_by_id.update({'patrimonio': {'patrimonio': 'patrimonio', 'balance': patrimonio}})
+            accounts_by_id.update({'pasivo_patrimonio': {'pasivo_patrimonio': 'pasivo_patrimonio', 'balance': patrimonio + pasivo}})
+            return accounts_by_id
+    
+    def _get_totales_estado_situacion(self, cr, uid, ids, context):
+        datas = self.read(cr, uid, ids, [], context=context)[0]
+        date_inicial_reporte = datas['date_from']
+        date_final_reporte = datas['date_end']
+        result = {}
+        fiscalyear_id = datas['fiscalyear']
+        writer = XLSWriter.XLSWriter()
+        cabecera_ini = ['','ESTADO DE SITUACION FINANCIERA',date_inicial_reporte,date_final_reporte]
+        writer.append(cabecera_ini)
+        cabecera_all = ['Cuentas','Denominacion','Anio Vigente']
+        writer.append(cabecera_all)
+        resultado = self.lineasSit(cr, uid, ids)
+        resultadoAnt = self.lineasSitAnt(cr, uid, ids)
+        writer.append(['','ACTIVO',resultado['act']['activo']['balance'],resultadoAnt['ant']['activo']['balance']])
+        writer.append(['CORRIENTE','',resultado['act']['corriente']['balance'],resultadoAnt['ant']['corriente']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'111','11101','11199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'112','11201','11299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'113','11301','11399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'121','12101','12199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'122','12201','12299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'123','12301','12399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'124','12401','12499',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'131','13101','13199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'132','13201','13299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'134','13401','13499',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'135','13501','13599',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['LARGO PLAZO','',resultado['act']['largo_plazo']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'122','12201','12299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'123','12301','12399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'124','12401','12499',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'125','12501','12599',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'126','12601','12699',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['ACTIVOS FIJOS','',resultado['act']['activos_fijos']['balance'],resultadoAnt['ant']['activos_fijos']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'141','14101','14198',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'14199','14199','14199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'142','14201','14298',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'14299','14299','14299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'143','14301','14398',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'14399','14399','14399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'144','14401','14498',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'14499','14499','14499',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'145','14501','14598',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'14599','14599','14599',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['INVERSIONES EN PROYECTOS Y PROGRAMAS','',resultado['act']['inversiones']['balance'],resultadoAnt['ant']['inversiones']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'151','15101','15197',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'15198','15198','15198',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'152','15201','15297',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'15298','15298','15298',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+#        writer.append(['OTROS','',resultado['act']['otros']['balance']])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'125','12501','12598',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'12599','12599','12599',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'126','12601','12698',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'12699','12699','12699',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'131','13101','13199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+#        for line in self._get_saldo_situacion(cr, uid,ids,context,'133','13301','13399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+#            if line:
+#                writer.append([line[0],line[1],line[2]])
+        writer.append(['','PASIVO',resultado['act']['pasivo']['balance'],resultadoAnt['ant']['pasivo']['balance']])
+        writer.append(['CORRIENTE','',resultado['act']['pcorrientes']['balance'],resultadoAnt['ant']['pcorrientes']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'212','21201','21299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'213','21301','21399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['LARGO PLAZO','',resultado['act']['plargo_plazo']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'222','22201','22299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'223','22301','22399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'224','22401','22499',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['OTROS','',resultado['act']['potros']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'225','22501','22599',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'226','22601','22699',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['','PATRIMONIO',resultado['act']['patrimonio']['balance'],resultadoAnt['ant']['patrimonio']['balance']])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'611','61101','61199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'612','61201','61299',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'61801','61801','61801',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'619','61901','61999',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'618','61801','61899',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.append(['','TOTAL PASIVO PATRIMONIO',resultado['act']['pasivo_patrimonio']['balance'],resultadoAnt['ant']['pasivo_patrimonio']['balance']])
+        writer.append(['CUENTAS DE ORDEN','',''])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'911','91101','91199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        for line in self._get_saldo_situacion(cr, uid,ids,context,'921','92101','92199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            if line:
+                writer.append([line[0],line[1],line[2],line[3]])
+        writer.save("EstadoSituacion"+date_inicial_reporte+".xls")
+        out = open("EstadoSituacion"+date_inicial_reporte+".xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'data': out, 'filename': "EstadoSituacion"+date_inicial_reporte+".xls"})
+        return True
+    ####METODOS DE EXPORTAR EL FLUJO DE EFECTIVO
+
+    def lineas(self, cr, uid, ids, context=None):
+        result = {}
+        context1={}
+        context1['tipo']='act'
+        result['act'] = self.lineas_individual_act(cr, uid, ids,context1)
+#        result['ant'] = self.lineas_individual(resumen,'ant')
+        return result
+
+    def lineas_individual_act(self, cr, uid, ids, context):
+        context = {}
+        tipo = 'act'
+        for this in self.browse(cr, uid, ids):
+            date_inicial_reporte = this.date_from
+            date_final_reporte = this.date_end
+            if tipo!='act':
+                date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+                date_inicial_aux = date_aux - relativedelta(years=1)
+                date_inicial_reporte = date_inicial_aux.strftime('%Y-%m-%d')
+                date_aux = datetime.datetime.strptime(date_final_reporte, '%Y-%m-%d').date()
+                date_final_aux = date_aux - relativedelta(years=1)
+                date_final_reporte = date_final_aux.strftime('%Y-%m-%d')
+            result = {}
+            fiscalyear_id = this.fiscalyear.id
+            if tipo=='ant':
+                fiscalyear_ids = self.pool.get('account.fiscalyear').search(cr, uid, [('date_start','<=', date_inicial_reporte),('date_stop','>=',date_final_reporte)])
+                if fiscalyear_ids:
+                    fiscalyear_id = fiscalyear_ids[0]        
+            move_line_obj = self.pool.get('account.move.line')
+            account_obj = self.pool.get('account.account')
+            move_obj = self.pool.get('account.move')
+            ctx = context.copy()
+            #fuentes_corrientes = ['11311','11313','11314','11317','','11318','11319','11381']
+            fuentes_corrientes = ['11311','11313','11314','11317','','11318','11319']
+            usos_corrientes = ['21315','21351','21353','21355','21356','21357','21358']
+            fuentes_capital = ['11324','11328']
+            usos_produccion = ['21361','21363','21367','21371','21373','21375','21377','21378','21384','21385','21387','11327','21388']
+
+            fuentes_financiamiento = ['11336','11397','11398']
+            usos_financiamiento = ['21396','21397','21398']
+            flujos_no_presupuestariosc = ['11340','11381','11382','11383']
+            flujos_no_presupuestariosd = ['21340','21381','21382','21383','21395']
+            variaciones = ['111','112','61991','212']
+            codes = fuentes_corrientes + usos_corrientes + fuentes_capital + usos_produccion
+            codes = codes + fuentes_financiamiento + usos_financiamiento + flujos_no_presupuestariosc + flujos_no_presupuestariosd + variaciones
+            account_ids = account_obj.search(cr, uid, [('code','in', codes)])
+            ctx.update({'fiscalyear': fiscalyear_id})
+            ctx.update({'state': 'posted'})
+            ctx.update({'date_from': date_inicial_reporte,
+                        'date_to': date_final_reporte})
+            accounts = account_obj.read(cr, uid, account_ids, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], ctx)
+            accounts_by_id = {}
+            for account in accounts:
+                accounts_by_id[account['code']] = account
+            for code in codes:
+                if accounts_by_id.get(code,False) == False:
+                    accounts_by_id.update({code: {'code': code, 'balance': 0, 'credit':0 , 'debit': 0} })
+            #######################
+            sum_fuentes_corrientes = 0
+            for code_aux in fuentes_corrientes:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+                sum_fuentes_corrientes+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'fuentes_corrientes': {'fuentes_corrientes': 'fuentes_corrientes', 'balance': sum_fuentes_corrientes}})
+            #######################
+            sum_usos_corrientes = 0
+            for code_aux in usos_corrientes:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+                sum_usos_corrientes+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'usos_corrientes': {'usos_corrientes': 'usos_corrientes', 'balance': sum_usos_corrientes}})
+            ######################
+            sd_corriente = sum_fuentes_corrientes - sum_usos_corrientes
+            accounts_by_id.update({'sd_corriente': {'sd_corriente': 'sd_corriente', 'balance': sd_corriente}})
+            #####################
+            sum_fuentes_capital = 0
+            for code_aux in fuentes_capital:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+                sum_fuentes_capital+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'fuentes_capital': {'fuentes_capital': 'fuentes_capital', 'balance': sum_fuentes_capital}})
+            #####################
+            sum_usos_produccion = 0
+            for code_aux in usos_produccion:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+                sum_usos_produccion+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'usos_produccion': {'usos_produccion': 'usos_produccion', 'balance': sum_usos_produccion}})
+            #####################
+            sd_capital = sum_fuentes_capital - sum_usos_produccion
+            accounts_by_id.update({'sd_capital': {'sd_capital': 'sd_capital', 'balance': sd_capital}})
+            #####################
+            sd_bruto = sd_corriente + sd_capital
+            accounts_by_id.update({'sd_bruto': {'sd_bruto': 'sd_bruto', 'balance': sd_bruto}})
+
+            #######################
+            sum_fuentes_financiamiento = 0
+            for code_aux in fuentes_financiamiento:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+                sum_fuentes_financiamiento+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'fuentes_financiamiento': {'fuentes_financiamiento': 'fuentes_financiamiento', 'balance': sum_fuentes_financiamiento}})
+            #######################
+            sum_usos_financiamiento = 0
+            for code_aux in usos_financiamiento:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+                sum_usos_financiamiento+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'usos_financiamiento': {'usos_financiamiento': 'usos_financiamiento', 'balance': sum_usos_financiamiento}})
+            ######################
+
+            sd_financiamiento = sum_fuentes_financiamiento - sum_usos_financiamiento
+            accounts_by_id.update({'sd_financiamiento': {'sd_financiamiento': 'sd_financiamiento', 'balance': sd_financiamiento}})
+
+            sum_flujos_no_presupuestariosc = 0
+            for code_aux in flujos_no_presupuestariosc:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+                sum_flujos_no_presupuestariosc+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'flujos_no_presupuestariosc': {'flujos_no_presupuestariosc': 'flujos_no_presupuestariosc', 'balance': sum_flujos_no_presupuestariosc}})
+            ######################
+            sum_flujos_no_presupuestariosd = 0
+            for code_aux in flujos_no_presupuestariosd:
+                accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+                sum_flujos_no_presupuestariosd+=accounts_by_id[code_aux]['balance']
+            accounts_by_id.update({'flujos_no_presupuestariosd': {'flujos_no_presupuestariosd': 'flujos_no_presupuestariosd', 'balance': sum_flujos_no_presupuestariosd}})
+            ######################
+            flujos_netos = sum_flujos_no_presupuestariosc - sum_flujos_no_presupuestariosd
+            accounts_by_id.update({'flujos_netos': {'flujos_netos': 'flujos_netos', 'balance': flujos_netos}})
+
+            #VARIACIONES NO PRESUPUESTARIAS
+            accounts_by_id_inicial = {}
+            accounts_by_id_final = {}
+            account_move_obj = self.pool.get('account.move') 
+            asiento_inicial = account_move_obj.search(cr, uid, [('fiscalyear_id','=',fiscalyear_id),('is_start','=',True)])
+            codes2 = ['111','112','61991','212']
+            account_ids2 = account_obj.search(cr, uid, [('code','in', codes2)])
+            nuevo_contexto = {'move_ids': asiento_inicial} # contexto agregado en modulo base account, en archivo account_move_line.py
+            cuentas2_inicial = account_obj.read(cr, uid, account_ids2, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], nuevo_contexto)
+            cuentas2_final = account_obj.read(cr, uid, account_ids2, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], ctx)
+            for account in cuentas2_inicial:
+                accounts_by_id_inicial[account['code']] = account
+            for account in cuentas2_final:
+                accounts_by_id_final[account['code']] = account            
+            for code in codes2:
+                if accounts_by_id_inicial.get(code,False) == False:
+                    accounts_by_id_inicial.update({code: {'code': code, 'balance': 0} })
+                if accounts_by_id_final.get(code,False) == False:
+                    accounts_by_id_final.update({code: {'code': code, 'balance': 0} })
+            accounts_by_id.update({'111': {'111': '111', 'balance': accounts_by_id_inicial['111']['balance'] - accounts_by_id_final['111']['balance']}})
+            accounts_by_id.update({'112': {'112': '112', 'balance': accounts_by_id_inicial['112']['balance'] - accounts_by_id_final['112']['balance']}})
+            accounts_by_id.update({'61991': {'61991': '61991', 'balance': accounts_by_id_inicial['61991']['balance'] - accounts_by_id_final['61991']['balance']}})
+            accounts_by_id.update({'212': {'212': '212', 'balance': abs(accounts_by_id_final['212']['balance']) - abs(accounts_by_id_inicial['212']['balance'])}})
+            variaciones_netas = accounts_by_id['111']['balance'] + accounts_by_id['112']['balance'] + accounts_by_id['61991']['balance'] + accounts_by_id['212']['balance']
+            accounts_by_id.update({'variaciones_netas': {'variaciones_netas': 'variaciones_netas', 'balance': variaciones_netas}})
+
+            sd_bruto2 = sd_financiamiento + flujos_netos + variaciones_netas
+            accounts_by_id.update({'sd_bruto2': {'sd_bruto2': 'sd_bruto2', 'balance': sd_bruto2}})
+            return accounts_by_id
+
+    def _get_saldo_flujo(self,cr, uid,id,context,code,desde,hasta,tipo,date_inicial_reporte,date_final_reporte,fiscalyear_id):
+        account_obj = self.pool.get('account.account')
+        account_parent_ids = account_obj.search(cr, uid, [('code','=',code)])
+        res= []
+        ctx = {}
+        ctx['fiscalyear'] = fiscalyear_id[0]
+        ctx['state'] = 'posted'
+        ctx['date_from'] = date_inicial_reporte
+        ctx['date_to'] = date_final_reporte
+        if account_parent_ids:
+            aux_parent = []
+            account_parent = account_obj.read(cr, uid, account_parent_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx)
+            if abs(account_parent[0][tipo])>0:
+                aux_parent.append(account_parent[0]['code_aux'])
+                aux_parent.append(account_parent[0]['name'])
+                aux_parent.append(abs(account_parent[0][tipo]))
+                aux_parent.append(abs(account_parent[0][tipo]))
+                res.append(aux_parent)
+                account_hijas_ids = account_obj.search(cr, uid, [('parent_id','=',account_parent_ids[0]),('code','>=',desde),('code','<=',hasta)])
+                if account_hijas_ids:
+                    for account_hija in account_obj.read(cr, uid, account_hijas_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx):
+                        if abs(account_hija[tipo])>0:
+                            aux_hija = []
+                            aux_hija.append(account_hija['code_aux'])
+                            aux_hija.append(account_hija['name'])
+                            aux_hija.append(abs(account_hija[tipo]))
+                            aux_hija.append(abs(account_hija[tipo]))
+                            res.append(aux_hija)
+        return res    
+
+    def _get_saldo_resta(self,cr, uid, ids, context, code,desde,hasta,lista,date_inicial_reporte,date_final_reporte,fiscalyear_id):
+        year_obj = self.pool.get('account.fiscalyear')
+        account_obj = self.pool.get('account.account')
+        account_parent_ids = account_obj.search(cr, uid, [('code','=',code)])
+        res= []
+        ctx = {}
+        ctx2 = {}
+        year = year_obj.browse(cr, uid, fiscalyear_id[0])
+        ctx['fiscalyear'] = fiscalyear_id[0]
+        ctx['state'] = 'posted'
+        ctx['date_from'] = date_inicial_reporte
+        ctx['date_to'] = date_final_reporte
+        ctx2['fiscalyear'] = fiscalyear_id[0]
+        ctx2['state'] = 'posted'
+        ctx2['date_from'] = year.date_start
+        ctx2['date_to'] = year.date_start
+        if account_parent_ids:
+            aux_parent = []
+            account_parent=account_obj.read(cr, uid, account_parent_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx)
+            if abs(account_parent[0]['balance'])>0:
+                aux_parent.append(account_parent[0]['code_aux'])
+                aux_parent.append(account_parent[0]['name'])
+            account_parent_i=account_obj.read(cr, uid, account_parent_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx2)
+            aux_resta = 0
+            if lista[0]=='final': #inicial - final
+                aux_resta = account_parent[0]['balance'] - account_parent_i[0]['balance']
+            else:
+                aux_resta = account_parent_i[0]['balance'] - account_parent[0]['balance']
+            aux_parent.append(aux_resta)
+            aux_parent.append(aux_resta)
+            res.append(aux_parent)
+        return res    
+
+    def _get_totales_flujo_efectivo(self, cr, uid, ids, context):
+        datas = self.read(cr, uid, ids, [], context=context)[0]
+        date_inicial_reporte = datas['date_from']
+        date_final_reporte = datas['date_end']
+        result = {}
+        fiscalyear_id = datas['fiscalyear']
+        writer = XLSWriter.XLSWriter()
+        cabecera_ini = ['','ESTADO DE FLUJO DE EFECTIVO',date_inicial_reporte,date_final_reporte]
+        writer.append(cabecera_ini)
+        cabecera_all = ['Cuentas','Denominacion','Anio Vigente']
+        writer.append(cabecera_all)
+        resultado = self.lineas(cr, uid, ids)
+        cabecera_all = ['FUENTES CORRIENTES','',resultado['act']['fuentes_corrientes']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11311','11311','11311','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11313','11313','11313','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11314','11314','11314','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11317','11317','11317','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11318','11318','11318','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11319','11319','11319','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['USOS CORRIENTES','',resultado['act']['usos_corrientes']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21315','21351','21351','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21353','21353','21353','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21356','21356','21356','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21357','21357','21357','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21358','21358','21358','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['SUPERAVIT/DEFICIT CORRIENTE','',resultado['act']['sd_corriente']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['FUENTES DE CAPITAL','',resultado['act']['fuentes_capital']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11324','11324','11324','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11327','11327','11327','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11328','11328','11328','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['USOS DE PRODUCCION, INVERSION Y CAPITAL','',resultado['act']['usos_produccion']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21371','21371','21371','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21373','21373','21373','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21375','21375','21375','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21377','21377','21377','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21378','21378','21378','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21384','21384','21384','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21387','21387','21387','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['SUPERAVIT/DEFICIT DE CAPITAL','',resultado['act']['sd_capital']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['SUPERAVIT/DEFICIT BRUTO','',resultado['act']['sd_bruto']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['FINANCIAMIENTO DEL DEFICIT','','','']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11336','11336','11336','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11397','11397','11397','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11398','11398','11398','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['FUENTES DE FINANCIAMIENTO','',resultado['act']['fuentes_financiamiento']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21394','21394','21394','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21396','21396','21396','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21397','21397','21397','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21398','21398','21398','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21399','21399','21399','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['USOS DE FINANCIAMIENTO','',resultado['act']['usos_financiamiento']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['SUPERAVIT/DEFICIT DE FINANCIAMIENTO','',resultado['act']['sd_financiamiento']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11381','11381','11381','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11383','11383','11383','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['FLUJOS NO PRESUPUESTARIOS CREDITOS','',resultado['act']['flujos_no_presupuestariosc']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21381','21381','21381','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21383','21383','21383','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['FLUJOS NO PRESUPUESTARIOS DEBITOS','',resultado['act']['flujos_no_presupuestariosd']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['FLUJOS NETOS','',resultado['act']['flujos_netos']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['VARIACIONES NO PRESUPUESTARIAS CREDITOS','',resultado['act']['111']['balance']+resultado['act']['112']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_resta(cr, uid,ids,context,'111','111','111',['inicial','final'],date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_resta(cr, uid,ids,context,'112','112','112',['inicial','final'],date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['VARIACIONES NO PRESUPUESTARIAS DEBITOS','',resultado['act']['212']['balance']+resultado['act']['61991']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'61991','61991','61991','balance',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        aux = self._get_saldo_resta(cr, uid,ids,context,'212','212','212',['final','inicial'],date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2]])
+        cabecera_all = ['VARIACIONES NETAS','',resultado['act']['variaciones_netas']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['SUPERAVIT O DEFICIT BRUTO','',resultado['act']['sd_bruto2']['balance'],'']
+        writer.append(cabecera_all)
+        writer.save("FlujoEfectivo"+date_inicial_reporte+".xls")
+        out = open("FlujoEfectivo"+date_inicial_reporte+".xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'data': out, 'filename': "FlujoEfectivo"+date_inicial_reporte+".xls"})
+        return True
+
+    def _get_totales_flujo_efectivoAA(self, cr, uid, ids, context):
+        datas = self.read(cr, uid, ids, [], context=context)[0]
+        date_inicial_reporte = datas['date_from']
+        date_final_reporte = datas['date_end']
+        result = {}
+        fiscalyear_id = datas['fiscalyear']
+        writer = XLSWriter.XLSWriter()
+        cabecera_ini = ['','ESTADO DE FLUJO DE EFECTIVO',date_inicial_reporte,date_final_reporte]
+        writer.append(cabecera_ini)
+        cabecera_all = ['Cuentas','Denominacion','Anio Vigente','Anio Anterior']
+        writer.append(cabecera_all)
+        resultado = self.lineas(cr, uid, ids)
+        cabecera_all = ['FUENTES CORRIENTES','',resultado['act']['fuentes_corrientes']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11311','11311','11311','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11313','11313','11313','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11314','11314','11314','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11317','11317','11317','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11318','11318','11318','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11319','11319','11319','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['USOS CORRIENTES','',resultado['act']['usos_corrientes']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21315','21351','21351','21351','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21353','21353','21353','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21356','21356','21356','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21357','21357','21357','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21358','21358','21358','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['SUPERAVIT/DEFICIT CORRIENTE','',resultado['act']['sd_corriente']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['FUENTES DE CAPITAL','',resultado['act']['fuentes_capital']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11324','11324','11324','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11327','11327','11327','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11328','11328','11328','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['USOS DE PRODUCCION, INVERSION Y CAPITAL','',resultado['act']['usos_produccion']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21371','21371','21371','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21373','21373','21373','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21375','21375','21375','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21377','21377','21377','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21378','21378','21378','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21384','21384','21384','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21387','21387','21387','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['SUPERAVIT/DEFICIT DE CAPITAL','',resultado['act']['sd_capital']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['SUPERAVIT/DEFICIT BRUTO','',resultado['act']['sd_bruto']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['FINANCIAMIENTO DEL DEFICIT','','','']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11336','11336','11336','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11397','11397','11397','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11398','11398','11398','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['FUENTES DE FINANCIAMIENTO','',resultado['act']['fuentes_financiamiento']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21394','21394','21394','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21396','21396','21396','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21397','21397','21397','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21398','21398','21398','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21399','21399','21399','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['USOS DE FINANCIAMIENTO','',resultado['act']['usos_financiamiento']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['SUPERAVIT/DEFICIT DE FINANCIAMIENTO','',resultado['act']['sd_financiamiento']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11381','11381','11381','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'11383','11383','11383','credit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['FLUJOS NO PRESUPUESTARIOS CREDITOS','',resultado['act']['flujos_no_presupuestariosc']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21381','21381','21381','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'21383','21383','21383','debit',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['FLUJOS NO PRESUPUESTARIOS DEBITOS','',resultado['act']['flujos_no_presupuestariosd']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['FLUJOS NETOS','',resultado['act']['flujos_netos']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['VARIACIONES NO PRESUPUESTARIAS CREDITOS','',resultado['act']['111']['balance']+resultado['act']['112']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_resta(cr, uid,ids,context,'111','111','111',['inicial','final'],date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_resta(cr, uid,ids,context,'112','112','112',['inicial','final'],date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['VARIACIONES NO PRESUPUESTARIAS DEBITOS','',resultado['act']['212']['balance']+resultado['act']['61991']['balance'],'']
+        writer.append(cabecera_all)
+        aux = self._get_saldo_flujo(cr, uid,ids,context,'61991','61991','61991','balance',date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        aux = self._get_saldo_resta(cr, uid,ids,context,'212','212','212',['final','inicial'],date_inicial_reporte,date_final_reporte,fiscalyear_id)
+        if aux:
+            writer.append([aux[0][0],aux[0][1],aux[0][2],aux[0][3]])
+        cabecera_all = ['VARIACIONES NETAS','',resultado['act']['variaciones_netas']['balance'],'']
+        writer.append(cabecera_all)
+        cabecera_all = ['SUPERAVIT O DEFICIT BRUTO','',resultado['act']['sd_bruto2']['balance'],'']
+        writer.append(cabecera_all)
+        writer.save("FlujoEfectivo"+date_inicial_reporte+".xls")
+        out = open("FlujoEfectivo"+date_inicial_reporte+".xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'data': out, 'filename': "FlujoEfectivo"+date_inicial_reporte+".xls"})
+        return True
+
+    def _get_cuentas(self, cr, uid,code,desde,hasta,date_start,date_end,fiscalyear_id):
+        account_obj = self.pool.get('account.account')
+        account_parent_ids = account_obj.search(cr, uid, [('code','=',code)])
+        res= []
+        ctx = {}
+        date_inicial_reporte = date_start
+        date_final_reporte = date_end
+        fiscalyear_id = fiscalyear_id
+        ctx['fiscalyear'] = fiscalyear_id
+        ctx['state'] = 'posted'
+        ctx['date_from'] = date_inicial_reporte
+        ctx['date_to'] = date_final_reporte
+        if account_parent_ids:
+            aux_parent = []
+            account_parent = account_obj.read(cr, uid, account_parent_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx)
+            if abs(account_parent[0]['balance'])>0:
+                aux_parent.append(account_parent[0]['code_aux'])
+                aux_parent.append(account_parent[0]['name'])
+                aux_parent.append(abs(account_parent[0]['balance']))
+                aux_parent.append(abs(account_parent[0]['balance']))
+                res.append(aux_parent)
+                account_hijas_ids = account_obj.search(cr, uid, [('parent_id','=',account_parent_ids[0]),('code','>=',desde),('code','<=',hasta)])
+                if account_hijas_ids:
+                    for account_hija in account_obj.read(cr,uid, account_hijas_ids,['code','code_aux','name','debit','credit', 'balance', 'parent_id','level'], ctx):
+                        if abs(account_hija['balance'])>0:
+                            aux_hija = []
+                            aux_hija.append(account_hija['code_aux'])
+                            aux_hija.append(account_hija['name'])
+                            aux_hija.append(abs(account_hija['balance']))
+                            aux_hija.append(abs(account_hija['balance']))
+                            res.append(aux_hija)
+        return res
+
+    def _get_totales_estado_resultados(self, cr, uid, ids, context):
+        datas = self.read(cr, uid, ids, [], context=context)[0]
+        date_inicial_reporte = datas['date_from']
+        date_final_reporte = datas['date_end']
+        result = {}
+        fiscalyear_id = datas['fiscalyear']
+        writer = XLSWriter.XLSWriter()
+        cabecera_ini = ['','ESTADO DE RESULTADOS',date_inicial_reporte,date_final_reporte]
+        writer.append(cabecera_ini)
+        cabecera_all = ['Cuentas','Denominacion','Anio Vigente','Anio Anterior']
+        writer.append(cabecera_all)
+        #=========
+        context = {}
+        #quitdo anterior
+#        date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+#        date_inicial_aux = date_aux - relativedelta(years=1)
+#        date_inicial_reporte = date_inicial_aux.strftime('%Y-%m-%d')
+#        date_aux = datetime.datetime.strptime(date_final_reporte, '%Y-%m-%d').date()
+#        date_final_aux = date_aux - relativedelta(years=1)
+#        date_final_reporte = date_final_aux.strftime('%Y-%m-%d')
+        ##
+        result = {}
+        fiscalyear_id = datas['fiscalyear'][0]
+        ##ant
+        fiscalyear_ids = self.pool.get('account.fiscalyear').search(cr, uid, [('date_start','<=', date_inicial_reporte),('date_stop','>=',date_final_reporte)])
+        if fiscalyear_ids:
+            fiscalyear_id = fiscalyear_ids[0]
+        writer.append(['RESULTADO DE EXPLOTACION'])
+        for account_id in self._get_cuentas(cr, uid,'624','62401','62421',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        writer.append(['RESULTADO DE OPERACION'])
+        for account_id in self._get_cuentas(cr, uid,'621','62101','62199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'623','62301','62399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'631','63101','63199',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'633','63301','63399',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'634','63401','63499',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'635','63501','63504',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        writer.append(['TRANSFERENCIAS NETAS'])
+        for account_id in self._get_cuentas(cr, uid,'626','62601','62699',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'636','63601','63699',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        writer.append(['RESULTADO FINANCIERA'])
+        for account_id in self._get_cuentas(cr, uid,'625','62501','62504',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'635','63502','63507',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        writer.append(['OTROS INGRESOS Y GASTOS'])
+        for account_id in self._get_cuentas(cr, uid,'624','62421','62427',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'638','63821','63827',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'625','62521','62524',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'638','63851','63893',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'629','62901','62999',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'639','63901','63999',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        for account_id in self._get_cuentas(cr, uid,'618','61803','61803',date_inicial_reporte,date_final_reporte,fiscalyear_id):
+            writer.append(['RESULTADO DEL EJERCICIO',account_id[2],account_id[3]])
+#            writer.append([account_id[0],account_id[1],account_id[2],account_id[3]])
+        #writer.append(final)
+        writer.save("EstadoResultados"+date_inicial_reporte+".xls")
+        out = open("EstadoResultados"+date_inicial_reporte+".xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'data': out, 'filename': "EstadoResultados"+date_inicial_reporte+".xls"})
+            
+    def _get_totales_balance_comprobacion(self, cr, uid, ids, context):
+        datas = self.read(cr, uid, ids, [], context=context)[0]
+        date_inicial_reporte = datas['date_from']
+        date_final_reporte = datas['date_end']
+        result = {}
+        fiscalyear_id = datas['fiscalyear']
+        nivel = datas['nivel']
+        move_line_obj = self.pool.get('account.move.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        account_ids = account_obj.search(cr, uid, [('type','!=','view')])
+        #Buscar lineas de asientos de asiento de inicio
+        sql_move_inicio = """
+        select account_move.id,date from account_move,account_period
+        where account_move.period_id=account_period.id and account_period.fiscalyear_id=%s and is_start=True """%(fiscalyear_id[0],)
+        cr.execute(sql_move_inicio)
+        move_inicial = cr.fetchall()
+        if move_inicial:
+            move_id_inicio = move_inicial[0][0]
+            fecha_inicio = move_inicial[0][1]
+        else:
+            texto = tools.ustr("No se ha marcado un asiento como de inicio para el periodo fiscal ") + tools.ustr(fiscalyear_id[1])
+            raise osv.except_osv('Error', texto)
+
+        if fecha_inicio == date_inicial_reporte:
+            date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+            date_aux = date_aux + timedelta(days=1)
+            date_inicial_reporte_aux = date_inicial_reporte
+            date_inicial_reporte = date_aux.strftime('%Y-%m-%d')
+        else:
+            date_aux = datetime.datetime.strptime(date_inicial_reporte, '%Y-%m-%d').date()
+            date_aux = date_aux - timedelta(days=1)
+            date_inicial_reporte_aux = date_aux.strftime('%Y-%m-%d')
+            
+        account_ids = account_obj.search(cr, uid, [('level','<=',nivel)])
+        if move_inicial:
+            move_id_inicio = move_inicial[0][0]
+        ctx = {}
+        ctx.update({'state': 'posted'})
+        ctx.update({'date_from': fecha_inicio,
+                    'date_to': date_inicial_reporte_aux})
+        account_ids = list(chunked(account_ids, 1000))
+        accounts_inicial = []
+        for accounts in account_ids:
+            accounts_inicial += account_obj.read(cr, uid, accounts, ['code','code_aux','name','debit','credit', 'balance','level','child_id'], ctx)
+
+        ctx2 = {}
+        ctx2.update({'state': 'posted'})
+        ctx2.update({'date_from': date_inicial_reporte,
+                     'date_to': date_final_reporte})
+        accounts_flujo = []
+        for accounts in account_ids:
+            accounts_flujo += account_obj.read(cr, uid, accounts, ['code','code_aux','name','debit','credit', 'balance','level'], ctx2)
+
+        accounts_inicial_dict = {}
+        for account_data in accounts_inicial:
+            debe_inicial = 0
+            haber_inicial = 0
+            debe_inicial = account_data['debit']
+            haber_inicial = account_data['credit']
+            if account_data['child_id']:
+                final=False
+            else:
+                final=True
+            accounts_inicial_dict[account_data['code']] = {
+                'code': account_data['code'],
+                'name':account_data['name'],
+                'desc': account_data['name'],
+                'nivel': account_data['level'],
+                'debit': debe_inicial,
+                'credit': haber_inicial,
+                'final':final,
+            }
+
+        accounts_flujo_dict = {}
+        for account_data in accounts_flujo:
+            accounts_flujo_dict[account_data['code']] = {
+                'debit': account_data['debit'],
+                'credit': account_data['credit']
+            }
+
+        accounts_final_dict = {}
+        for code in accounts_inicial_dict:
+            debe_final = 0
+            haber_final = 0
+            saldo = (accounts_inicial_dict[code]['debit'] + accounts_flujo_dict[code]['debit']) - (accounts_inicial_dict[code]['credit'] + accounts_flujo_dict[code]['credit'])
+            if abs(saldo)>0.0001:
+                if saldo >= 0:
+                    debe_final = saldo
+                else:
+                    haber_final = saldo * - 1
+            accounts_final_dict[code] = {
+                'code': accounts_inicial_dict[code]['code'],
+                'name': accounts_inicial_dict[code]['name'],
+                'desc': accounts_inicial_dict[code]['desc'],
+                'nivel': accounts_inicial_dict[code]['nivel'],
+                'final': accounts_inicial_dict[code]['final'],
+                'debe_inicial': accounts_inicial_dict[code]['debit'],
+                'haber_inicial': accounts_inicial_dict[code]['credit'],
+                'debe_flujo': accounts_flujo_dict[code]['debit'],
+                'haber_flujo': accounts_flujo_dict[code]['credit'],
+                'debe_suma': accounts_inicial_dict[code]['debit'] + accounts_flujo_dict[code]['debit'],
+                'haber_suma': accounts_inicial_dict[code]['credit'] + accounts_flujo_dict[code]['credit'],
+                'debe_final': debe_final,
+                'haber_final': haber_final
+            }
+        ########################
+        aux_dep = 0
+        if accounts_final_dict.has_key('14199'):
+            aux_dep = accounts_final_dict['14199']['haber_inicial']#accounts_final_dict['1']['haber_inicial']
+        aux_debe_activo = accounts_final_dict['1']['debe_inicial']-aux_dep#accounts_final_dict['1']['haber_inicial']
+        accounts_final_dict['1']['haber_inicial']=accounts_final_dict['1']['haber_inicial']-aux_dep#0
+        accounts_final_dict['1']['debe_inicial']=aux_debe_activo
+        #bajar tambien en la 141
+        aux_debe_activo_141 = 0
+        if accounts_final_dict.has_key('141'):
+            aux_debe_activo_141 = accounts_final_dict['141']['debe_inicial']-aux_dep
+            accounts_final_dict['141']['debe_inicial']=aux_debe_activo_141
+        aux_debe_activo_14 = 0
+        if accounts_final_dict.has_key('14'):
+            aux_debe_activo_14 = accounts_final_dict['14']['debe_inicial']-aux_dep
+            accounts_final_dict['14']['debe_inicial']=aux_debe_activo_14
+        #6 cero en el debe
+#        accounts_final_dict['6']['debe_inicial']=0
+        #en la 9 cero
+        accounts_final_dict['9']['debe_inicial']=0
+        accounts_final_dict['9']['haber_inicial']=0
+        #resta 619 deudor a 61 y a 6
+#        debe_619 = 0
+#        if accounts_final_dict.has_key('619'):
+#            debe_619 = accounts_final_dict['619']['debe_inicial']
+#        aux_haber_61 = 0
+#        if accounts_final_dict.has_key('61'):
+#            aux_haber_61 = accounts_final_dict['61']['haber_inicial']
+#        accounts_final_dict['61']['haber_inicial']= aux_haber_61 - debe_619
+#        aux_haber_6 = accounts_final_dict['6']['haber_inicial']
+#        accounts_final_dict['6']['haber_inicial']= aux_haber_6 - debe_619 - accounts_final_dict['61']['debe_inicial'] + debe_619 
+        #rio 92123
+        #lista_aux = ['92123','91123']
+        #for lista_a in lista_aux:
+        for cuenta_aux in accounts_final_dict:
+            saldo_92123 = 0
+#            if accounts_final_dict.has_key(lista_a):
+            aux_92123 = accounts_final_dict[cuenta_aux]['haber_inicial']
+            aux_debe_92123 = accounts_final_dict[cuenta_aux]['debe_inicial']
+            saldo_92123 = abs(accounts_final_dict[cuenta_aux]['haber_inicial'] - accounts_final_dict[cuenta_aux]['debe_inicial'])
+            if aux_92123 > aux_debe_92123:
+                accounts_final_dict[cuenta_aux]['haber_inicial']=saldo_92123
+                accounts_final_dict[cuenta_aux]['debe_inicial'] = 0
+            else:
+                accounts_final_dict[cuenta_aux]['debe_inicial']=saldo_92123
+                accounts_final_dict[cuenta_aux]['haber_inicial']=0
+        ########################
+        result_dic = accounts_final_dict.values()
+        dic_ord=sorted(result_dic, key=operator.itemgetter('code'))
+        datas = []
+        mes = str(datetime.datetime.strptime(date_final_reporte, '%Y-%m-%d').month)
+        writer = XLSWriter.XLSWriter()
+        cabecera_ini = ['','BALANCE DE COMPROBACION',date_inicial_reporte,date_final_reporte]
+        writer.append(cabecera_ini)
+        cabecera_all = ['Codigo Cuenta','Nombre Cuenta','Debe Inicial','Haber Inicial','Debe Flujo','Haber Flujo','Debe Sumas','Haber Sumas','Debe Final','Haber Final']
+        writer.append(cabecera_all)
+        aux_d_ini = aux_h_ini = aux_d_f = aux_h_f = aux_d_s = aux_h_s = aux_d_fin = aux_h_fin = 0
+        for line in dic_ord:
+            final = []
+            if line['nivel']<=nivel:
+                if line['nivel']==1:
+                    aux_d_ini += line['debe_inicial']
+                    aux_h_ini += line['haber_inicial']
+                    aux_d_f += line['debe_flujo']
+                    aux_h_f += line['haber_flujo']
+                    aux_d_s += line['debe_suma']
+                    aux_h_s += line['haber_suma']
+                    aux_d_fin += line['debe_final']
+                    aux_h_fin += line['haber_final']
+                if line['debe_inicial'] or line['debe_inicial'] or line['haber_inicial'] or line['debe_flujo'] or line['haber_flujo'] or line['debe_suma'] or line['haber_suma'] or line['debe_final'] or line['haber_final']:
+                    writer.append([line['code'],line['name'],line['debe_inicial'],line['haber_inicial'],line['debe_flujo'],line['haber_flujo'],line['debe_suma'],line['haber_suma'],line['debe_final'],line['haber_final']])
+                final = ['TOTALES','',aux_d_ini,aux_h_ini,aux_d_f,aux_h_f,aux_d_s,aux_h_s,aux_d_fin,aux_h_fin]
+        writer.append(final)
+        writer.save("BalanceComprobacion"+date_inicial_reporte+".xls")
+        out = open("BalanceComprobacion"+date_inicial_reporte+".xls","rb").read().encode("base64")
+        self.write(cr, uid, ids, {'data': out, 'filename': "BalanceComprobacion"+date_inicial_reporte+".xls"})
+#        writer.save("BalanceComprobacion.xls")
+#        out = open("BalanceComprobacion.xls","rb").read().encode("base64")
+#        self.write(cr, uid, ids, {'data': out, 'filename': "BalanceComprobacion.xls"})
+        return accounts_final_dict
+         
+
+    def print_gob_report(self, cr, uid, ids, context):
+        if context is None:
+            context = {}     
+        if 'default_type' in context:               
+            report_name = context['default_type']
+            #aqui debe mandar el reporte correcto siempre manda el mismo
+        data = self.read(cr, uid, ids, [], context=context)[0]
+        datas = {'ids': ids, 'model': 'report.gob.wizard',
+                 'form': data,'date_from':data['date_from'],'date_end':data['date_end'],
+                 }
+        if data['auxiliar'] and report_name!='BalanceComprobacion':
+            if report_name=='EstadoResultados':
+                return {
+                    'type': 'ir.actions.report.xml',
+                    'report_name': 'EstadoResultadosAuxiliar',
+                    'model': 'report.gob.wizard',
+                    'datas': datas,
+                    'nodestroy': True,                              
+                }
+            elif report_name=='EstadoSituacion':
+                return {
+                    'type': 'ir.actions.report.xml',
+                    'report_name': 'EstadoSituacionAux',
+                    'model': 'report.gob.wizard',
+                    'datas': datas,
+                    'nodestroy': True,                              
+                }
+            elif report_name=='FlujoEfectivo':
+                return {
+                    'type': 'ir.actions.report.xml',
+                    'report_name': 'FlujoEfectivoAuxiliar',
+                    'model': 'report.gob.wizard',
+                    'datas': datas,
+                    'nodestroy': True,                              
+                }
+            else:
+                return {
+                    'type': 'ir.actions.report.xml',
+                    'report_name': 'EstadoSituacionAuxiliar',
+                    'model': 'report.gob.wizard',
+                    'datas': datas,
+                    'nodestroy': True,                              
+                }
+        else:
+            return {
+                'type': 'ir.actions.report.xml',
+                'report_name': report_name,
+                'model': 'report.gob.wizard',
+                'datas': datas,
+                'nodestroy': True,                              
+            }
+
+    def compute_flujo(self, cr, uid, ids,date_start,date_end, context=None):
+        this = self.browse(cr, uid, ids)
+        context = {}
+        date_inicial_reporte = date_start
+        date_final_reporte = date_end
+        result = {}
+        fiscalyear_id = this[0].fiscalyear.id
+        move_line_obj = self.pool.get('account.move.line')
+        account_obj = self.pool.get('account.account')
+        move_obj = self.pool.get('account.move')
+        ctx = context.copy()
+        #fuentes_corrientes = ['11311','11313','11314','11317','','11318','11319','11381']
+        fuentes_corrientes = ['11311','11313','11314','11317','','11318','11319']
+        usos_corrientes = ['21315','21351','21352','21353','21355','21356','21357','21358']
+        fuentes_capital = ['11324','11328']
+        usos_produccion = ['21361','21363','21367','21371','21373','21375','21377','21378','21384','21385','21387','11327','21388']
+
+        fuentes_financiamiento = ['11336','11397','11398']
+        usos_financiamiento = ['21396','21397','21398']
+        flujos_no_presupuestariosc = ['11340','11381','11382','11383']
+        flujos_no_presupuestariosd = ['21340','21381','21382','21383','21395']
+        variaciones = ['111','112','61991','212']
+        codes = fuentes_corrientes + usos_corrientes + fuentes_capital + usos_produccion
+        codes = codes + fuentes_financiamiento + usos_financiamiento + flujos_no_presupuestariosc + flujos_no_presupuestariosd + variaciones
+        account_ids = account_obj.search(cr, uid, [('code','in', codes)])
+        ctx.update({'fiscalyear': fiscalyear_id})
+        ctx.update({'state': 'posted'})
+        ctx.update({'date_from': date_inicial_reporte,
+                    'date_to': date_final_reporte})
+        accounts = account_obj.read(cr, uid, account_ids, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], ctx)
+        accounts_by_id = {}
+        for account in accounts:
+            accounts_by_id[account['code']] = account
+        for code in codes:
+            if accounts_by_id.get(code,False) == False:
+                accounts_by_id.update({code: {'code': code, 'balance': 0, 'credit':0 , 'debit': 0} })
+        #######################
+        sum_fuentes_corrientes = 0
+        for code_aux in fuentes_corrientes:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+            sum_fuentes_corrientes+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'fuentes_corrientes': {'fuentes_corrientes': 'fuentes_corrientes', 'balance': sum_fuentes_corrientes}})
+        #######################
+        sum_usos_corrientes = 0
+        for code_aux in usos_corrientes:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+            sum_usos_corrientes+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'usos_corrientes': {'usos_corrientes': 'usos_corrientes', 'balance': sum_usos_corrientes}})
+        ######################
+        sd_corriente = sum_fuentes_corrientes - sum_usos_corrientes
+        accounts_by_id.update({'sd_corriente': {'sd_corriente': 'sd_corriente', 'balance': sd_corriente}})
+        #####################
+        sum_fuentes_capital = 0
+        for code_aux in fuentes_capital:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+            sum_fuentes_capital+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'fuentes_capital': {'fuentes_capital': 'fuentes_capital', 'balance': sum_fuentes_capital}})
+        #####################
+        sum_usos_produccion = 0
+        for code_aux in usos_produccion:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+            if code_aux=='11327':
+                sum_usos_produccion-=accounts_by_id[code_aux]['balance']
+            else:
+                sum_usos_produccion+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'usos_produccion': {'usos_produccion': 'usos_produccion', 'balance': sum_usos_produccion}})
+        #####################
+        sd_capital = sum_fuentes_capital - sum_usos_produccion
+        accounts_by_id.update({'sd_capital': {'sd_capital': 'sd_capital', 'balance': sd_capital}})
+        #####################
+        sd_bruto = sd_corriente + sd_capital
+        accounts_by_id.update({'sd_bruto': {'sd_bruto': 'sd_bruto', 'balance': sd_bruto}})
+
+        #######################
+        sum_fuentes_financiamiento = 0
+        for code_aux in fuentes_financiamiento:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+            sum_fuentes_financiamiento+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'fuentes_financiamiento': {'fuentes_financiamiento': 'fuentes_financiamiento', 'balance': sum_fuentes_financiamiento}})
+        #######################
+        sum_usos_financiamiento = 0
+        for code_aux in usos_financiamiento:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+            sum_usos_financiamiento+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'usos_financiamiento': {'usos_financiamiento': 'usos_financiamiento', 'balance': sum_usos_financiamiento}})
+        ######################
+
+        sd_financiamiento = sum_fuentes_financiamiento - sum_usos_financiamiento
+        accounts_by_id.update({'sd_financiamiento': {'sd_financiamiento': 'sd_financiamiento', 'balance': sd_financiamiento}})
+                
+        sum_flujos_no_presupuestariosc = 0
+        for code_aux in flujos_no_presupuestariosc:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['credit']
+            sum_flujos_no_presupuestariosc+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'flujos_no_presupuestariosc': {'flujos_no_presupuestariosc': 'flujos_no_presupuestariosc', 'balance': sum_flujos_no_presupuestariosc}})
+        ######################
+        sum_flujos_no_presupuestariosd = 0
+        for code_aux in flujos_no_presupuestariosd:
+            accounts_by_id[code_aux]['balance'] = accounts_by_id[code_aux]['debit']
+            sum_flujos_no_presupuestariosd+=accounts_by_id[code_aux]['balance']
+        accounts_by_id.update({'flujos_no_presupuestariosd': {'flujos_no_presupuestariosd': 'flujos_no_presupuestariosd', 'balance': sum_flujos_no_presupuestariosd}})
+        ######################
+        flujos_netos = sum_flujos_no_presupuestariosc - sum_flujos_no_presupuestariosd
+        accounts_by_id.update({'flujos_netos': {'flujos_netos': 'flujos_netos', 'balance': flujos_netos}})
+        
+        #VARIACIONES NO PRESUPUESTARIAS
+        accounts_by_id_inicial = {}
+        accounts_by_id_final = {}
+        account_move_obj = self.pool.get('account.move') 
+        asiento_inicial = account_move_obj.search(cr, uid, [('fiscalyear_id','=',fiscalyear_id),('is_start','=',True)])
+        codes2 = ['111','112','61991','212']
+        account_ids2 = account_obj.search(cr, uid, [('code','in', codes2)])
+        nuevo_contexto = {'move_ids': asiento_inicial} # contexto agregado en modulo base account, en archivo account_move_line.py
+        cuentas2_inicial = account_obj.read(cr, uid, account_ids2, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], nuevo_contexto)
+        cuentas2_final = account_obj.read(cr, uid, account_ids2, ['type','code','name','debit','credit', 'balance', 'parent_id','level','child_id'], ctx)
+        for account in cuentas2_inicial:
+            accounts_by_id_inicial[account['code']] = account
+        for account in cuentas2_final:
+            accounts_by_id_final[account['code']] = account            
+        for code in codes2:
+            if accounts_by_id_inicial.get(code,False) == False:
+                accounts_by_id_inicial.update({code: {'code': code, 'balance': 0} })
+            if accounts_by_id_final.get(code,False) == False:
+                accounts_by_id_final.update({code: {'code': code, 'balance': 0} })
+        accounts_by_id.update({'111': {'111': '111', 'balance': accounts_by_id_inicial['111']['balance'] - accounts_by_id_final['111']['balance']}})
+        accounts_by_id.update({'112': {'112': '112', 'balance': accounts_by_id_inicial['112']['balance'] - accounts_by_id_final['112']['balance']}})
+        accounts_by_id.update({'61991': {'61991': '61991', 'balance': accounts_by_id_inicial['61991']['balance'] - accounts_by_id_final['61991']['balance']}})
+        accounts_by_id.update({'212': {'212': '212', 'balance': abs(accounts_by_id_final['212']['balance']) - abs(accounts_by_id_inicial['212']['balance'])}})
+        variaciones_netas = accounts_by_id['111']['balance'] + accounts_by_id['112']['balance'] + accounts_by_id['61991']['balance'] + accounts_by_id['212']['balance']
+        accounts_by_id.update({'variaciones_netas': {'variaciones_netas': 'variaciones_netas', 'balance': variaciones_netas}})
+
+        sd_bruto2 = sd_financiamiento + flujos_netos + variaciones_netas
+        accounts_by_id.update({'sd_bruto2': {'sd_bruto2': 'sd_bruto2', 'balance': sd_bruto2}})
+        aux_diferencia = abs(accounts_by_id['sd_bruto']['balance']) - abs(accounts_by_id['sd_bruto2']['balance'])
+        return aux_diferencia
+
+    def validate_flujo(self, cr, uid, ids, context=None):
+        wizard_obj = self.pool.get('report.gob.wizard')
+        line_obj = self.pool.get('report.gob.line')
+        for this in self.browse(cr, uid, ids):
+            #validacion hasta el corte
+            line_antes = line_obj.search(cr, uid, [('g_id','=',this.id)])
+            if line_antes:
+                line_obj.unlink(cr, uid, line_antes)
+            diferencia = self.compute_flujo(cr, uid, ids, this.date_from,this.date_end,context)
+            if abs(diferencia)>0.01:
+                aux_texto = 'El reporte de Flujo Efectivo no cuadra al corte de fechas ' + str(diferencia) 
+#                wizard_obj.write(cr, uid, this.id,{'diferencia':diferencia,'notes':aux_texto,})
+                dia_final_str = datetime.datetime.strptime(this.date_end,'%Y-%m-%d').date()
+                primer_dia_mes = dateMonthStart="%s-%s-01" % (dia_final_str.year, dia_final_str.month)
+                band = False
+                j = 0
+                while band==False:
+                    #date_aux = primer_dia_mes + timedelta(days=1)
+                    j += 1 
+                    date_aux = datetime.datetime.strptime(primer_dia_mes,'%Y-%m-%d').date() + timedelta(days=j)
+                    date_end_aux = datetime.datetime.strptime(this.date_end,'%Y-%m-%d').date()
+                    if date_aux<=date_end_aux:
+                        date_final_aux_str = date_aux.strftime('%Y-%m-%d')
+                        diferencia = self.compute_flujo(cr, uid, ids, this.date_from,date_final_aux_str,context)
+                        if abs(diferencia)>0.01:
+                            line_obj.create(cr, uid, {
+                                'g_id':this.id,
+                                'dia':date_aux,
+                                'diferencia':abs(diferencia),
+                                'cuadra':False,
+                            })
+                            aux_texto = 'El reporte de Flujo Efectivo no cuadra al corte de fechas ' + str(diferencia) + ' La diferencia esta en el dia ' + date_final_aux_str
+                            wizard_obj.write(cr, uid, this.id,{'diferencia':diferencia,'notes':aux_texto,})
+                            band=True
+                        else:
+                            line_obj.create(cr, uid, {
+                                'g_id':this.id,
+                                'dia':date_aux,
+                                'diferencia':abs(diferencia),
+                                'cuadra':True,
+                            })
+                    else:
+                        band=True
+#                    date_aux = datetime.datetime.strptime(primer_dia_mes,'%Y-%m-%d').date() + timedelta(days=1)
+            else:
+                wizard_obj.write(cr, uid, this.id,{'diferencia':diferencia,'notes':'El reporte de Flujo Efectivo cuadra a la fecha seleccionada',})
+        return True
+
+    def validate_report(self, cr, uid, ids, context):
+        wizard_obj = self.pool.get('report.gob.wizard')
+        if context is None:
+            context = {}     
+        if 'default_type' in context:               
+            report_name = context['default_type']
+            #aqui debe mandar el reporte correcto siempre manda el mismo
+        data = self.read(cr, uid, ids, [], context=context)[0]
+        datas = {'ids': ids, 'model': 'report.gob.wizard',
+                 'form': data,'date_from':data['date_from'],'date_end':data['date_end'],
+                 }
+        if report_name=='FlujoEfectivo':
+            wizard_obj.write(cr, uid, ids[0],{'diferencia':0,'notes':'Verifique que hasta el mes previo a su revision el flujo de efectivo este cuadrado, ya que el reporte para la verificacion por dia solo toma en cuenta los dias del mes en revision, y se basa en que el flujo al mes previo a sido revisado y esta cuadrado'})
+            self.validate_flujo(cr, uid, ids, context)
+        return True
+
+    _columns = dict(
+        line_ids = fields.one2many('report.gob.line','g_id','Detalle Diario'),
+        diferencia = fields.float('Diferencia'),
+        notes = fields.text('Log Error'),
+        type = fields.selection([('FlujoEfectivo','Flujo Efectivo'),
+                                 ('BalanceComprobacion','Balance de Comprobacion'),
+                                 ('EstadoResultados','Estado de resultados'),
+                                 ('EstadoSituacion','Estado de Situacion Financiera')],'Tipo Reporte'),
+        auxiliar = fields.boolean('Auxiliar'),
+        date_from = fields.date('Desde', required=True),
+        date_end = fields.date('Hasta', required=True),
+        fiscalyear = fields.many2one('account.fiscalyear', 'Fiscal year', required=True),
+        nivel = fields.integer('Nivel'),
+        all_accounts = fields.boolean('Mostrar cuentas padres'),
+        cierre = fields.boolean('Sin asientos de cierre'),
+        data = fields.binary('Archivo Excel',readonly=True),
+        filename = fields.char('Filename', size=128,readonly=True),
+        )
+
+    def onchange_fiscalyear(self, cr, uid, ids, fiscalyear_id=False, context=None):
+        res = {}
+        if fiscalyear_id:
+            start_date = end_date = False
+            cr.execute('''
+                SELECT date_start,date_stop FROM account_fiscalyear
+                               WHERE id=%s''', (fiscalyear_id,))
+            data =  cr.fetchall()
+            for fy in data:
+               res['value'] = {'date_from': fy[0], 'date_end': fy[1]}
+        return res
+
+reportGobWizard()

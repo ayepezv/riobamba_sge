@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <delete id="account_asset.menu_asset_depreciation_confirmation_wizard" model="ir.ui.menu"/>
+
+      <record id="view_asset_deprecia" model="ir.ui.view">
+        <field name="name">Deprecia Activo</field>
+        <field name="model">asset.deprecia</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente depreciacion activos">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="year_id" colspan="4" required='1' attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	      </group>
+	      <notebook>
+		<page string="Detalle Categoria">
+		  <field name="line_ids" nolabel="1" readonly="1">
+		    <tree editable='top'>
+		      <field name="category_id" readonly="1" required="1"/>
+		      <field name="num"/>
+		      <field name="total"/>
+		    </tree>
+		  </field>
+		</page>
+		<page string="Detalle Activos">
+		  <field name="det_ids" nolabel="1" readonly='1'>
+		    <tree>
+		      <field name="asset_id"/>
+		      <field name="line_id"/>
+		      <field name="amount"/>
+		    </tree>
+		  </field>
+		</page>
+	      </notebook>
+	      <newline/>
+	      <group col="6" colspan="4">
+		<field name="state" readonly="1"/>
+		<!--button icon="gtk-cancel" special="cancel"
+	        	string="Salir" /-->
+		<button name="computeActivo" type="object" icon="gtk-execute"  string="Calcular Valores" 
+			confirm="Esta seguro que desea calcular" states='Borrador'/>
+		<!--button name="computeActivo2" type="object" icon="gtk-execute"  string="Calcular Valores 2" 
+			confirm="Esta seguro que desea calcular" states='Borrador'/-->
+		<button name="generaComprobanteDep" type="object" icon="gtk-execute"  string="Genera Comprobante" 
+			confirm="Esta seguro que desea generar" states='Borrador,Ejecutado'/>
+		<button name="ejecutaDep" type="object" icon="gtk-execute"  string="Depreciar Activos" 
+			confirm="Esta seguro que desea depreciar" states='Borrador'/>
+		<button name="imprimeDep" type="object" icon="gtk-execute"  string="Imprimir"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+    <record id="view_deprecia_tree" model="ir.ui.view">
+      <field name="name">view.asset.deprecia.tree</field>
+      <field name="model">asset.deprecia</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Depreciaciones">
+          <field name="year_id" select="1"/>
+        </tree>
+      </field>
+    </record>
+
+      <!--record id="action_deprecia_activo" model="ir.actions.act_window">
+        <field name="name">Depreciar Activos</field>
+        <field name="res_model">asset.deprecia</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem id="menu_deprecia_activo_2"
+		icon="STOCK_EXECUTE"
+		action="action_deprecia_activo"
+		parent="account.menu_account_end_year_treatments"
+		name="Depreciar Activos"/-->
+
+      <record id="action_deprecia_activo2" model="ir.actions.act_window">
+        <field name="name">Depreciar Activos</field>
+        <field name="res_model">asset.deprecia</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem id="menu_deprecia_activo_2"
+		icon="STOCK_EXECUTE"
+		action="action_deprecia_activo2"
+		parent="account.menu_account_end_year_treatments"
+		name="Depreciar Activos"/>
+
+      <menuitem id="menu_deprecia_activo_activo_2"
+		icon="STOCK_EXECUTE"
+		action="action_deprecia_activo2"
+		parent="menu_configuration_account_assets"
+		name="Depreciar Activos"/>
+
+</data>
+</openerp>

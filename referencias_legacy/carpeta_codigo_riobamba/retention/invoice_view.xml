@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- INVOICE LINE MODIFIED
+-->
+
+<record id="invoice_line_view_modified_gpa" model="ir.ui.view">
+  <field name="name">invoice.line.modified.gpa</field>
+  <field name="model">account.invoice.line</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="account.view_invoice_line_form"/>
+  <field name="arch" type="xml">
+	<field name="account_id" position="before">
+	  <field name="categ_id" string="Linea" context="{'categ_id': categ_id}"/>
+	</field>	
+  </field>
+</record>
+
+<!--record id="invoice_with_cxp_modified_gpa" model="ir.ui.view">
+  <field name="name">invoice.cxp.modified.gpa</field>
+  <field name="model">account.invoice</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="account.invoice_supplier_form"/>
+  <field name="arch" type="xml">
+	<xpath expr="/tree/field[@name='name']" position="before">
+	  <field name="ced_ruc"/>
+	</xpath>
+  </field>
+</record-->
+
+
+<record id="account_voucher.view_account_statement_from_invoice_lines" model="ir.ui.view">
+  <field name="name">account.statement.from.invoice.lines.form</field>
+  <field name="model">account.statement.from.invoice.lines</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Import Entries">
+      <group colspan="4" expand="1">
+        <separator string="Payable and Receivables" colspan="4"/>
+        <field height="300" width="700" name="line_ids" colspan="4" nolabel="1" domain="[('account_id.type','in',['receivable','payable']),('reconcile_id','=',False), ('state', '=', 'valid')]"/>
+      </group>
+      <group colspan="4" col="6">
+        <label string ="" colspan="2"/>
+        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+        <button icon="gtk-execute" string="Ok" name="populate_statement" type="object"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+
+    </data>
+</openerp>
+

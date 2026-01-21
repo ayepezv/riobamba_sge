@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- WIZARD FROM OBJ
+-->
+    <record id="view_user_permiso_wizard" model="ir.ui.view">
+      <field name="name">Usuarios Permisos</field>
+      <field name="model">user.permiso</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Reporte Usuario Permiso">
+	  <group string="Informacion" colspan="4" col="4">
+	    <field name="datas_fname" colspan="2" invisible="1"/>
+	    <field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+	  </group>
+	  <group col="4" colspan="4">
+	    <group col="3" colspan="1">
+	      <button name="computeUserRoles" string="Generar"
+		      colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_user_permiso" model="ir.actions.act_window">
+      <field name="name">Usuarios Permisos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">user.permiso</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+	
+
+    <menuitem id="menu_user_permiso"
+	      icon="STOCK_EXECUTE"
+	      action="action_user_permiso"
+	      parent="base.menu_users"
+	      name="Usuarios Permisos"/>
+    
+    </data>
+</openerp>

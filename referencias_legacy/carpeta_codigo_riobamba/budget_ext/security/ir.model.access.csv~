@@ -1,0 +1,10 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_obra_obra_pago","obra.obra.pago","model_obra_obra_pago","account.group_account_user",1,1,1,1
+"access_garantia_garantia","garantia.garantia","model_garantia_garantia","account.group_account_user",1,1,1,1
+"access_obra_garantia","obra.garantia","model_obra_garantia","account.group_account_user",1,1,1,1
+"access_obra_obra","obra.obra","model_obra_obra","account.group_account_user",1,1,1,1
+access_spi_obra_garantia,obra.garantia spi,model_obra_garantia,retention.group_tesorero,1,1,1,1
+"access_obra_garantia_renovacion","obra.garantia.renovacion","model_obra_garantia_renovacion","account.group_account_user",1,1,1,1
+"access_garantia_garantia_spi","garantia.garantia","model_garantia_garantia","retention.group_tesorero",1,1,1,1
+"access_obra_garantia_renovacion_spi","obra.garantia.renovacion","model_obra_garantia_renovacion","retention.group_tesorero",1,1,1,1
+"access_voucher_devengado","voucher.devengado","model_voucher_devengado","account.group_account_user",1,1,1,1

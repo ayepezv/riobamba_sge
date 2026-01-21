@@ -1,0 +1,68 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;">FONDOS AJENOS</td>	  	  
+    </tr>	
+  </table>
+  <table WIDTH="100%" border='1' rules="cols" cellpadding="2" cellspacing="2"  bordercolor="#000000" > 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Presupuesto:</td>
+      <td style="font-size:11px" width="42%">${o.name.name or  ''}</td>
+    </tr> 
+  </table>
+  <p></p>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+    <thead style="display: table-header-group">
+      <tr>
+        <th style="font-size:11px" width="15%">Cuenta</th>
+        <th style="font-size:11px" width="25%">Denominacion</th>
+        <th style="font-size:11px" width="10%">Recaudacion Prevista</th>
+        <th style="font-size:11px" width="10%">Saldo Inicial de Caja</th>
+        <th style="font-size:11px" width="10%">Total</th>
+        <th style="font-size:11px" width="10%">Porcentaje Beneficiarios</th>
+        <th style="font-size:11px" width="10%">Comision por Recaudacion</th>
+        <th style="font-size:11px" width="10%">Total</th>
+      </tr>
+    </thead>
+	<%
+	   rp=sl=total=pben=pcom=0
+	   %>
+    %for line in o.line_ids:
+	<%
+	   rp += line.prevista
+	   sl += line.inicial_caja
+	   total += line.total
+	   pben += line.beneficiario
+	   pcom += line.comision
+	   %>
+    <tr style="page-break-inside:avoid">
+      <td width="15%" style="font-size:11px;text-align:left">${line.name.code}</td>
+      <td width="25%" style="font-size:11px;text-align:left">${line.name.name}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.prevista}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.inicial_caja}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.total}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.beneficiario}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.comision}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.total_2}</td>
+    </tr>
+    %endfor      
+      <tr>
+        <th style="font-size:11px" width="15%"></th>
+        <th style="font-size:11px" width="25%">TOTAL FONDOS AJENOS</th>
+        <th style="font-size:11px" width="10%">${rp}</th>
+        <th style="font-size:11px" width="10%">${sl}</th>
+        <th style="font-size:11px" width="10%">${total}</th>
+        <th style="font-size:11px" width="10%">${pben}</th>
+        <th style="font-size:11px" width="10%">${pcom}</th>
+        <th style="font-size:11px" width="10%">${total}</th>
+      </tr>
+  </table>
+  %endfor
+</html>

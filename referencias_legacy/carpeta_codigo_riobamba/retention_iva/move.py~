@@ -1,0 +1,21 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Gestion de Obras - GobERP
+#    Copyright (C) 2013 Mario Chogllo
+#    mariofchogllo@gmail..com
+#    $Id$
+#
+##############################################################################
+from tools import ustr
+from osv import osv, fields
+import time
+
+class moveIva(osv.Model):
+    _inherit = 'account.move'
+
+    _columns = dict(
+        iva_id = fields.many2one('account.tax','Iva Proveedor'),
+        renta_id = fields.many2one('account.tax','Retencion Renta'),
+    )
+moveIva()

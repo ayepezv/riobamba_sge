@@ -1,0 +1,328 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import netsvc
+
+from osv import fields, osv
+from tools import ustr
+from tools.translate import _
+from more_itertools import chunked
+
+class closeYearMove(osv.TransientModel):
+    _name = 'close.fiscal.move'
+    _columns = dict(
+        year_id = fields.many2one('account.fiscalyear','Anio Fiscal'),
+    )
+closeYearMove()
+
+class closeYear(osv.TransientModel):
+    _inherit = 'account.fiscalyear.close'
+    _columns = dict(
+        journal_id = fields.many2one('account.journal', 'Opening Entries Journal', domain="[('type','=','situation')]", 
+                                     required=True, help='Debe ser un diario de apertura y centralizado TRUE'),
+    )
+
+    _defaults = {
+        'report_name': 'Saldo Cuenta',
+    }
+
+    def data_save(self, cr, uid, ids, context=None):
+        """
+        This function close account fiscalyear and create entries in new fiscalyear
+        @param cr: the current row, from the database cursor,
+        @param uid: the current user’s ID for security checks,
+        @param ids: List of Account fiscalyear close state’s IDs
+
+        """
+        def _reconcile_fy_closing(cr, uid, ids, context=None):
+            """
+            This private function manually do the reconciliation on the account_move_line given as `ids´, and directly 
+            through psql. It's necessary to do it this way because the usual `reconcile()´ function on account.move.line
+            object is really resource greedy (not supposed to work on reconciliation between thousands of records) and 
+            it does a lot of different computation that are useless in this particular case.
+            """
+            #check that the reconcilation concern journal entries from only one company
+            cr.execute('select distinct(company_id) from account_move_line where id in %s',(tuple(ids),))
+            if len(cr.fetchall()) > 1:
+                raise osv.except_osv(_('Warning !'), _('The entries to reconcile should belong to the same company'))
+            r_id = self.pool.get('account.move.reconcile').create(cr, uid, {'type': 'auto'})
+            cr.execute('update account_move_line set reconcile_id = %s where id in %s',(r_id, tuple(ids),))
+            return r_id
+
+        obj_acc_period = self.pool.get('account.period')
+        obj_acc_fiscalyear = self.pool.get('account.fiscalyear')
+        obj_acc_journal = self.pool.get('account.journal')
+        obj_acc_move = self.pool.get('account.move')
+        obj_acc_move_line = self.pool.get('account.move.line')
+        obj_acc_account = self.pool.get('account.account')
+        obj_acc_journal_period = self.pool.get('account.journal.period')
+        currency_obj = self.pool.get('res.currency')
+        traspaso_obj = self.pool.get('traspaso.cuenta')
+
+        data = self.browse(cr, uid, ids, context=context)
+
+        if context is None:
+            context = {}
+        fy_id = data[0].fy_id.id
+        cr.execute("update account_account_type set close_method='balance'")
+        cr.execute("SELECT id FROM account_period WHERE date_stop < (SELECT date_start FROM account_fiscalyear WHERE id = %s)", (str(data[0].fy2_id.id),))
+        fy_period_set = ','.join(map(lambda id: str(id[0]), cr.fetchall()))
+        cr.execute("SELECT id FROM account_period WHERE date_start > (SELECT date_stop FROM account_fiscalyear WHERE id = %s)", (str(fy_id),))
+        fy2_period_set = ','.join(map(lambda id: str(id[0]), cr.fetchall()))
+
+        if not fy_period_set or not fy2_period_set:
+            raise osv.except_osv(_('UserError'), _('The periods to generate opening entries were not found'))
+
+        period = obj_acc_period.browse(cr, uid, data[0].period_id.id, context=context)
+        new_fyear = obj_acc_fiscalyear.browse(cr, uid, data[0].fy2_id.id, context=context)
+        old_fyear = obj_acc_fiscalyear.browse(cr, uid, fy_id, context=context)
+        
+        new_journal = data[0].journal_id.id
+        new_journal = obj_acc_journal.browse(cr, uid, new_journal, context=context)
+        company_id = new_journal.company_id.id
+
+        if not new_journal.default_credit_account_id or not new_journal.default_debit_account_id:
+            raise osv.except_osv(_('UserError'),
+                    _('The journal must have default credit and debit account'))
+#        if (not new_journal.centralisation) or new_journal.entry_posted:
+#            raise osv.except_osv(_('UserError'),
+#                    _('The journal must have centralised counterpart without the Skipping draft state option checked!'))
+
+        #delete existing move and move lines if any
+        move_ids = obj_acc_move.search(cr, uid, [
+            ('journal_id', '=', new_journal.id), ('period_id', '=', period.id),('state','in',('draft','anulado'))])
+        if move_ids:
+            move_line_ids = obj_acc_move_line.search(cr, uid, [('move_id', 'in', move_ids)])
+            if len(move_line_ids)>1:
+                tuple_ids = tuple(move_line_ids)
+                operador = 'in'
+            else:
+                tuple_ids = (move_line_ids[0])
+                operador = '='
+#            obj_acc_move_line._remove_move_reconcile(cr, uid, move_line_ids, context=context)
+            cr.execute("DELETE FROM account_move_line WHERE move_id %s %s" %(operador,tuple_ids))
+#            obj_acc_move_line.unlink(cr, uid, move_line_ids, context=context)
+            if len(move_ids)>1:
+                tuple_ids = tuple(move_ids)
+                operador = 'in'
+            else:
+                tuple_ids = (move_ids[0])
+                operador = '='
+            cr.execute("DELETE FROM account_move WHERE id %s %s"%(operador,tuple_ids))
+#            obj_acc_move.unlink(cr, uid, move_ids, 1,context=context)
+
+        cr.execute("SELECT id FROM account_fiscalyear WHERE date_stop < %s", (str(new_fyear.date_start),))
+        result = cr.dictfetchall()
+        fy_ids = ','.join([str(x['id']) for x in result])
+        query_line = obj_acc_move_line._query_get(cr, uid,
+                obj='account_move_line', context={'fiscalyear': fy_ids})
+        #create the opening move
+        aux_narration = "Asiento Inicial o Apertura - " + new_fyear.name
+        vals = {
+            'name': '0',
+            'ref': 'Asiento Inicial o Apertura',
+            'period_id': period.id,
+            'date': period.date_start,
+            'journal_id': new_journal.id,
+            'narration':aux_narration,
+            'is_start':True,
+            'type2_id':'Cierre',
+            'partner_id':1,
+        }
+        move_id = obj_acc_move.create(cr, uid, vals, context=context)
+
+        #1. report of the accounts with defferal method == 'unreconciled'
+        cr.execute('''
+            SELECT a.id
+            FROM account_account a
+            LEFT JOIN account_account_type t ON (a.user_type = t.id)
+            WHERE a.active
+              AND a.type != 'view'
+              AND a.company_id = %s
+              AND t.close_method = %s''', (company_id, 'unreconciled', ))
+        account_ids = map(lambda x: x[0], cr.fetchall())
+        if account_ids:
+            cr.execute('''
+                INSERT INTO account_move_line (
+                     name, create_uid, create_date, write_uid, write_date,
+                     statement_id, journal_id, currency_id, date_maturity,
+                     partner_id, blocked, credit, state, debit,
+                     ref, account_id, period_id, date, move_id, amount_currency,
+                     quantity, product_id, company_id)
+                  (SELECT name, create_uid, create_date, write_uid, write_date,
+                     statement_id, %s,currency_id, date_maturity, partner_id,
+                     blocked, credit, 'draft', debit, ref, account_id,
+                     %s, (%s) AS date, %s, amount_currency, quantity, product_id, company_id
+                   FROM account_move_line
+                   WHERE account_id IN %s
+                     AND ''' + query_line + '''
+                     AND reconcile_id IS NULL)''', (new_journal.id, period.id, period.date_start, move_id, tuple(account_ids),))
+
+            #We have also to consider all move_lines that were reconciled
+            #on another fiscal year, and report them too
+            cr.execute('''
+                INSERT INTO account_move_line (
+                     name, create_uid, create_date, write_uid, write_date,
+                     statement_id, journal_id, currency_id, date_maturity,
+                     partner_id, blocked, credit, state, debit,
+                     ref, account_id, period_id, date, move_id, amount_currency,
+                     quantity, product_id, company_id)
+                  (SELECT
+                     b.name, b.create_uid, b.create_date, b.write_uid, b.write_date,
+                     b.statement_id, %s, b.currency_id, b.date_maturity,
+                     b.partner_id, b.blocked, b.credit, 'draft', b.debit,
+                     b.ref, b.account_id, %s, (%s) AS date, %s, b.amount_currency,
+                     b.quantity, b.product_id, b.company_id
+                     FROM account_move_line b
+                     WHERE b.account_id IN %s
+                       AND b.reconcile_id IS NOT NULL
+                       AND b.period_id IN ('''+fy_period_set+''')
+                       AND b.reconcile_id IN (SELECT DISTINCT(reconcile_id)
+                                          FROM account_move_line a
+                                          WHERE a.period_id IN ('''+fy2_period_set+''')))''', (new_journal.id, period.id, period.date_start, move_id, tuple(account_ids),))
+
+        #2. report of the accounts with defferal method == 'detail'
+        cr.execute('''
+            SELECT a.id
+            FROM account_account a
+            LEFT JOIN account_account_type t ON (a.user_type = t.id)
+            WHERE a.active
+              AND a.type != 'view'
+              AND a.company_id = %s
+              AND t.close_method = %s''', (company_id, 'detail', ))
+        account_ids = map(lambda x: x[0], cr.fetchall())
+
+        if account_ids:
+            cr.execute('''
+                INSERT INTO account_move_line (
+                     name, create_uid, create_date, write_uid, write_date,
+                     statement_id, journal_id, currency_id, date_maturity,
+                     partner_id, blocked, credit, state, debit,
+                     ref, account_id, period_id, date, move_id, amount_currency,
+                     quantity, product_id, company_id)
+                  (SELECT name, create_uid, create_date, write_uid, write_date,
+                     statement_id, %s,currency_id, date_maturity, partner_id,
+                     blocked, credit, 'draft', debit, ref, account_id,
+                     %s, (%s) AS date, %s, amount_currency, quantity, product_id, company_id
+                   FROM account_move_line
+                   WHERE account_id IN %s
+                     AND ''' + query_line + ''')
+                     ''', (new_journal.id, period.id, period.date_start, move_id, tuple(account_ids),))
+
+
+        #3. report of the accounts with defferal method == 'balance'
+        cr.execute('''
+            SELECT a.id
+            FROM account_account a
+            LEFT JOIN account_account_type t ON (a.user_type = t.id)
+            WHERE a.active
+              AND a.type != 'view'
+              AND a.company_id = %s
+              AND t.close_method = %s''', (company_id, 'balance', ))
+        account_ids = map(lambda x: x[0], cr.fetchall())
+
+        query_1st_part = """
+                INSERT INTO account_move_line (
+                     debit, credit, name, date, move_id, journal_id, period_id,
+                     account_id, currency_id, amount_currency, company_id, state,is_start) VALUES
+        """
+        query_2nd_part = ""
+        query_2nd_part_args = []
+        #ojo pasar las fechas tambin en el context
+        account_ids = list(chunked(account_ids, 1000))
+        accounts_ = []
+        for accounts in account_ids:
+            accounts_ += obj_acc_account.browse(cr, uid, accounts, context={'fiscalyear': fy_id,'date_from':data[0].fy_id.date_start,
+                                                                               'date_to':data[0].fy_id.date_stop,'state':'posted'})
+        for account in accounts_:
+#        for account in obj_acc_account.browse(cr, uid, account_ids, context={'fiscalyear': fy_id,'date_from':data[0].fy_id.date_start,
+#                                                                             'date_to':data[0].fy_id.date_stop,'state':'posted'}):
+            print "acccoiuntt", account.id, account.balance
+            balance_in_currency = 0.0
+            if account.currency_id:
+                cr.execute('SELECT sum(amount_currency) as balance_in_currency FROM account_move_line ' \
+                        'WHERE account_id = %s ' \
+                            'AND ' + query_line + ' ' \
+                            'AND currency_id = %s', (account.id, account.currency_id.id))
+                balance_in_currency = cr.dictfetchone()['balance_in_currency']
+
+            company_currency_id = self.pool.get('res.users').browse(cr, uid, uid).company_id.currency_id
+            if not currency_obj.is_zero(cr, uid, company_currency_id, abs(account.balance)):
+                #aqui mapeo la tabla y paso la nueva cuenta
+                traspaso_ids = traspaso_obj.search(cr, uid, [('name','=',account.id)])
+                if traspaso_ids:
+                    traspaso = traspaso_obj.browse(cr, uid, traspaso_ids[0])
+                    account_aux = traspaso.account_id
+                    if query_2nd_part:
+                        query_2nd_part += ','
+                    query_2nd_part += "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)"
+                    query_2nd_part_args += (account.balance > 0 and account.balance or 0.0,
+                                            account.balance < 0 and -account.balance or 0.0,
+                                            #account.code,
+                                            data[0].report_name,
+                                            period.date_start,
+                                            move_id,
+                                            new_journal.id,
+                                            period.id,
+                                            account.id,
+                                           # account_aux.id,
+                                            account.currency_id and account.currency_id.id or None,
+                                            balance_in_currency,
+                                            account.company_id.id,
+                                            'draft',
+                                            True,
+                    )
+                else:
+                    if query_2nd_part:
+                        query_2nd_part += ','
+                    query_2nd_part += "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s)"
+                    query_2nd_part_args += (account.balance > 0 and account.balance or 0.0,
+                           account.balance < 0 and -account.balance or 0.0,
+                           data[0].report_name,
+                           period.date_start,
+                           move_id,
+                           new_journal.id,
+                           period.id,
+                           account.id,
+                           account.currency_id and account.currency_id.id or None,
+                           balance_in_currency,
+                           account.company_id.id,
+                           'draft',
+                            True,
+                    )
+        if query_2nd_part:
+            cr.execute(query_1st_part + query_2nd_part, tuple(query_2nd_part_args))
+
+        #validate and centralize the opening move
+        obj_acc_move.validate(cr, uid, [move_id], context=context)
+
+        #reconcile all the move.line of the opening move
+        ids = obj_acc_move_line.search(cr, uid, [('journal_id', '=', new_journal.id),
+            ('period_id.fiscalyear_id','=',new_fyear.id)])
+        if ids:
+            reconcile_id = _reconcile_fy_closing(cr, uid, ids, context=context)
+            #set the creation date of the reconcilation at the first day of the new fiscalyear, in order to have good figures in the aged trial balance
+            self.pool.get('account.move.reconcile').write(cr, uid, [reconcile_id], {'create_date': new_fyear.date_start}, context=context)
+
+        #create the journal.period object and link it to the old fiscalyear
+        new_period = data[0].period_id.id
+        ids = obj_acc_journal_period.search(cr, uid, [('journal_id', '=', new_journal.id), ('period_id', '=', new_period)])
+        if not ids:
+            ids = [obj_acc_journal_period.create(cr, uid, {
+                   'name': (new_journal.name or '') + ':' + (period.code or ''),
+                   'journal_id': new_journal.id,
+                   'period_id': period.id
+               })]
+        cr.execute('UPDATE account_fiscalyear ' \
+                    'SET end_journal_period_id = %s ' \
+                    'WHERE id = %s', (ids[0], old_fyear.id))
+
+        return {'type': 'ir.actions.act_window_close'}
+
+closeYear()
+

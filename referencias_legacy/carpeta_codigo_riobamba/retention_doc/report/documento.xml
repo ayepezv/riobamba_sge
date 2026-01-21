@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="lista_comprobantes" model="account.folder.line"
+            name="lista_comprobantes" rml="retention_doc/report/comprobantes.mako"
+            usage="default" string="Lista Comprobantes" header="True" report_type="webkit"/>
+
+  </data>
+</openerp>

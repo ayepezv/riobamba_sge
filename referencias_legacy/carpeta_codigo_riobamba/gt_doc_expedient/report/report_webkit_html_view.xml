@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>   
+    <data>
+    <!--report auto="False"
+        id="report_doc_expedient_external"
+        model="doc_expedient.expedient"
+        name="report_doc_expedient_external"
+        file="gt_doc_expedient/report/report_doc_expedient_external.mako"
+        string="IMPRIMIR TICKET"
+        report_type="webkit"
+        webkit_header="report_webkit.ir_header_webkit_basesample0"/-->
+
+    <report auto="False"
+        id="report_doc_expedient"
+        model="doc_expedient.expedient"
+        name="report_doc_expedient"
+        file="gt_doc_expedient/report/report_doc_expedient.mako"
+        string="IMPRIMIR TRÁMITE"
+        report_type="webkit"
+        webkit_header="report_webkit.ir_header_webkit_basesample0"
+        groups="gt_document_manager.group_doc_user"/>
+        
+        
+    <report auto="False"
+        id="report_doc_expedient_consult"
+        model="doc_expedient.expedient"
+        name="report_doc_expedient_consult"
+        file="gt_doc_expedient/report/report_doc_expedient_consult.mako"
+        string="IMPRIMIR CONSULTA DEL TRÁMITE"
+        report_type="webkit"
+        webkit_header="report_webkit.ir_header_webkit_basesample0"
+        groups="gt_document_manager.group_doc_manager"/>
+
+    <report auto="False"
+        id="report_doc_task"
+        model="doc_expedient.task"
+        name="report_doc_task"
+        file="gt_doc_expedient/report/report_doc_task.mako"
+        string="Tareas Pendientes por Usuario"
+        report_type="webkit"
+        webkit_header="report_webkit.ir_header_webkit_basesample0"
+        groups="gt_document_manager.group_doc_manager"/>
+
+<!-- Estos no son de webkit -->
+<report 
+   auto="True" 
+   id="report_doc_expedient_ticket"
+   model="doc_expedient.expedient"
+   name="report_doc_expedient_ticket"
+   rml="gt_doc_expedient/report/report_doc_expedient_ticket.rml" 
+   string="IMPRIMIR TICKET" />
+
+<!--report 
+   auto="True" 
+   id="reporte_empleado_prueba"
+   model="hr.employee"
+   name="reporte_empleado_prueba"
+   rml="gt_doc_expedient/report/reporte_empleado_prueba.rml" 
+   string="IMPRIMIR EMPLEADO PRUEBA" /-->
+
+
+    </data>
+
+</openerp>

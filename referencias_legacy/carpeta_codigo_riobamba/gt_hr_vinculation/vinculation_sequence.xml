@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for vinculation --> 
+
+        <record id="seq_type_hr_vinculation" model="ir.sequence.type">
+            <field name="name">Contratación</field>
+            <field name="code">hr.vinculation</field>
+        </record>
+        <record id="seq_hr_vinculation" model="ir.sequence">
+            <field name="name">Contratación</field>
+            <field name="code">hr.vinculation</field>
+            <field name="prefix">PC</field>
+            <field name="padding">5</field>
+        </record>
+    </data>
+</openerp>

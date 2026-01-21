@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem
+        parent="account.menu_finance_reporting"
+        id="menu_reports_consolidate"
+        name="Reportes Consolidados"/>
+
+    <report auto="False" id="document_consolidate1_report" model="document.report.consolidate"
+            name="document_consolidate1_report" file="gt_reports_gpa/report/doc_report_consol.mako"
+            string="Reporte Consolidado de Ingresos" report_type="webkit" menu="False" header="False"/>
+
+    <record id="view_document_report_consolidate" model="ir.ui.view">
+      <field name="name">view.document.report.consolidate.form</field>
+      <field name="model">document.report.consolidate</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Reporte de Flujo de Gasto">
+	  <group string="Información" colspan="4">
+	    <field name="chart_account_id" required="1" readonly="1" string="GAD" widget="selection"/>
+	    <field name="fiscalyear_id" required="1" string="Ejercicio Fiscal" widget="selection"/>
+	    <field name="filter" on_change="onchange_filter(filter,fiscalyear_id)" invisible="1"/>
+	    <field name="period_from" required="1" string="Periodo desde" 
+		   domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',False)]"/>
+	    <field name="period_to" required="1" string="Periodo hasta"
+		   domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',False)]"/>
+	  </group>
+	  <separator string="Se tomará en cuenta los convenios, contratos y facturas por pagar ingresadas."/>
+	    <group colspan="4" string="Se tomará las facturas por pagar con fechas de vencimiento en los periodos de consulta">
+	      <field name="account_invoice" readonly="1"/>
+	    </group>
+	    <group colspan="4" string="Se tomará los términos de pagos de los contratos.">
+	      <field name="doc_contract" readonly="1"/>
+	      <field name="contract_state"/>
+	    </group>
+	    <group colspan="4" string="Se tomará los términos de pagos de los convenios.">
+	      <field name="doc_covenant" readonly="1"/>
+	      <field name="covenant_state"/>
+	    </group>
+	  <group colspan="4" col="6">
+	    <separator string="Reporte consolidado."/>
+	    <button special="cancel" string="Cerrar" icon="gtk-cancel"/>
+	    <button name="action_print_report" string="Imprimir" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_document_report_consolidate" model="ir.actions.act_window">
+      <field name="name">Reporte Consolidado de Flujo</field>
+      <field name="res_model">document.report.consolidate</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_document_report_consolidate"/>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+        icon="STOCK_PRINT"
+        name="Flujo Consolidado"
+        parent="menu_reports_consolidate"
+        action="action_document_report_consolidate"
+        id="menu_document_report_consolidate"
+        />
+
+  </data>
+</openerp>

@@ -1,0 +1,416 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+total_todo = []
+cabecera_todo = []
+
+class rol_transporte(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(rol_transporte, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'generate_dict': self.generate_dict,
+            'all_programas': self.all_programas,
+            'roles_programa': self.roles_programa,
+            'get_rubro_total': self.get_rubro_total,
+            'put_cabecera': self.put_cabecera,
+            'get_cargo_rol':self.get_cargo_rol,
+        })
+
+    def get_cargo_rol(self, cargo):
+        aux = ""
+        parameter_obj = self.pool.get('ir.config_parameter')
+        cargo_ids = parameter_obj.search(self.cr, self.uid, [('key','=',cargo)],limit=1)
+        if cargo_ids:
+            aux = parameter_obj.browse(self.cr, self.uid,cargo_ids[0]).value
+        return aux
+
+    def roles_programa(self, payroll,programa):
+        roles_obj = self.pool.get('hr.payslip')
+        roles_ids = roles_obj.search(self.cr, self.uid, [('payslip_run_id','=',payroll.id),('program_id','=',programa.id)])
+        #mandar browse de los roles
+        return roles_obj.browse(self.cr, self.uid, roles_ids)
+
+    def all_programas(self, obj):
+        programas = []
+        programas_aux = []
+        programas_ids = []
+        programa_obj = self.pool.get('project.program')
+        sql_programas = """select program_id from hr_payslip where payslip_run_id=%s group by program_id"""%(obj.id)
+        self.cr.execute(sql_programas)
+        for programa_id in self.cr.fetchall():
+            programa = programa_obj.browse(self.cr,self.uid,programa_id[0])
+            programas.append({'sequence':programa.sequence,'programa_id':programa})
+        #import pdb
+        #pdb.set_trace()
+        data = sorted(programas, key=lambda k: k['sequence'])
+        for programa_sort in data:
+            programas_ids.append(programa_sort['programa_id'])
+        #programas_ids.append(programa_id[0])
+        return programas_ids#programa_obj.browse(self.cr, self.uid, programas_ids)#programas
+
+    
+    def all_programas2(self, obj):
+        programas = []
+        programas_aux = []
+        programas_ids = []
+        programa_obj = self.pool.get('project.program')
+        for rol_individual in obj.slip_ids:
+            if not rol_individual.program_id.sequence in programas_aux:
+                programas_aux.append(rol_individual.program_id.sequence)
+                programas.append({'sequence':rol_individual.program_id.sequence})
+        data = sorted(programas, key=lambda k: k['sequence'])    
+        for programa_sort in data:
+            programa_ids = programa_obj.search(self.cr, self.uid, [('sequence','=',programa_sort['sequence'])],limit=1)
+            if not programa_ids:
+                print "NO POGAMA", programa_sort['sequence']
+            programas_ids.append(programa_ids[0])
+        return programa_obj.browse(self.cr, self.uid, programas_ids)#programas
+
+    def get_rubros(self, roles_ids):
+        rol_obj = self.pool.get('hr.payslip')
+        rule_obj = self.pool.get('hr.salary.rule')
+        rubros_ingreso = []
+        rubros_egreso = []
+        #hacer con sql sacar los rubros
+        #import pdb
+        #pdb.set_trace()
+        if len(roles_ids)>1:
+            tuple_ids = tuple(roles_ids)
+            operador = 'in'
+        else:
+            tuple_ids = (roles_ids[0])
+            operador = '='
+        sql_rubros = """select salary_rule_id from hr_payslip_line where slip_id %s %s group by salary_rule_id"""%(operador,tuple_ids)
+        self.cr.execute(sql_rubros)
+        for rubro_id in self.cr.fetchall(): 
+            #import pdb
+            #pdb.set_trace()
+            rubro = rule_obj.browse(self.cr, self.uid, rubro_id[0])
+            if rubro.category_id.code in ('BASIC','ING','APT'):
+                if not rubro.agrupar:
+                    if not [rubro.id,rubro.sequence,rubro.name] in rubros_ingreso:
+                        rubros_ingreso.append([rubro.id,rubro.sequence,rubro.name])
+            elif rubro.category_id.code == 'EGR':
+                if not rubro.agrupar:
+                    if not [rubro.id,rubro.sequence,rubro.name] in rubros_egreso:
+                        rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        #si no hay de adem agregar al diccionario
+        adem_aux = 0
+        for line_aux in rubros_egreso:
+            if line_aux[2]=='ADEM':
+                adem_aux += 1
+                break
+        if adem_aux<1:
+            rule_ids_adem = rule_obj.search(self.cr, self.uid, [('code','=','ADEM')],limit=1)
+            if rule_ids_adem:
+                rubro_adem = rule_obj.browse(self.cr, self.uid, rule_ids_adem[0])
+                rubros_egreso.append([rubro_adem.id,rubro_adem.sequence,rubro_adem.name])
+        rule_ids_ing = rule_obj.search(self.cr, self.uid, [('code','=','OING')],limit=1)
+#        if rule_ids_ing:
+#            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_ing[0])
+#            rubros_ingreso.append([rubro.id,rubro.sequence,rubro.name])
+#        rule_ids_egr = rule_obj.search(self.cr, self.uid, [('code','=','OtrosDescuentos')],limit=1)
+#        if rule_ids_egr:
+#            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_egr[0])
+#            rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        #totales ingresos y egresos            
+        rule_ids_total_ing = rule_obj.search(self.cr, self.uid, [('code','=','NET'),('name','=','TOTAL INGRESOS')],limit=1)
+        if rule_ids_total_ing:
+            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_total_ing[0])
+            rubros_ingreso.append([rubro.id,rubro.sequence,rubro.name])
+        rule_ids_total_egr = rule_obj.search(self.cr, self.uid, [('code','=','NET'),('name','=','TOTAL EGRESOS')],limit=1)
+        if rule_ids_total_egr:
+            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_total_egr[0])
+            rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        rule_ids_total = rule_obj.search(self.cr, self.uid, [('code','=','NET'),('name','in',('TOTAL','NETO A RECIBIR'))],limit=1)
+        if rule_ids_total:
+            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_total[0])
+            rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        return rubros_ingreso + rubros_egreso
+
+    
+    def get_rubros2(self, roles_ids):
+        rol_obj = self.pool.get('hr.payslip')
+        rule_obj = self.pool.get('hr.salary.rule')
+        rubros_ingreso = []
+        rubros_egreso = []
+        #hacer con sql sacar los rubros
+        for rol_individual_id in roles_ids:#registro.payroll_id.slip_ids:
+            rol_individual = rol_obj.browse(self.cr, self.uid, rol_individual_id)
+            for rubro in rol_individual.line_ids:
+                #rubro tiene la informacion (id,secuencia,name) exepto otros ingresos y otros egresos, estos se agregan al final OtrosDescuentos y OING
+                if rubro.salary_rule_id.category_id.code in ('BASIC','ING','APT'):
+                    if not rubro.salary_rule_id.agrupar:
+                        if not [rubro.salary_rule_id.id,rubro.salary_rule_id.sequence,rubro.salary_rule_id.name] in rubros_ingreso:
+                            rubros_ingreso.append([rubro.salary_rule_id.id,rubro.salary_rule_id.sequence,rubro.salary_rule_id.name])
+                elif rubro.salary_rule_id.category_id.code == 'EGR':
+                    if not rubro.salary_rule_id.agrupar:
+                        if not [rubro.salary_rule_id.id,rubro.salary_rule_id.sequence,rubro.salary_rule_id.name] in rubros_egreso:
+                            rubros_egreso.append([rubro.salary_rule_id.id,rubro.salary_rule_id.sequence,rubro.salary_rule_id.name])
+        #si no hay de adem agregar al diccionario
+        adem_aux = 0
+        for line_aux in rubros_egreso:
+            if line_aux[2]=='ADEM':
+                adem_aux += 1
+                break
+        if adem_aux<1:
+            rule_ids_adem = rule_obj.search(self.cr, self.uid, [('code','=','ADEM')],limit=1)
+            if rule_ids_adem:
+                rubro_adem = rule_obj.browse(self.cr, self.uid, rule_ids_adem[0])
+                rubros_egreso.append([rubro_adem.id,rubro_adem.sequence,rubro_adem.name])
+        rule_ids_ing = rule_obj.search(self.cr, self.uid, [('code','=','OING')],limit=1)
+#        if rule_ids_ing:
+#            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_ing[0])
+#            rubros_ingreso.append([rubro.id,rubro.sequence,rubro.name])
+#        rule_ids_egr = rule_obj.search(self.cr, self.uid, [('code','=','OtrosDescuentos')],limit=1)
+#        if rule_ids_egr:
+#            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_egr[0])
+#            rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        #totales ingresos y egresos            
+        rule_ids_total_ing = rule_obj.search(self.cr, self.uid, [('code','=','NET'),('name','=','TOTAL INGRESOS')],limit=1)
+        if rule_ids_total_ing:
+            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_total_ing[0])
+            rubros_ingreso.append([rubro.id,rubro.sequence,rubro.name])
+        rule_ids_total_egr = rule_obj.search(self.cr, self.uid, [('code','=','NET'),('name','=','TOTAL EGRESOS')],limit=1)
+        if rule_ids_total_egr:
+            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_total_egr[0])
+            rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        rule_ids_total = rule_obj.search(self.cr, self.uid, [('code','=','NET'),('name','in',('TOTAL','NETO A RECIBIR'))],limit=1)
+        if rule_ids_total:
+            rubro = rule_obj.browse(self.cr, self.uid, rule_ids_total[0])
+            rubros_egreso.append([rubro.id,rubro.sequence,rubro.name])
+        return rubros_ingreso + rubros_egreso
+
+    def put_cabecera(self, payroll):
+        linea_cab = []
+        head = cabecera_todo[0]
+        k = 0 
+        for k in range(len(cabecera_todo)-1):
+            if k>0:
+                linea_cab.append(head[k])
+        return linea_cab
+
+    def get_rubro_total(self, payroll):
+        rol_obj = self.pool.get('hr.payslip')
+        roles_all = rol_obj.search(self.cr, self.uid, [('payslip_run_id','=',payroll.id)])
+        aux_total_emp = len(roles_all)
+        rubros = self.get_rubros(roles_all)
+        linea_todo = []
+        dict_final = []
+        linea_r = []
+        #RUBROS
+        linea_r.append("TOT. FUNC.")
+        linea_r.append("RUBROS")
+        linea_r.append("=>")
+        for ma in range(len(rubros)):
+            linea_r.append(rubros[ma][2])
+        #TOTALES
+        linea_todo.append(str(aux_total_emp))
+        linea_todo.append("NETO A RECIBIR")
+        linea_todo.append("=>")
+        for ms in range(len(total_todo[0])):
+            aux_suma = 0
+            if ms>1:
+                for todo_line in total_todo:
+                    try:
+                        aux_suma += float(todo_line[ms])
+                    except ValueError:
+                        aux_suma += 0
+                    except IndexError:
+                        aux_suma += 0
+                linea_todo.append(aux_suma)
+        dict_final.append(linea_r)
+        dict_final.append(linea_todo)  
+        global total_todo
+        total_todo = []
+        return dict_final
+
+    def generateTotal(self, payroll, programa):
+        return True
+
+    def generate_dict(self, payroll,programa):
+        rol_obj = self.pool.get('hr.payslip')
+        rule_obj = self.pool.get('hr.salary.rule')
+        dept_obj = self.pool.get('hr.department')
+        diccionario = {}
+        diccionario_totales = {}
+        programas = []
+        departamentos = []
+        rubros = []
+#        cabecera_todo = []
+        lineas_depto = []
+        global total_todo
+        #total_todo = []
+        band = True
+        if band:
+            dept_ids = dept_obj.search(self.cr, self.uid, [])
+            dept_id = 1
+            depart = dept_obj.browse(self.cr, self.uid, dept_id)
+            departamentos.append([dept_id,depart.name])
+            programas.append([programa.id,programa.sequence,programa.name])
+            #antes desde halla armar en otro metodo los programas y se manda solo los slip de esos programas
+            roles_ids = rol_obj.search(self.cr, self.uid, [('payslip_run_id','=',payroll.id),('program_id','=',programa.id)],order='budget_id_ind desc')
+            roles_all = rol_obj.search(self.cr, self.uid, [('payslip_run_id','=',payroll.id)])
+            rubros = self.get_rubros(roles_all)
+            for rol_individual_id in roles_ids:#registro.payroll_id.slip_ids:
+                rol_individual = rol_obj.browse(self.cr, self.uid, rol_individual_id)
+                aux_key2 = rol_individual.contract_id.program_id.sequence+'.510304'
+                aux_key = rol_individual.contract_id.program_id.sequence+'.510304.' + rol_individual.contract_id.employee_id.name#rol_individual.contract_id.budget_ind + rol_individual.contract_id.employee_id.name
+                for rubro in rol_individual.line_ids:#payslip lines
+                    if diccionario.has_key(rol_individual.contract_id.program_id.id):
+                      if diccionario[rol_individual.contract_id.program_id.id].has_key(dept_id):
+                        if diccionario[rol_individual.contract_id.program_id.id][dept_id].has_key(aux_key):
+                            if not rubro.salary_rule_id.agrupar:
+                                if diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key].has_key(rubro.salary_rule_id.id):
+                                    diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro.salary_rule_id.id] += rubro.amount
+                                else:
+                                    diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro.salary_rule_id.id] = rubro.amount
+                            else:
+                                #buscar los de agrupacion de ingresos y egresos
+                                if rubro.salary_rule_id.category_id.code in ('ING','APT'):
+                                    rule_ids_ing = rule_obj.search(self.cr, self.uid, [('code','=','OING')],limit=1)
+                                    if rule_ids_ing:
+                                        rubro_aux = rule_obj.browse(self.cr, self.uid, rule_ids_ing[0])
+                                elif rubro.salary_rule_id.category_id.code in ('EGR'):
+                                    #todo al ADEM
+                                    rule_ids_egr = rule_obj.search(self.cr, self.uid, [('code','=','ADEM')],limit=1)
+                                    if rule_ids_egr:
+                                        rubro_aux = rule_obj.browse(self.cr, self.uid, rule_ids_egr[0])
+                                if diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key].has_key(rubro_aux.id):
+                                    diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro_aux.id] += rubro.amount
+                                else:
+                                    diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro_aux.id] = rubro.amount
+                        else:
+                            diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key] = {'nombre':rol_individual.employee_id.complete_name,'cedula': rol_individual.employee_id.name, 'tipo cuenta': (rol_individual.employee_id.bank_account_id and rol_individual.employee_id.bank_account_id.type_cta or '-'), 'numero cuenta': (rol_individual.employee_id.bank_account_id and rol_individual.employee_id.bank_account_id.acc_number or '-'), 'partida': (aux_key2 or '-'), rubro.salary_rule_id.id: rubro.amount}
+                      else:
+                        diccionario[rol_individual.contract_id.program_id.id][dept_id] = {aux_key: {'nombre':rol_individual.employee_id.complete_name,'cedula': rol_individual.employee_id.name, 'tipo cuenta': (rol_individual.employee_id.bank_account_id and rol_individual.employee_id.bank_account_id.type_cta or '-'), 'numero cuenta': (rol_individual.employee_id.bank_account_id and rol_individual.employee_id.bank_account_id.acc_number or '-'), 'partida': (aux_key2 or '-'), rubro.salary_rule_id.id: rubro.amount}}
+                    else:
+                        diccionario[rol_individual.contract_id.program_id.id] ={dept_id: {aux_key: {'nombre':rol_individual.employee_id.complete_name,'cedula': rol_individual.employee_id.name, 'tipo cuenta': (rol_individual.employee_id.bank_account_id and rol_individual.employee_id.bank_account_id.type_cta or '-'), 'numero cuenta': (rol_individual.employee_id.bank_account_id and rol_individual.employee_id.bank_account_id.acc_number or '-'), 'partida': (aux_key2 or '-'), rubro.salary_rule_id.id: rubro.amount}}}
+                    #al final del for del rol colocar los totales de ingresos y egresos
+                    rule_ids_tot_ing = rule_obj.search(self.cr, self.uid, [('name','=','TOTAL INGRESOS')],limit=1)
+                    if rule_ids_tot_ing:
+                        rubro_aux_tot_ing = rule_obj.browse(self.cr, self.uid, rule_ids_tot_ing[0])
+                        diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro_aux_tot_ing.id] = rol_individual.aportable + rol_individual.allowance + rol_individual.basic
+                    rule_ids_tot_egr = rule_obj.search(self.cr, self.uid, [('name','=','TOTAL EGRESOS')],limit=1)
+                    if rule_ids_tot_egr:
+                        rubro_aux_tot_egr = rule_obj.browse(self.cr, self.uid, rule_ids_tot_egr[0])
+                        diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro_aux_tot_egr.id] = rol_individual.deduction
+                    rule_ids_total = rule_obj.search(self.cr, self.uid, [('name','in',('TOTAL','NETO A RECIBIR'))],limit=1)
+                    if rule_ids_total:
+                        aux = rol_individual.aportable + rol_individual.allowance + rol_individual.basic - rol_individual.deduction
+                        if aux<0.1:
+                            aux = round(aux,2)
+                        rubro_aux_total = rule_obj.browse(self.cr, self.uid, rule_ids_total[0])
+                        diccionario[rol_individual.contract_id.program_id.id][dept_id][aux_key][rubro_aux_total.id] = aux
+        programa_clean = []
+        for key in programas:
+            if key not in programa_clean:
+                programa_clean.append(key)                
+        departamentos_clean = []
+        for key in departamentos:
+            if key not in departamentos_clean:
+                departamentos_clean.append(key)
+        rubros_clean = rubros
+        programa_clean.sort(key=lambda x: x[0])
+        departamentos_clean.sort(key=lambda x: x[0])
+        writer = XLSWriter.XLSWriter()
+        writer_dict = []
+        cabecera = ['NUM.','FUNCIONARIO: APELLIDOS Y NOMBRES']
+        pie = {}
+        for rubro in rubros_clean:
+            cabecera.append(rubro[2])
+        cabecera.append("PARTIDA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")
+        writer.append(cabecera)
+        writer_dict.append(cabecera)
+        cabecera_todo.append(cabecera)
+        for programa in programa_clean:
+          for departamento in departamentos_clean:
+            pie = {}
+            j =0 
+            if not diccionario.has_key(programa[0]):
+                continue
+            if not diccionario[programa[0]].has_key(departamento[0]):
+                continue
+            linea = ['','DEPARTAMENTO',departamento[1]]
+            writer.append([''])
+            writer.append(linea)
+            #writer_dict.append([''])
+            #writer_dict.append(linea)
+            j = 0
+            claves  = diccionario[programa[0]][departamento[0]].keys()
+            claves.sort()
+            for empleado in claves:
+                j += 1
+                linea = [j]
+                ocurrencias = False
+                ocur_aux = re.finditer(" ",empleado)
+                ocur_index = 0
+                for m in ocur_aux:
+                    ocur_index += 1
+                    ocurrencias = m.start()
+                if ocur_index == 3:
+                    linea.append(empleado[0:ocurrencias])
+                else:
+#                    linea.append(empleado)
+                    linea.append(diccionario[programa[0]][departamento[0]][empleado]['nombre'])
+                for rubro in rubros_clean:
+#                    j += 1
+                    if not pie.has_key(rubro[0]):
+                        pie.update({rubro[0]:0.00})
+                    if diccionario[programa[0]][departamento[0]][empleado].has_key(rubro[0]):
+                        linea.append(diccionario[programa[0]][departamento[0]][empleado][rubro[0]])
+                        pie[rubro[0]] = pie[rubro[0]] + diccionario[programa[0]][departamento[0]][empleado][rubro[0]]
+                    else:
+                        linea.append(0.00)
+                #linea.append('510306')
+                #import pdb
+                #pdb.set_trace()
+                linea.append(diccionario[programa[0]][departamento[0]][empleado]['partida'])
+                writer.append(linea)
+                writer_dict.append(linea)
+            linea = ['','TOTAL DEPARTAMENTO']
+            for rubro in rubros_clean:
+                linea.append(pie[rubro[0]])
+            lineas_depto.append(linea)
+            #writer.append(linea)
+            #writer_dict.append(linea)
+          #total por programa
+        linea2 = ['','TOTAL PROGRAMA']
+#        total_todo = []
+        #import pdb
+        #pdb.set_trace()
+        if lineas_depto:
+            for m in range(len(lineas_depto[0])):
+                if m>1:
+                    aux_sum = 0
+                    for line_dp in lineas_depto:
+                        aux_sum += line_dp[m]
+                    linea2.append(aux_sum)
+        writer.append(linea2)
+        writer_dict.append(linea2)
+        total_todo.append(linea2)
+#        writer.save("resumen_rol.xls")
+#        out = open("resumen_rol.xls","rb").read().encode("base64")
+#        self.write(cr, uid, ids, {'datas': out, 'datas_fname': 'resumen_rol.xls'})
+        return writer_dict
+        
+            
+      
+report_sxw.report_sxw('report.rol_transporte',
+                       'hr.payslip.run', 
+                       'addons/mod_riobamba/report/rol_transporte.mako',
+                       parser=rol_transporte,
+                       header=False)

@@ -1,0 +1,17 @@
+<openerp>
+<data>
+	
+    <record model="ir.ui.view" id="vinculation_expedient_form">
+        <field name="name">vinculation.expedient.form</field>
+        <field name="type">form</field>
+        <field name="model">hr.vinculation</field>
+        <field name="inherit_id" ref="gt_hr_vinculation.view_vinculation_form"/>
+        <field name="arch" type="xml">
+          <field name="date_create" position="after">
+			<field name="tramite_id" colspan="2" attrs="{'readonly': [('state', 'not in',('start'))]}"/>
+		  </field>
+        </field>
+    </record>
+                       
+</data>
+</openerp>

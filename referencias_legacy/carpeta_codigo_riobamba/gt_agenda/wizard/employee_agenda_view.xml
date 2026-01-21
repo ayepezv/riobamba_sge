@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="hr_empleado_line" model="ir.actions.act_window">
+        <field name="name">Listado Empleados</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.employee.exec</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+	  
+      <record id="hr_employee_exec_form_agenda" model="ir.ui.view">
+        <field name="name">hr.employee.form.agenda</field>
+        <field name="model">hr.employee.exec</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Listado Empleados">      
+            <field name="employee_idse" widget="many2many" nolabel="1" select="1" colspan="4"  context="{'tree_view_ref':'gt_agenda.view_employee_agenda_tree','search_view_ref':'gt_agenda.view_employee_agenda_search'}">                        
+              <tree editable="bottom">
+                <field name="complete_name" readonly='1'/>
+                    	<field name="department_id" readonly='1'/>
+                        <field name="job_id" readonly='1'/>                              	
+                        <field name="email" />
+                        <field name="work_email" />                    		                        			
+                    </tree>
+                 </field>
+                  
+                  <separator string="" colspan="4" />
+                  <label string="" colspan="2"/>
+                  <group col="2" colspan="2">
+                    <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+                    <button name="do_exec" string="Agregar Asistentes" colspan="1" type="object" icon="gtk-go-forward" />
+                  </group>
+                </form>
+            </field>
+        </record>
+		
+        
+
+    </data>
+</openerp>

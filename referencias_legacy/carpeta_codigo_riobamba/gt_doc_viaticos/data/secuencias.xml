@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data noupdate="1">
+    <!--data-->
+    	
+        <record id="seq_type_solicitud_viaticos" model="ir.sequence.type">
+            <field name="name">Solicitud Viaticos</field>
+            <field name="code">viaticos.solicitud</field>
+        </record>
+        
+        <record id="seq_solicitud_viaticos" model="ir.sequence">
+            <field name="name">Secuencia de Solicitud Viaticos</field>
+            <field name="code">viaticos.solicitud</field>
+            <field name="padding">6</field>
+        </record>
+        
+        <record id="seq_type_solicitud_salidas" model="ir.sequence.type">
+            <field name="name">Solicitud Salidas</field>
+            <field name="code">salidas.solicitud</field>
+        </record>
+        
+        <record id="seq_solicitud_salidas" model="ir.sequence">
+            <field name="name">Secuencia de Solicitud Salidas</field>
+            <field name="code">salidas.solicitud</field>
+            <field name="padding">6</field>
+        </record>
+        
+    </data>
+</openerp>

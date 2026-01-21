@@ -1,0 +1,24 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_verificar_funcionario,verificar.funcionario,model_verificar_funcionario,gt_document_manager.group_doc_user,1,0,0,0
+access_roles_empleado,roles.empleado,model_roles_empleado,gt_document_manager.group_doc_user,1,0,0,0
+access_roles_empleado_line,roles.empleado.line,model_roles_empleado_line,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip doc,hr.payslip,hr_payroll.model_hr_payslip,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_work_period_line doc,hr.work.period.line,gt_hr_base.model_hr_work_period_line,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_contract_type_type doc,hr.contract.type.type,gt_hr_base.model_hr_contract_type_type,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_salary_rule_category doc,hr.salary.rule.category,hr_payroll.model_hr_salary_rule_category,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip_run doc,hr.payslip.run,hr_payroll.model_hr_payslip_run,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip docr,hr.payslip,hr_payroll.model_hr_payslip,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_work_period_line docr,hr.work.period.line,gt_hr_base.model_hr_work_period_line,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_contract_type_type docr,hr.contract.type.type,gt_hr_base.model_hr_contract_type_type,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_salary_rule_category docr,hr.salary.rule.category,hr_payroll.model_hr_salary_rule_category,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_payslip_run docr,hr.payslip.run,hr_payroll.model_hr_payslip_run,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_contract docr,hr.contract,hr_contract.model_hr_contract,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_contract doc usr,hr.contract,hr_contract.model_hr_contract,gt_document_manager.group_doc_user,1,0,0,0
+access_hr_payslip_line docr,hr.payslip.line,hr_payroll.model_hr_payslip_line,gt_document_manager.group_doc_readonly,1,0,0,0
+access_hr_payslip_line doc usr,hr.payslip.line,hr_payroll.model_hr_payslip_line,gt_document_manager.group_doc_user,1,0,0,0
+access_cumpleanios,cumpleanios,model_cumpleanios,gt_document_manager.group_doc_user,1,0,0,0
+access_cumpleanios_line,cumpleanios.line,model_cumpleanios_line,gt_document_manager.group_doc_user,1,0,0,0
+access_activos_empleado,activos.empleado,model_activos_empleado,gt_document_manager.group_doc_user,1,0,0,0
+access_activos_empleado_line,activos.empleado.line,model_activos_empleado_line,gt_document_manager.group_doc_user,1,0,0,0
+access_funcionario_proyeccion,funcionario.proyeccion,model_funcionario_proyeccion,gt_document_manager.group_doc_user,1,1,1,1
+

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+<!-- REQ CAJA CHICA -->
+
+<record id="view_sol_caja_chica_tree" model="ir.ui.view">
+  <field name="name">view.sol.caja.chica.tree</field>
+  <field name="model">caja.chica.solicitud</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree>
+      <field name="date" select="1"/>
+      <field name="name" select="1"/>
+      <field name="solicita_id" select="1"/>
+      <field name="asset_id" select="1"/>
+      <field name="desc" select="1"/>
+    </tree>
+  </field>
+</record>
+	
+<record id="view_sol_caja_chica_form" model="ir.ui.view">
+  <field name="name">caja.chica.solicitud.form</field>
+  <field name="model">caja.chica.solicitud</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Caja Chica">
+      <group colspan="4" col="6">
+	<group colspan="4" col="6">
+	  <field name="name" string="Codigo" readonly="1" colspan="2" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="create_user_id" colspan="2" readonly="1" string="Creado por:"/>
+	  <newline/>
+	  <field name="date" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="solicita_id" 
+		 attrs="{'readonly': [('state', 'not in',('Borrador'))]}" required="1"/>
+	  <newline/>
+	  <field name="aprobador_id" required="1" colspan="4"/>
+	  <newline/>
+	  <field name="department_id" readonly="1" colspan="4"/>
+	  <newline/>
+	  <field name="asset_id" colspan="4" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <newline/>
+	  <field name="desc" colspan="4" required="1" 
+		 attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	</group>
+      </group>
+      <notebook colspan="4">
+	<page string="Detalle">
+	  <field colspan="4" name="line_ids" nolabel="1" widget="one2many_list" 
+		 attrs="{'readonly': [('state', 'not in',('Borrador'))]}">
+	    <tree string="Detalle de productos" editable="bottom">
+	      <field name="name" required="1"/>
+	      <field name="unidad" required="1"/>
+	      <field name="qty" required="1"/>
+	      <field name="pu" required="1"/>
+	      <field name="subtotal"/>
+	    </tree>
+	  </field>
+	  <group colspan="4" col="9">
+	    <button name="print_sol_caja" colspan="4" states="Solicitado" string="Imprimir" 
+		    type="object" icon="gtk-print"/> 
+	    <field name="state" readonly="1" widget="statusbar" statusbar_visible="Borrador,Solicitado" 
+		   statusbar_colors='{"auto":"blue", "Solicitado":"blue"}'/>
+	    <button name="return_caja_draft" states="Solicitado" type="object" string="Regresar a borrador" 
+		    confirm="Solo el usuario creador del requerimiento puede regresar, esta seguro que desea regresar" 
+		    icon="gtk-execute"/>
+	    <button name="caja_draft_solicitado" states="Borrador" string="Solicitar" type="object" icon="gtk-media-play"/>
+	  </group>
+	</page>
+      </notebook>
+    </form>
+  </field>
+</record>
+
+<record id="view_caja_chica_sol_search_doc" model="ir.ui.view">
+  <field name="name">caja.chica.solicitud.search.gpa</field>
+  <field name="model">caja.chica.solicitud</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Caja chica">
+      <group>
+	<separator orientation="vertical"/>
+	<field name="name"/>
+	<field name="solicita_id"/>
+	<field name="asset_id"/>
+	<field name="date"/>
+      </group>
+    </search>
+  </field>
+</record>
+	
+<record model="ir.actions.act_window" id="action_sol_caja">
+  <field name="name">Solicitud</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">caja.chica.solicitud</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[('create_user_id','=',uid)]</field>
+</record>
+
+<record model="ir.actions.act_window" id="action_sol_caja_all">
+  <field name="name">Todos</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">caja.chica.solicitud</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<!-- VALES DE CAJA CHICA -->
+
+<record id="view_vale_caja_chica_tree" model="ir.ui.view">
+  <field name="name">view.vale.caja.chica.tree</field>
+  <field name="model">caja.chica.vale</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree>
+      <field name="name" select="1"/>
+      <field name="date" select="1"/>
+      <field name="unidad_id" select="1"/>
+      <field name="concepto" select="1"/>
+      <field name="detalle" select="1"/>
+    </tree>
+  </field>
+</record>
+	
+<record id="view_vale_caja_chica_form" model="ir.ui.view">
+  <field name="name">caja.chica.vale.form</field>
+  <field name="model">caja.chica.vale</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Caja Chica">
+      <group colspan="4" col="6">
+	<group colspan="4" col="4">
+	  <field name="name" string="Codigo" readonly="1" colspan="2" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="create_user_id" colspan="2" readonly="1" string="Creado por:"/>
+	  <newline/>
+	  <field name="date" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="unidad_id" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="lugar_id" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <!--field name="solicita_id" 
+		 attrs="{'readonly': [('state', 'not in',('Borrador'))]}" required="1"/-->
+	  <field name="solicitud_id" required="1" on_change="onchange_solicitud_vale(solicitud_id)" 
+		 attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <newline/>
+	  <field name="concepto" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="detalle" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	</group>
+	<group colspan="4" col="6">
+	  <field name="subtotal" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="retencion" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	  <field name="cantidad" required="1" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+	</group>	
+      </group>
+      <group colspan="4" col="6">
+	<field name="state" readonly="1"/>
+	<button name="return_vale_draft" states="Ejecutado" type="object" string="Regresar a borrador" 
+		confirm="Solo el usuario creador del requerimiento puede regresar, esta seguro que desea regresar" 
+		icon="gtk-execute"/>
+	<button name="vale_draft_ejecutado" states="Borrador" string="Ejecutar" type="object" icon="gtk-media-play"/>
+	<button name="print_vale_caja" colspan="4" states="Ejecutado" string="Imprimir" 
+		type="object" icon="gtk-print"/> 
+      </group>
+    </form>
+  </field>
+</record>
+
+<record id="view_caja_chica_vale_search_doc" model="ir.ui.view">
+  <field name="name">caja.chica.vale.search</field>
+  <field name="model">caja.chica.vale</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Caja chica">
+      <group>
+	<separator orientation="vertical"/>
+	<field name="name"/>
+	<field name="unidad_id"/>
+	<field name="date"/>
+      </group>
+    </search>
+  </field>
+</record>
+	
+<record model="ir.actions.act_window" id="action_vale_caja">
+  <field name="name">Vale Caja Chica</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">caja.chica.vale</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+<!-- -->
+
+<menuitem id="menu_parent_chica" parent="gt_document_manager.menu_document_manager" 
+	  name="Caja Chica" sequence="6" groups="gt_document_manager.group_doc_user"/>
+
+<menuitem id="menu_solicitud_caja" parent="menu_parent_chica" 
+	  name="Solicitud" sequence="1" action="action_sol_caja" groups="gt_document_manager.group_doc_user"/>
+
+<menuitem id="menu_vale_caja" parent="menu_parent_chica" 
+	  name="Vale caja chica" sequence="1" action="action_vale_caja" groups=""/>
+
+<menuitem id="menu_solicitud_caja_all" parent="menu_parent_chica" 
+	  name="Todos" sequence="2" action="action_sol_caja_all" groups="group_vale_manager"/>
+<!-- -->
+
+<record model="ir.ui.view" id="purchase_req_inherit_2">
+  <field name="name">purchase.req.form.inherit2</field>
+  <field name="type">form</field>
+  <field name="model">purchase.requisition</field>
+  <field name="inherit_id" ref="gt_government_procedure.purchase_req_inherit"/>
+  <field name="arch" type="xml">
+    <xpath expr="/form/notebook/page[@string='Registro de cotizaciones']/field[@name='purchase_ids']/form/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+      <field name="product_uom" required="1"/>
+    </xpath>
+  </field>
+</record>
+
+
+      <!-- requisition sin required producto -->
+      
+      <record model="ir.ui.view" id="view_purchaserq_norequired">
+	<field name="name">purchase.requisition.noreq</field>
+	<field name="type">form</field>
+	<field name="model">purchase.requisition</field>
+	<field name="inherit_id" ref="gt_government_procedure.purchase_req_inherit"/>
+	<field name="arch" type="xml">
+	  <field  name='date_start'>
+	    <field name='date_start' attrs="{'readonly': [('state', 'not in',('draft','start'))]}"/>
+	  </field>
+	  <field name="total_compra" position="after">
+	    <field name='aprueba_aux' colspan="4" attrs="{'readonly': [('state', 'not in',('draft','start'))]}"/>
+	  </field>
+	  <field name='presp_ref' position="replace">
+	    <field name="partida_aux" colspan="4"/>
+	  </field>
+	  <xpath expr="/form/notebook/page[@string='Products']/field[@name='line_ids']" position="replace">
+	    <field name="line_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', 'not in',('draft','start','aproved'))]}">
+	      <tree string="Products" editable="bottom">
+		<field name="product_id" domain="[('type','in',parent.str_tipos.split())]"
+		       on_change="onchange_product_id(product_id,product_uom_id)" required="0"
+		       attrs="{'readonly': [('state', 'not in',('draft','start'))]}"/>
+		<field name="product_qty" required="1" attrs="{'readonly': [('state', 'not in',('draft','start','aproved'))]}"/>
+		<field name="desc" attrs="{'readonly': [('state', 'not in',('draft','start'))]}" required="1"/>
+		<field name="state" invisible="1"/>
+	      </tree>
+	    </field>
+	  </xpath>
+	</field>
+      </record>
+
+<record id="view_account_asset_asset2_1_form" model="ir.ui.view">
+  <field name="name">account.asset.asset21.form_asset</field>
+  <field name="model">account.asset.asset</field>
+  <field name="inherit_id" ref="gt_account_asset.view_account_asset_asset2_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="/form/notebook/page[@string='Requerimientos']" position="after">
+      <page string="Caja Chica">
+	<field name="caja_ids" nolabel="1" readonly="1" colspan="4">
+	  <tree>
+	    <field name="name"/>
+	    <field name="date"/>
+	    <field name="solicita_id"/>
+	  </tree>
+	</field>
+      </page>
+    </xpath>
+  </field>
+</record>
+
+
+    </data>
+</openerp>
+

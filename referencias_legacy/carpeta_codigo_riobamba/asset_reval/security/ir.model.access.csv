@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"account_asset_reval","account.asset.reval","model_account_asset_reval","gt_account_asset.group_gt_account_asset_manager",1,1,1,1
+"account_asset_reval_user","account.asset.reval","model_account_asset_reval","gt_account_asset.group_gt_account_asset_user",1,1,1,0
+"account_asset_reval_cotiza","reval.cotiza","model_reval_cotiza","gt_account_asset.group_gt_account_asset_manager",1,1,1,1
+"account_asset_reval_cotiza_user","reval.cotiza","model_reval_cotiza","gt_account_asset.group_gt_account_asset_user",1,1,1,0

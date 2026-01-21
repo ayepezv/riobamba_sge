@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<openerp>
+    <data> <!-- vista principal es la superior la del modulo mecanica
+		-->
+
+    <menuitem id="menu_mecanica" name="Mecanica" web_icon="images/mecanica.png" web_icon_hover="images/mecanica.png"/>
+
+
+
+<!-- vista de asistente para cargar los requerimientos -->
+        <record id="view_import_rqm_mantenimiento_wizard" model="ir.ui.view">
+            <field name="name">Importar Requerimiento</field>
+            <field name="model">import.rqm.mantenimiento</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Importar Requerimiento">
+                <label string="Este asistente realiza la importacion del requerimiento solicitado" colspan="4"/>
+                <field name="rqm_id_mant" domain="[('objeto_id_id','=',activo_vehiculo_id)]" colspan="4"/> <!-- coompara el objeto_id_id que es el campo de vehiculo maquinaria que esta en la tabla stock_requisition compara con el campo activo_vehiculo que esta la tabla vehiculo -->
+                
+                <newline/>
+                <separator colspan="4"/>
+                <group col="2" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" />
+                  <button name="import_rqm_mantenimiento_vehiculo" string="Importar"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Importar Requerimiento "
+            res_model="import.rqm.mantenimiento"
+            src_model="vehiculo"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_import_rqm_mecanica"/>
+<!-- fin -->
+
+<!-- vista de asistente para cargar las cajas chicas -->
+
+        <record id="view_import_caja_mantenimiento_wizard" model="ir.ui.view">
+            <field name="name">Importar Caja Chica</field>
+            <field name="model">import.caja.mantenimiento</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Importar Caja Chica">
+                <label string="Este asistente realiza la importacion de la caja chica solicitada" colspan="4"/>
+                <field name="caja_id_mant" domain="[('asset_id','=',activo_vehiculo_id)]" colspan="4"/> <!-- coompara el objeto_id_id que es el campo de vehiculo maquinaria que esta en la tabla stock_requisition compara con el campo activo_vehiculo que esta la tabla vehiculo -->
+                
+                <newline/>
+                <separator colspan="4"/>
+                <group col="2" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" />
+                  <button name="import_caja_mantenimiento_vehiculo" string="Importar"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+
+        <act_window name="Importar Caja Chica "
+            res_model="import.caja.mantenimiento"
+            src_model="vehiculo"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_import_caja_mecanica"/>
+<!-- fin -->
+
+	<!-- formulario de vista tree -->	  
+      <record id="view_vehiculo_tree" model="ir.ui.view">
+		<field name="name">vehiculo.tree</field>
+		<field name="model">vehiculo</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+		  <tree string="Vehiculos" >
+			<field name="name"/>
+                        <field name="activo_vehiculo_id"/>
+		  </tree>
+		</field>
+      </record>
+
+<!-- formulario de vehiculo -->
+      <record model="ir.ui.view" id="view_vehiculo_form">
+		<field name="name">vehiculo.form</field>
+		<field name="model">vehiculo</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		  <form string="Vehiculo">
+			<group col="4" colspan="4">
+			  <field name="name" colspan="2" /> <!-- cuando readonly="1"  que se activa para solo lectura-->
+                          <field name="create_user_id" colspan="2" readonly="1" string="Creado por:"/>
+                          <field name="activo_vehiculo_id" colspan="4" required="1" domain="[('category_id','=',5)]" widget="selection"/>                   
+                          
+                          
+			  <newline/>
+		        </group>
+			  <newline/>
+
+      <notebook colspan="4">
+      <!-- pagina de lubricacion del vehiculo-->
+	<page string="Lubricacion">
+	  <field colspan="4" name="lubricante_ids" nolabel="1" widget="one2many_list">
+	    <tree string="Lubricacion de Vehiculos" editable="bottom">
+              <field name="fecha" required="1"/>
+              <field name="tipo_lubricante_id" required="1"/>
+       <!--        <field name="lubricante_id" required="1"/>-->
+              <field name="cantidad" required="1"/>
+              <field name="unidad_id" required="1"/>
+	      <field name="name" required="1"/>
+              <field name="proximo_cambio_kilometraje" required="1"/>
+              <field name="tipo_cambio_id" required="1"/>
+
+	    </tree>
+	  </field>
+
+	</page>
+        <!-- pagina de mantenimiento de vehiculo               ESTO SE LE KITA PARA PONER UN ASISTENTE APARTE-->
+        <page string="Repuestos, Reparación y Mantenimiento">
+
+	  <field colspan="4" name="mantenimiento_ids" nolabel="1" widget="one2many_list">
+	    <tree string="Mantenimiento de Vehiculos" editable="bottom">
+		<field name="date"/>		
+                <field name="name" select="1"/>
+                <field name="cantidad"/>
+		<field name="unidad_id"/>
+		<field name="kilometraje"/>
+                <field name="requerimiento_cajachica"/>
+		<field name="observaciones"/> 	
+
+	    </tree>
+	  </field>
+        </page>     
+        <!-- pagina de combustibles de vehiculo -->
+	<page string="Combustibles">
+	  <field colspan="4" name="combustible_ids" nolabel="1" widget="one2many_list"> 
+	    <tree string="Combustibles de Vehiculos" editable="bottom">
+              <field name="date" required="1"/>
+              <field name="cantidad" required="1"/>
+              <field name="name" required="1"/>
+            </tree> 
+	  </field>    
+
+	<!--    <button name="calcular_combustibles" colspan="2" string="Calcular" type="object" />     -->             	  
+	</page>
+
+      </notebook>
+			
+
+		  </form>
+		</field>
+      </record>
+
+	<!-- formulario de vista para la busqueda del objeto lubricacion
+		-->
+      <record id="view_vehiculo_filter" model="ir.ui.view">
+	<field name="name">Vehiculo Busqueda</field>
+	<field name="model">vehiculo</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Vehiculos">
+	    <field name="name"/>
+            <field name="activo_vehiculo_id" string="Vehiculo"/>
+	    <newline />
+	    <newline />
+	  </search>
+	</field>
+      </record>
+
+	<!-- Redefinicion del menu de activos fijos y
+		 de bienes sujetos a control -->
+   
+    <record model="ir.actions.act_window" id="action_vehiculo_mecanica">
+        <field name="name">Vehiculos</field>
+        <field name="res_model">vehiculo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_type">form</field>
+		<field name="domain">[('type','=','Vehiculo')]</field>
+		<field name="context">{'default_type': 'Vehiculo'}</field> 
+        <field name="view_id" ref="view_vehiculo_tree"/>
+        <field name="search_view_id" ref="view_vehiculo_filter"/>
+
+    </record>
+
+    <menuitem id="menu_mecanica_vehiculo"  parent="menu_mecanica" name="Vehiculos" action="action_vehiculo_mecanica"/>
+
+    <menuitem id="menu_reportes"  parent="menu_mecanica" name="Reportes" />
+
+    </data>
+</openerp>

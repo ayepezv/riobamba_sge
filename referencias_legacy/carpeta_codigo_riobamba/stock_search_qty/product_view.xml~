@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Add the new filters to search by quantity -->
+        <record id="product_search_view" model="ir.ui.view">
+            <field name="name">stock_search_qty.product.search</field>
+            <field name="model">product.product</field>
+            <field name="type">search</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <!-- add the new filters -->
+                <xpath expr="//filter[@name='filter_to_purchase']" position="after">
+                    <separator orientation="vertical"/>
+                    <filter string="Available" name="filter_available"
+                        icon="terp-accessories-archiver" 
+                        domain="[('qty_available', '&gt;', 0.0)]"/>
+                    <filter string="Out of Stock" name="filter_unavailable"
+                        icon="terp-dialog-close" 
+                        domain="[('qty_available', '=', 0.0)]"/>
+                    <filter string="In Virtual Stock" name="filter_virtual_available"
+                        icon="terp-accessories-archiver"
+                        domain="[('virtual_available', '&gt;', 0.0)]"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

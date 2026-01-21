@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      <menuitem sequence="0" name="Parte Diario"
+		id="menu_diario"  parent="siim_integration.menu_finance_recaudacion" groups="account.group_account_manager"/>
+      <!-- PARTE DIARIO -->
+      <record id="view_rec_manual_form" model="ir.ui.view">
+	<field name="name">rec.manual.form</field>
+        <field name="model">recaudacion.manual</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Recaudacion Diaria" col='1'>
+            <group colspan="4" col="4">
+	      <field name="name" select="1" required="1" colspan="2"/>
+	      <field name="bank_id" select="1" required="1" colspan="2"/>
+              <field name="desc" select="1" required="1" colspan="4"/>
+	      <field name="move_id" select="1" readonly="1" colspan="2"/>
+	      <field name="state" select="1" readonly="1" colspan="2"/>
+	    </group>
+            <group colspan="4" col="5">
+	      <button name="generarComprobanteManual" 
+		      string="Generar Comprobante" type="object" icon="gtk-execute"/>
+	    </group>
+	    <field name="line_ids">
+	      <tree editable="top">
+		<field name="budget_id" required="1" on_change="onchange_budget_manual(budget_id)"/>
+		<!--field name='account_id'/-->
+		<field name="genera_emision"/>
+		<field name="monto" required="1" sum="TOTAL"/>
+	      </tree>
+	    </field>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_rec_manual_tree" model="ir.ui.view">
+	<field name="name">rec.manual.tree</field>
+	<field name="model">recaudacion.manual</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Recaudacion Diaria" colors="blue:state=='Pendiente'; green:state=='Realizado'">
+	    <field name="name"/>
+	    <field name="desc"/>
+	    <field name="state"/>
+	    <field name="bank_id"/>
+	  </tree>
+	</field>
+      </record>
+<record id="action_rec_manual" model="ir.actions.act_window">
+  <field name="name">Recaudacion Diaria</field>
+  <field name="res_model">recaudacion.manual</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_rec_manual" icon="STOCK_JUSTIFY_FILL" sequence="1"
+	  id="menu_action_rec_manual"  parent="menu_diario" groups="account.group_account_manager"/>
+
+      <record id="view_budget_titulo_form" model="ir.ui.view">
+	<field name="name">budget.titulo.form</field>
+        <field name="model">budget.titulo</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Partida">
+	    <field name="name"/>
+	    <field name="is_titulo"/>
+	  </form>
+	</field>
+      </record>
+      
+      
+      <record id="view_budget_titulo_tree" model="ir.ui.view">
+	<field name="name">budget.titulo.tree</field>
+	<field name="model">budget.titulo</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Partida">
+	    <field name="name"/>
+	    <field name="is_titulo"/>
+	  </tree>
+	</field>
+      </record>
+<record id="action_partida_emision" model="ir.actions.act_window">
+  <field name="name">Partida Anio Anterior</field>
+  <field name="res_model">budget.titulo</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_partida_emision" icon="STOCK_JUSTIFY_FILL" sequence="2"
+	  id="menu_action_partida_emision"  parent="menu_diario" groups="account.group_account_manager"/>
+    </data>
+</openerp>

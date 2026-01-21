@@ -1,0 +1,49 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_account_authorisation","account.authorisation","model_account_authorisation","account.group_account_invoice",1,1,1,0
+"access_account_retention","account.retention","model_account_retention","account.group_account_invoice",1,1,1,0
+"access_account_retention_cache","account.retention.cache","model_account_retention_cache","account.group_account_invoice",1,0,1,0
+"access_account_authorisation1","account.authorisation","model_account_authorisation","base.group_sale_manager",1,1,1,1
+"access_account_authorisation2","account.authorisation","model_account_authorisation","base.group_sale_salesman",1,1,1,1
+"access_account_ats_doc","account.ats.doc","model_account_ats_doc","account.group_account_invoice",1,1,1,0
+"access_account_ats_sustento","account.ats.sustento","model_account_ats_sustento","account.group_account_invoice",1,1,1,0
+"access_config_cxp","config.cxp","model_config_cxp","account.group_account_invoice",1,1,1,0
+access_account_payment_sri,account.payment.sri,model_account_payment_sri,account.group_account_invoice,1,1,1,1
+access_project_on_invoice,project.project on invoice,project.model_project_project,account.group_account_invoice,1,0,0,0
+access_budget_certificate_invoice,budget.certificate.invoice,gt_budget.model_budget_certificate,account.group_account_invoice,1,0,0,0
+access_budget_certificate_line_invoice,budget.certificate.line.invoice,gt_budget.model_budget_certificate_line,account.group_account_invoice,1,0,0,0
+access_account_move_invoicemc,account.move,model_account_move,account.group_account_invoice,1,1,1,1
+access_account_move_line_uinvoicemc,account.move.line invoice,model_account_move_line,account.group_account_invoice,1,1,1,1
+access_account_move_invoicemcacc,account.move,model_account_move,account.group_account_user,1,1,1,1
+access_account_move_line_uinvoicemcacc,account.move.line invoice,model_account_move_line,account.group_account_user,1,1,1,1
+access_account_move_invoicemcaccmn,account.move,model_account_move,account.group_account_manager,1,1,1,1
+access_account_move_line_uinvoicemcaccmn,account.move.line invoice,model_account_move_line,account.group_account_manager,1,1,1,1
+access_account_part_usr,res.partner,base.model_res_partner,account.group_account_user,1,1,1,1
+access_account_part_mnr,res.partner,base.model_res_partner,account.group_account_manager,1,1,1,1
+access_account_part_bank_usr,res.partner.bank,base.model_res_partner_bank,account.group_account_user,1,1,1,1
+access_account_part_bank_mn,res.partner.bank,base.model_res_partner_bank,account.group_account_manager,1,1,1,1
+access_account_pricelist_usr,product.pricelist,product.model_product_pricelist,account.group_account_user,1,1,1,1
+access_account_pricelist_mn,product.pricelist,product.model_product_pricelist,account.group_account_manager,1,1,1,1
+access_account_property_usr,ir.property,base.model_ir_property,account.group_account_user,1,1,1,1
+access_account_property_mn,ir.property,base.model_ir_property,account.group_account_manager,1,1,1,1
+access_account_bank_usr,res.bank,base.model_res_bank,account.group_account_user,1,1,1,1
+access_account_bank_mn,res.bank,base.model_res_bank,account.group_account_manager,1,1,1,1
+"access_account_preasiento","pre.asiento","model_pre_asiento","account.group_account_manager",1,1,1,0
+"access_account_preasiento_line","pre.asiento.line","model_pre_asiento_line","account.group_account_manager",1,1,1,0
+"access_validate_move","validate.move","model_validate_move","account.group_account_manager",1,1,1,0
+"access_validate_move_line","validate.move.line","model_validate_move_line","account.group_account_manager",1,1,1,0
+"access_balance_cedula","balance.cedula","model_balance_cedula","account.group_account_manager",1,1,1,1
+"access_cta_partida","cta.partida","model_cta_partida","account.group_account_manager",1,1,1,1
+access_account_project_task,project.task,project.model_project_task,account.group_account_user,1,0,0,0
+access_account_budget_post,budget.post,gt_budget.model_budget_post,account.group_account_user,1,0,0,0
+access_account_budget_item,budget.item,gt_budget.model_budget_item,account.group_account_user,1,0,0,0
+access_account_product_category,product.category,product.model_product_category,account.group_account_user,1,0,0,0
+access_account_tax_map,account.tax.map,model_account_tax_map,account.group_account_user,1,1,1,1
+access_account_digital_retention,digital.retention,model_digital_retention,account.group_account_manager,1,1,1,1
+access_account_digital_retention_process,digital.retention.process,model_digital_retention_process,account.group_account_manager,1,1,1,1
+access_account_pago_atahc_sri,ir.attachment,base.model_ir_attachment,account.group_account_invoice,1,1,1,1
+access_account_no_partida,no.partida,model_no_partida,account.group_account_user,1,1,1,1
+access_account_no_partida_mn,no.partida,model_no_partida,account.group_account_manager,1,1,1,1
+access_pay_fondo_sri,pay.fondo.sri,model_pay_fondo_sri,account.group_account_user,1,1,1,1
+access_pay_fondo_sri_mn,pay.fondo.sri,model_pay_fondo_sri,account.group_account_manager,1,1,1,1
+access_cuenta_anterior,cuenta.anterior,model_cuenta_anterior,account.group_account_user,1,1,1,1
+access_cuenta_anterior_mn,cuenta.anterior,model_cuenta_anterior,account.group_account_manager,1,1,1,1

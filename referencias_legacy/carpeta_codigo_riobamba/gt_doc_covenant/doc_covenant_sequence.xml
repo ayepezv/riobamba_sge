@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+	<!-- Sequences for doc.expedient --> 
+        <record id="doc_covenant_covenant" model="ir.sequence.type">
+            <field name="name">Doc Covenant</field>
+            <field name="code">seq.doc.covenant</field>
+        </record>
+        <record id="seq_doc_covenant_covenant" model="ir.sequence">
+            <field name="name">Doc Covenant Covenant</field>
+            <field name="code">seq.doc.covenant</field>
+            <field name="suffix">-CV-%(month)s-%(year)s</field>
+            <field name="padding">4</field>
+        </record>
+
+        <!-- Sequences for doc_covenant.beneficiary --> 
+        <record id="seq_doc_covenant_beneficiary" model="ir.sequence.type">
+            <field name="name">Doc Covenant Beneficiary</field>
+            <field name="code">doc.covenant.beneficiary</field>
+        </record>
+        <record id="seq_covenant_beneficiary" model="ir.sequence">
+            <field name="name">Covenant Beneficiary</field>
+            <field name="code">doc.covenant.beneficiary</field>
+            <field name="padding">5</field>
+        </record>
+
+	<!-- Sequences for doc_covenant.work --> 
+        <record id="seq_doc_covenant_work" model="ir.sequence.type">
+            <field name="name">Doc Covenant Work</field>
+            <field name="code">doc.covenant.work</field>
+        </record>
+        <record id="seq_covenant_work" model="ir.sequence">
+            <field name="name">Covenant Work</field>
+            <field name="code">doc.covenant.work</field>
+            <field name="padding">4</field>
+        </record>
+
+
+
+        
+    </data>
+</openerp>

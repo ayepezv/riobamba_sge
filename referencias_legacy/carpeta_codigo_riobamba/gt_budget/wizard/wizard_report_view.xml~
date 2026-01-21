@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+  
+      <record id="view_print_budget_card" model="ir.ui.view">
+        <field name="name">Cedula Presupuestaria</field>
+        <field name="model">report.budget.card</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cédula Presupuestaria">				
+            <group colspan="4" string="Cédula Presupuestaria">
+	      <field name="fiscalyear" required="1"/>
+	      <field name="period_from" string='Período Inicio' required="1" 
+		     colspan="2" domain="[('fiscalyear_id','=',fiscalyear),('special','=',False)]"/>
+	      <field name="period_to" string='Período Fin' required="1" 
+		     colspan="2" domain="[('fiscalyear_id','=',fiscalyear),('special','=',False)]"/>
+	      <field name="project" colspan="4"/>
+	      <field name="project_id" colspan="2" 
+				 attrs="{'invisible': [('project', '==',False)], 'required': [('project','=',True)]}"/>
+	    </group>
+            <separator  colspan="4" />
+	    <button icon="gtk-cancel" special="cancel" string="Salir" />
+	    <button name="print_report" type="object" icon="gtk-print" string="Imprimir"/>
+	  </form>
+        </field>
+      </record> 
+      
+    <record id="action_print_budget_card" model="ir.actions.act_window">
+      <field name="name">Ejecución Presupuestaria</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">report.budget.card</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>	
+      <field name="view_id" ref="view_print_budget_card"/>
+      <field name="context">{'report_name':'BudgetCard'}</field> 
+      <field name="target">new</field>	  	          
+    </record> 
+    	
+    <record model="ir.values" id="action_print_budget_card_value">
+      <field name="model_id" ref="gt_budget.model_budget_poa" />
+      <field name="name">Ejecución Presupuestaria</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card'))" />
+      <field name="key">action</field>
+      <field name="model">budget.poa</field>
+    </record>
+    
+    <record id="action_print_budget_card_income" model="ir.actions.act_window">
+	  <field name="name">Resumen Cédula de Ingresos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">report.budget.card</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>	
+	  <field name="view_id" ref="view_print_budget_card"/>			          
+	  <field name="target">new</field>
+	  <field name="context">{'report_name':'BudgetCardIncome'}</field>    	  	          
+    </record> 
+    	    	
+    <record model="ir.values" id="action_print_budget_card_income_value">
+      <field name="model_id" ref="gt_budget.model_budget_poa" />
+      <field name="name">Resumen Cédula de Ingresos</field>
+      <field name="key2">client_print_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card_income'))" />
+      <field name="key">action</field>
+      <field name="model">budget.poa</field>
+    </record>   
+        
+        <record id="action_print_budget_card_expense" model="ir.actions.act_window">
+	           <field name="name">Resumen Cédula de Gastos</field>
+	           <field name="type">ir.actions.act_window</field>
+	           <field name="res_model">report.budget.card</field>
+	           <field name="view_type">form</field>
+	           <field name="view_mode">form</field>	
+	           <field name="view_id" ref="view_print_budget_card"/>			          
+	           <field name="target">new</field>
+	           <field name="context">{'report_name':'BudgetCardExpense'}</field>    	  	          
+    	</record> 
+    	    	
+    	<!-- quitado record model="ir.values" id="action_print_budget_card_expense_value">
+            <field name="model_id" ref="gt_account_budget.model_crossovered_budget" />
+            <field name="name">Resumen Cédula de Gastos</field>
+            <field name="key2">client_print_multi</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card_expense'))" />
+            <field name="key">action</field>
+            <field name="model">crossovered.budget</field>
+        </record-->
+        
+        <record id="action_print_budget_card_expense_group" model="ir.actions.act_window">
+	           <field name="name">Cédula Presupuestaria de Gastos</field>
+	           <field name="type">ir.actions.act_window</field>
+	           <field name="res_model">report.budget.card</field>
+	           <field name="view_type">form</field>
+	           <field name="view_mode">form</field>	
+	           <field name="view_id" ref="view_print_budget_card"/>			          
+	           <field name="target">new</field>
+	           <field name="context">{'report_name':'BudgetCardExpenseGroup'}</field>    	  	          
+    	</record> 
+    	    	
+    	<!-- quitado record model="ir.values" id="action_print_budget_card_expense_group_value">
+            <field name="model_id" ref="gt_account_budget.model_crossovered_budget" />
+            <field name="name">Cédula Presupuestaria de Gastos</field>
+            <field name="key2">client_print_multi</field>
+            <field name="value" eval="'ir.actions.act_window,' + str(ref('action_print_budget_card_expense_group'))" />
+            <field name="key">action</field>
+            <field name="model">crossovered.budget</field>
+        </record-->
+     
+</data>
+</openerp>

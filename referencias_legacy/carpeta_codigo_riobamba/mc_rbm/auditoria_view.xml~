@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+
+<!-- ORDENES DE PAGO-->
+      <menuitem id="menu_conta_doc" 
+		parent="gt_document_manager.menu_document_manager"
+		name="Contabilidad" sequence="20"
+		groups="group_conta_doc"
+		/>
+
+<!-- ROLES DE PAGO-->
+
+      <record id="action_rol_audic" model="ir.actions.act_window">
+	<field name="name">Roles de pago</field>
+	<field name="res_model">hr.payslip.run</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_roles_auditoriac" parent="menu_conta_doc" 
+		name="Roles de pago" sequence="1"
+		action="action_rol_audic"
+		groups="group_conta_doc"/>
+
+
+<!-- ASIENTOS CONTABLES-->
+
+
+      <record id="action_account_move_audic" model="ir.actions.act_window">
+	<field name="name">Asientos Contables</field>
+	<field name="res_model">account.move</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_account_move_auditoriac" parent="menu_conta_doc" 
+		name="Asientos Contables" sequence="1"
+		action="action_account_move_audic"
+		groups="group_conta_doc"/>
+
+
+<!-- CERTIFICADOS PRESUPUESTARIOS  -->
+
+    <menuitem id="menu_budget_certificate_auditorc" action="gt_budget.action_budget_certificate" parent="menu_conta_doc"/>
+<!-- REPORTES FINANCIEROS  -->
+    <menuitem
+	name="Estados Financieros"
+	icon="STOCK_INDENT"
+	id="menu_gob_report_auditorc"
+	parent="menu_conta_doc"
+	groups="account.group_account_user,account.group_account_manager,group_conta_doc"
+	sequence="13"/>
+    <menuitem
+        icon="STOCK_INDENT"
+        action="gt_gob_report.action_gob_report_comprobacion"
+        id="menu_gob_report_comprobacion_auditc"
+        parent="menu_gob_report_auditorc"
+        groups="account.group_account_user,account.group_account_manager,group_conta_doc"
+        sequence="1"/>
+    <menuitem
+	icon="STOCK_INDENT"
+	action="gt_gob_report.action_gob_report_estadoresultados"
+	id="menu_gob_report_estadoresultados_auditorc"
+	parent="menu_gob_report_auditorc"
+	groups="account.group_account_user,account.group_account_manager,group_conta_doc"
+	sequence="2"/>
+    <menuitem
+	icon="STOCK_INDENT"
+	action="gt_gob_report.action_gob_report_estadosituacion"
+	id="menu_gob_report_estadosituacion_auditorc"
+	parent="menu_gob_report_auditorc"
+       groups="account.group_account_user,account.group_account_manager,group_conta_doc"
+       sequence="3"/>
+    <menuitem
+        icon="STOCK_INDENT"
+        action="gt_gob_report.action_gob_report_flow"
+        id="menu_gob_report_flow_auditorc"
+        parent="menu_gob_report_auditorc"
+        groups="account.group_account_user,account.group_account_manager,group_conta_doc"
+        sequence="4"/>
+    </data>
+</openerp>

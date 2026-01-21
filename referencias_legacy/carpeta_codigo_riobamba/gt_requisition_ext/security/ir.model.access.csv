@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_caja_chica_solicitud,caja.chica.solicitud,model_caja_chica_solicitud,gt_document_manager.group_doc_user,1,1,1,1
+access_caja_chica_solicitud_line,caja.chica.solicitud.line,model_caja_chica_solicitud_line,gt_document_manager.group_doc_user,1,1,1,1
+access_caja_chica_vale,caja.chica.vale,model_caja_chica_vale,group_vale_manager,1,1,1,1

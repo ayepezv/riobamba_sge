@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+<!-- WIZARD FROM OBJ
+-->
+    <record id="view_import_category" model="ir.ui.view">
+      <field name="name">Importar Categoria</field>
+      <field name="model">import.category</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_category" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_import_category" model="ir.actions.act_window">
+      <field name="name">Imp. Categorias</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.category</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <!--Importar ACtivos fijos-->
+    <record id="view_import_asset" model="ir.ui.view">
+      <field name="name">Importar Activos</field>
+      <field name="model">import.asset</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_asset" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_import_asset" model="ir.actions.act_window">
+      <field name="name">Imp. Activos</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.asset</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <!--Importar Clases-->
+    <record id="view_import_asset_class" model="ir.ui.view">
+      <field name="name">Importar Clases de Bienes</field>
+      <field name="model">import.class</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_class" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_import_asset_class" model="ir.actions.act_window">
+      <field name="name">Imp. Clases de Bienes</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.class</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <!--Importar componentes-->
+    <record id="view_import_asset_components" model="ir.ui.view">
+      <field name="name">Importar Componentes de Bienes</field>
+      <field name="model">import.components</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_componente" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_import_asset_components" model="ir.actions.act_window">
+      <field name="name">Imp. Componentes de Bienes</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.components</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <!--Importar propiedades-->
+    <record id="view_import_asset_propiedades" model="ir.ui.view">
+      <field name="name">Importar propiedades de Bienes</field>
+      <field name="model">import.propiedades</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Importar Hoja">	 
+	  <group col="4" colspan="4">
+	    <label colspan="4" nolabel="1" string="Este wizard le permite importar propiedades de un bien desde una hoja de excel (.xls)"/>
+	    <group colspan="4">
+	      <field name="archivo"/>
+	    </group>
+	    <newline/>	   
+	    <group col="3" colspan="1">
+	      <button name="import_propiedades" string="Importar" colspan="1" type="object" icon="gtk-execute"/>
+	    </group>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_import_asset_propiedades" model="ir.actions.act_window">
+      <field name="name">Imp. Propiedades de Bienes</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">import.propiedades</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_action_import_asset"
+	      icon="STOCK_EXECUTE"
+	      sequence="45"
+	      action="action_import_asset"
+	      parent="account_asset.menu_finance_config_assets"
+	      name="Importar Activos"/>
+
+    <menuitem id="menu_action_import_category"
+	      icon="STOCK_EXECUTE"
+	      sequence="40"
+	      action="action_import_category"
+	      parent="account_asset.menu_finance_config_assets"
+	      name="Importar Categoria"/>
+	      
+	<menuitem id="menu_action_import_class"
+	      icon="STOCK_EXECUTE"
+	      sequence="50"
+	      action="action_import_asset_class"
+	      parent="account_asset.menu_finance_config_assets"
+	      name="Importar Clase de Bien"/>
+	      
+	<menuitem id="menu_action_import_components"
+	      icon="STOCK_EXECUTE"
+	      sequence="60"
+	      action="action_import_asset_components"
+	      parent="account_asset.menu_finance_config_assets"
+	      name="Importar Componentes de Bien"/>
+	      
+	<menuitem id="menu_action_import_propiedades"
+	      icon="STOCK_EXECUTE"
+	      sequence="70"
+	      action="action_import_asset_propiedades"
+	      parent="account_asset.menu_finance_config_assets"
+	      name="Importar Propiedades de Bien"/>
+    
+    </data>
+</openerp>

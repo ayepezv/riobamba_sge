@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="purchase.report_purchase_quotation" model="purchase.order" 
+                name="purchase.quotation.modified" rml="gt_purchase_report/report/request_quotation.rml"
+                string="Solicitud de cotización"/>
+
+        <report auto="False" id="purchase.report_purchase_order" model="purchase.order"
+                name="purchase.order.modified" rml="gt_purchase_report/report/order.rml"
+                usage="default" string="Orden de compra"/>
+    </data>
+</openerp>

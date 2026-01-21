@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <!-- Tabla configuracion -->
+    <record model="ir.ui.view" id="view_tabla_carga_ir_form">
+      <field name="name">tabla.carga.ir</field>
+      <field name="model">tabla.carga.ir</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Tabla Cargas Familiares">
+	  <field name="name" select="1" required="1" widget="selection"/>
+	  <notebook colspan="4">
+	    <page string="Lineas">
+	      <field name="line_ids" nolabel="1" colspan="4">
+		<tree editable="bottom" string="Detalle">
+		  <field name="name" required="1"/>
+		  <field name="valor" required="1"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_tabla_carga_ir_tree">
+      <field name="name">tabla.carga.ir.tree</field>
+      <field name="model">tabla.carga.ir</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree string="Tabla Cargas Familiares">
+	  <field name="name" select="1"/>
+	</tree>
+      </field>
+    </record>
+
+<record id="action_hr_carga_renta" model="ir.actions.act_window">
+  <field name="name">Tabla Cargas Familiares</field>
+  <field name="res_model">tabla.carga.ir</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<menuitem action="action_hr_carga_renta" 
+	  id="hr_carga_renta"
+	  sequence="10"
+	  parent="gt_hr_base.menu_sri"/>
+    
+    <!-- vista de emp -->
+    <record id="view_hr_employee_carga_renta_form" model="ir.ui.view">
+      <field name="name">Empleado Cargas</field>
+      <field name="model">hr.employee</field>
+      <field name="inherit_id" ref="gt_hr_base.view_employee_modified_form"/>
+      <field name="arch" type="xml">
+	<notebook position="inside">
+	  <page string="Cargas Familiares IR">
+	    <group colspan="4" col="4">
+	      <field name="total_cargas" colspan="2" string="Total Cargas"/>
+	    </group>
+	  </page>	    		       
+	</notebook>
+      </field>
+    </record>    
+      
+
+    </data>
+</openerp>

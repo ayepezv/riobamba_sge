@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_asset_mnt_root" 
+	      name="Mantenimiento Activo"/>
+    
+      <!-- Mmt views -->
+      <record model="ir.ui.view" id="view_asset_mnt_form">
+	<field name="name">view.asset.mnt.form</field>
+	<field name="model">asset.mnt</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Mantenimiendo Activos">
+	    <group col="4" colspan="4" string='Informacion Basica'>
+	      <field name="name" colspan='2'/>
+	      <field name="date_ingreso" colspan='2'/>
+	      <field name="asset_id" colspan='4'/>
+	    </group>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_asset_mnt_tree" model="ir.ui.view">
+	<field name="name">asset.mnt.tree</field>
+	<field name="model">asset.mnt</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Mantenimiento activo">
+	    <field name="name"/>
+	    <field name="date_ingreso"/>
+	    <field name="asset_id"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_asset_mnt_filter" model="ir.ui.view">
+	<field name="name">asset.mnt.search</field>
+	<field name="model">asset.mnt</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Mantenimiento activo">
+	    <field name="name"/>
+	    <field name="date_ingreso"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_asset_id" string="Activo" domain="[]" context="{'group_by':'asset_id'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_asset_mnt" model="ir.actions.act_window">
+	<field name="name">Mantenimiento Activos</field>
+	<field name="res_model">asset.mnt</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+	  
+      <menuitem id="menu_asset_mnt_form"
+		action="action_asset_mnt"
+		parent="menu_asset_mnt_root"
+		name="Mantenimiento Activo"
+		/>
+      
+    </data>
+</openerp>

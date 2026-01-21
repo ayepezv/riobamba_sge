@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record model="ir.ui.view" id="view_contract_107">
+	<field name="name">hr.contract.107.view.form</field>
+	<field name="model">hr.contract</field>
+	<field name="type">form</field>
+	<field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+	<field name="arch" type="xml">
+	  <notebook position="inside">
+	    <page string="Otros Rubros 107">
+	      <field colspan="4" name="rubros_ids" nolabel="1">
+		<tree editable="bottom" string="Detalle">
+		  <field name="casillero"/>
+		  <field name="period_id" widget="selection"/>
+		  <field name="valor"/>
+		  <field name="name"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	</field>
+      </record>
+    	
+    	<!--record id="view_sri_107_tree" model="ir.ui.view">
+			<field name="name">Formulario 107</field>
+			<field name="model">sri.107</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Formulario 107">	 
+					<group col="4" colspan="4">
+						<field name="field_102"/>
+						<field name="field_103"/>
+						<field name="field_201"/>
+						<field name="field_202"/>
+						<field name="field_331"/>
+					</group>
+				</tree>
+			</field>
+		</record-->
+		
+		<record id="view_sri_107_tree" model="ir.ui.view">
+			<field name="name">Formulario 107 - tree</field>
+			<field name="model">sri.107</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Formulario 107">
+					<field name="name"/>
+					<field name="codigo"/>
+					<field name="field_202"/>
+					<field name="field_102"/>
+					<field name="field_103"/>
+					<field name="state"/>
+				</tree>
+			</field>
+		</record>
+		
+		<record id="view_sri_107_search" model="ir.ui.view">
+            <field name="name">Formulario 107 - search</field>
+            <field name="model">sri.107</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Formulario 107">
+                	<group col='4' colspan='4'>
+                		<filter icon="gtk-edit" name="state_draft" string="Borrador" domain="[('state','=','draft')]"/>
+                		<filter icon="gtk-file" name="state_done" string="Aprobado" domain="[('state','=','done')]"/>
+                		<filter icon="gtk-cancel" name="state_cancel" string="Cancelado" domain="[('state','=','cancel')]"/>
+                		<newline/>
+                		<!--separator orientation="vertical"/-->
+                		<field name="name" string="Descripcion"/>
+                		<field name="codigo" string="Numero"/>
+                		<field name="field_202" string="Empleado"/>
+                		<field name="field_102" string="Ejercicio Fiscal"/>
+                		<separator orientation="vertical"/>
+                		<field name="field_103" string="Fecha"/>
+                	</group>
+                	<newline/>
+					<group expand="1" string="Agrupar por..." colspan="4" col="10">
+						<filter name="group_employee" string="Empleado" icon="terp-personal" context="{'group_by':'field_202'}"/>
+						<filter name="group_fiscal" string="Ejercicio Fiscal" icon="terp-partner" context="{'group_by':'field_102'}"/>
+						<filter name="group_state" string="Estado" icon="terp-stock_symbol-selection" context="{'group_by':'state'}"/>
+                	</group>
+                </search>
+            </field>
+        </record>
+    	
+		<record id="view_sri_107_form" model="ir.ui.view">
+			<field name="name">Formulario 107</field>
+			<field name="model">sri.107</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Formulario 107">
+					<group col="4" colspan="4">
+						<field name="name" colspan="4" readonly="1"/>
+						<field name="codigo" colspan="2" readonly="1"/>
+						<field name="archivo" colspan="2"/>
+						<field name="state" colspan="2" readonly="1"/>
+						<button name="aprobar" string="Aprobar Formulario" colspan="1" icon="gtk-ok" type="object" states="draft"/>
+						<button name="cancelar" string="Cancelar Formulario" colspan="1" icon="gtk-cancel" type="object"/>
+						<newline/>
+						<separator colspan="4" string="200 Identificación del empleado contribuyente"/>
+						<field name="field_202" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="field_201" colspan="2" readonly="1"/>
+						<!--separator colspan="2" string="Formulario 107"/-->
+						<newline/>
+						<field name="field_102" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+						<field name="field_103" colspan="2" readonly="1"/>
+						<separator colspan="3"/>
+						<button name="calcular_exportar" string="Calcular" icon="gtk-ok" type="object" colspan="1" states="draft"/>
+						<newline/>
+						
+						<separator colspan="4" string="Identificación del Empleador (Agente de Retención)"/>
+						<field name="field_105" colspan="2" readonly="1"/>
+						<field name="field_106" colspan="2" readonly="1"/>
+						<newline/>
+						<separator string="Liquidación del Impuesto" colspan="4"/>
+						<field name="field_301" colspan="4" readonly="1"/>
+						<field name="field_303" colspan="4" readonly="1"/>
+						<field name="field_305" colspan="4" readonly="1"/>
+						<field name="field_307" colspan="4" readonly="1"/>
+						<field name="field_311" colspan="4" readonly="1"/>
+						<field name="field_313" colspan="4" readonly="1"/>
+						<field name="field_315" colspan="4" readonly="1"/>
+						<field name="field_317" colspan="4" readonly="1"/>
+						<field name="field_351" colspan="4" readonly="1"/>
+						<field name="field_353" colspan="4" readonly="1"/>
+						<field name="field_361" colspan="4" readonly="1"/>
+						<field name="field_363" colspan="4" readonly="1"/>
+						<field name="field_365" colspan="4" readonly="1"/>
+						<field name="field_367" colspan="4" readonly="1"/>
+						<field name="field_369" colspan="4" readonly="1"/>
+						<field name="field_371" colspan="4" readonly="1"/>
+						<field name="field_373" colspan="4" readonly="1"/>
+						<field name="field_381" colspan="4" readonly="1"/>
+						<field name="field_399" colspan="4" readonly="1"/>
+						<field name="field_401" colspan="4" readonly="1"/>
+						<field name="field_403" colspan="4" readonly="1"/>
+						<field name="field_405" colspan="4" readonly="1"/>
+						<field name="field_407" colspan="4" readonly="1"/>
+						<field name="field_349" colspan="4" readonly="1"/>
+						<group colspan="4">
+							<field name="detalle" colspan="4" readonly="1"/>
+						</group>
+						<!--group colspan="4">
+							<button name="print_107" string="Generar Archivo" icon="gtk-ok" type="object" colspan="2"/>
+
+						</group-->
+					</group>
+				</form>
+			</field>
+		</record>
+		
+		<record id="action_sri_107_" model="ir.actions.act_window">
+		  <field name="name">Accion Formulario 107</field>
+		  <field name="res_model">sri.107</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		  <!--field name="target">new</field-->
+		</record>
+		
+		<menuitem id="menu_sri" parent="hr.menu_hr_root" name="SRI"/>
+		<menuitem id="menu_sri_107_" parent="menu_sri" name="Formulario 107 Individual" action="action_sri_107_"/>
+
+    <!--act_window
+       id="act_formulario_107"
+       name="Formulario 107"
+       res_model="sri.107"
+       target="new"
+       src_model="hr.employee"/-->
+       
+       <record id="action_empresa_107" model="ir.actions.act_window">
+		  <field name="name">Formulario107</field>
+		  <field name="res_model">empresa.107</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		</record>
+		
+		<record id="view_empresa_107_form" model="ir.ui.view">
+			<field name="name">Formulario107</field>
+			<field name="model">empresa.107</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Formulario 107">
+					<group colspan="4">
+						<field name="name" colspan="4" required="1"/>
+						<field name="name2" colspan="2" required="1"/>
+						<field name="state" colspan="2" readonly="1"/>
+						<field name="archivo_rdep" colspan="4" readonly="1"/>
+						<newline/>
+						<button name="crear_lineas" string="Crear Formularios" type="object" icon="gtk-ok" colspan="2"/>
+						<newline/>
+						<field name="line_ids" colspan="4" nolabel="1"/>
+					</group>
+				</form>
+			</field>
+		</record>
+		
+		<record id="view_empresa_107_tree" model="ir.ui.view">
+			<field name="name">Formulario107</field>
+			<field name="model">empresa.107</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Formulario 107">
+						<field name="name2"/>
+				</tree>
+			</field>
+		</record>
+		
+		<menuitem id="menu_empresa_107" parent="menu_sri" name="Generar Formulario 107 Empresa" action="action_empresa_107"/>
+    	
+	</data>
+</openerp>

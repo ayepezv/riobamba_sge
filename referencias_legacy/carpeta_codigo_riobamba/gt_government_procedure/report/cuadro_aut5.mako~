@@ -1,0 +1,176 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style type="text/css">
+    .line {
+    border-bottom:1pt solid black;
+    }
+  </style>
+</head>
+<body>
+%for o in objects:
+<table width="100%" style="border:thin solid;">
+  <thead>
+    <h4 colspan="2" style="text-align:center">CUADRO COMPARATIVO SOLICITUD DE REQUERIMIENTO No. ${ o.name }</h4>
+    <tr>
+      <th style="text-align:left;font-size:12px">Fecha Elaboracion : ${ formatLang(o.date_start, date=True) }</th>
+      <th style="text-align:left;font-size:12px">Solicitado por : ${o.solicitant_id.complete_name}</th>
+      <th style="text-align:left;font-size:12px">Presp. Referencial : ${o.partida_aux or ''}</th>
+    </tr>
+    <tr>
+      <th></th>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>                
+  </thead>
+  <tbody>
+    <table width="100%">
+      <tr style="text-align:left;font-size:12px">
+        <b>OBSERVACIONES</b>
+      </tr>
+      <tr>
+	<td style="text-align:justify;font-size:14px">${ o.description or "" }</td>
+      </tr>
+    </table>
+    <table width="100%" style="border:thin solid;">
+      <tr style="text-align:center;font-size:12px">
+        <b>DETALLE PRODUCTOS</b>
+      </tr>
+    </table>
+    <table width="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:14px">
+      <tr>
+        <td width="10%" style="text-align:center;font-size:12px"></td>
+        <td width="30%" style="text-align:center;font-size:12px">OFERTA NRo.</td>
+        <td width="12%" style="text-align:center;font-size:12px">${ o.purchase_ids[0].name or "" }</td>
+        <td width="12%" style="text-align:center;font-size:12px">${ o.purchase_ids[1].name or "" }</td>
+        <td width="12%" style="text-align:center;font-size:12px">${ o.purchase_ids[2].name or "" }</td>
+        <td width="12%" style="text-align:center;font-size:12px">${ o.purchase_ids[3].name or "" }</td>
+	%if len(o.purchase_ids)>4:
+        <td width="12%" style="text-align:center;font-size:12px">${ o.purchase_ids[4].name or "" }</td>
+	%endif
+      </tr>
+      <tr>
+        <td width="10%" style="text-align:center;font-size:10px"></td>
+        <td width="30%" style="text-align:center;font-size:10px">Proveedor</td>
+        <td width="12%" style="text-align:center;font-size:10px">${ o.purchase_ids[0].partner_id.ced_ruc or "" } - ${ o.purchase_ids[0].partner_id.name or "" }</td>
+        <td width="12%" style="text-align:center;font-size:10px">${ o.purchase_ids[1].partner_id.ced_ruc or "" } - ${ o.purchase_ids[1].partner_id.name or "" }</td>
+        <td width="12%" style="text-align:center;font-size:10px">${ o.purchase_ids[2].partner_id.ced_ruc or "" } - ${ o.purchase_ids[2].partner_id.name or "" }</td>
+        <td width="12%" style="text-align:center;font-size:10px">${ o.purchase_ids[3].partner_id.ced_ruc or "" } - ${ o.purchase_ids[3].partner_id.name or "" }</td>
+	%if len(o.purchase_ids)>4:
+        <td width="12%" style="text-align:center;font-size:10px">${ o.purchase_ids[4].partner_id.ced_ruc or "" } - ${ o.purchase_ids[4].partner_id.name or "" }</td>
+	%endif
+      </tr>
+      %for line in o.line_ids:
+      <tbody>
+        <tr>
+          <td style="text-align:center;font-size:10px">${ line.product_qty or ''}</td>
+          <td style="text-align:left;font-size:10px">${line.product_id.name or '' } ${line.desc or ""}</td>
+          <td style="text-align:center;font-size:10px">${ get_solicitud_value_mk(o,line,line.desc,0) or ''}</td>
+          <td style="text-align:center;font-size:10px">${ get_solicitud_value_mk(o,line,line.desc,1) or ''}</td>
+          <td style="text-align:center;font-size:10px">${ get_solicitud_value_mk(o,line,line.desc,2) or ''}</td>
+          <td style="text-align:center;font-size:10px">${ get_solicitud_value_mk(o,line,line.desc,3) or ''}</td>
+	  %if len(o.purchase_ids)>4:
+          <td style="text-align:center;font-size:10px">${ get_solicitud_value_mk(o,line,line.desc,4) or ''}</td>
+	  %endif
+        </tr>
+      </tbody>
+      %endfor
+      <tr>
+        <td style="text-align:center;font-size:10px"></td>
+        <td style="text-align:left;font-size:10px">Tiene en stock / Procedencia / Genérico o Marca</td>
+        <td style="text-align:center;font-size:10px">${ get_in_stock_mk(o.purchase_ids[0]) or ''} / ${ o.purchase_ids[0].procedencia or '' } / ${ o.purchase_ids[0].tipo or '' }</td>
+        <td style="text-align:center;font-size:10px">${ get_in_stock_mk(o.purchase_ids[1]) or ''} / ${ o.purchase_ids[1].procedencia or '' } / ${ o.purchase_ids[1].tipo or '' }</td>
+        <td style="text-align:center;font-size:10px">${ get_in_stock_mk(o.purchase_ids[2]) or ''} / ${ o.purchase_ids[2].procedencia or '' } / ${ o.purchase_ids[2].tipo or '' }</td>
+        <td style="text-align:center;font-size:10px">${ get_in_stock_mk(o.purchase_ids[3]) or ''} / ${ o.purchase_ids[3].procedencia or '' } / ${ o.purchase_ids[3].tipo or '' }</td>
+	%if len(o.purchase_ids)>4:
+        <td style="text-align:center;font-size:10px">${ get_in_stock_mk(o.purchase_ids[4]) or ''} / ${ o.purchase_ids[4].procedencia or '' } / ${ o.purchase_ids[4].tipo or '' }</td>
+	%endif
+      </tr>
+      <tr>
+	<td style="text-align:center;font-size:10px"></td>
+        <td style="text-align:left;font-size:10px">Tiempo entrega / Días credito / Garantía / Validez Oferta</td>
+        <td style="text-align:center;font-size:10px">${ o.purchase_ids[0].tiempo_entrega or ''} / ${ o.purchase_ids[0].dias_credito or '' } / ${ o.purchase_ids[0].garantia or '' } / ${ o.purchase_ids[0].validez or '' }</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[1].tiempo_entrega or ''} / ${ o.purchase_ids[1].dias_credito or '' } / ${ o.purchase_ids[1].garantia or '' } / ${ o.purchase_ids[1].validez or '' }</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[2].tiempo_entrega or ''} / ${ o.purchase_ids[2].dias_credito or '' } / ${ o.purchase_ids[2].garantia or '' } / ${ o.purchase_ids[2].validez or '' }</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[3].tiempo_entrega or ''} / ${ o.purchase_ids[3].dias_credito or '' } / ${ o.purchase_ids[3].garantia or '' } / ${ o.purchase_ids[3].validez or '' }</td>
+	%if len(o.purchase_ids)>4:
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[4].tiempo_entrega or ''} / ${ o.purchase_ids[4].dias_credito or '' } / ${ o.purchase_ids[4].garantia or '' } / ${ o.purchase_ids[4].validez or '' }</td>
+	%endif
+      </tr>
+      <tr>
+	<td style="text-align:center;font-size:10px"></td>
+        <td style="text-align:left;font-size:10px">Costo Total – Desc</td>
+        <td style="text-align:center;font-size:10px">${ o.purchase_ids[0].amount_untaxed or ''} - ${ o.purchase_ids[0].add_disc_amt or '' }</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[1].amount_untaxed or ''} - ${ o.purchase_ids[1].add_disc_amt or '' }</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[2].amount_untaxed or ''} - ${ o.purchase_ids[2].add_disc_amt or '' }</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[3].amount_untaxed or ''} - ${ o.purchase_ids[3].add_disc_amt or '' }</td>
+	%if len(o.purchase_ids)>4:
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[4].amount_untaxed or ''} - ${ o.purchase_ids[4].add_disc_amt or '' }</td>
+	%endif
+      </tr>
+      <tr>
+	<td style="text-align:center;font-size:10px"></td>
+        <td style="text-align:left;font-size:10px">IVA</td>
+        <td style="text-align:center;font-size:10px">${ o.purchase_ids[0].amount_tax or ''}</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[1].amount_tax or ''}</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[2].amount_tax or ''}</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[3].amount_tax or ''}</td>
+	%if len(o.purchase_ids)>4:
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[4].amount_tax or ''}</td>
+	%endif
+      </tr>
+      <tr>
+	<td style="text-align:center;font-size:10px"></td>
+        <td style="text-align:left;font-size:10px">TOTAL</td>
+        <td style="text-align:center;font-size:10px">${ o.purchase_ids[0].amount_total or ''}</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[1].amount_total or ''}</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[2].amount_total or ''}</td>
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[3].amount_total or ''}</td>
+	%if len(o.purchase_ids)>4:
+	<td style="text-align:center;font-size:10px">${ o.purchase_ids[4].amount_total or ''}</td>
+	%endif
+      </tr>
+      <tr>
+	<td style="text-align:center;font-size:10px"></td>
+        <td style="text-align:left;font-size:10px">Oferta Seleccionada</td>
+        <td style="text-align:center;font-size:10px">${ get_select_mk(o.purchase_ids[0]) or ''}</td>
+	<td style="text-align:center;font-size:10px">${ get_select_mk(o.purchase_ids[1]) or ''}</td>
+	<td style="text-align:center;font-size:10px">${ get_select_mk(o.purchase_ids[2]) or ''}</td>
+	<td style="text-align:center;font-size:10px">${ get_select_mk(o.purchase_ids[3]) or ''}</td>
+	%if len(o.purchase_ids)>4:
+	<td style="text-align:center;font-size:10px">${ get_select_mk(o.purchase_ids[4]) or ''}</td>
+	%endif
+      </tr>
+    </table>
+    <table width="100%">
+      <tr style="text-align:left;font-size:9px">
+        <b>Criterio de recomendacion</b>
+      </tr>
+      <tr>
+	<td>${ o.criterio_rec or "" }</td>
+      </tr>
+    </table>
+  </tbody>
+  <tfoot>
+    <br>
+    <table width="100%">
+      <tr>
+	<th width="100%" style="text-align:center;font-size:12px">___________________________________</th>
+      </tr>
+    </table>
+    <table width="100%">
+      <tr>
+	<td width="100%" style="text-align:center;font-size:12px">${ user.employee_id.complete_name }</td>
+      </tr>
+    </table>
+  </tfoot>
+</table>  
+%endfor
+</body>
+</html>

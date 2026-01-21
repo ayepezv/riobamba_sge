@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <record id="view_purchase_config_form" model="ir.ui.view">
+      <field name="name">view.purchase.config.form</field>
+      <field name="model">purchase.config</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tabla">
+		  <group colspan="4">
+			<field name="name"/>
+			<field name="activo"/>
+		  </group>
+		  <notebook colspan="4">
+			<page string="Tipos de procesos">
+			  <field name="line_ids" widget="one2many_list" nolabel="1" colspan="4">
+				<tree editable="bottom">
+				  <field name="objeto"/>
+				  <field name="name"/>
+				  <field name="desde"/>
+				  <field name="hasta"/>
+				</tree>
+			  </field>
+			</page>
+		  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_purchase_config_tree" model="ir.ui.view">
+      <field name="name">view.purchase.config.tree</field>
+      <field name="model">purchase.config</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Tabla Configuración">
+          <field name="name" select="1"/>
+          <field name="activo" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_purchase_table" model="ir.actions.act_window">
+      <field name="name">Tabla SERCOP</field>
+      <field name="res_model">purchase.config</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>        
+
+    <record id="view_purchase_config_infima_form" model="ir.ui.view">
+      <field name="name">view.purchase.config.infima.form</field>
+      <field name="model">purchase.config.infima</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Tabla">
+		  <group colspan="4">
+			<field name="monto_maximo"/>			
+			<field name="monto_maximo_menor"/>
+			<field name="name"/>
+			<field name="activo"/>
+		  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_purchase_config_infima_tree" model="ir.ui.view">
+      <field name="name">view.purchase.config.infima.tree</field>
+      <field name="model">purchase.config.infima</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Tabla Configuración">
+          <field name="name" select="1"/>
+		  <field name="monto_maximo" select="1"/>
+          <field name="activo" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_purchase_table_infima" model="ir.actions.act_window">
+      <field name="name">Tabla Infima</field>
+      <field name="res_model">purchase.config.infima</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_purchase_table_config" parent="purchase.menu_purchase_config_purchase" name="Infima Cuantia"/>
+    <!--menuitem id="menu_purchase_table" parent="gt_government_procedure.menu_purchase_process_config" 
+			  action="action_purchase_table" groups="gt_government_procedure.group_cp"/-->
+	<menuitem id="menu_purchase_table" parent="gt_government_procedure.menu_base_purchase_contract" 
+			  action="action_purchase_table" groups="gt_government_procedure.group_cp"/>
+    <menuitem id="menu_purchase_table_infima" parent="menu_purchase_table_config" 
+			  action="action_purchase_table_infima"/>
+    </data>
+</openerp>

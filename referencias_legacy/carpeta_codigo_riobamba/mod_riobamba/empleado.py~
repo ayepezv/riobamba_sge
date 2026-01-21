@@ -1,0 +1,109 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+from time import strftime
+from gt_tool import XLSWriter
+
+##  kardex de cargos e historial de contratos
+
+class empleadoKardexLineLine(osv.TransientModel):
+   _order = 'fecha_inicio desc'
+   _name = 'empleado.kardex.line.line'
+   _columns = dict(
+      employee_id = fields.many2one('hr.employee','Funcionario'),
+      l_id = fields.many2one('empleado.kardex.line','Detalle'),
+      contract_id = fields.many2one('hr.contract','Contrato'),
+      fecha_inicio = fields.date('Fecha Inicio'),
+      fecha_fin = fields.date('Fecha Fin'),
+      estado = fields.char('Estado',size=10),
+   )
+   
+empleadoKardexLineLine()
+
+class empleadoKardexLine(osv.TransientModel):
+   _order = 'empleado_nombre asc'
+   _name = 'empleado.kardex.line'
+   _columns = dict(
+      empleado_nombre = fields.char('Nombre',size=256),
+      employee_id = fields.many2one('hr.employee','Funcionario'),
+      k_id = fields.many2one('empleado.kardex','Funcionario'),
+      estado = fields.char('Estado',size=10),
+      line_ids = fields.one2many('empleado.kardex.line.line','l_id','Detalle'),
+   )
+   
+empleadoKardexLine()
+
+
+class empleadoKardex(osv.TransientModel):
+   _name = 'empleado.kardex'
+   _columns = dict(
+      fecha = fields.date('Fecha Desde'),
+      employee_id = fields.many2one('hr.employee','Funcionario'),
+      line_ids = fields.one2many('empleado.kardex.line','k_id','Detalle'),
+   )
+
+   def printKdxEmpleado(self, cr, uid, ids, context=None):
+      if not context:
+         context = {}
+      report = self.browse(cr, uid, ids, context)[0]
+      datas = {'ids': [report.id], 'model': 'empleado.kardex'}
+      return {
+         'type': 'ir.actions.report.xml',
+         'report_name': 'empleadoKardex',
+         'model': 'empleado.kardex',
+         'datas': datas,
+         'nodestroy': True,                        
+      }
+
+   def calculaKdxEmpleado(self, cr, uid, ids, context=None):
+      employee_obj = self.pool.get('hr.employee')
+      contract_obj = self.pool.get('hr.contract')
+      line_obj = self.pool.get('empleado.kardex.line')
+      line_line_obj = self.pool.get('empleado.kardex.line.line')
+      for this in self.browse(cr, uid, ids):
+         contract_ids = contract_obj.search(cr, uid, [('date_start','>=',this.fecha)])
+         if contract_ids:
+            dict_contract = {}
+            for contract_id in contract_ids:
+               contract = contract_obj.browse(cr, uid, contract_id)
+               if contract.employee_id in dict_contract:
+                  dict_contract[contract.employee_id].append(contract)
+               else:
+                  dict_contract[contract.employee_id] = [contract]
+         #import pdb
+         #pdb.set_trace()
+         for linea_contract in dict_contract:
+            aux_estado = 'INACTIVO'
+            if linea_contract.active:
+               aux_estado = 'ACTIVO'
+            line_id = line_obj.create(cr, uid, {
+               'empleado_nombre':linea_contract.complete_name,
+               'estado':aux_estado,
+               'employee_id':linea_contract.id,
+               'k_id':this.id,
+            })
+            for contrato in dict_contract[linea_contract]:
+               aux_estado_contrato = 'INACTIVO'
+               if contrato.activo:
+                  aux_estado_contrato = 'ACTIVO'
+               line_line_obj.create(cr, uid, {
+                  'l_id':line_id,
+                  'employee_id':contrato.employee_id.id,
+                  'contract_id':contrato.id,
+                  'fecha_inicio':contrato.date_start,
+                  'fecha_fin':contrato.date_end,
+                  'estado':aux_estado_contrato,
+               })
+         print "doit"
+      return True
+   
+empleadoKardex()
+
+###

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      
+    <report auto="False" id="mass_reform" model="mass.reform"
+            name="mass.reform" rml="gt_budget/report/reform.mako"
+            usage="default" string="Reforma" header="True" report_type="webkit"/>
+
+    <report auto="False" id="mass_reformg" model="mass.reform"
+            name="mass_reformg" rml="gt_budget/report/reformg.mako"
+            usage="default" string="Reforma Programa" header="True" report_type="webkit"/>
+
+    <report auto="False" id="mass_reform_programa" model="mass.reform"
+            name="reform_programa" rml="gt_budget/report/reforma_programa.mako"
+            usage="default" string="Reforma Agrupada" header="True" report_type="webkit"/>
+    
+    <report auto="False" id="mass_reformingreso" model="mass.reform.ingreso"
+            name="mass.reform.ingreso" rml="gt_budget/report/reform_ingreso.mako"
+            usage="default" string="Reforma Ingreso" header="True" report_type="webkit"/>
+    
+    
+    <!-- no esta implementado el reporte: report auto="False"
+         id="report_account_budget_roof"
+         model="budget.roof"
+         name="report.account.budget.roof"
+         file="gt_budget/report/report_budget_roof.mako"
+         string="Techo Presupuestario"
+         report_type="webkit"
+	 header="True"/-->
+
+
+    </data>
+</openerp>

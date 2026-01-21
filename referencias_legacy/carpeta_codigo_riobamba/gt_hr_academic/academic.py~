@@ -1,0 +1,50 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+from time import strftime, strptime
+
+from osv import osv, fields
+
+_STATE = [('draft','Borrador')]
+
+
+
+class hrCapacitacion(osv.Model):
+    _name = 'hr.capacitacion'
+    _description = "Cursos Dictados por la entidad"
+    _MODALITY = [('v','Virtual'),('d','Distancia'),('p','Presencial'),
+                 ('s','Semipresencial'),('o','Otros')]
+    _columns = dict(
+        name = fields.char('Nombre Curso',size=256),
+        fecha_desde = fields.date('Fecha desde'),
+        fecha_hasta = fields.date('Fecha hasta'),
+        dictado_por = fields.many2one('res.partner','Dictado por'),
+        hours =  fields.integer('Numero de horas'),
+        modality = fields.selection(_MODALITY,'Modalidad'),
+        tipo = fields.selection([('aprobacion','de aprobacion'),('asistencia','de asistencia')],'Tipo de Curso'),
+        line_ids = fields.one2many('hr.employee.course','a_id','Detalle Personas'),
+        state = fields.selection([('Registro','Registro'),('Finalizado','Finalizado')],'Estado'),
+    )
+
+    _defaults = dict(
+        state='Registro',
+        
+    )
+
+hrCapacitacion()
+
+class employeeCourseAcademic(osv.Model):
+    _inherit = 'hr.employee.course'
+    _columns = dict(
+        a_id = fields.many2one('hr.capacitacion','Curso Dictado'),
+    )
+
+    _defaults = dict(
+        name='/',
+    )
+
+employeeCourseAcademic()

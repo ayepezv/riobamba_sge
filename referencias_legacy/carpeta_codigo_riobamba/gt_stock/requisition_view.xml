@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+	<record id="view_stock_requisition_tree" model="ir.ui.view">
+	  <field name="name">view.stock.requisition.tree</field>
+	  <field name="model">stock.requisition</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+		<tree colors="black:state == 'Borrador',blue:state == 'Aprobado',green:state == 'Autorizado'" 
+			  string="Requerimiento a Bodega">
+		  <field name="date" select="1"/>
+		  <field name="name" select="1"/>
+		  <field name="solicitant_id" select="1"/>
+		  <field name="bodega_id" select="1"/>
+		  <field name="unidad_id" select="1"/>
+		  <field name="project_id" select="1"/>
+		  <field name="state" select="1"/>
+		</tree>
+	  </field>
+	</record>
+	
+	<record id="view_requisition_picking_form" model="ir.ui.view">
+	  <field name="name">stock.requisition.picking.form</field>
+	  <field name="model">stock.requisition</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Requerimiento bodega">
+	      <group colspan="4" col="6">
+		<group colspan="4" col="6">
+		  <field name="name" string="Codigo" readonly="1" colspan="2" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+		  <field name="create_user_id" colspan="2" readonly="1" string="Creado por:"/>
+		  <field name="app_user_id" invisible="1"/>
+		  <field name="app_employee_id" invisible="1"/>
+		  <field name="date" string="Fecha" attrs="{'readonly': [('state', 'not in',('Borrador'))]}" required="1"/>
+		  <newline/>
+		  <field name="solicitant_id" on_change="onchange_solicitant(solicitant_id)" 
+			 attrs="{'readonly': [('state', 'not in',('Borrador'))]}" required="1"/>
+		  <!--field name="solicitant_id" on_change="onchange_solicitant(solicitant_id)" 
+		      domain="[('department_id','=',unidad_id)]"
+		      attrs="{'readonly': [('state', 'not in',('Borrador'))]}" required="1"/-->
+		  <field name="recibe_id"
+			 attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+		  <field name="unidad_id" readonly="1" colspan="2" required="1" 
+			 attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+		  <newline/>
+		  <!--field name="bodega_id" colspan="2" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/-->
+		  <field name="objeto_id_id" colspan="2" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+		  <field name="validate_id" colspan="2" attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+		</group>
+	      </group>
+	      <notebook colspan="4">
+		<page string="Detalle">
+		  <field colspan="4" name="move_lines" nolabel="1" widget="one2many_list" 
+			 attrs="{'readonly': [('state', 'not in',('Borrador'))]}">
+		    <tree string="Detalle de productos" editable="bottom">
+		      <field name="product_id" on_change="onchange_product_line(product_id)" domain="[('type','!=','service')]"/>
+		      <!--field name="qty" required="1" on_change="onchange_quantity(qty)"/-->
+		      <field name="qty" required="1"/>
+		      <!--field name="uom_id" string="UoM"/-->
+		    </tree>
+		  </field>
+		  <group colspan="4" col="9">
+		    <button name="print_rqm" colspan="4" states="Aprobado" string="Imprimir Requerimiento" 
+			    type="object" icon="gtk-print"/> 
+		    <field name="state" readonly="1" widget="statusbar" statusbar_visible="Borrador,Solicitado,Aprobado" 
+			   statusbar_colors='{"auto":"blue", "Solicitado":"blue"}'/>
+		    <button name="return_draft" states="Solicitado,Aprobado" type="object" string="Regresar a borrador" 
+			    confirm="Solo el usuario creador del requerimiento puede regresar, esta seguro que desea regresar" 
+			    icon="gtk-execute"/>
+		    <button name="draft_confirmed" states="Borrador" string="Solicitar" type="object" icon="gtk-media-play"/>
+		    <button name="confirm_aprobe" groups="gt_document_manager.group_doc_leader" states="Solicitado" 
+			    string="Aprobar" type="object" icon="gtk-jump-to"/>
+		  </group>
+		</page>
+		<page string="Justificativo">
+		  <field colspan="4" name="note" nolabel="1" required="1"/>
+		</page>
+	      </notebook>
+	    </form>
+	  </field>
+	</record>
+	
+	<record id="view_picking_out_search_gpa_doc" model="ir.ui.view">
+	  <field name="name">stock.picking.req.out.doc.search.gpa</field>
+	  <field name="model">stock.requisition</field>
+	  <field name="type">search</field>
+	  <field name="arch" type="xml">
+	    <search string="Requerimientos Bodega">
+	      <group>
+		<separator orientation="vertical"/>
+		<field name="unidad_id"/>
+		<field name="project_id"/>
+		<field name="bodega_id"/>
+		<field name="objeto_id_id"/>
+		<field name="solicitant_id"/>
+		<field name="name"/>
+	      </group>
+	      <newline/>
+	      <group expand="1" string="Group By...">
+		<separator orientation="vertical" />
+		<filter icon="terp-stock_effects-object-colorize" name="state" 
+			string="Estado" domain="[]" context="{'group_by':'state'}"/>
+		<filter icon="terp-stock_effects-object-colorize" name="solicitant_id" 
+			string="Estado" domain="[]" context="{'group_by':'solicitant_id'}"/>
+		<separator orientation="vertical" />
+		<filter string="Fecha" icon="terp-go-month" domain="[]"  
+			context="{'group_by':'date'}"/>
+		<separator orientation="vertical" />
+		<filter string="Vehiculo/Maquinaria" icon="terp-folder-orange" domain="[]" 
+			context="{'group_by':'objeto_id_id'}"/>
+	      </group>
+	    </search>
+	  </field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_picking_alone_aprobar">
+	  <field name="name">Aprobar</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">stock.requisition</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">['&amp;','|',('create_user_id','=',uid),('app_user_id','=',uid),('state','=','Solicitado')]</field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_picking_alone">
+	  <field name="name">Requerimiento a bodega</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">stock.requisition</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">[('create_user_id','=',uid)]</field>
+	</record>
+	
+	<record model="ir.actions.act_window" id="action_picking_alone_todas">
+	  <field name="name">Todas</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">stock.requisition</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">['|',('create_user_id','=',uid),('app_user_id','=',uid)]</field>
+	</record>
+	
+	<menuitem id="menu_parent_stock_document" parent="gt_document_manager.menu_document_manager" 
+			  name="Requerimientos a Bodega" sequence="5" groups="gt_document_manager.group_doc_user"/>
+	
+	<menuitem id="menu_picking_document" parent="menu_parent_stock_document" 
+			  name="Solicitar" sequence="1" action="action_picking_alone" groups="gt_document_manager.group_doc_user"/>
+	
+	<menuitem id="menu_picking_document_aprobar" parent="menu_parent_stock_document" 
+			  name="Aprobar" sequence="2" action="action_picking_alone_aprobar" 
+			  groups="gt_document_manager.group_doc_leader"/>
+	
+	<menuitem id="menu_picking_document_todas" parent="menu_parent_stock_document" 
+			  name="Todas" sequence="5" action="action_picking_alone_todas" groups="gt_document_manager.group_doc_user"/>
+	
+	<!--record model="ir.rule" id="stock_requisition_rule">
+	  <field name="name">Req bodega por area</field>
+	  <field name="model_id" ref="model_stock_requisition"/>
+	  <field name="global" eval="True"/>
+	  <field name="domain_force">[('unidad_id','child_of',user.context_department_id.id)]</field>
+	  <field name="groups" eval="[(4,ref('gt_document_manager.group_doc_leader'))]"/>
+	</record-->
+
+
+	<!-- menu todos los rqms en bodega -->
+	
+	<record model="ir.actions.act_window" id="action_stock_req_all">
+	  <field name="name">Requerimientos a bodega</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">stock.requisition</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">[('state','=','Aprobado')]</field>
+	</record>
+	
+	<menuitem id="menu_rqm_stock_todas" parent="stock.menu_stock_root" 
+		  name="Requerimientos a bodega" sequence="5" action="action_stock_req_all" groups="stock.group_stock_manager,stock.group_stock_user"/>
+	
+  </data>
+</openerp>
+

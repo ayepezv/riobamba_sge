@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for poliza --> 
+
+        <record id="seq_type_obra_garantia_renovacion" model="ir.sequence.type">
+            <field name="name">Poliza</field>
+            <field name="code">obra.garantia.renovacion</field>
+        </record>
+        <record id="seq_obra_garantia_renovacion" model="ir.sequence">
+            <field name="name">Poliza</field>
+            <field name="code">obra.garantia.renovacion</field>
+            <field name="prefix">GADMR-</field>
+	    <field name="suffix">-DF-TES-</field>
+            <field name="padding">6</field>
+        </record>
+
+    </data>
+</openerp>

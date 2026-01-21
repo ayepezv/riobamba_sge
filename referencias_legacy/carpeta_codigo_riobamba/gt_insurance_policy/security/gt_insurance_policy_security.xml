@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_policy_manager" model="res.groups">
+      <field name="name">Pólizas/ Manager</field>
+    </record>
+    <record id="group_policy_user" model="res.groups">
+      <field name="name">Pólizas / User</field>
+    </record>
+    <record id="group_policy_readonly" model="res.groups">
+      <field name="name">Pólizas / Readonly</field>
+    </record>
+</data>
+</openerp>

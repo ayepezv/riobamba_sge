@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_audittrail_rule_all_users_all,audittrail rule all,audittrail.model_audittrail_rule,gt_document_manager.group_doc_user,1,1,1,0
+access_audittrail_log_all_users_all,audittrail log all,audittrail.model_audittrail_log,gt_document_manager.group_doc_user,1,0,1,0
+access_audittrail_log_line_all_users_all,audittrail log line all,audittrail.model_audittrail_log_line,gt_document_manager.group_doc_user,1,0,1,0

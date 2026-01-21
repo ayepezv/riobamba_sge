@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    
+    
+    <menuitem id="menu_cxp_configure" parent="account.menu_finance_accounting" 
+	      name="Tabla Config. Cuentas"/>
+    
+    <record model="ir.ui.view" id="view_cxp_config_form">
+      <field name="name">cxp.config.view.form</field>
+      <field name="model">config.cxp</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name="budget" widget="selection"/>
+	  <field name="account_id" domain="[('type','=','payable')]"/>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_cxp_config_tree">
+      <field name="name">cxp.config.view.tree</field>
+      <field name="model">config.cxp</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree>
+	  <field name="budget"/>
+	  <field name="account_id" domain="[('type','=','payable')]"/>
+	</tree>
+      </field>
+    </record>
+    
+	  
+    <record model="ir.actions.act_window" id="cxp_config_action">
+      <field name="name">Tabla Ctas x Pagar</field>
+      <field name="res_model">config.cxp</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+    </record> 
+    
+	  <menuitem name="Tabla Ctas x Pagar" 
+		    id="menu_cxp_configure_" 
+		    parent="menu_cxp_configure" 
+		    action="cxp_config_action"/>
+	  
+	  <!-- MENU CONFIGURACION CUENTA PARTIDA-->
+	  <!--record model="ir.ui.view" id="view_cta_partida_form">
+	    <field name="name">cta.partida.view.form</field>
+	    <field name="model">cta.partida</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+  	      <form>
+		<field name="cta"/>
+		<field name="partida"/>
+	      </form>
+	    </field>
+	  </record-->
+	  
+	  <record model="ir.ui.view" id="view_cta_partida_tree">
+	    <field name="name">cta.partida.view.tree</field>
+	    <field name="model">cta.partida</field>
+	    <field name="type">tree</field>
+	    <field name="arch" type="xml">
+  	      <tree>
+		<field name="cta"/>
+		<field name="ctap"/>
+		<field name="partida"/>
+	      </tree>
+	    </field>
+	  </record>
+	  
+	  
+	  <record model="ir.actions.act_window" id="cta_partida_action">
+	    <field name="name">Validacion Cuentas Partidas</field>
+	    <field name="res_model">cta.partida</field>
+	    <field name="view_type">form</field>
+	    <field name="view_mode">tree,form</field>
+	  </record> 
+	  
+	  <menuitem name="Validacion Cuentas Partidas" 
+		    id="menu_cta_partida" 
+		    parent="menu_cxp_configure" 
+		    action="cta_partida_action"/>
+	  
+<!--     -->
+	  <record model="ir.ui.view" id="view_cta_partida_tree">
+	    <field name="name">cuenta.partida.view.tree</field>
+	    <field name="model">cuenta.partida</field>
+	    <field name="type">tree</field>
+	    <field name="arch" type="xml">
+  	      <tree>
+		<field name="code"/>
+		<field name="name"/>
+		<field name="budget_debe"/>
+		<field name="budget_haber"/>
+	      </tree>
+	    </field>
+	  </record>
+	  
+	  
+	  <record model="ir.actions.act_window" id="cuenta_partida_action">
+	    <field name="name">Cuentas Partidas</field>
+	    <field name="res_model">cuenta.partida</field>
+	    <field name="view_type">form</field>
+	    <field name="view_mode">tree,form</field>
+	  </record> 
+	  
+	  <menuitem name="Cuentas Partidas" 
+		    id="menu_cuenta_partida" 
+		    parent="menu_cxp_configure" 
+		    action="cuenta_partida_action"/>
+
+	  <!--
+-->
+
+	  <record model="ir.ui.view" id="view_ctas_categ_config_form">
+	    <field name="name">ctas.categ.config.view.form</field>
+	    <field name="model">ctas.categ</field>
+	    <field name="type">form</field>
+	    <field name="arch" type="xml">
+  	      <form>
+		<field name="categ_id" colspan="4"/>
+		<group string="Cuenta Existencias Corriente" colspan="4">
+		  <field name="account_ex_normal"/>
+		  <field name="budget_ex"/>
+		</group>
+		<group string="Cuenta Existencias Inversion" colspan="4">
+		  <field name="account_ex_program"/>
+		  <field name="account_ex_project"/>
+		  <field name="budget_inv"/>
+		</group>
+		<group string="Cuenta Gastos" colspan="4">
+		  <field name="account_expense"/>
+		  <field name="account_expense_inv"/>
+		  <field name="account_comp_id" invisible="1"/>
+		</group>
+	      </form>
+	    </field>
+	  </record>
+
+<record model="ir.ui.view" id="view_ctas_categ_config_tree">
+  <field name="name">ctas.config.view.tree</field>
+  <field name="model">ctas.categ</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+  	<tree>
+	  <field name="categ_id" select="1"/>
+	  <field name="account_ex_normal" select="1"/>
+	  <field name="budget_ex" select="1"/>
+	  <field name="account_ex_program" select="1"/>
+	  <field name="budget_inv" select="1"/>
+	  <field name="account_ex_project" select="1"/>
+	  <field name="account_expense" select="1"/>
+	</tree>
+  </field>
+</record>
+
+	  
+<record model="ir.actions.act_window" id="ctas_categ_config_action">
+  <field name="name">Tabla Ctas. Gasto</field>
+  <field name="res_model">ctas.categ</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem name="Tabla Ctas. Gasto" 
+		  id="menu_ctas_categ_configure_" 
+		  parent="menu_cxp_configure" 
+		  action="ctas_categ_config_action"/>
+
+<!-- fondo Tercero -->
+    <record model="ir.ui.view" id="view_cxp_f3_form">
+      <field name="name">cxp.f3.view.form</field>
+      <field name="model">pay.fondo.sri</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name="account_id" required="1"/>
+	  <field name="account_id2" required="1"/>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_cxp_f3_tree">
+      <field name="name">cxp.f3.view.tree</field>
+      <field name="model">pay.fondo.sri</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree>
+	  <field name="account_id"/>
+	  <field name="account_id2"/>
+	</tree>
+      </field>
+    </record>
+    
+	  
+    <record model="ir.actions.act_window" id="cxp_f3_action">
+      <field name="name">Tabla Deposito y Fondo Tercero/SRI</field>
+      <field name="res_model">pay.fondo.sri</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record> 
+    
+    <menuitem name="Tabla Deposito y Fondo Tercero/SRI" 
+	      id="menu_f3_sri" 
+	      parent="menu_cxp_configure" 
+	      action="cxp_f3_action"
+	      />
+
+<!-- Cuenta Anterior -->
+    <record model="ir.ui.view" id="view_cxp_anterior_form">
+      <field name="name">cxp.anterior.view.form</field>
+      <field name="model">cuenta.anterior</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name="budget_id" required="1"/>
+	  <field name="account_id" required="1"/>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_cxp_anterior_tree">
+      <field name="name">cxp.anterior.view.tree</field>
+      <field name="model">cuenta.anterior</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree>
+	  <field name="budget_id"/>
+	  <field name="account_id"/>
+	</tree>
+      </field>
+    </record>
+    
+	  
+    <record model="ir.actions.act_window" id="cxp_anterior_action">
+      <field name="name">Tabla Cuentas/Partida Anio Anterior</field>
+      <field name="res_model">cuenta.anterior</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record> 
+    
+    <menuitem name="Tabla Cuentas/Partida Anio Anterior" 
+	      id="menu_anterior" 
+	      parent="menu_cxp_configure" 
+	      action="cxp_anterior_action"
+	      />
+
+    </data>
+</openerp>

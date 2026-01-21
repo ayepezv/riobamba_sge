@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+        <record id="confirm_process_form_contratation" model="ir.ui.view">
+            <field name="name">confirm.process.form</field>
+            <field name="model">confirm.process</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form>
+				<field name="name" required="1" colspan="2"/>
+				<field name="sub_id" required="1" colspan="2"/>
+				<field name="date" required="1" colspan="2"/>
+				<field name="ocupational_id" required="1" colspan="2"/>
+				<field name="wage" required="1" colspan="2"/>
+				<field name="work_id" required="1" colspan="2"/>
+                <separator string="" colspan="4" />
+                <label string="" colspan="2"/>
+                <group col="2" colspan="2">
+                  <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+                  <button name="confirm_process_contratation" string="Contratar" confirm="Esta seguro que desea contratar??, si usted confirma se crea un empleado y un contrato asociado, mismo que usted debe completar.." colspan="1" type="object" icon="gtk-ok" />
+                  <!--button name="do_return_state" string="Regresar" confirm="Esta seguro que desea regresar???" colspan="1" type="object" icon="gtk-go-back" /-->
+                </group>
+              </form>
+            </field>
+        </record>
+		
+        <record id="action_confirm_contratation" model="ir.actions.act_window">
+            <field name="name">Confirmar</field>
+            <field name="res_model">confirm.process</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</openerp>

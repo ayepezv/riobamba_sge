@@ -1,0 +1,175 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;"><b>${user.context_department_id.name or ''}</b></td>	  	  
+    </tr>
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;">INGRESO DE BODEGA Nro. ${o.name or  ''}</td>	  	  
+    </tr>	
+  </table>
+  <table WIDTH="100%" border='1' rules="cols" cellpadding="2" cellspacing="2"  bordercolor="#000000" >  
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Fecha Factura:</td>
+      <td style="font-size:11px" width="42%">${o.document_date or  ''}</td>
+    </tr>	
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Fecha Ingreso:</td>
+      <td style="font-size:11px" width="42%">${o.date_done or  ''}</td>
+    </tr>	
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Proveedor</td>
+      <td style="font-size:11px" width="42%">${o.partner_id.ced_ruc or ''} - ${o.partner_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Departamento</td>
+      <td style="font-size:11px" width="42%">${o.solicitant_id.department_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Solicitado por:</td>
+      <td style="font-size:11px" width="42%">${o.solicitant_id.complete_name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Solicitud/Doc. Referencia:</td>
+      <td style="font-size:11px" width="42%">${o.document_id.name or ''} - ${o.number or ''}</td>
+    </tr>
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Bodega:</td>
+      <td style="font-size:11px" width="42%">${o.bodega_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Objeto Receptor:</td>
+      <td style="font-size:11px" width="42%">${o.objeto_id.name or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Observaciones:</td>
+      <td style="font-size:11px" width="42%">${o.categ_aux or ''} - ${o.note or ''}</td>
+    </tr> 
+    <tr>
+      <td style="font-weight: bold;font-size:11px" width="12%">Autoriza Ingreso:</td>
+      <td style="font-size:11px" width="42%">${o.responsable_id.complete_name or ''}</td>
+    </tr> 
+  </table>
+  <p></p>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+    <thead style="display: table-header-group">
+      <tr>
+        <th style="font-size:11px" width="5%">Nro.</th>
+        <th style="font-size:11px" width="45%">DETALLE</th>
+        <th style="font-size:11px" width="10%">UNIDAD</th>
+        <th style="font-size:11px" width="10%">CANTIDAD</th>
+        <th style="font-size:11px" width="10%">P.UNIT</th>
+        <th style="font-size:11px" width="10%">SUBTOTAL</th>
+      </tr>
+    </thead>
+    <%
+       a=0
+       %>
+    %for line in o.move_lines:
+    <%
+       a+=1
+       %>
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center">${a}</td>
+      %if line.product_id.default_code:
+      <td width="45%" style="font-size:11px;text-align:left">${line.product_id.default_code} ${line.product_id.name}</td>
+      %else:
+      <td width="45%" style="font-size:11px;text-align:left">${line.product_id.name}</td>
+      %endif
+      <td width="10%" style="font-size:11px;text-align:right">${line.product_id.uom_id.name}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${'{:,.2f}'.format(line.product_qty)}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${'{:,.2f}'.format(line.price_unit_inc_imp)}</td>
+      <td width="10%" style="font-size:11px;text-align:right">${'{:,.2f}'.format(line.total)}</td>
+    </tr>
+    %endfor      
+  </table>
+  <table width="100%">
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center"> </td>
+      <td width="40%" style="font-size:11px;text-align:left"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="15%" style="font-size:11px;text-align:right"><b>Subtotal</b></td>
+      <td width="10%" style="font-size:11px;text-align:right;border: medium solid black">${'{:,.2f}'.format(o.subtotal_inv_0+o.subtotal_inv)}</td>
+    </tr>
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center"> </td>
+      <td width="40%" style="font-size:11px;text-align:left"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      %if line.picking_id.iva>0:
+      <td width="15%" style="font-size:11px;text-align:right"><b>Tarifa 12%</b></td>
+      %else:
+      <td width="15%" style="font-size:11px;text-align:right"><b>Tarifa 14%</b></td>
+      %endif
+      <td width="10%" style="font-size:11px;text-align:right;border: medium solid black">${'{:,.2f}'.format(o.subtotal_inv)}</td>
+    </tr>
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center"> </td>
+      <td width="40%" style="font-size:11px;text-align:left"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="15%" style="font-size:11px;text-align:right"><b>Tarifa 0%</b></td>
+      <td width="10%" style="font-size:11px;text-align:right;border: medium solid black">${'{:,.2f}'.format(o.subtotal_inv_0)}</td>
+    </tr>
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center"> </td>
+      <td width="40%" style="font-size:11px;text-align:left"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      %if line.picking_id.iva>0:
+      <td width="15%" style="font-size:11px;text-align:right"><b>IVA 12%</b></td>
+      %else:
+      <td width="15%" style="font-size:11px;text-align:right"><b>IVA 14%</b></td>
+      %endif
+      <td width="10%" style="font-size:11px;text-align:right;border: medium solid black">${'{:,.2f}'.format(o.total_taxes)}</td>
+    </tr>
+    <tr style="page-break-inside:avoid">
+      <td width="5%" style="font-size:11px;text-align:center"> </td>
+      <td width="40%" style="font-size:11px;text-align:left"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="10%" style="font-size:11px;text-align:right"> </td>
+      <td width="15%" style="font-size:11px;text-align:right"><b>Total</b></td>
+      <td width="10%" style="font-size:11px;text-align:right;border: medium solid black">${'{:,.2f}'.format(o.total_inventario)}</td>
+    </tr>
+  </table>
+  <table style="page-break-inside:avoid" width="100%">
+	<tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+	</tr>
+	<tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+	</tr>
+	<tr style="font-size:11px">
+      <th width="33%">ELABORADO POR</th>
+      <th width="33%">APROBADO POR</th>
+      <th width="33%">RECIBIDO EN BODEGA</th>
+	</tr>  
+	<tr style="height:35px">
+      <th></th>
+      <th></th>
+      <th></th>
+	</tr>
+	<tr style="height:35px">
+      <th>__________________</th>
+      <th>__________________</th>
+      <th>__________________</th>
+	</tr>
+	<tr style="font-size:11px">
+	  <th width="33%">${user.employee_id.complete_name or ''}</th>
+	  <th width="33%">${user.context_department_id.coordinador_id.complete_name or ''}</th>
+	  <th width="33%">${o.receptor_id.complete_name or ''}</th>
+	</tr>  
+  </table>
+  %endfor
+</html>

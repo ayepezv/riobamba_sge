@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 		
+	<!--menuitem name="Gestión Documental" 
+    	id="menu_document_manager" 
+    	sequence="10"
+    	/-->	
+	<menuitem name="Configuración" 
+     		  id="menu_document_manager_configuration" 
+			  groups="group_doc_user"
+     		  parent="gt_document_manager.menu_document_manager"
+     		  sequence="100"/>
+     	
+     
+    <record id="res_request_tree_modified" model="ir.ui.view">
+		<field name="name">res.request.tree.modified</field>
+		<field name="model">res.request</field>
+		<field name="inherit_id" ref="base.res_request_tree-view"/>
+		<field name="arch" type="xml">
+	    <field name="create_date" position="before">
+	    <field name="module"/>
+	    </field>
+		</field>
+    </record>
+         	
+    <record id="res_request_form_modified" model="ir.ui.view">
+		<field name="name">res.request.form.modified</field>
+		<field name="model">res.request</field>
+		<field name="inherit_id" ref="base.res_request-view"/>
+		<field name="arch" type="xml">
+	    <field name="active" position="after">
+	    <field name="module" attrs="{'readonly':[('state','!=','draft')]}"/>
+	    </field>
+		</field>
+    </record>
+    
+    
+    <record id="res_request_filter_modified" model="ir.ui.view">
+		<field name="name">res.request.filter.modified</field>
+		<field name="model">res.request</field>
+		<field name="inherit_id" ref="base.res_request_search_view"/>
+		<field name="arch" type="xml">
+		<field name="state" position="after">
+	    <field name="module"/>
+		</field>
+		</field>
+    </record>
+    
+    <record id="res_request_search_modified" model="ir.ui.view">
+		<field name="name">res.request.search.modified</field>
+		<field name="model">res.request</field>
+		<field name="inherit_id" ref="base.res_request_search_view"/>
+		<field name="arch" type="xml">
+	    <xpath expr="/search/group[@string='Group By']/filter[@string='State']" position="before">
+	    	<separator orientation="vertical"/>
+	    	<filter string="Módulo" icon="gtk-select-color" domain="[]" context="{'group_by':'module'}"/>
+	    </xpath>
+		</field>
+    </record>
+
+	<menuitem id="menu_parent_he_doc" parent="menu_document_manager" 
+			  name="Ausencias / Horas Adicionales" sequence="6"/>
+    
+</data>
+</openerp>
+
+

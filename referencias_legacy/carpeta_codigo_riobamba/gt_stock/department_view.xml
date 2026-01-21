@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+	  <record model="ir.ui.view" id="view_department_form_modified">
+		<field name="name">hr.department.modified</field>
+		<field name="model">hr.department</field>
+		<field name="type">form</field>
+		<field name="inherit_id" ref="hr.view_department_form"/>
+		<field name="arch" type="xml">
+		  <field name="manager_id" position="before">
+			<field name="bool_location"/>
+			<field name="location_id" readonly="1"/>
+		  </field>
+		</field>
+	  </record>
+
+    </data>
+</openerp>

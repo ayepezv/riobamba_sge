@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="hr_advance_sequence" model="ir.sequence">
+            <field name="name">Anticipo</field>
+            <field eval="3" name="padding"/>
+            <field name="prefix">ANTIC/%(year)s/</field>
+        </record>
+        <record forcecreate="1" id="advance_journal" model="account.journal">
+            <field name="name">Diario Anticipo</field>
+            <field name="code">ANT</field>
+            <field name="type">general</field>
+            <field name="view_id" ref="account.account_journal_view"/>
+            <field name="sequence_id" ref="hr_advance_sequence"/>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+
+        <record id="regla_anticipo_sueldo" model="hr.salary.rule">
+			<field name="name">Anticipo Salario</field>
+			<field name="code">ANTICIPOS</field>
+            <field name="category_id" ref="hr_payroll.DED"/>
+            <field name="sequence" eval="204"/>
+			<field name="condition_select">python</field>
+            <field name="condition_python">if inputs.ANTICIPOS:
+    result=True
+else:
+    result=False</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">result=inputs.ANTICIPOS.amount</field>
+        </record>
+
+    </data>
+</openerp>

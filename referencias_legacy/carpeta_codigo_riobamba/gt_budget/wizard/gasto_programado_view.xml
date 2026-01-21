@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <menuitem id="menu_gastos_programados"
+		parent="menu_budget_queries_base"
+		name="Resumen Gastos Programados"
+		sequence="1"/>
+
+      <!-- RESUMEN DE GASTOS PROGRAMADOS INICIAL -->
+      <record id="view_resumen_gastos_programados" model="ir.ui.view">
+        <field name="name">Resumen Gastos Programados</field>
+        <field name="model">resumen.gasto.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Resumen Gastos Programados">
+	    <group col="4" colspan="4">
+	      <field name="poa_id" colspan="2" required="1" widget="selection"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_rgw" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="printResumenGasto" type="object" icon="gtk-execute"  string="Imprimir"/>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_resumen_gastos_programados" model="ir.actions.act_window">
+        <field name="name">Inicial</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">resumen.gasto.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_resumen_gastos_programados"
+		icon="STOCK_EXECUTE"
+		action="action_resumen_gastos_programados"
+		parent="menu_gastos_programados"
+		name="Inicial"
+		sequence="1"/>
+
+      <!-- FINAL-->
+
+      <record id="view_resumen_gastos_programados_final" model="ir.ui.view">
+        <field name="name">Final</field>
+        <field name="model">resumen.gasto.final.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Resumen Gastos Programados Final">
+	    <group col="4" colspan="4">
+	      <field name="poa_id" colspan="2" required="1" widget="selection"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_rgwf" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="printResumenGastoFinal" type="object" icon="gtk-execute"  string="Imprimir"/>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_resumen_gastos_programados_final" model="ir.actions.act_window">
+        <field name="name">Final</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">resumen.gasto.final.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_resumen_gastos_programados_final"
+		icon="STOCK_EXECUTE"
+		action="action_resumen_gastos_programados_final"
+		parent="menu_gastos_programados"
+		name="Final"
+		sequence="2"/>
+
+      <!-- G PROGRAMADO COMPROMISO-->
+      <record id="view_resumen_gastos_programados_comprometido" model="ir.ui.view">
+        <field name="name">Resumen Gastos Programados Comprometido</field>
+        <field name="model">resumen.gasto.comprometido.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Resumen Gastos Programados Comprometido">
+	    <group col="4" colspan="4">
+	      <field name="poa_id" colspan="2" required="1" widget="selection"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_rgwc" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="printResumenGastoComprometido" type="object" icon="gtk-execute"  string="Imprimir"/>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_resumen_gastos_programados_comprometido" model="ir.actions.act_window">
+        <field name="name">Comprometido</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">resumen.gasto.comprometido.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_resumen_gastos_programados_comprometido"
+		icon="STOCK_EXECUTE"
+		action="action_resumen_gastos_programados_comprometido"
+		parent="menu_gastos_programados"
+		name="Comprometido"
+		sequence="3"/>
+
+      <!-- G PROGRAMADO PAGADO-->
+      <record id="view_resumen_gastos_programados_pagado" model="ir.ui.view">
+        <field name="name">Pagado</field>
+        <field name="model">resumen.gasto.pagado.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Resumen Gastos Programados Pagado">
+	    <group col="4" colspan="4">
+	      <field name="poa_id" colspan="2" required="1" widget="selection"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_rgwp" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="printResumenGastoPagado" type="object" icon="gtk-execute"  string="Imprimir"/>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_resumen_gastos_programados_pagado" model="ir.actions.act_window">
+        <field name="name">Pagado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">resumen.gasto.pagado.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_resumen_gastos_programados_pagado"
+		icon="STOCK_EXECUTE"
+		action="action_resumen_gastos_programados_pagado"
+		parent="menu_gastos_programados"
+		name="Pagado"
+		sequence="4"/>
+
+</data>
+</openerp>

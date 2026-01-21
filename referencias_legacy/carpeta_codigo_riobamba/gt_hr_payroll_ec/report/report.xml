@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<openerp>
+	<data>
+		
+		<!-- ROL INDIVIDUAL -->
+		<report auto="True"
+			id="rol_individual"
+			model="hr.payslip"
+			name="rol_individual"
+			rml="gt_hr_payroll_ec/report/rol_individual.rml"
+			string="Rol de empleado"/>
+
+<report auto="False"
+        id="rol_no_descontado"
+        model="hr.payslip.run"
+        name="no_descontado"
+        file="gt_hr_payroll_ec/report/no_descuento.mako"
+        string="No descontado"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="resumen_rol"
+        model="resumen.rol"
+        name="resumen_rol"
+        file="gt_hr_payroll_ec/report/resumen_rol.mako"
+        string="Resumen Rol"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="resumen_rol_detalle"
+        model="resumen.rol"
+        name="resumen_rol_detalle"
+        file="gt_hr_payroll_ec/report/resumen_rol_detalle.mako"
+        string="Resumen Rol Detalle"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="rol_banco"
+        model="hr.payslip.run"
+        name="rol_banco"
+        file="gt_hr_payroll_ec/report/banco.mako"
+        string="Cuentas Banco"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="rol_individual_gpa"
+        model="hr.payslip"
+        name="rol_individual_gpa"
+        file="gt_hr_payroll_ec/report/rol_individual_gpa.mako"
+        string="Rol individual"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="rol_individual_masivo"
+        model="hr.payslip.run"
+        name="rol_individual_masivo"
+        file="gt_hr_payroll_ec/report/rol_individual_masivo.mako"
+        string="Rol individual"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="rol_general_gpa"
+        model="hr.payslip.run"
+        name="rol_general_gpa"
+        file="gt_hr_payroll_ec/report/rol_general_gpa.mako"
+        string="Rol general"
+        report_type="webkit"
+	/>
+
+<report auto="False"
+        id="rol_extra"
+        model="hr.payslip.run"
+        name="rol_extra"
+        file="gt_hr_payroll_ec/report/rol_extra.mako"
+        string="Rol Aporte Patronal"
+        report_type="webkit"
+	/>
+
+<report auto="False"
+        id="rol_decimo"
+        model="hr.payslip.run"
+        name="rol_decimo"
+        file="gt_hr_payroll_ec/report/rol_decimo.mako"
+        string="Rol Decimo/Fondo Reserva"
+        report_type="webkit"
+	/>
+
+<!--report auto="False"
+        id="rol_fr"
+        model="hr.payslip.run"
+        name="rol_fr"
+        file="gt_hr_payroll_ec/report/rol_fr.mako"
+        string="Rol Fondo Reserva"
+        report_type="webkit"
+	/-->
+
+<report auto="False"
+        id="rol_general_budget"
+        model="hr.payslip.run"
+        name="rol_general_budget"
+        file="gt_hr_payroll_ec/report/rol_general_budget.mako"
+        string="Rol general Partida"
+        report_type="webkit"
+	/>
+
+<report auto="False"
+        id="rol_general_detalle"
+        model="hr.payslip.run"
+        name="rol_general_detalle"
+        file="gt_hr_payroll_ec/report/detalle.mako"
+        string="Detalle Programa Rubro"
+        report_type="webkit"
+        webkit_header=""/>
+
+<report auto="False"
+        id="rol_asiento"
+        model="hr.payslip.run"
+        name="rol_asiento"
+        file="gt_hr_payroll_ec/report/moverol.mako"
+        string="Pre-Asiento"
+        report_type="webkit"
+        webkit_header=""/>
+			
+<!-- BORRAMOS REPORTES NO USADOS -->
+<delete model="ir.actions.report.xml" search="[('report_name','=','payslip')]"/>
+<delete model="ir.actions.report.xml" search="[('report_name','=','paylip.details')]"/>
+
+<!-- ROL GENERAL en excel-->
+<record id="view_wizard_export_rol" model="ir.ui.view">
+  <field name="name">Exportar Rol</field>
+  <field name="model">hr.payroll.export</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Exportar Rol">	 
+      <group col="4" colspan="4">
+	<label colspan="4" nolabel="1" string="Este wizard le permite exportar el rol de pagos general en una hoja de excel (.xls)"/>
+	<field name="datas_fname" colspan="2" invisible="1"/>
+	<field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	<newline/>
+	<group col="4" colspan="4">
+	  <button name="generar_archivo_rol" string="Generar" colspan="2" type="object" icon="gtk-execute"/>
+	  <button special="cancel" string="Cancelar" colspan="2" type="object" icon="gtk-cancel"/>
+	</group>
+      </group>
+    </form>
+  </field>
+</record>
+
+<act_window
+    id="act_export_rol"
+    name="Exportar detalle"
+    res_model="hr.payroll.export"
+    target="new"
+    view_mode="form"
+    src_model="hr.payslip.run"/>
+
+<record id="view_wizard_verifica_anticipo" model="ir.ui.view">
+  <field name="name">Verificar Cuentas de anticipo</field>
+  <field name="model">verifica.cta.anticipo</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Verificar">	 
+      <group col="4" colspan="4">
+	<field name="rubro_id" colspan="4"/>
+	<newline/>
+	<group col="4" colspan="4">
+	  <button name="verificaCta" string="Verificar" colspan="2" type="object" icon="gtk-execute"/>
+	  <button name="actualizaCta" string="Actualizar" colspan="2" type="object" icon="gtk-execute"/>
+	</group>
+	<field name='line_ids'>
+	  <tree editable='bottom'>
+	    <field name="employee_id" readonly="1"/>
+	    <field name="cta_n"/>
+	    <field name="cta" readonly="1"/>
+	  </tree>
+	</field>
+      </group>
+    </form>
+  </field>
+</record>
+
+<act_window
+    id="act_verifica_anticipo"
+    name="Verificar Ctas Anticipo"
+    res_model="verifica.cta.anticipo"
+    target="new"
+    view_mode="form"
+    src_model="hr.payslip.run"/>
+
+	</data>
+</openerp>

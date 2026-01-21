@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="seq_type_asset_rev" model="ir.sequence.type">
+            <field name="name">Revalorizacion Activo</field>
+            <field name="code">account.asset.reval</field>
+        </record>
+        <record id="seq_asset_rev" model="ir.sequence">
+            <field name="name">Revalorizacion Activo</field>
+            <field name="code">account.asset.reval</field>
+            <field name="prefix"></field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</openerp>

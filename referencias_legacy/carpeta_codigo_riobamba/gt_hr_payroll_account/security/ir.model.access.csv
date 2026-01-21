@@ -1,0 +1,20 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_payslip_run cm","hr.payslip.run","hr_payroll.model_hr_payslip_run","account.group_account_manager",1,1,1,1
+"access_payslip cm","hr.payslip","hr_payroll.model_hr_payslip","account.group_account_manager",1,1,1,1
+"access_period_line cm","hr.work.period.line","gt_hr_base.model_hr_work_period_line","account.group_account_manager",1,1,1,1
+"access_accconfig acc","hr.account.configuration","model_hr_account_configuration","account.group_account_manager",1,1,1,1
+"access_accconfig accus","hr.account.configuration","model_hr_account_configuration","account.group_account_user",1,1,1,1
+"access_accpgrdet acc","run.programa.detalle","model_run_programa_detalle","account.group_account_manager",1,1,1,1
+"access_accpgrdet hr","run.programa.detalle","model_run_programa_detalle","base.group_hr_manager",1,1,1,1
+"access_accpgrdet hrusr","run.programa.detalle","model_run_programa_detalle","base.group_hr_user",1,1,1,1
+access_account_terce,hr.pago.terceros,model_hr_pago_terceros,account.group_account_manager,1,1,1,1
+access_account_terce_line,hr.pago.terceros.line,model_hr_pago_terceros_line,account.group_account_manager,1,1,1,1
+access_account_pago_rol,hr.pago.rol,model_hr_pago_rol,account.group_account_manager,1,1,1,1
+access_account_pago_rol_line,hr.pago.rol.line,model_hr_pago_rol_line,account.group_account_manager,1,1,1,1
+"access_hr_contract_type_type ret","hr.contract.type.type","gt_hr_base.model_hr_contract_type_type","account.group_account_manager",1,1,1,1
+"access_accconfig accus_bd","hr.account.configuration","model_hr_account_configuration","gt_budget.group_budget_manager",1,1,1,1
+"access_hr_salary_rule accus_bd","hr.salary.rule","hr_payroll.model_hr_salary_rule","gt_budget.group_budget_manager",1,0,0,0
+"access_acc_acc accus_bd","account.account","account.model_account_account","gt_budget.group_budget_manager",1,0,0,0
+access_account_tercero_move,tercero.move,model_tercero_move,account.group_account_manager,1,1,1,1
+access_account_beneficiario_tercero,beneficiario.tercero,model_beneficiario_tercero,account.group_account_manager,1,1,1,1
+"access_hr_rule_input ret","hr.rule.input","hr_payroll.model_hr_rule_input","account.group_account_manager",1,0,0,0

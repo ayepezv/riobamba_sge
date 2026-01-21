@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      
+      <menuitem id="menu_reval_asset_root" 
+		parent="account_asset.menu_finance_assets"
+		groups="account.group_account_manager,account.group_account_manager,group_gt_account_asset_manager"
+		name="Revalorizacion"
+		/>
+      
+      <!-- Revalorizacion views
+		-->
+      <record model="ir.ui.view" id="view_asset_reval_form">
+	<field name="name">account.asset.reval.form</field>
+	<field name="model">account.asset.reval</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Revalorizacion">
+	    <group col="4" colspan="4">
+	      <field name="name" colspan="2" readonly="1"/>
+	      <field name="date" colspan="2"/>
+	      <field name="asset_id" colspan="4"/>
+	      <field name="perito_id" colspan="2"/>
+	      <field name="autorizado_id" colspan="2"/>	      
+	    </group>
+	    <group col="4" colspan="4" string='Detalle Anterior'>
+	      <field name="valor_ant" colspan="2" readonly="1"/>
+	      <field name="fecha_ant" colspan="2" readonly="1"/>
+	      <field name="dep_acumulada_ant" colspan="2" readonly="1"/>
+	      <field name="residual_ant" colspan="2" readonly="1"/>
+	      <field name="actual_ant" colspan="2" readonly="1"/>
+	    </group>
+	    <group col="4" colspan="4" string='Detalle Revalorizacion'>
+	      <field name="valor" colspan="2"/>
+	      <field name="fecha" colspan="2"/>
+	      <field name="residual_actual" colspan="2"/>
+	      <field name="depreciacion" colspan="2"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string='Detalle'>
+		<field name="comision_ids" colspan="4" nolabel="1"/>
+	      </page>
+	    </notebook>
+	    <group col="4" colspan="4">
+	      <field name="state" colspan="2"/>
+	    </group>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_asset_reval_tree" model="ir.ui.view">
+	<field name="name">account.asset.reval.tree</field>
+	<field name="model">account.asset.reval</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Revalorizacion">
+	    <field name="name"/>
+	    <field name="asset_id"/>
+	    <field name="date"/>
+	    <field name="perito_id"/>
+	    <field name="autorizado_id"/>
+	    <field name="valor_ant"/>
+	    <field name="valor"/>
+	    <field name="state"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_asset_reval_filter" model="ir.ui.view">
+	<field name="name">Revalorizacion.Busca</field>
+	<field name="model">account.asset.reval</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Revalorizacion">
+	    <field name="name"/>
+	    <field name="asset_id"/>
+	    <field name="date"/>
+	    <field name="perito_id"/>
+	    <field name="autorizado_id"/>
+	    <field name="state"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_asset" string="Activo" icon="STOCK_INDENT" domain="[]" context="{'group_by':'asset_id'}"/>
+	      <filter name="group_perito" string="Perito" icon="STOCK_INDENT" domain="[]" context="{'group_by':'perito_id'}"/>
+	      <filter name="group_autoriza" string="Autorizado" icon="STOCK_INDENT" domain="[]" context="{'group_by':'autorizado_id'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_asset_reval" model="ir.actions.act_window">
+	<field name="name">Revalorizacion</field>
+	<field name="res_model">account.asset.reval</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+	  
+      <menuitem id="menu_asset_reval"
+		action="action_asset_reval"
+		parent="menu_reval_asset_root"
+		name="Revalorizar"
+		/>
+    </data>
+</openerp>

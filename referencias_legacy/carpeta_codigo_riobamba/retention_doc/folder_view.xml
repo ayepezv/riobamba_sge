@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem name="Carpetas" 
+	      id="menu_folder" 
+	      parent="account.menu_finance"/>
+
+<!-- MOVES A EXCEL -->
+
+<record id="view_ex_excel_comprobantes" model="ir.ui.view">
+  <field name="name">Exporta Lista Comprobantes</field>
+  <field name="model">wizard.move.excel</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Exporta lista comprobantes">
+      <group col="4" colspan="4">
+	<group colspan="4">
+	  <field name="opc" required="1" colspan="2"/>
+	  <field name="opc1" required="1" colspan="2"/>
+	  <field name="banco_id" colspan="4" attrs="{'required': [('opc', '=','Egresos')],
+						    'invisible': [('opc', '!=','Egresos')]}"/>
+	  <field name="date_start" colspan="2" required="1"/>
+	  <field name="date_end" colspan="2" required="1"/>
+	</group>
+	<newline/>
+	<group colspan="4">
+	  <field name="datas_fname" colspan="4" invisible="1"/>
+	  <field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+	</group>
+	<group colspan="4">
+	  <button icon="gtk-execute" name="actionMoveExcel" string="Exporta Excel" type="object" colspan="1"/>
+	  <button icon="gtk-cancel" special="cancel"
+	          string="Salir" />
+	</group>
+      </group>
+    </form>
+  </field>
+</record>
+
+
+<record id="action_move_ex_excel" model="ir.actions.act_window">
+  <field name="name">Exportar Lista Comprobantes</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">wizard.move.excel</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<menuitem id="menu_move_ex_excel"
+	  icon="STOCK_EXECUTE"
+	  action="action_move_ex_excel"
+	  parent="menu_folder"
+	  name="Exportar Lista Comprobantes"/>
+
+
+<!-- Menu y vista de folder -->
+
+<record id="wizard_move_folder" model="ir.ui.view">
+  <field name="name">Relacionar Comprobante</field>
+  <field name="model">wizard.move.folder</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Relacionar Comprobante">
+      <group string="Comprobante Contable" colspan="4">
+	<field name="move_id" required="1" domain="[('state','=','posted')]"/>
+      </group>
+      <group colspan="4">
+	<button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	<button name="action_move_folder" string="Relacionar" type="object" icon="gtk-execute"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+<record id="move_folder" model="ir.actions.act_window">
+  <field name="name">Relacionar Comprobante</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">wizard.move.folder</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">form</field>
+  <field name="target">new</field>
+</record>
+
+<record model="ir.ui.view" id="view_folder_form">
+  <field name="name">account.folder.view.form</field>
+  <field name="model">account.folder</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form>
+      <field name="name" colspan="3" required="1"/>
+      <button name="%(move_folder)d" colspan="1" string="Relacionar Comprobante" 
+	      type="action" icon="gtk-execute"/>
+      <newline/>
+      <notebook colspan="4">
+	<page string="Comprobantes Contables">
+	  <field name="move_ids" nolabel="1" readonly="1">
+	    <tree>
+	      <field name="name"/>
+	      <field name="date"/>
+	      <field name="partner_id"/>
+	      <field name="narration"/>
+	    </tree>
+	  </field>
+	</page>
+      </notebook>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_folder_tree">
+  <field name="name">account.folder.view.tree</field>
+  <field name="model">account.folder</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree>
+      <field name="name"/>
+      <field name="move_ids"/>
+    </tree>
+  </field>
+</record>
+
+
+<record model="ir.actions.act_window" id="folder_action">
+  <field name="name">Carpetas</field>
+  <field name="res_model">account.folder</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem name="Carpeta" 
+	  id="menu_folder_folder" 
+	  parent="menu_folder" 
+	  action="folder_action"/>
+<!-- detalle relacionado -->
+<record model="ir.ui.view" id="view_folder_line_form">
+  <field name="name">account.folder.line.view.form</field>
+  <field name="model">account.folder.line</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form>
+      <field name="name" colspan="4" required="1" readonly="1"/>
+    </form>
+  </field>
+</record>
+    <record model="ir.ui.view" id="view_folder_line_tree">
+      <field name="name">account.folder.line.view.tree</field>
+      <field name="model">account.folder.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree>
+	  <field name="f_id" readonly="1"/>
+	  <field name="name"  readonly="1"/>
+	  <field name="date" readonly="1"/>
+	  <field name="partner_id" readonly="1"/>
+	  <field name="narration" readonly="1"/>
+	</tree>
+      </field>
+    </record>
+    
+    <record id="folder_line_search" model="ir.ui.view">
+      <field name="name">account.folder.line.search</field>
+      <field name="model">account.folder.line</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Comprobantes">
+	  <field name="f_id"/>
+	  <field name="name"/>
+	  <field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+	  <field name="date" string="Fecha Hasta" filter_domain="[('date','&lt;=',self)]"/>
+	  <field name="partner_id"/>
+	  <field name="narration"/>
+          <newline/>
+          <group expand="1" string="Agrupar por...">
+            <filter string="Fecha" domain="[]" context="{'group_by':'date'}"/>
+            <separator orientation="vertical"/>
+	    <filter string="Carpeta" domain="[]" context="{'group_by': 'f_id'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+	  
+    <record model="ir.actions.act_window" id="folder_line_action">
+      <field name="name">Detalle comprobantes</field>
+      <field name="res_model">account.folder.line</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record> 
+    <menuitem name="Comprobantes relacionados" 
+	      id="menu_folder_line" 
+	      parent="menu_folder" 
+	      action="folder_line_action"/>
+
+    <!-- todos -->
+        <record id="action_account_moves_less_folder" model="ir.actions.act_window">
+      <field name="name">Comprobantes Contables</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="retention.view_account_move_search_less"/>
+    </record>
+
+    <record id="action_move_less_tree_folder" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="retention.view_move_less_tree"/>
+      <field name="act_window_id" ref="action_account_moves_less_folder"/>
+    </record>
+    
+    <record id="action_move_less_form_folder" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="retention.view_move_less_form"/>
+      <field name="act_window_id" ref="action_account_moves_less_folder"/>
+    </record>
+    
+    <menuitem
+        action="action_account_moves_less_folder"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobantes Contables"
+        id="menu_action_account_moves_less_folder"
+        parent="menu_folder"
+        sequence="5"
+        />
+
+    </data>
+</openerp>

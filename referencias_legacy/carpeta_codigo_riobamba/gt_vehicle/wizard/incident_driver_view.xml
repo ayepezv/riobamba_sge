@@ -1,0 +1,36 @@
+<openerp>
+      <data>
+
+    	<record id="view_incident_driver_w" model="ir.ui.view">
+            <field name="name">Incidentes</field>
+            <field name="model">incident.driver.w</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              	<form string="Registro del Incidente">
+              	 <group colspan="4">
+              	   <field name="tipo" invisible='1'/>
+              	   <field name="driver_id" colspan="2" required="1" domain="[('driver_type','=',tipo)]"/>              	   
+				   <field name="date" on_change="validar_tiempo(date)" colspan="2" required="1"/>
+				   <newline/>
+				   <field name="desc" required="1" colspan="4"/>
+              	   <separator  colspan="4" />
+		           <button  icon="gtk-cancel" special="cancel" string="Cancelar" colspan="2"/>
+		           <button icon="gtk-ok" name="create_incident" string="Agregar Incidente" type="object" colspan="2"/>
+		         </group>
+			  	</form>
+            </field>
+		</record>
+
+		<record id="action_add_incident" model="ir.actions.act_window">
+	           <field name="name">Incidente</field>
+	           <field name="type">ir.actions.act_window</field>
+	           <field name="res_model">incident.driver.w</field>
+	           <field name="view_type">form</field>
+	           <field name="view_mode">form</field>
+		       <field name="context">{'record_id' : active_id}</field>
+	           <field name="target">new</field>
+    	</record>        
+</data>
+</openerp>
+
+       

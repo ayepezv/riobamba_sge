@@ -1,0 +1,166 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <report auto="False"
+              id="bugget_codificado"
+              model="cedula.codificado"
+              name="cedula_codificado"
+              file="budget_report/report/cedula_codificado.mako"
+              string="Cédula Codificado Ingresos"
+              header="True" report_type="webkit" menu="False"
+	      />
+
+      <report auto="False"
+	      id="bugget_codificado_gasto"
+	      model="cedula.codificado.gasto"
+              name="cedula_codificado_gasto"
+              file="budget_report/report/cedula_codificado_gasto.mako"
+              string="Cédula Codificado Egresos"
+              header="True" report_type="webkit" menu="False"
+	      />
+      
+      <menuitem id="menu_cedulas_codificado" 
+		parent="gt_budget.menu_budget_queries_base" 
+		sequence="12" name="Cedulas Codificado"/>
+
+      <menuitem id="menu_cedulas_lotaip" 
+		parent="gt_budget.menu_budget_queries_base" 
+		sequence="13" name="LOTAIP"/>
+      
+      
+      <record id="view_print_cedula_codificado" model="ir.ui.view">
+        <field name="name">Cedula Presupuestaria Codificado</field>
+        <field name="model">cedula.codificado</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cédula Presupuestaria Codificado">
+	    <notebook colspan="4">
+	      <page string="Formulario">
+		<group colspan="4" string="Cédula Presupuestaria Codificado">
+		  <field name="poa_id" required="1" colspan="4" widget="selection"/>
+		  <field name="date_from" string='Fecha Desde' required="1" colspan="2"/>
+		  <field name="date_to" string='Fecha Hasta' required="1" colspan="2"/>
+		</group>
+		<separator string="Archivo Excel" colspan="4"/>
+		<field name="datas_fname" colspan="2" invisible="1"/>
+		<field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+		<group colspan="4" col='5'>
+		  <button name="export_report" type="object" icon="gtk-execute" string="Exporta Excel"/>
+		  <button name="print_report" type="object" icon="gtk-print" string="Imprimir"/>
+		</group>
+	      </page>
+	    </notebook>
+	  </form>
+        </field>
+      </record>     
+      
+    <record id="action_print_cedula_codificado" model="ir.actions.act_window">
+	  <field name="name">Cédula Codificado</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">cedula.codificado</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>	  	          
+    </record>
+
+
+    <record id="view_print_budget_lotaip" model="ir.ui.view">
+        <field name="name">Cedula LOTAIP</field>
+        <field name="model">budget.lotaip</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cédula Presupuestaria LOTAIP">
+	    <notebook colspan="4">
+	      <page string="Formulario">
+		<group colspan="4" string="Cédula Presupuestaria LOTAIP">
+		  <field name="poa_id" required="1" colspan="4" widget="selection"/>
+		  <field name="date_from" string='Fecha Desde' required="1" colspan="2"/>
+		  <field name="date_to" string='Fecha Hasta' required="1" colspan="2"/>
+		</group>
+		<separator string="Archivo Excel" colspan="4"/>
+		<field name="datas_fname" colspan="2" invisible="1"/>
+		<field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+		<group colspan="4" col='5'>
+		  <button name="computeBudgetLotaip" type="object" icon="gtk-execute" string="Exportar CSV Lotaip"/>
+		  <!--button name="print_report" type="object" icon="gtk-print" string="Imprimir"/-->
+		</group>
+	      </page>
+	    </notebook>
+	  </form>
+        </field>
+      </record>     
+      
+    <record id="action_print_budget_lotaip" model="ir.actions.act_window">
+	  <field name="name">Cédula LOTAIP</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">budget.lotaip</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>	  	          
+    </record> 
+
+    <menuitem id="menu_budget_lotaip"
+		icon="STOCK_EXECUTE"
+		action="action_print_budget_lotaip"
+		parent="menu_cedulas_lotaip"
+		sequence="1"
+		name="Cedula LOTAIP"/>
+      
+      <menuitem id="menu_cedula_codificado"
+		icon="STOCK_EXECUTE"
+		action="action_print_cedula_codificado"
+		parent="menu_cedulas_codificado"
+		sequence="1"
+		name="Codificado Ingresos"/>
+
+      <!-- GASTOS -->
+
+      <record id="view_print_cedula_codificado_gasto" model="ir.ui.view">
+        <field name="name">Cedula Presupuestaria Codificado Gastos</field>
+        <field name="model">cedula.codificado.gasto</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Cédula Presupuestaria Codificado Gastos">
+	    <notebook colspan="4">
+	      <page string="Formulario">
+		<group colspan="4" string="Cédula Presupuestaria Codificado Gastos">
+		  <field name="poa_id" required="1" colspan="4" widget="selection"/>
+		  <field name="program_id" required="1" colspan="4" widget="selection"/>
+		  <field name="date_from" string='Fecha Desde' required="1" colspan="2"/>
+		  <field name="date_to" string='Fecha Hasta' required="1" colspan="2"/>
+		</group>
+		<separator string="Archivo Excel" colspan="4"/>
+		<field name="datas_fname" colspan="2" invisible="1"/>
+		<field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+		<group colspan="4" col='5'>
+		  <button name="export_report" type="object" icon="gtk-execute" string="Exporta Excel"/>
+		  <button name="print_report" type="object" icon="gtk-print" string="Imprimir"/>
+		</group>
+	      </page>
+	    </notebook>
+	  </form>
+        </field>
+      </record>     
+      
+    <record id="action_print_cedula_codificado_gastos" model="ir.actions.act_window">
+	  <field name="name">Cédula Codificado Gastos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">cedula.codificado.gasto</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>	  	          
+    </record> 
+
+      
+      
+      <menuitem id="menu_cedula_codificado_gastos"
+		icon="STOCK_EXECUTE"
+		action="action_print_cedula_codificado_gastos"
+		parent="menu_cedulas_codificado"
+		sequence="2"
+		name="Codificado Gastos"/>
+      
+      
+    </data>
+</openerp>

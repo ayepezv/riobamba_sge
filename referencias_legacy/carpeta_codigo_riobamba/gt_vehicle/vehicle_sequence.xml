@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Sequences for combustible order --> 
+        <record id="seq_type_combustible_order" model="ir.sequence.type">
+            <field name="name">Combustible Order</field>
+            <field name="code">combustible.order</field>
+        </record>
+        <record id="seq_combustible_order" model="ir.sequence">
+            <field name="name">Combustible Order</field>
+            <field name="code">combustible.order</field>
+            <field name="prefix">OC</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequences for movilization order --> 
+        <record id="seq_type_movilization_order" model="ir.sequence.type">
+            <field name="name">Órden de Movilización</field>
+            <field name="code">movilization.order</field>
+        </record>
+        <record id="seq_movilization_order" model="ir.sequence">
+            <field name="name">Órden de Movilización</field>
+            <field name="code">movilization.order</field>
+            <field name="prefix">OM/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Sequences for vehicular programming --> 
+        <!--record id="seq_type_vehicular_programming" model="ir.sequence.type">
+            <field name="name">Vehicular Programming</field>
+            <field name="code">vehicular.programming</field>
+        </record>
+        <record id="seq_vehicular_programming" model="ir.sequence">
+            <field name="name">Vehicular Programming</field>
+            <field name="code">vehicular.programming</field>
+            <field name="prefix">PV</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record-->
+
+
+        <!-- Sequences for reapair order --> 
+        <record id="seq_type_repair_order" model="ir.sequence.type">
+          <field name="name">Orden Reparacion</field>
+            <field name="code">repair.order</field>
+        </record>
+        <record id="seq_repair_order" model="ir.sequence">
+            <field name="name">Orden Reparacion</field>
+            <field name="code">repair.order</field>
+            <field name="prefix">OR</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</openerp>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <record id="view_refund_wizard_modified_form" model="ir.ui.view">
+      <field name="name">refund.wizard.modified.form</field>
+      <field name="model">account.invoice.refund</field>
+      <field name="inherit_id" ref="account.view_account_invoice_refund"/>
+      <field name="arch" type="xml">
+		<xpath expr="/form/group[@col='4']" position="replace"></xpath>
+        <field name="filter_refund" position="replace"></field>
+        <field name="description" position="replace">
+		  <field name="description" string="Ref."/>
+		</field>
+        <field name="journal_id" position="replace">
+		  <field name="journal_id" string="Diario NC"/>
+		</field>
+        <field name="period" position="replace">
+		  <field name="period" string="Periodo"/>
+		</field>
+		<button name="invoice_refund" position="replace">
+          <button string="Crear Nota Credito" icon="gtk-execute" name="invoice_refund" type="object"/>
+		</button>
+	  </field>
+    </record>
+
+    <record id="view_wizard_invoice_return_form" model="ir.ui.view">
+      <field name="name">wizard.invoice.return.form</field>
+      <field name="model">wizard.invoice.return</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form string="Asistente: Devolver Transferencia">
+	  <group string="Este asistente reversará la transferecia y creará un asiento de cuentas por pagar.">
+	    <field name="move_id"/>
+	    <field name="date" on_change="onchange_date(date)"/>
+	    <field name="period_id"/>
+	  </group>
+	  <!-- group string="Pagos a Reversar" colspan="4">
+	    <field name="payment_ids" nolabel="1"/>
+	  </group -->
+	  <group colspan="4">
+	    <button special="cancel" string="Cerrar" icon="gtk-cancel"/>
+	    <button name="action_return_invoice" type="object" string="Reversar Transferencia" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_wiz_inv_return" model="ir.actions.act_window">
+      <field name="name">Reversar Transferencia</field>
+      <field name="res_model">wizard.invoice.return</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_wizard_invoice_return_form"/>
+      <field name="target">new</field>
+    </record>
+
+    <record id="action_invoice_return_money" model="ir.values">
+      <field name="model_id" ref="model_account_invoice" />
+      <field name="name">Reversar Transferencia</field>
+      <field name="key2">client_action_multi</field>
+      <field name="value" eval="'ir.actions.act_window,' + str(ref('action_wiz_inv_return'))"/>
+      <field name="key">action</field>
+      <field name="model">account.invoice</field>
+    </record>
+    
+    </data>
+</openerp>

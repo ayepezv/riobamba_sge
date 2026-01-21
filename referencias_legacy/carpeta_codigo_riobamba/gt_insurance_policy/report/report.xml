@@ -1,0 +1,27 @@
+<?xml version="1.0"  encoding="utf-8"?>
+<openerp>
+  <data>
+	<report 
+	   auto="True" 
+	   id="report_polizas"
+	   model="gt.insurance.policy"
+	   name="report_polizas"
+	   rml="gt_insurance_policy/report/report_polizas.rml" 
+	   string="Activos asegurados" />
+
+	<report 
+	   auto="True" 
+	   id="report_insurance_policy"
+	   model="gt.insurance.policy"
+	   name="report_insurance_policy"
+	   rml="gt_insurance_policy/report/report_insurance_policy.rml" 
+	   string="Información de Poliza" />
+	<report 
+	   auto="True" 
+	   id="report_activos_asegurados"
+	   model="gt.insurance.policy.temporal"
+	   name="report_activos_asegurados"
+	   rml="gt_insurance_policy/report/report_activos_asegurados.rml" 
+	   string="Activos asegurados" />
+  </data>
+</openerp>

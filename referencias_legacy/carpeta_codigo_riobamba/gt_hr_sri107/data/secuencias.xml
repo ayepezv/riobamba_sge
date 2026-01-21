@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<openerp>
+    <data>
+    <!--data-->
+    	
+        <record id="seq_type_sri_107" model="ir.sequence.type">
+            <field name="name">Formulario 107</field>
+            <field name="code">sri.107</field>
+        </record>
+        
+        <record id="seq_sri_107" model="ir.sequence">
+            <field name="name">Secuencia de Formulario 107</field>
+            <field name="code">sri.107</field>
+            <field name="padding">4</field>
+        </record>
+        
+    </data>
+</openerp>

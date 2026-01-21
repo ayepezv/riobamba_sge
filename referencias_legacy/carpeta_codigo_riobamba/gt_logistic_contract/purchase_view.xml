@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+<!-- usuario sindicatura -->
+
+    <record id="view_usr_sindicatura_form" model="ir.ui.view">
+      <field name="name">view.usr.sindicatura.form</field>
+      <field name="model">contract.sindicature</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Sindicatura">
+	  <group colspan="4">
+	    <field name="name"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_usr_sindic_tree" model="ir.ui.view">
+      <field name="name">view.usr.sindicature.tree</field>
+      <field name="model">contract.sindicature</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Sindicatura">
+          <field name="name" select="1"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="action_usr_sindicature" model="ir.actions.act_window">
+      <field name="name">Usr Sindicatura</field>
+      <field name="res_model">contract.sindicature</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_contract_usr_sindicature"
+			  groups="gt_document_manager.group_ct_info_general"
+			  parent="gt_doc_contract.menu_doc_contract_configuration" 
+			  action="action_usr_sindicature"/>
+    
+
+<record model="ir.ui.view" id="public_purchase_type_form_inherit_base">
+  <field name="name">purchase.contract.type.form.inherit</field>
+  <field name="type">form</field>
+  <field name="model">purchase.contract.type</field>
+  <field name="inherit_id" ref="gt_government_procedure.view_purchase_contract_type_form"/>
+  <field name="arch" type="xml">
+    <field name="name" position="after">
+	  <field name="contract_type"/>
+    </field>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="public_purchase_form_inherit">
+  <field name="name">public.purchase.form.inherit</field>
+  <field name="type">form</field>
+  <field name="model">purchase.public.process</field>
+  <field name="inherit_id" ref="gt_government_procedure.view_purchase_public_process_form"/>
+  <field name="arch" type="xml">
+    <field name="amount" position="before">
+      <field name="contract_id" readonly="1" colspan="2"/>
+    </field>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="doc_contract_form_modify">
+  <field name="name">doc.contract.contract.modify</field>
+  <field name="type">form</field>
+  <field name="model">doc_contract.contract</field>
+  <field name="inherit_id" ref="gt_doc_contract.view_doc_contract_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="//page[@string='Garantias']" position="after">
+	  <page string="Solicitudes de pago">
+		<field name="pay_ids" nolabel="1" readonly="1"/>
+	  </page>
+	  <page string="Facturas" colspan="4">
+		<group>
+		  <field name="invoice_ids" nolabel="1" readonly="1" colspan="4"/>
+		</group>
+		<newline/>
+		<group>
+		  <field name="amount_total_invoice"/>
+		  <field name="amount_extra"/>
+		</group>
+	  </page>
+	  <page string="Ingresos Bodega">
+		<field name="pick_ids" nolabel="1" readonly="1"/>
+	  </page>
+	</xpath>
+	<field name="codigo_contrato" position="after"><field name="ref_cp"/></field>
+    <field name="department_id" position="after">
+      <field name="objeto" colspan="4" required="True" on_change="onchange_modality_id()" 
+			 attrs="{'readonly':['|',('state','!=','draft'),'|',
+					('info_general','=',False),('is_cp','=',True)]}"/>	
+      <field name="procedimiento" colspan="4" domain="[('contract_type','=',objeto)]" 
+			 required="True" attrs="{'readonly':['|',('state','!=','draft'),'|',
+									('info_general','=',False),('is_cp','=',True)]}"/>
+    </field>
+  </field>
+</record>
+
+<!-- vista de convenio modificada -->
+
+<record model="ir.ui.view" id="doc_covenant_form_modify">
+  <field name="name">doc.covenant.covenant.modify</field>
+  <field name="type">form</field>
+  <field name="model">doc_covenant.covenant</field>
+  <field name="inherit_id" ref="gt_doc_covenant.view_doc_covenant_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="//page[@string='Docs. Presupuestarios']" position="before">
+	  <page string="Facturas" colspan="4">
+		<group>
+		  <field name="invoice_ids" nolabel="1" readonly="1" colspan="4"/>
+		</group>
+		<newline/>
+		<group>
+		  <field name="amount_total_invoice"/>
+		  <field name="amount_extra"/>
+		</group>
+	  </page>
+	  <page string="Ingresos Bodega">
+		<field name="pick_ids" nolabel="1" readonly="1"/>
+	  </page>
+	</xpath>
+  </field>
+</record>
+
+
+<!--record id="doc_contract_form_document_modified" model="ir.ui.view">
+	<field name="name">doc_contract.form.document.modified</field>
+	<field name="model">ir.attachment</field>
+	<field name="inherit_id" ref="gt_doc_contract.view_doc_contract_form"/>
+	<field name="arch" type="xml">
+		<field name="year" position="before">	
+      		<field name="document_type_id"/>
+   		 </field>
+    	<xpath expr="/form/notebook[@colspan='4']/page[@string='Documentos de Contrato']/field[@name='parent_id']" position="before">
+	    	<field name="document_type_id"/>
+		</xpath>		
+	</field>
+</record-->  
+
+
+<!--DOC_CONTRACT_TYPE FORM TREE ACTION--> 
+<record model="ir.ui.view" id="view_doc_contract_type_form">
+    <field name="name">doc_contract.type</field>
+    <field name="model">doc_contract.type</field>
+    <field name="priority" eval="1"/>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+        <form string="Objetos de Contratación">
+            <group colspan="4" col="6">
+                <!--field name="code"/-->
+                <field name="name"/>
+                <!--field name="ir_sequence_id"/-->
+            </group>
+            <notebook colspan="4">	
+            <page string="Descripcion">
+            	 <field name="desc" nolabel="1"/>                	 
+            </page>	
+            </notebook>
+        </form>
+    </field>
+</record>
+
+<record model="ir.ui.view" id="view_doc_contract_type_tree">
+    <field name="name">VIEW DOC_CONTRACT.TYPE TREE</field>
+    <field name="model">doc_contract.type</field>
+    <field name="type">tree</field>
+    <field name="priority" eval="1"/>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="desc"/>
+       </tree>
+    </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_doc_contract_type_form">
+    <field name="name">Objetos de Contratación</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">doc_contract.type</field>
+    <field name="view_type">form</field>
+    <field name="help">The Documents repository gives you access to all att.</field>
+</record>	    
+    
+<menuitem
+    name="Objetos de Contratación"
+    action="action_doc_contract_type_form"
+    id="menu_doc_contract_type"
+    parent="gt_government_procedure.menu_purchase_process_config"
+    sequence="5"/>
+    
+<!--WARRANTY--> 
+<record model="ir.ui.view" id="view_cp_warranty_form">
+    <field name="name">cp.warranty.form</field>
+    <field name="model">cp.warranty</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+        <form string="Garantía">
+            <group colspan="4" col="6">
+                <!--field name="code"/-->
+                <field name="name"/>
+                <!--field name="ir_sequence_id"/-->
+            </group>
+        </form>
+    </field>
+</record>
+
+<record model="ir.ui.view" id="view_cp_warranty_tree">
+    <field name="name">cp.warranty.tree</field>
+    <field name="model">cp.warranty</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+       </tree>
+    </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_cp_warranty_form">
+    <field name="name">Garantías</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">cp.warranty</field>
+    <field name="view_type">form</field>
+</record>	    
+    
+<menuitem
+    name="Garantías"
+    action="action_cp_warranty_form"
+    id="menu_cp_warranty"
+    parent="gt_government_procedure.menu_purchase_process_config"
+    sequence="100"/>
+
+    
+<!--DOC_CONTRACT_TYPE_DOCUMENT FORM TREE ACTION--> 
+<record model="ir.ui.view" id="view_doc_contract_type_document_form">
+    <field name="name">doc_contract_type_document</field>
+    <field name="model">doc.contract.type.document</field>
+    <field name="priority" eval="1"/>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+        <form string="Tipos de Documentos">
+            <group colspan="4" col="6">
+                <field name="name"/>
+                <field name="perfil"/>
+                <field name="unico"/>
+                <field name="contract_type_id"/>
+            </group>
+        </form>
+    </field>
+</record>
+
+<record model="ir.ui.view" id="view_doc_contract_type_document_tree">
+    <field name="name">view_doc_contract_type_document_tree</field>
+    <field name="model">doc.contract.type.document</field>
+    <field name="type">tree</field>
+    <field name="priority" eval="1"/>
+    <field name="arch" type="xml">
+        <tree>
+            <field name="name"/>
+            <field name="perfil"/>
+            <field name="unico"/>
+            <field name="contract_type_id"/>
+       </tree>
+    </field>
+</record>
+
+<record model="ir.actions.act_window" id="action_doc_contract_type_document_form">
+    <field name="name">Tipos de Documentos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">doc.contract.type.document</field>
+    <field name="view_type">form</field>
+    <field name="help">Tipos de documentos a agregar en un Contrato</field>
+</record>	    
+    
+<menuitem
+    name="Tipos de Documentos"
+    action="action_doc_contract_type_document_form"
+    id="menu_doc_contract_type_document"
+    parent="gt_doc_contract.menu_doc_contract_configuration"
+    sequence="5"/>
+
+
+    </data>
+</openerp>

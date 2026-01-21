@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record id="group_registro" model="res.groups">
+      <field name="name">Registro Propiedad</field>
+    </record>
+
+    <record id="ryp_emitir" model="res.groups">
+      <field name="name">Emisor Registro Propiedad</field>
+    </record>
+
+</data>
+</openerp>

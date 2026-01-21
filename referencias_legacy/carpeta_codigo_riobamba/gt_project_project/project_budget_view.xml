@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <!-- programas en presupuesto-->
+     <menuitem action="action_project_program" id="menu_project_program_budget" parent="gt_budget.menu_budget_configuration" sequence="20"/>
+     
+     <!-- cuentas financieras -->
+  <record id="view_budget_financiamiento" model="ir.ui.view">
+    <field name="name">view.budget.financiamiento</field>
+    <field name="model">budget.financiamiento</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Cuenta Financiera">
+        <field name="name" colspan="2"/>
+        <field name="tipo" colspan="2" required="1"/>
+        <field name="desc" colspan="4"/>
+        <field name="desc_report" colspan="4"/>
+      </form>
+    </field>
+  </record>
+
+
+  <record id="view_budget_financiamiento_tree" model="ir.ui.view">
+    <field name="name">view.budget.financiamiento.tree</field>
+    <field name="model">budget.financiamiento</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+      <tree string="Cuenta Financiera">
+        <field name="name"/>
+        <field name="tipo"/>
+        <field name="desc"/>
+      </tree>
+    </field>
+  </record>
+
+    <record id="view_budget_financiamiento_filter" model="ir.ui.view">
+      <field name="name">budget.financiamiento.select</field>
+      <field name="model">budget.financiamiento</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Cuenta Financiera">
+          <group>
+            <field name="name"/>
+            <field name="tipo"/>
+            <field name="desc"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_financia" model="ir.actions.act_window">
+      <field name="name">Cuenta Financiera</field>
+      <field name="res_model">budget.financiamiento</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>   
+
+     <menuitem action="action_financia" id="menu_financia_budget" parent="gt_budget.menu_budget_configuration" sequence="25"/>
+    <!-- -->
+  <record id="view_project_budget_transfer" model="ir.ui.view">
+    <field name="name">view.project.budget.transfer</field>
+    <field name="model">project.budget.transfer</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Transferencia de Crédito">
+        <field name="name" invisible="1"/>
+        <group string="Información Origen" colspan="4">
+          <field name="project_from_id" colspan="4" domain="[('state','=','exec'),('user_id','=',uid)]"/>
+          <field name="activity_from_id" domain="[('project_id','=',project_from_id)]"/>
+          <field name="budget_from_id" domain="[('task_id','=',activity_from_id)]"/>
+        </group>
+        <group string="Información Destino" colspan="4">
+          <field name="project_to_id" colspan="4" domain="[('state','=','exec'),('user_id','=',uid)]"/>
+          <field name="activity_to_id" domain="[('project_id','=',project_to_id),('id','!=',activity_from_id)]"/>
+          <field name="budget_to_id" domain="[('task_id','=',activity_to_id)]"/>
+          <field name="amount" on_change="onchange_amount(budget_from_id,amount)"/>
+        </group>
+        <field name="state" widget="statusbar"/>
+        <button name="action_transfer" string="Aprobar" icon="gtk-go-forward" states="draft" confirm="Seguro de transferir fondos ?" type="object"/>
+      </form>
+    </field>
+  </record>
+
+
+  <record id="view_project_budget_transfer_tree" model="ir.ui.view">
+    <field name="name">view.project.budget.transfer.tree</field>
+    <field name="model">project.budget.transfer</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+      <tree string="Transferencias de Crédito">
+        <field name="name" invisible="1"/>
+        <field name="project_from_id"/>
+        <field name="project_to_id"/>
+        <field name="activity_from_id"/>
+        <field name="activity_to_id"/>
+        <field name="amount"/>
+        <field name="state"/>
+      </tree>
+    </field>
+  </record>
+
+    <record id="view_project_budget_transfer_filter" model="ir.ui.view">
+      <field name="name">project.budget.transfer.select</field>
+      <field name="model">project.budget.transfer</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Transferencias de Crédito">
+          <group>
+            <field name="name"/>
+            <field name="project_from_id"/>
+            <field name="project_to_id"/>
+            <field name="activity_from_id"/>
+            <field name="activity_to_id"/>
+          </group>
+          <newline/>
+          <group expand="1" string="Agrupar por...">
+            <filter string="Proyecto Origen" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'project_from_id'}"/>
+            <filter string="Borradores" icon="gtk-media-pause" domain="[('state','=','draft')]"/>
+            <filter string="Aprobadas" icon="terp-check" domain="[('state','=','ok')]"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <!-- record id="action_project_budget_transfer" model="ir.actions.act_window">
+      <field name="name">Transferencia de Fondos</field>
+      <field name="res_model">project.budget.transfer</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+  <menuitem action="action_project_budget_transfer" id="menu_project_budget_transfer" parent="gt_budget.menu_budget_management" sequence="30"/ -->
+  
+  </data>
+</openerp>

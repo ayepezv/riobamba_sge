@@ -1,0 +1,81 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Account Module - Ecuador
+#    Copyright (C) 2013 GnuThink Software All Rights Reserved
+#    info@gnuthink.com
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+from tools.translate import _
+
+class mayorCuentaLine(osv.TransientModel):
+    _name = 'mayor.cuenta.line'
+    _columns = dict(
+        m_id = fields.many2one('mayor.cuenta','Mayor'),
+        name = fields.char('Referencia',size=32),
+        debit = fields.float('Debe'),
+        credit = fields.float('Haber'),
+        saldo = fields.float('Saldo'),
+    )
+mayorCuentaLine()
+
+class mayorCuenta(osv.TransientModel):
+    _name = 'mayor.cuenta'
+    
+    def loadMayor(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        move_line_obj = self.pool.get('account.move.line')
+        mayor_line_obj = self.pool.get('mayor.cuenta.line')
+        for this in self.browse(cr, uid, ids):
+            saldo_aux = 0
+            move_line_ids = move_line_obj.search(cr, uid, [('account_id','=',this.name.id),('date','>=',this.date_start),('date','<=',this.date_end)])
+            for move_line_id in move_line_ids:
+                move_line = move_line_obj.browse(cr, uid, move_line_id)
+                saldo_aux = move_line.debit - move_line.credit
+                mayor_line_id = mayor_line_obj.create(cr, uid, {
+                    'm_id':this.id,
+                    'name':move_line.move_id.name,
+                    'debit':move_line.debit,
+                    'credit':move_line.credit,
+                    'saldo':saldo_aux,
+                })
+        return True
+
+    def print_mayor_cta(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'mayor.cuenta'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'mayor.cuenta',
+            'model': 'mayor.cuenta',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    _columns = dict(
+        line_ids = fields.one2many('mayor.cuenta.line','m_id','Detalle'),
+        name = fields.many2one('account.account','Cuenta Contable'),
+        date_start = fields.date('Desde'),
+        date_end = fields.date('Hasta'),
+    )
+    
+mayorCuenta()

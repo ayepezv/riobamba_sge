@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+  	
+    <report auto="False"
+	    id="report_ordenpago"
+	    model="payment.request"
+	    name="Listado Ordenes de pago"
+	    file="gt_financial_management/report/ordenpago.mako"
+	    string="Listado Ordenes de pago"
+	    report_type="webkit"
+	    webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+    
+  </data>     
+     
+</openerp>

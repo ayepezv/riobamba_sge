@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <!-- boton asiento en anticipo -->
+      
+      <record model="ir.ui.view" id="view_anticipo_form_c">
+	<field name="name">hr.payroll.advance</field>
+	<field name="type">form</field>
+	<field name="model">hr.payroll.advance</field>
+	<field name="inherit_id" ref="gt_hr_advance.view_advance_planificado"/>
+	<field name="arch" type="xml">
+	  <xpath expr="//button[@string='Anular']" position="after">
+	    <button name="%(action_crea_asiento_wizard)d" string="Generar Comprobante" type="action" icon="gtk-execute"/>
+	  </xpath>
+	</field>
+      </record>
+
+      <record model="ir.ui.view" id="view_anticipo_form_ca">
+	<field name="name">hr.payroll.advance</field>
+	<field name="type">form</field>
+	<field name="model">hr.payroll.advance</field>
+	<field name="inherit_id" ref="gt_hr_advance.view_anticipo_form"/>
+	<field name="arch" type="xml">
+	  <xpath expr="//button[@string='Anular']" position="after">
+	    <button name="%(action_crea_asiento_wizard)d" string="Generar Comprobante" type="action" states='aprobado' icon="gtk-execute"/>
+	  </xpath>
+	</field>
+      </record>
+
+      <!-- menu anticipos en contabilidad -->
+
+      <menuitem id="menu_anticipoc_contabilidad"
+		action="gt_hr_advance.action_hr_payroll_advance_"
+		parent="retention.menu_finance_anticipos"
+		name="Anticipos Tipo C"
+		groups="account.group_account_user,account.group_account_manager"/>
+
+    </data>
+</openerp>

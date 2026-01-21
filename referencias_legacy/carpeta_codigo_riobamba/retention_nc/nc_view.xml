@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- registro de notas de credito -->
+
+      <record model="ir.ui.view" id="view_account_nc_form">
+	<field name="name">account.nc.form</field>
+	<field name="model">account.nc</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Notas de credito">
+	    <group col="4" colspan="4">
+	      <field name="name" colspan="2"/>
+	      <field name="fecha" colspan="2"/>
+	      <field name="partner_id" colspan="4"/>
+	    </group>
+	    <group col="6" colspan="4">
+	      <field name="base" colspan="2"/>
+	      <field name="iva" colspan="2"/>
+	      <field name="total" colspan="2"/>
+	    </group>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_account_nc_tree" model="ir.ui.view">
+	<field name="name">account.nc.tree</field>
+	<field name="model">account.nc</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Notas de credito">
+	    <field name="name"/>
+	    <field name="partner_id"/>
+	    <field name="fecha"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_account_nc_filter" model="ir.ui.view">
+	<field name="name">account.nc.filter</field>
+	<field name="model">account.nc</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Renta">
+	    <field name="name"/>
+	    <field name="partner_id"/>
+	    <field name="fecha"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="group_partner" string="Proveedor" icon="STOCK_INDENT" domain="[]" context="{'group_by':'partner_id'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_account_nc" model="ir.actions.act_window">
+	<field name="name">Nota Credito</field>
+	<field name="res_model">account.nc</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+
+      <menuitem id="menu_action_account_nc" name="Nota Credito" action="action_account_nc" parent="account.menu_finance_payables"/>
+
+      <!-- Disminucion de valor a pagar -->
+      <record id="view_nc_pay_wizard" model="ir.ui.view">
+        <field name="name">Disminuir pago(Nota Credito)</field>
+        <field name="model">nc.pay</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Pagar">
+            <label string="Este asistente permite disminuir el monto a pagar cruzando con una nota de credito, devuelve los valores con signo negativo." 
+		   colspan="4"/>
+	    <field name="partner_id" colspan="4" readonly="1"/>
+	    <field name="nc_id" colspan="4" domain="[('partner_id','=',partner_id)]"/>
+	    <button name="loadNc" string="Cargar Cuentas"
+		    colspan="2" type="object" icon="gtk-ok" />
+	    <button name="disminuyeNc" string="Disminuir Cuentas"
+		    colspan="2" type="object" icon="gtk-ok" />
+	    <newline/>
+	    <group string="Detalle de cuentas" colspan="4">
+	      <field name="line_ids" nolabel="1">
+		<tree editable="top">
+		  <field name="account_id" readonly="1"/>
+		  <field name="debe" readonly="1"/>
+		  <field name="haber" readonly="1"/>
+		  <field name="disminuye"/>
+		  <field name="debe_d"/>
+		  <field name="haber_d"/>
+		</tree>
+	      </field>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      <act_window name="Disminuir pago(Nota Credito)"
+		  res_model="nc.pay"
+		  src_model="account.move"
+		  view_mode="form"
+		  target="new"
+            key2="client_action_multi"
+            id="act_nc_pay"/>
+      
+    </data>
+</openerp>

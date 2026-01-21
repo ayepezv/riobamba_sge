@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="hr.accion.personal" model="hr.accion.personal"
+            name="hr.accion.personal" rml="gt_hr_base/report/accion.mako"
+            usage="default" string="Accion Personal" header="True" report_type="webkit"/>
+
+    
+  </data>
+</openerp>

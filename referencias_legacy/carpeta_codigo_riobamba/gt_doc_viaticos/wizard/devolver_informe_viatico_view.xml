@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_devolver_informe_viatico" model="ir.ui.view">
+        <field name="name">Devolver Informe</field>
+        <field name="model">viatico.devolver.informe</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente">
+			<label colspan="4" nolabel="1" string="Con este asistente usted debe especificar el motivo para esta acción"/>
+            <group col="4" colspan="4">
+			  <group colspan="4" col="4">
+                <field name="viatico_id" colspan="2"/>
+                <field name="state" colspan="2" readonly="1"/>
+                <field name="descripcion" colspan="4"/>
+			  </group>
+			  <group colspan="4" col="6">
+				<button icon="gtk-cancel" special="cancel" string="Salir" colspan="2"/>
+				<button name="devolver_informe_viatico" type="object" icon="gtk-execute" colspan="2" string="Devolver Informe" states="informe1,informe2"
+						confirm="CON ESTA ACCION PIDE AL USUARIO QUE MODIFIQUE O COMPLETE EL INFORME DE VIATICOS PRESENTADO, CONFIRMA QUE DESEA CONTINUAR?"/>
+				<button name="rechazar_solicitud_viatico" type="object" icon="gtk-execute" colspan="2" string="Rechazar Solicitud" states="solicitud1,solicitud2"
+						confirm="CON ESTA ACCION RECHAZA LA SOLICITUD DE VIATICOS PRESENTADA, CONFIRMA QUE DESEA CONTINUAR?"/>
+			  </group>
+			</group>
+          </form>
+        </field>
+      </record>
+	  
+      <record id="action_wizard_devolver_informe_viatico" model="ir.actions.act_window">
+        <field name="name">Devolver Informe</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">viatico.devolver.informe</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+	  
+
+</data>
+</openerp>

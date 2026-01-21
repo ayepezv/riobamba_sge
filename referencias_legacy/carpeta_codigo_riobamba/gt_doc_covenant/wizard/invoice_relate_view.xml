@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+      <record id="relate_invoice_form" model="ir.ui.view">
+        <field name="name">relate.invoice.form</field>
+        <field name="model">relate.invoice.covenant</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form>
+			<!--field name="name" required="1" colspan="4"/>
+			<field name="partner_id" readonly="1"/-->
+			<field name="covenant_id"/>
+            <separator string="" colspan="4" />
+            <label string="" colspan="2"/>
+            <group col="2" colspan="2">
+              <button icon='gtk-cancel' special="cancel" string="Cancelar" />
+              <button name="relate_invoice_covenant" string="Relacionar" confirm="Esta seguro que desea relacionar"
+					  colspan="1" type="object" icon="gtk-ok" />
+              <!--button name="do_return_state" string="Regresar" confirm="Esta seguro que desea regresar???" colspan="1" type="object" icon="gtk-go-back" /-->
+            </group>
+          </form>
+        </field>
+      </record>
+
+	  <!-- BOTON EN LA FACTURA
+		-->
+	  
+	  <record id="action_relate_covenant" model="ir.actions.act_window">
+		<field name="name">Relacionar Convenio</field>
+		<field name="res_model">relate.invoice.covenant</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">form</field>
+		<field name="target">new</field>
+	  </record>
+	  
+	  <record id="view_covenant_invoice_form" model="ir.ui.view">
+		<field name="name">account.invoice.covenant.form</field>
+		<field name="model">account.invoice</field>
+		<field name="inherit_id" ref="account.invoice_supplier_form"/>
+		<field name="arch" type="xml">
+		  <xpath expr="//field[@name='currency_id']" position="after">
+			<button name="%(action_relate_covenant)d" 
+					string="Relacionar Convenio" type="action" icon="gtk-execute"/>
+		  </xpath>
+		</field>
+	  </record>
+	  
+    </data>
+</openerp>

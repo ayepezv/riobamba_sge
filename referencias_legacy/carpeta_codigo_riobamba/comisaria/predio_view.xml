@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_comisaria" 
+			   
+			  name="Comisaria"
+/>
+
+      <!--  COMISARIA VISTAS  -->
+
+	<!-- formulario del ingreso de la predio -->
+      <record model="ir.ui.view" id="view_predio_form">
+		<field name="name">predio.form</field>
+		<field name="model">predio</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		  <form string="Predio">
+			<group col="4" colspan="4">
+			  <field name="cliente_id" required="1" colspan="3"/>
+			  <newline/>
+			  <field name="name" colspan="1" required="1"/>
+			</group>
+		  </form>
+		</field>
+      </record>
+	<!-- formulario de vista de los predios listado -->	  
+      <record id="view_predio_tree" model="ir.ui.view">
+		<field name="name">predio.tree</field>
+		<field name="model">predio</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+		  <tree string="Predios" >
+	           <field name="cliente_id"/>
+	           <field name="name"/>
+		  </tree>
+		</field>
+      </record>
+	<!-- formulario de vista para la busqueda de los predios-->
+      <record id="view_predio_filter" model="ir.ui.view">
+	<field name="name">Predio Busqueda</field>
+	<field name="model">predio</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Predios">
+	    <field name="cliente_id"/>
+	    <field name="name"/>
+	    <newline/>
+	  </search>
+	</field>
+      </record>
+	<!-- al hacer click se abre el formulario de ingreso del predio -->  
+      <record id="action_predio" model="ir.actions.act_window">
+		<field name="name">Predios</field>
+		<field name="res_model">predio</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+      </record>
+	<!-- el menu en la parte izquierda donde aparece el predio-->   
+      <menuitem id="menu_comisaria_predio" sequence="3"
+				action="action_predio"
+				parent="menu_comisaria"
+				name="Predios" />
+
+
+    </data>
+</openerp>

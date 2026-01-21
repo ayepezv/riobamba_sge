@@ -1,0 +1,388 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<openerp>
+  <data>
+
+    <menuitem id="menu_he_root" parent="hr.menu_hr_root" 
+			  name="Horas Extras" groups="base.group_hr_manager"/>
+
+	<!-- Config HE
+	  -->
+	
+	<record model="ir.ui.view" id="view_he_config_form">
+	  <field name="name">he.config.view.form</field>
+	  <field name="model">he.config</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+  		<form>
+		  <field name="name"/>
+		  <field name="contract_type"/>
+		  <field name="rule_id"/>
+		  <field name="coef"/>
+		</form>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_he_config_tree">
+	  <field name="name">he.config.view.tree</field>
+	  <field name="model">he.config</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+  		<tree>
+		  <field name="contract_type"/>
+		  <field name="rule_id"/>
+		  <field name="coef"/>
+		  <field name="name"/>
+		</tree>
+	  </field>
+	</record>
+
+
+<record model="ir.actions.act_window" id="he_config_action">
+  <field name="name">Tipo Hora Extra</field>
+  <field name="res_model">he.config</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<!--menuitem id="menu_he_configure" parent="hr.menu_hr_configuration" name="Horas Extras"/>
+
+<menuitem name="Tipo Hora Extra" 
+		  id="menu_he_configure_" 
+		  parent="menu_he_configure" 
+		  action="he_config_action"/-->
+
+	<!--
+	====================
+	   View for HE Individual
+	====================
+	-->
+
+	<record id="hr_he_register_alone_tree" model="ir.ui.view">
+      <field name="name">hr.he.register.alone.tree</field>
+      <field name="model">hr.he.register.alone</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+		<tree string="Horas Extra" colors="blue:state=='draft'">
+		  <field name="date_create" select="1"/>
+		  <field name="period_id" select="1"/>
+		  <field name="contract_id" select="1"/>
+		  <field name="name" select="1"/>
+		  <field name="revert"/>
+		  <field name="state" select="1"/>
+		</tree>
+      </field>
+    </record>
+	<record id="hr_he_register_alone_tree_apr" model="ir.ui.view">
+      <field name="name">hr.he.register.alone.tree</field>
+      <field name="model">hr.he.register.alone</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+		<tree string="Horas Extra" colors="blue:state=='draft'">
+		  <field name="date_create" select="1"/>
+		  <field name="period_id" select="1"/>
+		  <field name="contract_id" select="1"/>
+		  <field name="name" select="1"/>
+		  <field name="revert"/>
+		  <field name="state" select="1"/>
+		</tree>
+      </field>
+    </record>
+	
+    <record id="hr_he_register_alone_form" model="ir.ui.view">
+      <field name="name">hr.he.register.alone.form</field>
+      <field name="model">hr.he.register.alone</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form>
+	  <group colspan="4" string="Información">
+	    <field name="date_create" colspan="2"/>
+	    <!--field name="user_id" colspan="2"/-->
+	    <field name="name" colspan="2"/>
+	    <!--field name="type_contract_id" readonly="1"/-->
+	    <field name="contract_id" colspan="2"/>
+	    <field name="department_id" select="1" colspan="2"/>
+	    <field name="period_id" select="1" required="1"  colspan="2" widget="selection" domain="[('state','=','abierto')]"
+		   attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	    <field name="costo_hora" colspan="2"/>
+	    <button name="compute_he_alone" states="proceso,aprobado"  type="object"  
+		    colspan="2" string="Calcular" icon="gtk-execute"/>
+	    <field name="date" colspan="2" required="1"/>
+	    <!--field name="type_contract_id" colspan="2" invisible='1'/-->
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <separator string="Detalle de Horas Suplementarios y Extraordinarias" colspan="4"/>
+	      <field name="line_ids" nolabel="1" colspan="4" attrs="{'readonly': [('state', 'not in',('draft','aprobado'))]}">
+		<tree editable="bottom" string="Detalle">
+		  <field name="name"/>
+		  <!--field name="hora_desde" widget="float_time"/>
+		      <field name="hora_hasta" widget="float_time"/>
+		      <field name="t_hora" /-->
+		  <field name="h_25"/>
+		  <field name="h_50"/>
+		  <field name="h_60"/>
+		  <field name="h_100"/>
+		  <field name="usd_25" readonly="1"/>
+		  <field name="usd_50" readonly="1"/>
+		  <field name="usd_60" readonly="1"/>
+		  <field name="usd_100" readonly="1"/>
+		  <field name="total_usd"/>
+		  <!--field name="actividad"/-->
+		</tree>
+	      </field>
+	      <group string="Totales USD" colspan="4" col="10">
+		<!--field name="subtotal_sup" colspan="2"/>
+		    <field name="subtotal_extra" colspan="2"/-->
+		<field name="total_25" colspan="2"/>
+		<field name="total_50" colspan="2"/>
+		<field name="total_60" colspan="2"/>
+		<field name="total_100" colspan="2"/>
+		<field name="total" colspan="2"/>
+	      </group>
+	    </page>
+	    <page string="Totales">
+	      <field name="detalle_ids" nolabel="1" colspan="4" readonly="1">
+		<tree string="Detalle">
+				  <field name="categ_id"/>
+				  <field name="date"/>
+				  <field name="valor"/>
+				</tree>
+			  </field>
+			</page>
+			<page string="Historial">
+			  <field name="log_ids" nolabel="1">
+				<tree>
+				  <field name="date"/>
+				  <field name="name"/>
+				  <field name="action"/>
+				  <field name="desc"/>
+				</tree>
+			  </field>
+			</page>
+		  </notebook>
+		  <group string="Validación" colspan="4" col="7">
+	    	<field name="state" select="1"/>
+			<button name="he_alone_draft_process" states="draft" type="object" string="En proceso" icon="gtk-apply"/> 
+			<button name="%(action_return_alone)d" groups="gt_hr_he.group_he_aprove" states="proceso" 
+					type="action" string="Devolver" icon="gtk-go-back"/>
+			<button name="he_alone_process_aprobado" groups="gt_hr_he.group_he_aprove,base.group_hr_manager" states="proceso" 
+					type="object" string="Aprobar" icon="gtk-apply"/>
+			<button name="he_alone_aprobado_terminado" groups="gt_hr_he.group_he_validate,base.group_hr_manager" 
+					states="aprobado" type="object" string="Terminar" icon="gtk-apply"/>
+  			<button name="%(action_return_alone)d" groups="gt_hr_he.group_he_validate" states="aprobado" 
+					type="action" string="Devolver" icon="gtk-go-back"/>
+	      </group>
+		</form>
+      </field>
+    </record>
+    <record id="hr_he_register_alone_form_apr" model="ir.ui.view">
+      <field name="name">hr.he.register.alone.form</field>
+      <field name="model">hr.he.register.alone</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+	<form>
+	  <group colspan="4" string="Información">
+	    <field name="date_create" colspan="2"/>
+	    <!--field name="user_id" colspan="2"/-->
+	    <field name="name" colspan="2"/>
+	    <!--field name="type_contract_id" invisible='1'/-->
+	    <field name="contract_id" colspan="2"/>
+	    <field name="department_id" select="1" colspan="2"/>
+	    <field name="period_id" select="1" required="1"  colspan="2" domain="[('state','=','abierto')]"
+		   attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	    <field name="costo_hora" colspan="2"/>
+	    <button name="compute_he_alone" states="proceso,aprobado"  
+		    type="object"  colspan="2" string="Calcular" icon="gtk-execute"/>
+	    <field name="date" colspan="2" required="1"/>
+	    <field name="type_contract_id" colspan="2" invisible='1'/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <separator string="Detalle de Horas Suplementarios y Extraordinarias" colspan="4"/>
+	      <field name="line_ids" nolabel="1" colspan="4" attrs="{'readonly': [('state', 'not in',('draft','proceso'))]}">
+		<tree editable="bottom" string="Detalle">
+		  <field name="name"/>
+		  <!--field name="hora_desde" widget="float_time" groups="gt_hr_he.group_he_aprove,gt_hr_he.group_he_validate"/>
+		      <field name="hora_hasta" widget="float_time"/-->
+		  <!--field name="t_hora" />
+		      <field name="tipo_he"/-->
+		  <field name="actividad"/>
+		  <field name="h_25"/>
+		  <field name="h_50"/>
+		  <field name="h_60"/>
+		  <field name="h_100"/>
+		  <field name="usd_25"/>
+		  <field name="usd_50"/>
+		  <field name="usd_100"/>
+		  <field name="total_usd"/>
+		</tree>
+	      </field>
+	      <group string="Totales" colspan="4" col="6">
+		<!--field name="subtotal_sup" colspan="2"/>
+		    <field name="subtotal_extra" colspan="2"/-->
+		<field name="total" colspan="2"/>
+	      </group>
+	    </page>
+	    <page string="Totales">
+	      <field name="detalle_ids" nolabel="1" colspan="4" readonly="1">
+		<tree string="Detalle">
+		  <field name="categ_id"/>
+		  <field name="valor"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string="Historial">
+	      <field name="log_ids" nolabel="1">
+		<tree>
+		  <field name="date"/>
+		  <field name="name"/>
+		  <field name="action"/>
+		  <field name="desc"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	  <group string="Validación" colspan="4" col="7">
+	    <field name="state" select="1"/>
+	    <button name="he_alone_draft_process" states="draft" type="object" string="En proceso" icon="gtk-apply"/> 
+	    <button name="%(action_return_alone)d" groups="gt_hr_he.group_he_aprove" states="proceso" 
+		    type="action" string="Devolver" icon="gtk-go-back"/>
+	    <button name="he_alone_process_aprobado" groups="gt_hr_he.group_he_aprove" states="proceso" 
+		    type="object" string="Aprobar" icon="gtk-apply"/>
+	    <button name="he_alone_aprobado_terminado" groups="gt_hr_he.group_he_validate" 
+		    states="aprobado" type="object" string="Terminar" icon="gtk-apply"/>
+  	    <button name="%(action_return_alone)d" groups="gt_hr_he.group_he_validate" states="aprobado" 
+		    type="action" string="Devolver" icon="gtk-go-back"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+
+	<record model="ir.actions.act_window" id="action_he_register_alone">
+	  <field name="name">Registro Individual</field>
+	  <field name="res_model">hr.he.register.alone</field>
+	  <field name="view_mode">tree,form</field>
+	</record> 
+	
+	<menuitem name="Registro Individual" 
+			  id="menu_he_register_alone" 
+			  groups="gt_hr_he.group_he_alone,base.group_hr_user"
+			  parent="menu_he_root" 
+			  action="action_he_register_alone"/>
+
+	<record model="ir.actions.act_window" id="action_he_doc_alone">
+	  <field name="name">Registrar</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">hr.he.register.alone</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+	<record id="view_registra_horas_extra_tree" model="ir.actions.act_window.view">
+       <field eval="1" name="sequence"/>
+       <field name="view_mode">tree</field>
+       <field name="view_id" ref="hr_he_register_alone_tree"/>
+       <field name="act_window_id" ref="action_he_doc_alone"/>
+   </record>
+   <record id="view_registra_horas_extra_form" model="ir.actions.act_window.view">
+       <field eval="2" name="sequence"/>
+       <field name="view_mode">form</field>
+       <field name="view_id" ref="hr_he_register_alone_form"/>
+       <field name="act_window_id" ref="action_he_doc_alone"/>
+   </record>
+
+	<record model="ir.actions.act_window" id="action_he_doc_aprobar">
+	  <field name="name">Aprobar</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">hr.he.register.alone</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	  <field name="domain">[('state','=','proceso'),('user_id','!=',uid)]</field>
+	</record>
+	<record id="view_registra_horas_extra_tree_apr" model="ir.actions.act_window.view">
+       <field eval="1" name="sequence"/>
+       <field name="view_mode">tree</field>
+       <field name="view_id" ref="hr_he_register_alone_tree_apr"/>
+       <field name="act_window_id" ref="action_he_doc_aprobar"/>
+   </record>
+   <record id="view_registra_horas_extra_form_apr" model="ir.actions.act_window.view">
+       <field eval="2" name="sequence"/>
+       <field name="view_mode">form</field>
+       <field name="view_id" ref="hr_he_register_alone_form_apr"/>
+       <field name="act_window_id" ref="action_he_doc_aprobar"/>
+   </record>
+<!--
+	<menuitem id="menu_he_registro_document_parent" parent="gt_document_manager.menu_parent_he_doc" 
+			  name="Horas Adicionales" sequence="1"/>
+
+	<menuitem id="menu_he_registro_document" parent="menu_he_registro_document_parent" 
+			  name="Registrar" sequence="1" action="action_he_doc_alone"/>
+	
+	<menuitem id="menu_he_aprobar_document" parent="menu_he_registro_document_parent" 
+			  name="Aprobar" sequence="2" action="action_he_doc_aprobar"/>   -->
+	
+    <!--
+	====================
+	View for HE
+	====================
+	-->
+    <record id="hr_he_register_tree" model="ir.ui.view">
+      <field name="name">hr.he.register.tree</field>
+      <field name="model">hr.he.register</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+		<tree string="Registro Horas Extras" colors="blue:state=='draft'">
+		  <field name="period_id" select="1"/>
+		  <field name="name" select="1"/>
+		  <field name="state" select="1"/>
+		</tree>
+      </field>
+    </record>
+	
+    <record id="hr_he_register_form" model="ir.ui.view">
+      <field name="name">hr.he.register.form</field>
+      <field name="model">hr.he.register</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+		<form>
+		  <group colspan="4" string="Información">
+			<field name="name"/>
+			<field name="department_id" select="1"/>
+			<field name="period_id" select="1" required="1" widget="selection" domain="[('state','=','abierto')]"/>
+		  </group>
+		  <group colspan="4" col="6">
+			<separator colspan="2"/>
+			<button name="cargar_empleados" states="draft" colspan="2" string="Cargar Empleados" type="object" icon="gtk-execute"/>
+		  </group>
+		  <separator string="Detalle de Horas por Empleado(Click para ver detalle)" colspan="4"/>
+	      <field name="line_ids" nolabel="1" colspan="4">
+			<tree editable="bottom" string="Detalle">
+			  <field name="contract_id"/>
+			  <field name="total" sum="TOTAL GENERAL"/>
+			</tree>
+	      </field>
+	      <group string="Validación" colspan="4" col="7">
+	    	<field name="state" select="1"/>
+			<!--button name="calcular_valores" states="draft,validate" type="object" string="Calcular" icon="terp-hr"/-->
+	    	<button name="he_draft_validar" states="draft" type="object" string="Validar" icon="gtk-apply"/> 
+			<!--button name="he_validar_terminar" states="validate" type="object" string="Terminado" icon="gtk-apply"/--> 
+			<button name="he_validar_cancelar" states="validate" type="object" string="Cancelar" icon="gtk-cancel"/> 
+			<!--button name="he_cancelar_validar" states="cancel" type="object" string="Validar" icon="gtk-apply"/--> 
+	      </group>
+		</form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_he_register">
+	  <field name="name">Resumen Horas Extras</field>
+	  <field name="res_model">hr.he.register</field>
+	  <field name="view_mode">tree,form</field>
+	</record> 
+	
+	<menuitem name="Resumen Horas Extras" 
+			  id="menu_he_register" 
+			  parent="menu_he_root" 
+			  action="action_he_register"/>
+	
+  </data>
+</openerp>

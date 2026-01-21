@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+   <report auto="False" id="deprecia" model="asset.deprecia"
+            name="deprecia" rml="gt_account_asset/report/deprecia.mako"
+            usage="default" string="Depreciacion" header="True" report_type="webkit"/>
+
+   <report auto="False" id="baja_categoria" model="gt.account.asset.baja.masiva"
+            name="baja_categoria" rml="gt_account_asset/report/baja_categoria.mako"
+            usage="default" string="Bajas Categoria" header="True" report_type="webkit"/>
+
+   <report auto="False" id="no_bienes" model="asset.no.bienes"
+            name="no.bienes" rml="gt_account_asset/report/no_bienes.mako"
+            usage="default" string="Certificado No Bienes" header="True" report_type="webkit"/>
+
+   <report auto="False" id="activo_valorado" model="departamento.valor"
+            name="activo_valorado" rml="gt_account_asset/report/activo_valorado.mako"
+            usage="default" string="Valorado" header="False" report_type="webkit"/>
+
+   <report auto="False" id="custodio_valorado" model="custodio.valorado"
+            name="custodio_valorado" rml="gt_account_asset/report/custodio_valorado.mako"
+            usage="default" string="Custodio Valor" header="True" report_type="webkit"/>
+
+   <report auto="False" id="activo_total" model="activo.total"
+            name="activo_total" rml="gt_account_asset/report/activo_total.mako"
+            usage="default" string="Total Activos" header="True" report_type="webkit"/>
+<report auto="False" id="activo_total_dep" model="activo.total.dep"
+            name="activo_total_dep" rml="gt_account_asset/report/activo_total_dep.mako"
+            usage="default" string="Total Depreciacion Activos" header="True" report_type="webkit"/>
+
+   <report auto="False"
+	   id="report_bien_custodio"
+	   model="account.asset.asset"
+	   name="report_bien_custodio"
+	   file="gt_account_asset/report/report_bien_custodio.mako"
+	   string="Acta Bienes Custodio"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   
+   <report auto="False"
+	   id="report_ingreso_bien"
+	   model="account.asset.asset"
+	   name="report_ingreso_bien"
+	   file="gt_account_asset/report/report_ingreso_bien.mako"
+	   string="Ingreso de Bien"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>   
+   <report auto="True"
+	   id="report_entrega_inicial"
+	   model="account.asset.asset"
+	   name="report_entrega_inicial"
+	   file="gt_account_asset/report/report_entrega_inicial.mako"
+	   string="Entrega Inicial de Bien"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   <report auto="True"
+	   id="report_entrega_inicial_agrupado"
+	   model="account.asset.asset"
+	   name="report_entrega_inicial_agrupado"
+	   file="gt_account_asset/report/report_entrega_inicial_agrupado.mako"
+	   string="Entrega Inicial Agrupado"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   <report auto="True"
+	   id="report_ingreso_duplicado"
+	   model="gt.account.asset.duplicar"
+	   name="report_ingreso_duplicado"
+	   file="gt_account_asset/report/report_ingreso_duplicado.mako"
+	   string="Reporte de ingreso"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   <report auto="True"
+	   id="report_transferencias"
+	   model="account.asset.transfer.head"
+	   name="report_transferencias"
+	   file="gt_account_asset/report/report_transferencias.mako"
+	   string="Traspaso de bienes"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   <report auto="True"
+	   id="report_baja_bienes"
+	   model="gt.account.asset.baja.masiva"
+	   name="report_baja_bienes"
+	   file="gt_account_asset/report/report_baja_bienes.mako"
+	   string="Baja de Bienes"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>      
+   <report auto="True"
+	   id="report_entrega_recepcion"
+	   model="account.asset.transfer.head"
+	   name="report_entrega_recepcion"
+	   file="gt_account_asset/report/report_entrega_recepcion.mako"
+	   string="Acta Entrega recepción"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+   <report auto="False"
+	   id="report_employee_account_asset"
+	   model="hr.employee"
+	   name="Activos por custodio"
+	   file="gt_account_asset/report/report_employee_account_asset.mako"
+	   string="Activos a cargo"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+ </data>
+  <data>
+  	
+    <report auto="False"
+	    id="report_activos"
+	    model="account.asset.asset"
+	    name="Reporte de bienes"
+	    rml="gt_account_asset/report/report_activos.mako"
+	    usage="default"
+	    string="Listado de activos"
+	    header="True"
+	    report_type="webkit"
+	    />
+	
+    <report auto="False"
+	    id="report_activos_movimientos"
+	    model="account.asset.asset"
+	    name="report_activos_movimientos"
+	    file="gt_account_asset/report/report_activos_movimientos.mako"
+	    string="Modificaciones de activos"
+	    report_type="webkit"
+	    webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+	
+	<report auto="False"
+			id="report_acta"
+			model="gt.account.asset.acta"
+			name="report_acta"
+			file="gt_account_asset/report/report_acta.mako"
+			string="Imprimir acta"
+			report_type="webkit"
+			webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+	
+	<report auto="False"
+		id="report_activos_lista_componentes"
+		model="account.asset.asset"
+		name="report_activos_lista_componentes"
+		rml="gt_account_asset/report/report_activos_lista_componentes.mako"
+		usage="default"
+		string="Activos y componentes"
+		header="True"
+		report_type="webkit"
+		/>
+	
+	<!--report auto="False"
+			   id="report_etiquetas"
+			   model="account.asset.asset"
+			   name="report_etiquetas"
+			   file="gt_account_asset/report/report_etiquetas.mako"
+			   string="Imprimir etiquetas"
+			   report_type="webkit"
+			   webkit_header="report_webkit.ir_header_webkit_basesample0"/-->          
+    
+	<report 
+	   auto="True" 
+	   id="report_impresion_etiquetas"
+	   report_type="pdf"
+	   model="account.asset.asset"
+	   name="report_impresion_etiquetas"
+	   rml="gt_account_asset/report/report_impresion_etiquetas.rml" 
+	   string="Impresion etiquetas" />        	
+	<report 
+	   auto="True" 
+	   id="report_impresion_etiquetas_duplica"
+	   report_type="pdf"
+	   model="gt.account.asset.duplicar"
+	   name="report_impresion_etiquetas_duplica"
+	   rml="gt_account_asset/report/report_impresion_etiquetas_duplica.rml" 
+	   string="Impresion etiquetas" />        	
+	<report 
+	   auto="True" 
+	   id="report_impresion_etiquetas_transfer"
+	   report_type="pdf"
+	   model="account.asset.transfer.head"
+	   name="report_impresion_etiquetas_transfer"
+	   rml="gt_account_asset/report/report_impresion_etiquetas_transfer.rml" 
+	   string="Impresion etiquetas" />
+	</data>     
+     
+</openerp>

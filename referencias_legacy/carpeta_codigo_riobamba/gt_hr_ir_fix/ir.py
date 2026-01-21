@@ -1,0 +1,562 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+from time import strftime, strptime
+
+from osv import osv, fields
+
+_STATE = [('draft','Borrador')]
+
+class tablaCargaIrLine(osv.Model):
+    _name = 'tabla.carga.ir.line'
+    _columns = dict(
+        name = fields.integer('Total Cargas'),
+        valor = fields.float('Maximo Descuento'),
+        t_id = fields.many2one('tabla.carga.ir','Tabla'),
+    )
+tablaCargaIrLine()
+
+class tablaCargaIr(osv.Model):
+    _name = 'tabla.carga.ir'
+    _columns = dict(
+        name = fields.many2one('hr.work.period','Periodo'),
+        line_ids = fields.one2many('tabla.carga.ir.line','t_id','Detalle'),
+    )
+
+    def unlink(self, cr, uid, ids, *args, **kwargs):
+        raise osv.except_osv(('Operación no permitida !'), ('No puede eliminar, solo puede realizar esta operacion en estado Registro'))
+    
+tablaCargaIr()
+
+class employeeCarga(osv.Model):
+    _inherit = 'hr.employee'
+    _columns = dict(
+        total_cargas = fields.integer('Total Cargas'),
+    )
+employeeCarga()
+
+class hrIRLineFix(osv.Model):
+    _inherit = 'hr.ir.line'
+    _columns = dict(
+    )
+
+    def ir_recalculo(self, cr, uid, ids, context=None):
+        line_obj = self.pool.get('hr.ir.line')
+        ie_line_obj = self.pool.get('hr.ie.line')
+        period_obj = self.pool.get('hr.work.period.line')
+        contract_obj = self.pool.get('hr.contract')
+        obj_rent_tax = self.pool.get('hr.rent.tax')
+        obj_anual_tax = self.pool.get('hr.anual.rent.tax')
+        porcentaje_iess = 0.1145
+        #import pdb
+        #pdb.set_trace()
+        for this in self.browse(cr, uid, ids):
+            lineas_antes = ie_line_obj.search(cr, uid, [('state','!=','pagado'),('l_id','=',this.id)])
+            contract_ids = [this.contract_id.id]
+            if contract_ids:
+                fraccion_basica = 11722
+                maximo = 24967.86
+                for contract_id in contract_ids:
+                    contrato = contract_obj.browse(cr, uid, contract_id)
+                    valor = valor_anual = 0.0
+                    mes =0# int(periodo.month2)
+                    #proceso para obtener los valores anteriores
+                    anterior = 0
+                    anterior_np = 0
+                    aportado = 0
+                    id_renta_anual = 0
+                    actual = contrato.wage
+                    anterior_iess = anterior*porcentaje_iess
+                    anterior_iess_np = anterior_np*porcentaje_iess
+                    ingresos = (actual*(12))
+                    dec_4 = 450
+                    dec_3 = actual
+                    fr = ingresos*0.0833
+                    base_imponible_ingresos = (actual*(12)) + dec_3 + dec_4 + fr
+                    base_imponible = (actual*(12))# + actual_np + anterior + anterior_np#(actual*(13.0-mes)) + actual_np + anterior + anterior_np
+                    #actual_iess = ((actual*(13.0-mes))*porcentaje_iess) + (actual_np*porcentaje_iess)
+                    actual_iess = ((actual*(12))*porcentaje_iess)
+                    gastos = actual_iess
+                    base_imponible = base_imponible - actual_iess#(actual_iess + anterior_iess + anterior_iess_np)
+                    porcentaje = 0.20
+                    if base_imponible_ingresos>=maximo:
+                        porcentaje = 0.10
+                    deducible = 0
+                    #if base_imponible_ingresos 
+                    if contrato.employee_id.projection_ids:
+                        for deducible_anual in contrato.employee_id.projection_ids:
+                            if deducible_anual.fy_id == this.ir_id.period_id:
+                                for deducible_line in deducible_anual.line_ids:
+                                    deducible = deducible + deducible_line.value 
+                    if deducible>=5344.08:
+                        deducible=5344.08
+#                    deducible = 5037 ##quitar
+                    #import pdb
+                    #pdb.set_trace()
+                    credito_tributario = deducible*porcentaje
+                    #print base_imponible
+                    tabla_obj = self.pool.get("hr.base.retention")
+                    linea_obj = self.pool.get("hr.base.retention.line")
+
+                    tabla_ids = tabla_obj.search(cr, uid, [('active','=',True)])
+                    if tabla_ids:
+                        for tabla in tabla_obj.browse(cr, uid, tabla_ids):
+                            if tabla.max_deduction < deducible and tabla.max_deduction > 0:
+                                deducible = tabla.max_deduction
+                            base_imponible = base_imponible #- deducible
+                            linea_id = linea_obj.search(cr, uid, [('retention_id','=', tabla.id),
+                                                                  ('basic_fraction','<=', base_imponible),
+                                                                  ('excess_to','>=', base_imponible)])
+                            #print linea_id
+                            for linea in linea_obj.browse(cr, uid, linea_id):
+                                #print linea.basic_fraction
+                                #import pdb
+                                #pdb.set_trace()
+                                division = 100
+                                if linea.percent<1:
+                                    division = 1
+                                valor_anual = linea.basic_fraction_tax
+                                valor_anual = valor_anual + (((base_imponible - linea.basic_fraction)/division)*linea.percent)
+                                valor_anual -= credito_tributario
+                                valor = (valor_anual)/(12)#(valor_anual - aportado)/(13.0-mes)
+            if valor>0:
+                ie_line_obj.write(cr, uid, lineas_antes,{'valor':valor})
+            else:
+                ie_line_obj.write(cr, uid, lineas_antes,{'state':'draft'})
+                ie_line_obj.unlink(cr, uid, lineas_antes)
+        return True
+
+    def ir_recalculo2(self, cr, uid, ids, context=None):
+        obj_ie_line= self.pool.get('hr.ie.line')
+        parent_obj = self.pool.get('hr.ir.line')
+        period_obj = self.pool.get('hr.work.period.line')
+        for this in self.browse(cr, uid, ids):
+            lineas_antes = obj_ie_line.search(cr, uid, [('l_id','=',this.id)])
+            if lineas_antes:
+                obj_ie_line.write(cr, uid, lineas_antes,{'state':'draft'})
+                obj_ie_line.unlink(cr, uid, lineas_antes)
+            porcentaje_iess = 0.1145
+            valor = valor_anual = 0.0
+            mes =0# int(periodo.month2)
+            #proceso para obtener los valores anteriores
+            anterior = 0
+            anterior_np = 0
+            aportado = 0
+            id_renta_anual = 0
+            contrato = this.contract_id
+            actual = contrato.wage
+            anterior_iess = anterior*porcentaje_iess
+            anterior_iess_np = anterior_np*porcentaje_iess
+            ingresos = this.ingresos
+            base_imponible = this.base_imponible# + actual_np + anterior + anterior_np#(actual*(13.0-mes)) + actual_np + anterior + anterior_np
+            #actual_iess = ((actual*(13.0-mes))*porcentaje_iess) + (actual_np*porcentaje_iess)
+            actual_iess = ((actual*(12))*porcentaje_iess)
+            gastos = actual_iess
+            base_imponible = base_imponible# - actual_iess#(actual_iess + anterior_iess + anterior_iess_np)
+            deducible = 0
+            if contrato.employee_id.projection_ids:
+                for deducible_anual in contrato.employee_id.projection_ids:
+                    if deducible_anual.fy_id == this.ir_id.period_id:
+                        for deducible_line in deducible_anual.line_ids:
+                            deducible = deducible + deducible_line.value 
+            #print base_imponible
+            tabla_obj = self.pool.get("hr.base.retention")
+            linea_obj = self.pool.get("hr.base.retention.line")
+
+            tabla_ids = tabla_obj.search(cr, uid, [('active','=',True)])
+            if tabla_ids:
+                for tabla in tabla_obj.browse(cr, uid, tabla_ids):
+                    if tabla.max_deduction < deducible and tabla.max_deduction > 0:
+                        deducible = tabla.max_deduction
+                    base_imponible = base_imponible #- deducible
+                    linea_id = linea_obj.search(cr, uid, [('retention_id','=', tabla.id),
+                                                                    ('basic_fraction','<=', base_imponible),
+                                                                    ('excess_to','>=', base_imponible)])
+                    #print linea_id
+                    for linea in linea_obj.browse(cr, uid, linea_id):
+                        #print linea.basic_fraction
+                        valor_anual = linea.basic_fraction_tax
+                        valor_anual = valor_anual + (((base_imponible - linea.basic_fraction)/100)*linea.percent)
+                        #print valor_anual
+                        valor = (valor_anual)/(12)#(valor_anual - aportado)/(13.0-mes)
+                        if this.meses and this.meses>1:
+                            valor = valor_anual / this.meses
+            if valor>0:
+                #generar para los doce meses que chkcs
+                j = 12
+                monto_pago=valor
+                ids = self.pool.get('hr.work.period.line').search(cr, uid,[('date_start','>=',this.ir_id.period_id.date_start)])
+                if len(ids)<j:
+                    raise osv.except_osv(('Operación no permitida!'),
+                                         'Debe tener generados los periodos correspondientes para el anticipo')
+                for pago in range(j-1):
+                    period = period_obj.browse(cr, uid, ids[pago])
+                    p_line = obj_ie_line.create(cr, uid, {
+                        'name': contrato.employee_id.complete_name,
+                        'employee_id': contrato.employee_id.id,
+                        'date': period.date_stop,
+                        'valor': float("%.2f" % valor),
+                        'categ_id': this.ir_id.name.id,
+                        'period_id': ids[pago],
+                        'state': 'draft',
+                        'l_id':this.id,
+                    })
+                period = period_obj.browse(cr, uid, ids[j-1])
+                p_line = obj_ie_line.create(cr, uid, {
+                    'name': contrato.employee_id.complete_name,
+                    'employee_id': contrato.employee_id.id,
+                    'date': period.date_stop,
+                    'valor': float("%.2f" % valor),
+                    'categ_id': this.ir_id.name.id,
+                    'period_id': ids[j-1],
+                    'state': 'draft',
+                    'l_id':this.id,
+                })
+            parent_obj.write(cr, uid, this.id, {
+                'state':'Recalculo',
+            })
+        return True
+
+    def generar_manual(self, cr, uid, ids, context=None):
+        line_obj = self.pool.get('hr.ie.line')
+        for this in self.browse(cr, uid, ids):
+            lineas_antes = line_obj.search(cr, uid, [('l_id','=',this.id)])
+            if lineas_antes:
+                line_obj.write(cr, uid, lineas_antes,{'state':'draft'})
+                line_obj.unlink(cr, uid, lineas_antes)
+            for period_id in this.ir_id.period_id.line_ids:
+                id_creado = line_obj.create(cr, uid, {
+                    'name': this.contract_id.employee_id.complete_name,
+                    'employee_id': this.contract_id.employee_id.id,
+                    'date': period_id.date_stop,
+                    'valor': float("%.2f" % this.monto_manual),
+                    'categ_id': this.ir_id.name.id,
+                    'period_id': period_id.id,
+                    'state': 'pendiente',
+                    'l_id':this.id,
+                })
+        return True
+
+    def ir_revisado(self, cr, uid, ids, context=None):
+        line_obj = self.pool.get('hr.ie.line')
+        for this in self.browse(cr, uid, ids):
+            for line in this.line_ids:
+                line_obj.write(cr, uid, line.id,{
+                    'state':'pendiente',
+                })
+        self.write(cr, uid, ids, {
+            'state':'Revisado',
+        })
+        return True
+
+    _defaults = dict(
+        state = 'Revisado',
+    )
+
+hrIRLineFix()    
+
+class hrIRHeadFix(osv.Model):
+    _inherit = 'hr.ir.head'
+    _columns = dict(
+        )
+
+    def revisadoRenta(self, cr, uid, ids, context=None):
+        ie_line_obj = self.pool.get('hr.ie.line')
+        ir_line_obj = self.pool.get('hr.ir.line')
+        for this in self.browse(cr, uid, ids):
+            for line in this.line_ids:
+                for line_line in line.line_ids:
+                    ie_line_obj.write(cr,uid, line_line.id,{'state':'pendiente'})
+        self.write(cr, uid, ids, {'state':'Revisado'})
+        return True   
+
+
+    def compute_renta(self, cr, uid, ids, context=None):
+        tabla_carga_obj = self.pool.get('tabla.carga.ir')
+        tabla_carga_line_obj = self.pool.get('tabla.carga.ir.line')
+        line_obj = self.pool.get('hr.ir.line')
+        ie_line_obj = self.pool.get('hr.ie.line')
+        period_obj = self.pool.get('hr.work.period.line')
+        contract_obj = self.pool.get('hr.contract')
+        obj_rent_tax = self.pool.get('hr.rent.tax')
+        obj_anual_tax = self.pool.get('hr.anual.rent.tax')
+        head_obj = self.pool.get('hr.ir.head')
+        porcentaje_iess = 0.1145
+        cargas_lista = {'0':963.53,'1':1238.83,'2':1514.13,'3':1927.07,'4':2340.01,'5':2752.96}
+        for this in self.browse(cr, uid, ids):
+            tabla_carga_ids = tabla_carga_obj.search(cr, uid, [('name','=',this.period_id.id)])
+            if not tabla_carga_ids:
+                raise osv.except_osv(('Error de configuracion!'),
+                                     'No a configurado tabla de deducciones por numero de cargas familiares, debe configurar una para el presente periodo')
+            #otro head
+            head_ids = head_obj.search(cr, uid, [('period_id','=',this.period_id.id),('state','=','Revisado')])
+            if head_ids:
+                lineas_otro_ids = line_obj.search(cr, uid, [('ir_id','in',head_ids)])
+                if lineas_otro_ids:
+                    for linea_otro_id in lineas_otro_ids:
+                        contract_otro_id = line_obj.read(cr, uid, linea_otro_id,['contract_id'])
+                        contract2_ids.append(contract_otro_id['contract_id'][0])
+                contract_ids = contract_obj.search(cr, uid, [('activo','=',True),('employee_id.discapacitado','!=',True),('wage','>=',1000),('id','not in',contract2_ids)],order='wage desc')
+            else:
+                contract_ids = contract_obj.search(cr, uid, [('activo','=',True),('employee_id.discapacitado','!=',True),('wage','>=',1000)],order='wage desc')
+            ##
+            lineas_antes = line_obj.search(cr, uid, [('ir_id','=',this.id)])
+            if lineas_antes:
+                ie_line_antes = ie_line_obj.search(cr, uid, [('l_id','in',lineas_antes)])
+                ie_line_obj.unlink(cr, uid, ie_line_antes)
+                line_obj.unlink(cr, uid, lineas_antes)
+            if contract_ids:
+                for contract_id in contract_ids:
+                    valor=0
+                    contrato = contract_obj.browse(cr, uid, contract_id)
+                    aux_total_cargas = contrato.employee_id.total_cargas
+                    if aux_total_cargas>5:
+                        aux_total_cargas = 5
+                    tabla_carga_line_ids = tabla_carga_line_obj.search(cr,uid, [('t_id','in',tabla_carga_ids),('name','=',aux_total_cargas)])
+                    if not tabla_carga_line_ids:
+                        raise osv.except_osv('Error de usuario','No ha configurado detalle de deducciones por cargas para el numero de cargas : %s.'%(aux_total_cargas))
+                    tabla_carga_line = tabla_carga_line_obj.browse(cr, uid, tabla_carga_line_ids[0])
+                    if contrato.wage<1000:
+                        proy_ids = renta_obj.search(cr, uid, [('name','=',contrato.employee_id.id),('year_id','=',this.mes_id.period_id.id)])
+                        if not proy_ids:
+                            continue
+                    actual = contrato.wage
+                    empleado_id = contrato.employee_id.id
+                    total_ingresos = contrato.wage*12
+                    dec_4 = 460
+                    dec_3 = actual
+                    fr = total_ingresos*0.0833
+                    base_imponible_ingresos = total_ingresos + dec_3 + dec_4 + fr
+                    ####
+                    iess_personal = total_ingresos * 0.1145
+                    gastos = iess_personal
+                    #anual_ids = anual_projection.search(cr, uid, [('employee_id','=',contrato.employee_id.id),('date_start','<=',from_date),
+                    #                                              ('date_stop','>=',from_date)])
+                    deducciones = 0
+                    #if anual_ids:
+                    #    anual = anual_projection.browse(cr, uid, anual_ids[0])
+                    #    deducciones = anual.total
+                    if deducciones>=5037:
+                        deducciones=5037
+                    deducible = deducciones
+                    #credito_tributario = deducciones*porcentaje
+                    total_restas = iess_personal #+ deducciones
+                    base_imponible = total_ingresos - total_restas
+                    ##
+                    tabla_obj = self.pool.get("hr.base.retention")
+                    linea_tabla_obj = self.pool.get("hr.base.retention.line")
+                    tabla_ids = tabla_obj.search(cr, uid, [('active','=',True)])
+                    valor = 0
+                    if tabla_ids:
+                        for tabla in tabla_obj.browse(cr, uid, tabla_ids):
+                            base_imponible = base_imponible #- deducible
+                            linea_tabla_id = linea_tabla_obj.search(cr, uid, [('retention_id','=', tabla.id),
+                                                                  ('basic_fraction','<=', base_imponible),
+                                                                  ('excess_to','>=', base_imponible)])
+                            #import pdb
+                            #pdb.set_trace()
+                            for tabla_linea in linea_tabla_obj.browse(cr, uid, linea_tabla_id):
+                                division = 100
+                                if tabla_linea.percent<1:
+                                    division = 1
+                                valor_anual = tabla_linea.basic_fraction_tax
+                                valor_anual = valor_anual + (((base_imponible - tabla_linea.basic_fraction)/division)*tabla_linea.percent)
+                                valor_anual -= cargas_lista[str(aux_total_cargas)]#credito_tributario
+                                valor = (valor_anual)/(12)
+                    if valor>0:
+                        line_id = line_obj.create(cr, uid, {
+                            'ir_id':this.id,
+                            'contract_id':contrato.id,
+                            'date':contrato.date_start,
+                            'sueldo':contrato.wage,
+                            'ingresos':total_ingresos,
+                            'gastos':gastos,
+                            'deducibles':deducible,
+                            'base_imponible':base_imponible,
+                            'renta_anual':valor_anual,
+                            'renta_mensual':valor,
+                        })
+                        #generar para los doce meses que chkcs
+                        j = 12#obj.num_pagos
+                        monto_pago=valor
+                        obj_ie_line= self.pool.get('hr.ie.line')
+                        ids = self.pool.get('hr.work.period.line').search(cr, uid,[('date_start','>=',this.period_id.date_start)])
+                        if len(ids)<j:
+                            raise osv.except_osv(('Operación no permitida!'),
+                                                 'Debe tener generados los periodos correspondientes para el anticipo')
+                        for pago in range(j-1):
+                            period = period_obj.browse(cr, uid, ids[pago])
+                            p_line = obj_ie_line.create(cr, uid, {
+                                'name': contrato.employee_id.complete_name,
+                                'employee_id': contrato.employee_id.id,
+                                'date': period.date_stop,
+                                'valor': float("%.2f" % valor),
+                                'categ_id': this.name.id,
+                                'period_id': ids[pago],
+                                'state': 'draft',
+                                'l_id':line_id,
+                            })
+                        period = period_obj.browse(cr, uid, ids[j-1])
+                        p_line = obj_ie_line.create(cr, uid, {
+                            'name': contrato.employee_id.complete_name,
+                            'employee_id': contrato.employee_id.id,
+                            'date':period.date_stop,
+                            'valor': float("%.2f" % valor),
+                            'categ_id': this.name.id,
+                            'period_id': ids[j-1],
+                            'state': 'draft',
+                            'l_id':line_id,
+                        })           
+        return True
+    
+    def compute_rentaAntes(self, cr, uid, ids, context=None):
+        line_obj = self.pool.get('hr.ir.line')
+        ie_line_obj = self.pool.get('hr.ie.line')
+        period_obj = self.pool.get('hr.work.period.line')
+        contract_obj = self.pool.get('hr.contract')
+        obj_rent_tax = self.pool.get('hr.rent.tax')
+        obj_anual_tax = self.pool.get('hr.anual.rent.tax')
+        head_obj = self.pool.get('hr.ir.head')
+        contract2_ids = []
+        #contract_ids = [6210,6889]
+        #contract_ids = [1162]
+        porcentaje_iess = 0.1145
+        for this in self.browse(cr, uid, ids):
+            #otro head
+            head_ids = head_obj.search(cr, uid, [('period_id','=',this.period_id.id),('state','=','Revisado')])
+            if head_ids:
+                lineas_otro_ids = line_obj.search(cr, uid, [('ir_id','in',head_ids)])
+                if lineas_otro_ids:
+                    for linea_otro_id in lineas_otro_ids:
+                        contract_otro_id = line_obj.read(cr, uid, linea_otro_id,['contract_id'])
+                        contract2_ids.append(contract_otro_id['contract_id'][0])
+                contract_ids = contract_obj.search(cr, uid, [('activo','=',True),('employee_id.discapacitado','!=',True),('wage','>=',1000),('id','not in',contract2_ids)],order='wage desc')
+            else:
+                contract_ids = contract_obj.search(cr, uid, [('activo','=',True),('employee_id.discapacitado','!=',True),('wage','>=',1000)],order='wage desc')
+            ##
+            lineas_antes = line_obj.search(cr, uid, [('ir_id','=',this.id)])
+            if lineas_antes:
+                ie_line_antes = ie_line_obj.search(cr, uid, [('l_id','in',lineas_antes)])
+                ie_line_obj.unlink(cr, uid, ie_line_antes)
+                line_obj.unlink(cr, uid, lineas_antes)
+            if contract_ids:
+                fraccion_basica = 11722
+                maximo = 24967.86
+                for contract_id in contract_ids:
+                    contrato = contract_obj.browse(cr, uid, contract_id)
+                    valor = valor_anual = 0.0
+                    mes =0# int(periodo.month2)
+                    #proceso para obtener los valores anteriores
+                    anterior = 0
+                    anterior_np = 0
+                    aportado = 0
+                    id_renta_anual = 0
+                    actual = contrato.wage
+                    anterior_iess = anterior*porcentaje_iess
+                    anterior_iess_np = anterior_np*porcentaje_iess
+                    ingresos = (actual*(12))
+                    dec_4 = 450
+                    dec_3 = actual
+                    fr = ingresos*0.0833
+                    base_imponible_ingresos = (actual*(12)) + dec_3 + dec_4 + fr
+                    base_imponible = (actual*(12))# + actual_np + anterior + anterior_np#(actual*(13.0-mes)) + actual_np + anterior + anterior_np
+                    #actual_iess = ((actual*(13.0-mes))*porcentaje_iess) + (actual_np*porcentaje_iess)
+                    actual_iess = ((actual*(12))*porcentaje_iess)
+                    gastos = actual_iess
+                    base_imponible = base_imponible - actual_iess#(actual_iess + anterior_iess + anterior_iess_np)
+                    porcentaje = 0.20
+                    if base_imponible_ingresos>=maximo:
+                        porcentaje = 0.10
+                    deducible = 0
+                    #if base_imponible_ingresos 
+                    if contrato.employee_id.projection_ids:
+                        for deducible_anual in contrato.employee_id.projection_ids:
+                            if deducible_anual.fy_id == this.period_id:
+                                for deducible_line in deducible_anual.line_ids:
+                                    deducible = deducible + deducible_line.value 
+                    if deducible>=5344.08:   #estaba 5037
+                        deducible=5344.08
+#                    deducible = 5037 ##quitar
+                    #import pdb
+                    #pdb.set_trace()
+                    credito_tributario = deducible*porcentaje
+                    #print base_imponible
+                    tabla_obj = self.pool.get("hr.base.retention")
+                    linea_obj = self.pool.get("hr.base.retention.line")
+
+                    tabla_ids = tabla_obj.search(cr, uid, [('active','=',True)])
+                    if tabla_ids:
+                        for tabla in tabla_obj.browse(cr, uid, tabla_ids):
+                            if tabla.max_deduction < deducible and tabla.max_deduction > 0:
+                                deducible = tabla.max_deduction
+                            base_imponible = base_imponible #- deducible
+                            linea_id = linea_obj.search(cr, uid, [('retention_id','=', tabla.id),
+                                                                  ('basic_fraction','<=', base_imponible),
+                                                                  ('excess_to','>=', base_imponible)])
+                            #print linea_id
+                            for linea in linea_obj.browse(cr, uid, linea_id):
+                                #print linea.basic_fraction
+                                #import pdb
+                                #pdb.set_trace()
+                                division = 100
+                                if linea.percent<1:
+                                    division = 1
+                                valor_anual = linea.basic_fraction_tax
+                                valor_anual = valor_anual + (((base_imponible - linea.basic_fraction)/division)*linea.percent)
+                                valor_anual -= credito_tributario
+                                valor = (valor_anual)/(12)#(valor_anual - aportado)/(13.0-mes)
+                                #obj_rent_tax.create(cr, uid, {'period_id': periodo.id,
+                                #                                        'apt_proy': actual,
+                                #                                        'apt_noproy': actual_np,
+                                #                                        'valor': valor,
+                                #                                        'tl_id': id_renta_anual})
+                    if valor>0:
+                        line_id = line_obj.create(cr, uid, {
+                            'ir_id':this.id,
+                            'contract_id':contrato.id,
+                            'date':contrato.date_start,
+                            'sueldo':contrato.wage,
+                            'ingresos':ingresos,
+                            'gastos':gastos,
+                            'deducibles':deducible,
+                            'base_imponible':base_imponible,
+                            'renta_anual':valor_anual,
+                            'renta_mensual':valor,
+                        })
+                        #generar para los doce meses que chkcs
+                        j = 12#obj.num_pagos
+                        monto_pago=valor
+                        obj_ie_line= self.pool.get('hr.ie.line')
+                        ids = self.pool.get('hr.work.period.line').search(cr, uid,[('date_start','>=',this.period_id.date_start)])
+                        if len(ids)<j:
+                            raise osv.except_osv(('Operación no permitida!'),
+                                                 'Debe tener generados los periodos correspondientes para el anticipo')
+                        for pago in range(j-1):
+                            period = period_obj.browse(cr, uid, ids[pago])
+                            p_line = obj_ie_line.create(cr, uid, {
+                                'name': contrato.employee_id.complete_name,
+                                'employee_id': contrato.employee_id.id,
+                                'date': period.date_stop,
+                                'valor': float("%.2f" % valor),
+                                'categ_id': this.name.id,
+                                'period_id': ids[pago],
+                                'state': 'draft',
+                                'l_id':line_id,
+                            })
+                        period = period_obj.browse(cr, uid, ids[j-1])
+                        p_line = obj_ie_line.create(cr, uid, {
+                            'name': contrato.employee_id.complete_name,
+                            'employee_id': contrato.employee_id.id,
+                            'date':period.date_stop,
+                            'valor': float("%.2f" % valor),
+                            'categ_id': this.name.id,
+                            'period_id': ids[j-1],
+                            'state': 'draft',
+                            'l_id':line_id,
+                        })
+
+hrIRHeadFix()

@@ -1,0 +1,18 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_spi_voucher,account.spi.voucher,model_account_spi_voucher,retention.group_director_financiero,1,1,1,1
+access_spi_voucher_usr,account.spi.voucher,model_account_spi_voucher,retention.group_tesorero,1,1,1,1
+access_spi_acc_move_usr,account.move,account.model_account_move,retention.group_tesorero,1,1,0,0
+access_spi_quincena_usr,hr.quincena,gt_hr_quincena.model_hr_quincena,retention.group_tesorero,1,1,0,0
+access_spi_quincena_line_usr,hr.quincena.line,gt_hr_quincena.model_hr_quincena_line,retention.group_tesorero,1,1,0,0
+access_spi_dept_line_usr,hr.dept.line,gt_hr_quincena.model_hr_dept_line,retention.group_tesorero,1,1,0,0
+access_spi_quincena_line_line_usr,hr.quincena.line.line,gt_hr_quincena.model_hr_quincena_line_line,retention.group_tesorero,1,1,0,0
+access_spi_payslip_run_usr,hr.payslip.run,hr_payroll.model_hr_payslip_run,retention.group_tesorero,1,1,0,0
+access_spi_journal_usr,account.journal,account.model_account_journal,retention.group_tesorero,1,1,0,0
+access_spi_resume_usr,spi.resume,model_spi_resume,retention.group_tesorero,1,1,1,1
+access_spi_line_usr,spi.line,model_spi_line,retention.group_tesorero,1,1,1,1
+access_spi_res_p_bank,res.partner.bank spi,base.model_res_partner_bank,retention.group_tesorero,1,1,1,1
+access_spi_move_line_usr,account.move.line spi,account.model_account_move_line,retention.group_tesorero,1,1,1,1
+access_spi_varios,hr.varios spi,gt_hr_pago.model_hr_varios,retention.group_tesorero,1,1,1,0
+access_spi_varios_line,hr.varios.line spi,gt_hr_pago.model_hr_varios_line,retention.group_tesorero,1,1,1,0
+access_spi_analyline,account.analytic.line spi,analytic.model_account_analytic_line,retention.group_tesorero,1,1,1,0
+access_spi_payslip,hr.payslip spi,hr_payroll.model_hr_payslip,retention.group_tesorero,1,1,1,0

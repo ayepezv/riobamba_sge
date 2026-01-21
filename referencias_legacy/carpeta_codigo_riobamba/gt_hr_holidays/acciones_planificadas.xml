@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+      <record id="ir_cron_compute_vacaciones" model="ir.cron">
+	<field name="name">Actualizar Vacaciones</field>
+	<field name="user_id">1</field>
+	<field name="priority">1</field>
+	<field name="active">False</field> 
+	<field name="interval_number">1</field>
+	<field name="interval_type">days</field>
+	<field name="numbercall">-1</field>
+	<field name="doall">True</field>
+	<field name="model">hr.employee</field>
+	<field name="function">tarea_actualizar_vacaciones</field>
+	<field name="args">[]</field>
+      </record>
+    </data>
+</openerp>

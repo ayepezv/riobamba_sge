@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <record model="ir.ui.view" id="view_spi_modified_form">
+      <field name="name">spi.modified.form</field>
+      <field name="model">account.spi.voucher</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="gt_spi.view_spi_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="/form/notebook/page[@string='Detalle']/field[@name='line_ids']/tree/field[@name='ref']" position="replace">
+	  <field name="concepto_id" widget="selection"/>
+	</xpath>
+      </field>
+    </record>
+
+  </data>      
+</openerp>

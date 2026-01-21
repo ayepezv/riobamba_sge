@@ -1,0 +1,29 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_budget_poa,budget.poa,model_budget_poa,gt_budget.group_budget_manager,1,1,1,1
+access_budget_budget,budget.budget,model_budget_budget,gt_budget.group_budget_manager,1,1,1,1
+access_budget_item,budget.item,model_budget_item,gt_budget.group_budget_manager,1,1,1,1
+access_budget_roof,budget.roof,model_budget_roof,gt_budget.group_budget_manager,1,1,1,1
+access_budget_roof_line,budget.roof.line,model_budget_roof_line,gt_budget.group_budget_manager,1,1,1,1
+access_budget_certificate,budget.certificate,model_budget_certificate,gt_budget.group_budget_manager,1,1,1,1
+access_budget_certificate_line,budget.certificate.line,model_budget_certificate_line,gt_budget.group_budget_manager,1,1,1,1
+access_budget_reform,budget.reform,model_budget_reform,gt_budget.group_budget_manager,1,1,1,1
+access_budget_post,budget.post,model_budget_post,gt_budget.group_budget_manager,1,1,1,1
+access_budget_user_type,budget.user.type,model_budget_user_type,gt_budget.group_budget_manager,1,1,1,1
+access_budget_user_depto,hr.department,hr.model_hr_department,gt_budget.group_budget_manager,1,1,1,1
+access_budget_user_employee,hr.employee,hr.model_hr_employee,gt_budget.group_budget_manager,1,1,1,1
+access_budget_item_log,budget.item.log,model_budget_item_log,gt_budget.group_budget_manager,1,1,1,1
+access_budget_mass_reform,mass.reform,model_mass_reform,gt_budget.group_budget_manager,1,1,1,1
+access_budget_mass_reform_line,mass.reform.line,model_mass_reform_line,gt_budget.group_budget_manager,1,1,1,1
+access_budget_mass_reform_ingreso,mass.reform.ingreso,model_mass_reform_ingreso,gt_budget.group_budget_manager,1,1,1,1
+access_budget_mass_reform_line_ingreso,mass.reform.line.ingreso,model_mass_reform_line_ingreso,gt_budget.group_budget_manager,1,1,1,1
+access_budget_financiamiento,budget.financiamiento,model_budget_financiamiento,gt_budget.group_budget_manager,1,1,1,1
+access_budget_financiamiento all,budget.financiamiento,model_budget_financiamiento,gt_document_manager.group_doc_user,1,1,1,1
+access_reforma,reforma,model_reforma,gt_budget.group_budget_manager,1,1,1,1
+access_payment_request_manager_bud,payment.request,gt_payment_request.model_payment_request,gt_budget.group_budget_manager,1,1,1,1
+access_budget_item_migra,budget.item.migrated,model_budget_item_migrated,gt_budget.group_budget_manager,1,1,1,1
+access_account_move_budget,account.move,account.model_account_move,gt_budget.group_budget_manager,1,0,0,0
+access_account_move_line_budget,account.move.line,account.model_account_move_line,gt_budget.group_budget_manager,1,0,0,0
+access_budget_item doc,budget.item,model_budget_item,gt_document_manager.group_doc_user,1,0,0,0
+access_budget_post doc,budget.post,model_budget_post,gt_document_manager.group_doc_user,1,0,0,0
+access_budget_poa doc,budget.poa,model_budget_poa,gt_document_manager.group_doc_user,1,0,0,0
+access_budget_reform doc,budget.reform,model_budget_reform,gt_document_manager.group_doc_user,1,0,0,0

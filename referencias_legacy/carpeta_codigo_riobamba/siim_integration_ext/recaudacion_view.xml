@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <record id="view_recaudacion_ext" model="ir.ui.view">
+        <field name="name">account.recaudacion.ext.form</field>
+        <field name="model">account.recaudacion</field>
+        <field name="inherit_id" ref="siim_integration.view_account_recaudacion_form"/>
+        <field name="arch" type="xml">
+	  <xpath expr="//field[@name='formapago_ids']" position='after'>
+	    <group string="Otros por cobrar/pagar">
+	      <field name="otros_id" nolabel="1">
+		<tree editable='bottom'>
+		  <field name='account_id' required="1"/>
+		  <field name='tipo' required="1"/>
+		  <field name='monto' required="1" sum="TOTAL"/>
+		</tree>
+	      </field>
+	    </group>
+	  </xpath>
+          <button name="cargar_recaudado" position="after">
+	    <button name="resumen_recaudado" states="Borrador" 
+		    string="Consolidar/Resumir" type="object" icon="gtk-execute"/>
+          </button>
+        </field>
+      </record>
+      
+      <record id="view_budget_post_ext" model="ir.ui.view">
+        <field name="name">budget.post.ext.form</field>
+        <field name="model">budget.post</field>
+        <field name="inherit_id" ref="gt_budget.view_budget_post_form"/>
+        <field name="arch" type="xml">
+	  <field name='venta' position='after'>
+	    <field name="solo_actual"/>
+	  </field>
+        </field>
+      </record>
+
+
+    </data>
+</openerp>

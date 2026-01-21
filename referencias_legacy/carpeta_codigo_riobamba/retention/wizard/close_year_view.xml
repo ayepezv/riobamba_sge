@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_close_mes_inherit" model="ir.ui.view">
+        <field name="name">period_close_inherit</field>
+        <field name="model">account.period.close</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="account.view_account_period_close"/>
+        <field name="arch" type="xml">
+          <field name="sure" position="replace">
+	    <field name="sure" required="1" colspan="4" string="He verificado este cuadro?"/>
+	    <newline/>
+	    <group string="Archivos cargados y validados en el MIN. Finanzas." colspan='4'>
+	      <field name="data_balance" required="1" colspan="4"/>
+	      <field name="data_cedulas" required="1" colspan="4"/>
+	      <field name="data_transferencias" required="1" colspan="4"/>
+	    </group>
+          </field>
+        </field>
+      </record>
+    
+    </data>
+</openerp>

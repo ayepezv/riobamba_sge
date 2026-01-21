@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    
+    <record id="move_iva_form" model="ir.ui.view">
+      <field name="name">account.move.iva</field>
+      <field name="model">account.move</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="retention.view_move_less_form_afectacion"/>
+      <field name="arch" type="xml">
+	<field name='type2_id' position='replace'/>
+	<field name="certificate_id" position="replace">
+	  <field name="type2_id" colspan="2"/>
+	  <field name="iva_id" colspan="2" domain="[('tax_group','=','other'),('type_tax_use','=','purchase')]"/>
+	  <field name="renta_id" colspan="2" domain="[('tax_group','=','ret_ir'),('type_tax_use','=','purchase')]"/>
+	  <field name="certificate_id" domain="[('partner_id','=',partner_id),('state','=','commited')]" 
+		 attrs="{'readonly': [('state', 'in',('posted','anulado'))],'invisible':['|',('type','=','Impuestos'),('no_cp','=',True)],
+			'required':[('no_cp','=',False)],
+			}" 
+		 on_change="onchange_cp(certificate_id,period_id,date,journal_id)"/>
+	</field>
+      </field>
+    </record>
+
+
+    </data>
+</openerp>

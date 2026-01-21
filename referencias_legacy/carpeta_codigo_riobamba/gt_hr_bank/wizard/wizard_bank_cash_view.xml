@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+      <record id="view_hr_payroll_ecm" model="ir.ui.view">
+        <field name="name">Exportar SPI</field>
+        <field name="model">e.cm</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Exportar CM">
+	    <label string="Este asistente le permite generar y guardar el archivo SPI para el banco central." colspan="4"/>
+	    <newline/>
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="name" colspan="2" readonly="1"/>
+		<field name="period_id" colspan="2" required="1"/>
+		<newline/>
+		<field name="archivo" colspan="4"/>
+		<newline/>
+	      </group>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon='gtk-cancel' special="cancel"
+			string="Cancel" />
+		<button name="exportar_archivo" string="Exportar Archivo"
+			colspan="1" type="object" icon="gtk-execute" />
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+      
+      
+      <record id="action_hr_ecm" model="ir.actions.act_window">
+        <field name="name">Exportar SPI</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">e.cm</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_ecm"
+		icon="STOCK_EXECUTE"
+		action="action_hr_ecm"
+		parent="menu_hr_bank_cash"
+		name="Exportar SPI"/>
+    </data>
+</openerp>

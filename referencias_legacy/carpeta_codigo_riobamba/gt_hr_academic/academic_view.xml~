@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_capacitacion_root" 
+	      parent="hr.menu_hr_root" 
+	      name="Capacitaciones"
+	      groups="base.group_hr_manager" sequence="100"/>
+
+      <!-- capacitaciones views
+		-->
+      <record model="ir.ui.view" id="view_hr_capacitacion_form">
+	<field name="name">Capacitaciones Funcionarios</field>
+	<field name="model">hr.capacitacion</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Capacitaciones">
+	    <group col="4" colspan="4">
+	      <field name="state" widget='statusbar'/>
+	      <button name="finaliza_capacitacion" string="Finalizar" type="object" icon="gtk-execute" states="Registro"/>
+	    </group>
+	    <group col="4" colspan="4">
+	      <field name="name" colspan="4" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	      <field name="fecha_desde" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	      <field name="fecha_hasta" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	      <field name="dictado_por" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	      <field name="hours" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	      <field name="modality" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	      <field name="tipo" colspan="2" required="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string='Detalle'>
+		<field name="line_ids" colspan="4" nolabel="1" attrs="{'readonly': [('state', 'not in',('Registro'))]}">
+		  <tree editable="top">
+		    <field name="employee_id" required="1"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_hr_capacitacion_tree" model="ir.ui.view">
+	<field name="name">Capacitaciones</field>
+	<field name="model">hr.capacitacion</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Capacitacion">
+	    <field name="name"/>
+	    <field name="dictado_por"/>
+	    <field name="fecha_desde"/>
+	    <field name="fecha_hasta"/>
+	    <field name="hours"/>
+	    <field name="modality"/>
+	    <field name="state"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_hr_capacitacion_filter" model="ir.ui.view">
+	<field name="name">Capacitaciones</field>
+	<field name="model">hr.capacitacion</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Capacitaciones">
+	    <field name="name"/>
+	    <field name="dictado_por"/>
+	    <field name="fecha_desde"/>
+	    <field name="fecha_hasta"/>
+	    <field name="hours"/>
+	    <field name="modality"/>
+	    <field name="state"/>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_hr_capacitacion" model="ir.actions.act_window">
+	<field name="name">Capacitaciones</field>
+	<field name="res_model">hr.capacitacion</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+	  
+      <menuitem id="menu_hr_capacitacion"
+		action="action_hr_capacitacion"
+		parent="menu_capacitacion_root"
+		name="Capacitaciones"
+		groups="base.group_hr_manager"/>
+
+    </data>
+</openerp>

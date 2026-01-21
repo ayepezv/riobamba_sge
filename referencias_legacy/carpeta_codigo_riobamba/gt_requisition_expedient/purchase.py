@@ -1,0 +1,896 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2011-2013 Gnuthink Software Labs Cia. Ltda.
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+import time
+from datetime import date
+from tools.translate import _
+import decimal_precision as dp
+import netsvc
+
+class PurchaseType(osv.Model):
+    _name = 'purchase.type'
+    _description = 'Tipos de Compra'
+
+    _columns = dict(
+        code = fields.char('Código', size=32, required=True),
+        name = fields.char('Tipo', size=32, required=True),
+        )
+
+
+class PurchaseContractType(osv.Model):
+    _name = 'purchase.contract.type'
+    _description = 'Contract Types'
+
+    def create(self, cr, uid, vals, context=None):
+        obj_sequence = self.pool.get('ir.sequence')
+        vals['code'] = obj_sequence.get(cr, uid, 'purchase.contract.type')
+        return super(PurchaseContractType, self).create(cr, uid, vals, context=None)
+
+    _columns = dict(
+        code = fields.char('Código', size=32),
+        name = fields.char('Procedimiento', size=128, required=True),
+#        seq_id = fields.many2one('ir.sequence','Secuencia'),
+        state_ids = fields.one2many('purchase.process.state','ptype_id','Estados'),
+        )    
+
+
+class PurchaseProcessState(osv.Model):
+    _name = 'purchase.process.state'
+    _description = 'Status para Procesos de Compra'
+
+    def create(self, cr, uid, vals, context=None):    
+        obj_sequence = self.pool.get('ir.sequence')
+        vals['code'] = obj_sequence.get(cr, uid, 'purchase.process.state')
+        type_id = vals['ptype_id']
+        type_obj = self.pool.get('purchase.contract.type')
+        type_ = type_obj.browse(cr, uid, type_id)
+        vals['sequence'] = len(type_.state_ids)
+        res_id = super(PurchaseProcessState, self).create(cr, uid, vals, context=context)
+        return res_id
+
+    _columns = dict(
+        sequence = fields.integer('Secuencia'),
+        code = fields.char('Código', size=32, required=True),
+        name = fields.char('Estado', size=32, required=True),
+        ptype_id = fields.many2one('purchase.contract.type','Tipo Contrato'),
+        )
+    
+    _sql_constraints = [
+        ('secuencia', 'unique (sequence,code,name,ptype_id)', 'Debe esxistir solo un numero de secuencia!')
+        ]
+
+class LogStateChange(osv.Model):
+    _name = 'log.state.change'
+    _description = 'Log de cambios de estado de la compra'
+    _columns = dict(
+        date = fields.datetime('Fecha Modificación'),
+        user_id = fields.many2one('res.users','Usuario'),
+        state_to = fields.char('Estado anterior',size=64),
+        state_from = fields.char('Estado nuevo',size=64),
+        public_id = fields.many2one('purchase.public.process','Contratación'),
+        )
+
+class DateState(osv.Model):
+    _name = 'date.state'
+    _columns = dict(
+        date_to = fields.date('Fecha desde'),
+        date_from = fields.date('Fecha hasta'),
+        state_id = fields.many2one('purchase.process.state','Estado'),
+        public_id = fields.many2one('purchase.public.process','Contratación'),
+        )
+
+class PurchasePublicProcess(osv.Model):
+    _name = 'purchase.public.process'
+    _description = 'Process Public Purchases'
+
+    def _generate_log(self, cr, uid, id, state, context=None ):
+        req_obj = self.pool.get('purchase.public.process')
+        log_obj = self.pool.get('log.state.change')
+        req=req_obj.browse(cr, uid, id)
+        log_obj.create(cr, uid, {
+                'user_id':uid,
+                'public_id':id,
+                'date':time.strftime('%Y-%m-%d %H:%M:%S'),
+                'state_to':req.internal_state,
+                'state_from':state,
+                })
+        return True
+
+
+    def send_notification(self, cr, uid, ids,context=None):
+        print "Envia Notificacion", ids
+        return True
+
+    def accion_planificada_public_process_state(self, cr, uid, context=None):
+        #si la fecha del sistema es igual a la date_from le pasa al estado siguiente
+        #si la diferencia en dias es uno envia un mail
+        obj_public_purchase = self.pool.get('purchase.public.process')
+        ids_public_process = obj_public_purchase.search(cr, uid, [])
+        today = date.today().strftime("%Y-%m-%d")
+        for purchase in self.browse(cr, uid, ids_public_process):
+            for date_line in purchase.date_ids:
+                date_from_str = date_line.date_from
+                now = today.split('-')
+                date_from = date_from_str.split('-')
+                if now==date_from:
+                    self.state_change(self, cr, uid, purchase.id)
+                else:
+                    datenow = date( int(now[0]), int(now[1]), int(now[2]) )
+                    date_from_aux = date( int(date_from[0]), int(date_from[1]), int(date_from[2]) )
+                    delta = date_from_aux - datenow
+                    day = delta.days
+                    if day==1:
+                        self.send_notification(self, cr, uid, purchase.id)
+        return True
+
+    def purchase_anulate(self, cr, uid, ids, context=None):
+        log_obj = self.pool.get('log.state.change')
+        state_obj = self.pool.get('purchase.process.state')
+        public_obj = self.pool.get('purchase.public.process')
+        #deberia bloquear el formulario de compra publica
+        for purchase in self.browse(cr, uid, ids):
+            state_ids = state_obj.search(cr, uid, [('code','=',purchase.state.code)], limit=1)
+            actual_state = state_obj.browse(cr, uid, state_ids)
+            for this in actual_state:
+                public_obj.write(cr, uid, purchase.id, {
+                        'internal_state':'anulated',
+                        })
+                log_obj.create(cr, uid, {
+                        'date':time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'user_id':uid,
+                        'state_to':this.name,
+                        'state_from':'Anulado',
+                        'public_id':purchase.id,
+                        })
+                task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                             'other_action':str('Anula proceso'),
+                                                                             'description':'Servidor: ' + purchase.responsable_id.complete_name + ' ' + 'Anula el proceso',
+                                                                             'department': purchase.coordination_dept.id,
+                                                                             'employee_id' : purchase.responsable_id.id,
+                                                                             'job_id': purchase.responsable_id.job_id.id,
+                                                                             'user_id': uid,
+                                                                             'expedient_id':purchase.tramite_id.id,
+                                                                             'state': 'done',
+                                                                             'assigned_user_id':purchase.responsable_p_id.id,
+                                                                             }, context=context)
+        return True
+
+#    def state_change_other
+
+    def state_change(self, cr, uid, ids,context=None):
+        state_obj = self.pool.get('purchase.process.state')
+        purchase_obj = self.pool.get('purchase.public.process')
+        state_obj = self.pool.get('purchase.process.state')
+        log_obj = self.pool.get('log.state.change')
+        for purchase in self.browse(cr, uid, ids):
+            actual_state = purchase.state
+            seq_actual = purchase.state.sequence
+            seq_next = seq_actual + 1
+            next_state_ids = state_obj.search(cr, uid, [('sequence','=',seq_next),
+                                                        ('ptype_id','=',purchase.type_process.type_contract_id.id)], limit=1)
+            states = state_obj.read(cr, uid, next_state_ids, ['code','name','id'])
+            if states:
+                purchase_obj.write(cr, uid, purchase.id,{
+                        'state':states[0]['id'],
+                        'actual_state':states[0]['name'],
+                        })
+                log_obj.create(cr, uid, {
+                        'date':time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'user_id':uid,
+                        'state_to':actual_state.name,
+                        'state_from':states[0]['name'],
+                        'public_id':purchase.id,
+                        })
+                #crear la tarea del tramite
+                task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                             'other_action':str('Cambia estado a ')+states[0]['name'],
+                                                                             'description':'Servidor: ' + purchase.responsable_id.complete_name + ' ' + 'Cambia el estado del proceso',
+                                                                             'department': purchase.coordination_dept.id,
+                                                                             'employee_id' : purchase.responsable_id.id,
+                                                                             'job_id': purchase.responsable_id.job_id.id,
+                                                                             'user_id': uid,
+                                                                             'expedient_id':purchase.tramite_id.id,
+                                                                             'state': 'done',
+                                                                             'assigned_user_id':purchase.responsable_p_id.id,
+                                                                             }, context=context)
+        return True
+
+    def _get_next_state(self, cr, uid, context, seq, start):
+        state_obj = self.pool.get('purchase.process.state')
+        if context is None:
+            context = {}
+        if start==True:
+            seq = 0
+        seq += 1
+        state_ids = state_obj.search(cr, uid, [('sequence','=',seq)], limit=1)
+        states = state_obj.read(cr, uid, state_ids, ['name'])
+        if states:
+            return states[0]['name']
+
+    def _get_state(self, cr, uid, context=None):
+        state_obj = self.pool.get('purchase.process.state')
+        if context is None:
+            context = {}
+        state_ids = state_obj.search(cr, uid, [('sequence','=',0)], limit=1)
+        states = state_obj.read(cr, uid, state_ids, ['code'])
+        if states:
+            return states[0]['code']
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type=False, context=None, toolbar=False, submenu=False):
+        state_obj = self.pool.get('purchase.process.state')
+        if context is None:
+            context = {}
+        res = super(PurchasePublicProcess,self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, 
+                                                                context=context, toolbar=toolbar, submenu=submenu)
+        ptype_id = context.get('type_contract_id', False)
+        for field in res['fields']:
+            if ptype_id:
+                state_select = state_obj._name_search(cr, uid, '', [('ptype_id', '=', ptype_id)], 
+                                                      context=context, limit=None, name_get_uid=1)
+                if field==ptype_id:
+                    res['fields'][field]['selection'] = state_select 
+        return res
+
+    def _get_state_selection(self, cr, uid, context=None):
+        if context is None:
+            context = {}
+        state_ids = self.pool.get('purchase.process.state').search(cr, uid, [])
+        states = self.pool.get('purchase.process.state').read(cr, uid, state_ids, ['code', 'name'])
+        return [(item['code'],item['name']) for item in states]
+
+    _OBJ_CONTRACT = [('b','Bienes'),('s','Servicios'),('bienes','Bienes y Servicios'),
+                     ('obras','Obras'),('consultoria','Consultoría')]
+
+  
+
+class POLine(osv.Model):
+    _inherit = 'purchase.order.line'
+
+    def _check_values(self, cr, uid, ids):
+        result = False
+        for obj in self.browse(cr, uid, ids):
+            if obj.product_qty > 0 and obj.price_unit >= 0:
+                result = True
+        return result
+
+    def _amount_line_s(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        tax_obj = self.pool.get('account.tax')
+        for line in self.browse(cr, uid, ids, context=context):
+            if line.select:
+                taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty)
+                cur = line.order_id.pricelist_id.currency_id
+                res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
+            else:
+                res[line.id] = 0
+        return res
+
+    def _amount_tax_line(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        tax_obj = self.pool.get('account.tax')
+        po_line_obj = self.pool.get('purchase.order.line')
+        po_obj = self.pool.get('purchase.order')
+        fiscal_obj = self.pool.get('account.fiscal.position')
+        for line in self.browse(cr, uid, ids, context=context):
+            po = po_obj.browse(cr, uid, line.order_id.id)
+#            taxes_ids = taxes_ids_1 = []
+#            if len(line.taxes_id)<1 and len(line.product_id.supplier_taxes_id)>0:
+ #           for impuesto in line.product_id.supplier_taxes_id:
+#                taxes_ids_1.append(impuesto.id)
+#            import pdb
+ #           pdb.set_trace()
+ #           fpos = po.partner_id.property_account_position
+ #           taxes_ids = fiscal_obj.map_tax(cr, uid, fpos, line.product_id.supplier_taxes_id)
+ #           po_line_obj.write(cr, uid, line.id,{'taxes_id': [(6,0,taxes_ids)]})
+            taxes = tax_obj.compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty)
+            cur = line.order_id.pricelist_id.currency_id
+            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total_included']-taxes['total'])
+        return res
+
+    def _amount_total_inc_line(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        tax_obj = self.pool.get('account.tax')
+        for line in self.browse(cr, uid, ids, context=context):
+            cur = line.order_id.pricelist_id.currency_id
+            res[line.id] = cur_obj.round(cr, uid, cur, line.price_subtotal_s + line.amount_tax)
+        return res
+
+    _columns = dict(
+        price_subtotal_s = fields.function(_amount_line_s, type="float", store=True,string='Subtotal', digits_compute= dp.get_precision('Purchase Price')),
+        amount_tax = fields.function(_amount_tax_line, string='Imp.', digits_compute= dp.get_precision('Purchase Price')),
+        tot_included = fields.function(_amount_total_inc_line, string='Total', digits_compute= dp.get_precision('Purchase Price')),
+        select = fields.boolean('Seleccionar'),
+        is_group = fields.boolean('Agrupar'),
+        qty_available = fields.float('Cant. Disponible'),
+        presp_ref = fields.many2one('crossovered.budget.certificate','Pres. Referecial'),
+        )
+
+    _constraints = [
+        (_check_values,'Los valores de precio unitario y cantidad deben ser mayor a cero',['product_qty','price_unit']),
+        ]
+
+POLine()
+
+
+class purchaseOrder(osv.Model):
+    _inherit = 'purchase.order'
+
+    def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'amount_untaxed': 0.0,
+                'amount_tax': 0.0,
+                'amount_total': 0.0,
+            }
+            val = val1 = 0.0
+            cur = order.pricelist_id.currency_id
+            for line in order.order_line:
+                #if line.select: #si queremos calcular solamente de los seleccionados
+                    val1 += line.price_subtotal
+                    for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, order.partner_address_id.id, line.product_id.id, order.partner_id)['taxes']:
+                        val += c.get('amount', 0.0)
+            res[order.id]['amount_tax']=cur_obj.round(cr, uid, cur, val)
+            res[order.id]['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
+            res[order.id]['amount_total']=res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
+        return res
+
+    def calcular_valores(self, cr, uid, ids, context=None):
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        for order in self.browse(cr, uid, ids, context=context):
+            res = {
+                'amount_untaxed': 0.0,
+                'amount_tax': 0.0,
+                'amount_total': 0.0,
+            }
+            val = val1 = 0.0
+            cur = order.pricelist_id.currency_id
+            for line in order.order_line:
+                #if line.select: #si queremos calcular solamente de los seleccionados
+                    val1 += line.price_subtotal
+                    for c in self.pool.get('account.tax').compute_all(cr, uid, line.taxes_id, line.price_unit, line.product_qty, order.partner_address_id.id, line.product_id.id, order.partner_id)['taxes']:
+                        val += c.get('amount', 0.0)
+            res['amount_tax']=cur_obj.round(cr, uid, cur, val)
+            res['amount_untaxed']=cur_obj.round(cr, uid, cur, val1)
+            res['amount_total']=res['amount_untaxed'] + res['amount_tax']
+            self.write(cr, uid, ids, res, context)
+        return res
+
+    def _amount_all_iva(self, cr, uid, ids, field_name, arg, context=None):
+        '''    Desglosa el valor de iva, ice e impuesto verde 
+        por cotizaciion
+        '''
+        res = {}
+        cur_obj=self.pool.get('res.currency')
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = {
+                'iva_value': 0.0,
+                'ice_value': 0.0,
+                'imp_verde': 0.0,
+            }
+            val = ice_line = iva_line=line_imp=ice_l=0.0
+            cur = order.pricelist_id.currency_id
+            imp_prueba=0
+            for order_line in order.order_line:
+                #if order_line.select:
+                    vat_l=ice_l=0
+                    for tax in order_line.taxes_id:
+                        if tax.tax_group=="vat":# and tax.price_include==True:
+                            vat_l=tax.porcentaje
+                        else:
+                            if tax.tax_group=="ice":# and tax.price_include==True:
+                                ice_l=tax.porcentaje
+                    line_imp=float(vat_l)+float(ice_l)
+                    impuesto_line=(order_line.product_qty*order_line.price_unit)*(line_imp/(100.00))#+line_imp))
+                    if ice_l!=0:
+                        ice_line+=impuesto_line*(float(ice_l)/line_imp)
+                        iva_line+=impuesto_line-(impuesto_line*(float(ice_l)/line_imp))
+                    else: 
+                        iva_line+=impuesto_line
+            res[order.id]['iva_value']=cur_obj.round(cr, uid, cur, iva_line)
+            res[order.id]['ice_value']=cur_obj.round(cr, uid, cur, ice_line)
+            res[order.id]['imp_verde']=cur_obj.round(cr, uid, cur, val)
+        return res
+
+    def onchange_partner_id(self, cr, uid, ids, partner_id):
+        partner = self.pool.get('res.partner')
+        if not partner_id:
+            return {'value':{'partner_address_id': False, 'fiscal_position': False}}
+        supplier_address = partner.address_get(cr, uid, [partner_id], ['default'])
+        supplier = partner.browse(cr, uid, partner_id)
+        pricelist = supplier.property_product_pricelist_purchase.id
+        ec_type = supplier.partner_incop_type
+        fiscal_position = supplier.property_account_position and supplier.property_account_position.id or False
+        return {'value':{'partner_address_id': supplier_address['default'],'partner_incop_type':ec_type ,'pricelist_id': pricelist, 'fiscal_position': fiscal_position}}
+
+    def print_oc_req(self, cr, uid, ids, context=None):
+        '''
+        cr: cursor de la base de datos
+        uid: ID de usuario
+        ids: lista ID del objeto instanciado
+
+        Metodo para imprimir la orden de compra
+        '''        
+        if not context:
+            context = {}
+        order_obj = self.pool.get('purchase.order')
+        order = order_obj.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [order.id], 'model': 'purchase.order'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'purchase.order.m',
+            'model': 'purchase.order',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+    def action_invoice_create(self, cr, uid, ids, context=None):
+        """Generates invoice for given ids of purchase orders and links that invoice ID to purchase order.
+        Relaciona el tramite del proceso a la factura, asi como tambien el presupuesto referencial
+        :param ids: list of ids of purchase orders.
+        :return: ID of created invoice.
+        :rtype: int
+        """
+        res = False
+
+        journal_obj = self.pool.get('account.journal')
+        inv_obj = self.pool.get('account.invoice')
+        inv_line_obj = self.pool.get('account.invoice.line')
+        fiscal_obj = self.pool.get('account.fiscal.position')
+        property_obj = self.pool.get('ir.property')
+
+        for order in self.browse(cr, uid, ids, context=context):
+            pay_acc_id = order.partner_id.property_account_payable.id
+            journal_ids = journal_obj.search(cr, uid, [('type', '=','purchase'),('company_id', '=', order.company_id.id)], limit=1)
+            if not journal_ids:
+                raise osv.except_osv(_('Error !'),
+                    _('There is no purchase journal defined for this company: "%s" (id:%d)') % (order.company_id.name, order.company_id.id))
+
+            # generate invoice line correspond to PO line and link that to created invoice (inv_id) and PO line
+            inv_lines = []
+            for po_line in order.order_line:
+                if po_line.product_id:
+                    acc_id = po_line.product_id.product_tmpl_id.property_account_expense.id
+                    if not acc_id:
+                        acc_id = po_line.product_id.categ_id.property_account_expense_categ.id
+                    if not acc_id:
+                        raise osv.except_osv(_('Error !'), _('There is no expense account defined for this product: "%s" (id:%d)') % (po_line.product_id.name, po_line.product_id.id,))
+                else:
+                    acc_id = property_obj.get(cr, uid, 'property_account_expense_categ', 'product.category').id
+                fpos = order.fiscal_position or False
+                acc_id = fiscal_obj.map_account(cr, uid, fpos, acc_id)
+
+                inv_line_data = self._prepare_inv_line(cr, uid, acc_id, po_line, context=context)
+                inv_line_id = inv_line_obj.create(cr, uid, inv_line_data, context=context)
+                inv_lines.append(inv_line_id)
+
+                po_line.write({'invoiced':True, 'invoice_lines': [(4, inv_line_id)]}, context=context)
+
+            # get invoice data and create invoice
+            inv_data = {
+                'name': order.partner_ref or order.name,
+                'reference': order.partner_ref or order.name,
+                'account_id': pay_acc_id,
+                'type': 'in_invoice',
+                'partner_id': order.partner_id.id,
+                'currency_id': order.pricelist_id.currency_id.id,
+                'address_invoice_id': order.partner_address_id.id,
+                'address_contact_id': order.partner_address_id.id,
+                'journal_id': len(journal_ids) and journal_ids[0] or False,
+                'invoice_line': [(6, 0, inv_lines)], 
+                'origin': order.name,
+                'fiscal_position': order.fiscal_position.id or order.partner_id.property_account_position.id,
+                'payment_term': order.partner_id.property_payment_term and order.partner_id.property_payment_term.id or False,
+                'company_id': order.company_id.id,
+                'tramite_id':order.tramite_id.id,
+                'certificate_id':order.presp_ref.id,
+            }
+            inv_id = inv_obj.create(cr, uid, inv_data, context=context)
+
+            # compute the invoice
+            inv_obj.button_compute(cr, uid, [inv_id], context=context, set_total=True)
+
+            # Link this new invoice to related purchase order
+            order.write({'invoice_ids': [(4, inv_id)]}, context=context)
+            res = inv_id
+        return res
+
+    def _prepare_order_line_move(self, cr, uid, order, order_line, picking_id, context=None):
+        return {
+            'name': order.name + ': ' + (order_line.name or ''),
+            'product_id': order_line.product_id.id,
+            'product_qty': order_line.product_qty,
+            'product_uos_qty': order_line.product_qty,
+            'product_uom': order_line.product_uom.id,
+            'product_uos': order_line.product_uom.id,
+            'date': order_line.date_planned,
+            'date_expected': order_line.date_planned,
+            'location_id': order.partner_id.property_stock_supplier.id,
+            'location_dest_id': order.location_id.id,
+            'picking_id': picking_id,
+            'address_id': order.dest_address_id.id or order.partner_address_id.id,
+            'move_dest_id': order_line.move_dest_id.id,
+            'state': 'draft',
+            'purchase_line_id': order_line.id,
+            'company_id': order.company_id.id,
+            'price_unit': order_line.price_unit,
+            'amount_tax' :order_line.amount_tax,
+            'subtotal':order_line.price_subtotal,
+        }
+
+    def _create_pickings(self, cr, uid, order, order_lines, picking_id=False, context=None):
+        """Creates pickings and appropriate stock moves for given order lines, then
+        confirms the moves, makes them available, and confirms the picking.
+
+        If ``picking_id`` is provided, the stock moves will be added to it, otherwise
+        a standard outgoing picking will be created to wrap the stock moves, as returned
+        by :meth:`~._prepare_order_picking`.
+
+        Modules that wish to customize the procurements or partition the stock moves over
+        multiple stock pickings may override this method and call ``super()`` with
+        different subsets of ``order_lines`` and/or preset ``picking_id`` values.
+
+        :param browse_record order: purchase order to which the order lines belong
+        :param list(browse_record) order_lines: purchase order line records for which picking
+                                                and moves should be created.
+        :param int picking_id: optional ID of a stock picking to which the created stock moves
+                               will be added. A new picking will be created if omitted.
+        :return: list of IDs of pickings used/created for the given order lines (usually just one)
+        """
+        context = {}
+        context['type_internal_menu']='in'
+        context['type']='in'
+        if not picking_id: 
+            picking_id = self.pool.get('stock.picking').create(cr, uid, self._prepare_order_picking(cr, uid, order, context),context)
+        todo_moves = []
+        stock_move = self.pool.get('stock.move')
+        wf_service = netsvc.LocalService("workflow")
+        for order_line in order_lines:
+            if not order_line.product_id:
+                continue
+            if order_line.product_id.type in ('product', 'consu'):
+                #aqui pasar en el context un parametro para q no use el create modificado sino el normal
+                context = {}
+                context['crear'] = True
+                move = stock_move.create(cr, uid, self._prepare_order_line_move(cr, uid, order, order_line, picking_id, context=context),context)
+                if order_line.move_dest_id:
+                    order_line.move_dest_id.write({'location_id': order.location_id.id})
+                todo_moves.append(move)
+        stock_move.action_confirm(cr, uid, todo_moves)
+        stock_move.force_assign(cr, uid, todo_moves)
+        wf_service.trg_validate(uid, 'stock.picking', picking_id, 'button_confirm', cr)
+        return [picking_id]
+
+
+    def _prepare_order_picking(self, cr, uid, order, context=None):
+        location_obj = self.pool.get('stock.location')
+        #sacar la bodega de los productos
+        for line_o in order.req_id.line_ids:
+            if line_o.product_id.type in ('product','consu'):
+                bodega_id = line_o.product_id.location_id_id.id
+        type_compra = self.pool.get('ie.type').search(cr, uid, [('is_compra','=',True)],limit=1)
+        if order.req_id:
+            return {
+                'ie_type':type_compra[0],
+                'type_internal_menu':'in',
+                'is_oc':True,
+                'responsable_id':order.solicitant_id.id,
+                'solicitant_id':order.req_id.solicitant_id.id,
+                'unidad_id':order.req_id.department_id.id,
+                'tramite_id':order.tramite_id.id,
+                'name': '/',#self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.in'),
+                'origin': order.name + ((order.origin and (':' + order.origin)) or ''),
+                'date': order.date_order,
+                'type': 'in',
+                'internal_type':'in',
+                'address_id': order.dest_address_id.id or order.partner_address_id.id,
+                'invoice_state': '2binvoiced' if order.invoice_method == 'picking' else 'none',
+                'purchase_id': order.id,
+                'company_id': order.company_id.id,
+                'move_lines' : [],
+                'bodega_id' : bodega_id,
+                'presp_ref' : order.req_id.presp_ref.id,
+                'partner_id' : order.partner_id.id,
+                }   
+        else:
+            bodega_ids = location_obj.search(cr, uid, [('is_general','=',True)],limit=1)
+            if len(bodega_ids)<1:
+                 raise osv.except_osv(('Error de configuración!'),('No existe bodega general configurada'))
+            return {
+                'type_internal_menu':'in',
+                'responsable_id':order.solicitant_id.id,
+                'solicitant_id':order.solicitant_id.id,
+                'tramite_id':order.tramite_id.id,
+                'name': self.pool.get('ir.sequence').get(cr, uid, 'stock.picking.in'),
+                'origin': order.name + ((order.origin and (':' + order.origin)) or ''),
+                'date': order.date_order,
+                'type': 'in',
+                'partner_id':order.partner_id.id,
+                'address_id': order.dest_address_id.id or order.partner_address_id.id,
+                'invoice_state': '2binvoiced' if order.invoice_method == 'picking' else 'none',
+                'purchase_id': order.id,
+                'company_id': order.company_id.id,
+                'bodega_id' : bodega_ids[0],
+                'move_lines' : [],
+                'presp_ref' : order.presp_ref.id,
+                }
+
+#    def create(self, cr, uid, vals, context=None):
+#        print "KJHKJJKJH"
+#        import pdb
+#        pdb.set_trace()
+#        band = context.get('band',False)
+#        print band
+#        return super(purchaseOrder, self).create(cr, uid, vals, context=None)
+
+    def _compute_items(self, cr, uid, ids, a, b, c):
+        po = self.pool.get('purchase.order')
+        res = {}
+        aux = 0
+        this = self.browse(cr, uid, ids[0])
+#        for this in self.browse(cr, uid, ids):
+        for line in this.order_line:
+            if line.select:
+                aux += line.product_qty
+#        if aux > 0:
+#            po.write(cr, uid, this.id, {
+#                    'select_item':True,
+#                    })
+        res[this.id] = aux
+        return res
+
+    def _is_select(self, cr, uid, ids, a, b, c):
+        this = self.browse(cr, uid, ids[0])
+        res = {}
+        aux = False
+        if this.number_select > 0:
+            aux = True
+        res[this.id] = aux
+        return res
+
+    _columns = dict(
+        is_finish = fields.boolean('Finalizado'),
+        is_cotizacion = fields.boolean('Cot'),
+        partner_incop_type = fields.selection([('economia_popular','Economia popular y solidaria'),
+                                                 ('micro','Micro'),
+                                                 ('pequena','Pequena'),
+                                                 ('mediana', 'Mediana'),
+                                                 ('grande','Grande')], 'Tipo Actor Económico'),
+        solicitant_id = fields.many2one('hr.employee','Responsable'),
+        select = fields.boolean('Seleccionada'),
+        select_item = fields.function(_is_select,string='Seleccionada',type="boolean",store=True),
+        order_ref = fields.many2one('purchase.order','Orden Padre'),
+        is_son = fields.boolean('Separada'),
+#        recomended = fields.boolean('Recomendar'),
+        state_sol = fields.related('requisition_id','state', type='selection', 
+                                   string='Estado', store=True),
+#        selected = fields.boolean('Seleccionada', help="Es la mejor oferta elejida por el Director Administrativo"),
+        active = fields.boolean('Activo'),
+        in_stock = fields.boolean('Tiene en stock'),
+        procedencia = fields.char('Procedencia',size=32,required=True),
+        tipo = fields.selection([('Generico','Generico'),('Marca','Marca')],'Tipo'),
+        tiempo_entrega = fields.integer('Tiempo entrega(días)'),
+        dias_credito = fields.integer('Días Crédito(días)'),
+        garantia = fields.integer('Garantía(meses)'),
+        validez = fields.integer('Validéz oferta(días)'),
+        lugar_entrega = fields.selection([('Entrega Directa','Entrega Directa'),('Bodega del GPA','Bodega del GPA'),
+                                          ('Entrega en la obra','Entrega en la obra'),('Bodega de proveedor','Bodega de proveedor'),
+                                          ('Otro','Otro')],'Lugar Entrega'),
+        number_select = fields.function(_compute_items,string='#Items',type="integer",store=True),
+        requisition_select_id = fields.many2one('purchase.requisition','Solicitud'),
+        req_id = fields.many2one('purchase.requisition','Solicitud Compra'),
+        tramite_id = fields.many2one('doc_expedient.expedient','Trámite',
+                                     help="Tramite relacionado al proceso"),
+        presp_ref = fields.many2one('crossovered.budget.certificate','Pres. Referecial'),
+        payment_term = fields.many2one('account.payment.term','Término de pago',required=True),
+        iva_value= fields.function(_amount_all_iva, digits_compute= dp.get_precision('Account'), string='IVA',
+             multi="sums",help="Valor de IVA"),
+        ice_value= fields.function(_amount_all_iva, digits_compute= dp.get_precision('Account'), string='ICE',
+             multi="sums",help="Valor de ICE"),
+        imp_verde= fields.function(_amount_all_iva, digits_compute= dp.get_precision('Account'), string='Imp. Verde',
+             multi="sums",help="Valor de impuesto verde"),
+        #amount_untaxed= fields.function(_amount_all, digits_compute= dp.get_precision('Purchase Price'), string='Base imponible',
+        #    store=True, multi="sums", help="The amount without tax"),
+        #amount_tax= fields.function(_amount_all, digits_compute= dp.get_precision('Purchase Price'), string='Total Impuestos',
+        #    store=True, multi="sums", help="The tax amount"),
+        #amount_total= fields.function(_amount_all, digits_compute= dp.get_precision('Purchase Price'), string='Total',
+        #    store=True, multi="sums",help="The total amount"),
+        #taxes_ids =  fields.one2many('purchase.order.tax','purchase_id','Impuestos'),
+        )
+
+#    def write(self, cr, uid, ids, vals, context=None):
+#        req_obj = self.pool.get('purchase.requisition')
+#        j = 0
+#        for order in self.browse(cr, uid, ids):
+#            req = req_obj.browse(cr, uid, order.requisition_id.id)
+#            for line in order.order_line:
+#                if line.select:
+#                    j += 1
+#        total_number = len(req.line_ids)
+#        str_total = "0/0"
+#        str_total = str(j)+"/"+str(total_number)
+#        vals['number_select'] = str_total
+#        return super(purchaseOrder, self).write(cr, uid, ids, vals, context=None)
+
+
+
+    def quit_all(self, cr, uid, ids, context=None):
+        po_line_obj = self.pool.get('purchase.order.line')
+        po_obj = self.pool.get('purchase.order')
+        number_select = ""
+        for this in self.browse(cr, uid, ids):
+            for line in this.order_line:
+                po_line_obj.write(cr, uid, line.id,{
+                        'select':False,
+                        })
+#            number_select = "0/"+str(this.requisition_id.total_items) 
+#            po_obj.write(cr, uid, [this.id],{
+#                    'number_select':number_select,
+#                    })
+        return True
+
+    def load_product(self, cr, uid, ids, context=None):
+        active_ids = context and context.get('active_ids', [])
+        data =  self.browse(cr, uid, active_ids[0], context=context)[0]
+        for line in data.line_ids:
+            product = line.product_id
+            seller_price, qty, default_uom_po_id, date_planned = self._seller_details(cr, uid, line, supplier, context=context)
+            taxes_ids = product.supplier_taxes_id
+            taxes = fiscal_position.map_tax(cr, uid, supplier.property_account_position, taxes_ids)
+            purchase_order_line.create(cr, uid, {
+                    'order_id': ids[0],
+                    'name': product.partner_ref,
+                    'product_qty': qty,
+                    'product_id': product.id,
+                    'product_uom': default_uom_po_id,
+                    'price_unit': seller_price,
+                    'date_planned': date_planned,
+                    'notes': product.description_purchase,
+                    'taxes_id': [(6, 0, taxes)],
+                    }, context=context)
+        return True
+
+#    def _get_lines_po(self, cr, uid, ids, context=None):
+#        po_line_obj = self.pool.get('purchase.line')
+#        req_obj = self.pool.get('purchase.requisition')
+#        lineas = []
+#        requisition = req_obj.browse(cr, uid, context['active_id'])
+#        for line in requisition.line_ids:
+#            k = 0
+#            product = line.product_id
+#            taxes_ids = product.supplier_taxes_id
+#            taxes = fiscal_position.map_tax(cr, uid, supplier.property_account_position, taxes_ids)
+#            line_desc = ''
+#            if line.desc:
+#                line_desc = line.desc
+#                desc = product.partner_ref+' '+line_desc
+#            lineas.append(obj_detalle.create(cr, uid, {#'solicitud_id': id_solicitud,
+#                        'name': desc,
+#                        'product_qty': 0,
+#                        'product_id': product.id,
+#                        'qty_available':product.qty_available,
+#                        'product_uom': default_uom_po_id,
+#                        'price_unit': seller_price,
+#                        'date_planned': date_planned,
+#                        'notes': product.description_purchase,
+#                        'taxes_id': [(6, 0, taxes)],
+#                        'presp_ref':requisition.presp_ref.id,
+#                    }, context))
+#        return lineas
+
+    def select_all(self, cr, uid, ids, context=None):
+        po_obj = self.pool.get('purchase.order')
+        po_line_obj = self.pool.get('purchase.order.line')
+        number_select = ""
+        for this in self.browse(cr, uid, ids):
+            for line in this.order_line:
+                po_line_obj.write(cr, uid, line.id,{
+                        'select':True,
+                        })
+#            number_select = str(this.requisition_id.total_items)+"/"+str(this.requisition_id.total_items) 
+#            po_obj.write(cr, uid, [this.id],{
+#                    'number_select':number_select,
+#                    })
+        return True
+
+    def wkf_confirm_order(self, cr, uid, ids, context=None):
+        vals = {}
+        obj_sequence = self.pool.get('ir.sequence')
+        vals['name'] = obj_sequence.get(cr, uid, 'purchase.order')
+        self.write(cr, uid, ids, vals)
+        ##tomar la secuencia aqui
+        todo = []
+        for po in self.browse(cr, uid, ids, context=context):
+            if not po.order_line:
+                raise osv.except_osv(('Error !'),('No puede confirmar una orden de compra sin lineas de detalle.'))
+            for line in po.order_line:
+                if line.state=='draft':
+                    todo.append(line.id)
+            message = ("Orden de compra '%s' confirmada.") % (po.name,)
+            self.log(cr, uid, po.id, message)
+#        current_name = self.name_get(cr, uid, ids)[0][1]
+        self.pool.get('purchase.order.line').action_confirm(cr, uid, todo, context)
+        for id in ids:
+            self.write(cr, uid, [id], {'state' : 'done', 'validator' : uid})
+        return True        
+
+    def purchase_cut(self, cr, uid, ids, context=None):
+        if context is None: context = {}
+        context = dict(context, active_ids=ids, active_model=self._name)
+        sep_id = self.pool.get("separate.order").create(cr, uid, {}, context=context)
+        return {
+            'name':"Separar Order Compra",
+            'view_mode': 'form',
+            'view_id': False,
+            'view_type': 'form',
+            'res_model': 'separate.order',
+            'res_id': sep_id,
+            'type': 'ir.actions.act_window',
+            'nodestroy': True,
+            'target': 'new',
+            'domain': '[]',
+            'context': context,
+        }
+
+    def _get_payment_term(self, cr, uid, ids, context=None):
+        pay_obj = self.pool.get('account.payment.term')
+        pay_ids = pay_obj.search(cr, uid, [])
+        if not len(pay_ids)>0:
+            raise osv.except_osv(('Error de configuración'), ('No se ha definido ningun termino de pago'))
+        return pay_ids[0]
+
+    def _check_desc(self, cr, uid, ids, context=None):
+        for this in self.browse(cr, uid, ids):
+            if this.add_disc < 0 or this.add_disc > 100: 
+                return False
+        return True
+
+    _constraints = [
+        (_check_desc,'El descuento debe estar entre 0 y 100',[]),
+        ] 
+
+    _sql_constraints = [
+        ('name_uniq', 'unique()', 'Order Reference must be unique per Company!'),
+    ]
+
+    _defaults = dict(
+        is_cotizacion = True,
+        name = '/',
+        select = True,
+        active = True,
+        tipo = 'Generico',
+        location_id = 1,
+        pricelist_id = 1,
+        procedencia = 'Ecuador',
+        payment_term = _get_payment_term,
+#        invoice_method = 'order',
+        invoice_method = 'picking',
+        partner_incop_type = 'micro',
+#        order_line = _get_lines_po,
+        )
+
+purchaseOrder()

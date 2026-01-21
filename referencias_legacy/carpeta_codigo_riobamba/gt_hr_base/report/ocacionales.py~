@@ -1,0 +1,34 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+class ocacionales(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(ocacionales, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_actividades': self.get_actividades,
+        })
+
+    def get_actividades(self, this):
+        categ_obj = self.pool.get('account.asset.category')
+        categ_ids = categ_obj.search(self.cr, self.uid, [])
+        return categ_ids
+
+report_sxw.report_sxw('report.hr.ocacionales',
+                       'hr.contract', 
+                       'addons/gt_hr_base/report/ocacionales.mako',
+                       parser=ocacionales,
+                       header=False)
+

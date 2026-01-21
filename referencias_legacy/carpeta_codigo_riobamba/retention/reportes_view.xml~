@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+
+	  
+	  <menuitem id="menu_cxp_configure" parent="account.menu_finance_accounting" 
+				name="Tabla Config. Cuentas"/>
+		
+	  <record model="ir.ui.view" id="view_cxp_config_form">
+		<field name="name">cxp.config.view.form</field>
+		<field name="model">config.cxp</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+  		  <form>
+			<field name="budget" widget="selection"/>
+			<field name="account_id" domain="[('type','=','payable')]"/>
+		  </form>
+		</field>
+	  </record>
+	  
+	  <record model="ir.ui.view" id="view_cxp_config_tree">
+		<field name="name">cxp.config.view.tree</field>
+		<field name="model">config.cxp</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+  		  <tree>
+			<field name="budget"/>
+			<field name="account_id" domain="[('type','=','payable')]"/>
+		  </tree>
+		</field>
+	  </record>
+	  
+	  
+	  <record model="ir.actions.act_window" id="cxp_config_action">
+		<field name="name">Tabla Ctas x Pagar</field>
+		<field name="res_model">config.cxp</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	  </record> 
+	  
+	  <menuitem name="Tabla Ctas x Pagar" 
+				id="menu_cxp_configure_" 
+				parent="menu_cxp_configure" 
+				action="cxp_config_action"/>
+
+<!--
+-->
+
+<record model="ir.ui.view" id="view_ctas_categ_config_form">
+  <field name="name">ctas.categ.config.view.form</field>
+  <field name="model">ctas.categ</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+  	<form>
+	  <field name="categ_id"/>
+	  <field name="account_ex_normal"/>
+	  <field name="account_ex_program"/>
+	  <field name="account_ex_project"/>
+	  <field name="account_expense"/>
+	  <field name="account_comp_id"/>
+	</form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_ctas_categ_config_tree">
+  <field name="name">ctas.config.view.tree</field>
+  <field name="model">ctas.categ</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+  	<tree>
+	  <field name="categ_id" select="1"/>
+	  <field name="account_ex_normal" select="1"/>
+	  <field name="account_ex_program" select="1"/>
+	  <field name="account_ex_project" select="1"/>
+	  <field name="account_expense" select="1"/>
+	</tree>
+  </field>
+</record>
+
+	  
+<record model="ir.actions.act_window" id="ctas_categ_config_action">
+  <field name="name">Tabla Ctas. Gasto</field>
+  <field name="res_model">ctas.categ</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem name="Tabla Ctas. Gasto" 
+		  id="menu_ctas_categ_configure_" 
+		  parent="menu_cxp_configure" 
+		  action="ctas_categ_config_action"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <record id="view_repair_taller_form" model="ir.ui.view">
+      <field name="name">view.repair.taller.form</field>
+      <field name="model">repair.taller</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Ordenes Reparación">
+          <group string="Estado" col="2" colspan="4">
+			<field name="state" readonly="1" widget="statusbar" 
+				   statusbar_colors='{"No Operativo":"red","Reparacion":"blue","Operativo":"green"}'/>
+		  </group>
+		  <group colspan="2" col="2" string="Información General">
+			<field name="type_taller" required="1"/>
+			<field name="name"/>
+			<field name="jefe_id"/>
+			<field name="capacity"/>
+	        <field name="state_id" required="1"/>
+			<field name="canton_id" required="1" domain="[('state_id','=',state_id)]" />
+			<field name="parish_id" domain="[('canton_id','=',canton_id)]"/>
+			<field name="direccion"/>
+		  </group>
+        </form>
+      </field>
+    </record>
+	
+    <record id="view_repair_taller_tree" model="ir.ui.view">
+      <field name="name">view.repair.taller.tree</field>
+      <field name="model">repair.taller</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Talleres" colors="red:state=='No Operativo';blue:state=='Reparacion';green:state=='Operativo'">
+          <field name="name"/>
+		  <field name="jefe_id"/>
+		  <field name="state_id"/>
+		  <field name="canton_id"/>
+		  <field name="parish_id"/>
+		  <field name="state"/>
+	    </tree>
+      </field>
+    </record>
+
+    <record id="view_taller_taller_search" model="ir.ui.view">
+      <field name="name">view.repair.taller.search</field>
+      <field name="model">repair.taller</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Talleres">
+          <group>
+            <separator orientation="vertical"/>
+            <field name="name"/>
+			<field name="state_id"/>
+		  <field name="canton_id"/>
+		  <field name="parish_id"/>
+	      </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_taller_taller_order" model="ir.actions.act_window">
+      <field name="name">Talleres</field>
+      <field name="res_model">repair.taller</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_taller_taller_search"/>
+    </record>
+
+    <menuitem id="menu_repair_order" parent="menu_vehicle_root" name="Talleres" sequence="5"/>
+
+    <menuitem id="menu_taller_taller_action" parent="menu_repair_order"
+              action="action_taller_taller_order" sequence="1"/>
+
+<!-- taller -->
+
+    <record id="view_repair_order_form" model="ir.ui.view">
+      <field name="name">view.repair.order.form</field>
+      <field name="model">repair.order</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Ordenes Reparación">
+
+		<group colspan="4" col="4">
+            <group colspan="2" col="2" string="Vehículo">
+			  <field name="taller_id"/>
+			  <field name="type_repair" required="1"/>
+			  <field name="ref"/>
+			  <field name="name"/>
+			  <field name="date_start" on_change="validar_tiempo(date_start)"/>
+			  <field name="project_id"/>
+			</group>
+            <group colspan="2" col="2" string="Descripción">
+			  <field name="solicitant_id" required="1" colspan="2"/>
+			  <newline/>
+			  <field name="description" colspan="2" nolabel="1"/>
+			</group>
+		  </group>
+		  <notebook colspan="4">
+			<page string="Detalle Repuestos">
+			  <field name="product_ids" nolabel="1" colspan="4">
+				<tree editable="bottom" string="Detalle Repuestos">
+				  <field name="name"/>
+				  <field name="qty"/>
+				  <field name="in_order"/>
+				</tree>
+			  </field>
+			</page>
+          </notebook>
+          <group string="Estado" col="6" colspan="4">
+			<field name="state" readonly="1" widget="statusbar" statusbar_colors='{"solicitada":"black","proceso":"blue","terminada":"green"}'/>
+			<button name="repair_proceso" type="object" states="solicitada" string="Proceso" icon="gtk-go-forward" confirm="Cuando usted procesa una órden de reparación se genera un egreso de bodega, ¿Está seguro que desea continuar?"/>
+			<button name="repair_terminado" type="object" states="proceso" string="Terminado" icon="gtk-ok"/>
+			<button name="repair_create_sc" type="object" states="solicitada" string="Solicitar Compra" icon="gtk-execute" confirm="Esta seguro que desea crear una solicitud de compra, esta se creará con los productos que tienen activa la opción de solicitar compra"/>
+		  </group>
+        </form>
+      </field>
+    </record>
+	
+    <record id="view_repair_order_tree" model="ir.ui.view">
+      <field name="name">view.repair.order.tree</field>
+      <field name="model">repair.order</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Órdenes Reparación" colors="black:state=='solicitada';blue:state=='proceso';green:state=='terminada'">
+          <field name="name"/>
+		  <field name="ref"/>		  
+		  <field name="date_start"/>		 
+		  <field name="state"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_repair_order_search" model="ir.ui.view">
+      <field name="name">view.repair.order.search</field>
+      <field name="model">repair.order</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Órdenes Reparación">
+          <group>
+            <separator orientation="vertical"/>
+            <field name="name"/>
+			<field name="ref"/>			
+			<field name="date_start"/>
+			<field name="state"/>			
+          </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Vehículo" icon="terp-tools" domain="[]" context="{'group_by':'name'}"/>
+            <filter string="Fecha" icon="terp-calendar" domain="[]" context="{'group_by':'date_start'}"/>
+			<filter string="Proyecto" icon="terp-partner" domain="[]" context="{'group_by':'project_id'}"/>
+			<filter string="Estado" icon="gtk-edit" domain="[]" context="{'group_by':'state'}"/>		
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_repair_order" model="ir.actions.act_window">
+      <field name="name">Ordenes Reparacion</field>
+      <field name="res_model">repair.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_repair_order_search"/>
+    </record>
+
+     <menuitem id="menu_repair_order_action" parent="menu_repair_order"
+              action="action_repair_order" sequence="1"/>
+
+
+    </data>
+</openerp>

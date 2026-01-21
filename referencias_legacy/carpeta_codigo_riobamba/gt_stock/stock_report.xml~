@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False" id="stock.pickingrqm" model="stock.requisition"
+            name="stock.picking.rqm" rml="gt_government_procedure/report/rqm_bodega.mako"
+            usage="default" string="Requerimiento Bodega" header="True" report_type="webkit"/>
+    
+  </data>
+</openerp>

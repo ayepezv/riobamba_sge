@@ -1,0 +1,1778 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		
+	  <menuitem id="menu_main_viaticos" parent="hr.menu_hr_root" name="Viáticos" sequence="6"/>
+	  <menuitem id="menu_viaticos" parent="menu_main_viaticos" name="Viáticos"/>
+	  <menuitem id="menu_configuracion_viaticos" parent="hr.menu_hr_configuration" 
+		    groups="gt_doc_viaticos.group_via_administrador,base.group_hr_manager" name="Viáticos" sequence="6"/>
+	  
+
+	  <!-- menu lotaip -->
+	  <record id="view_viatico_lotaip" model="ir.ui.view">
+	    <field name="name">Formulario LOTAIP</field>
+	    <field name="model">viatico.lotaip</field>
+	    <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Formulario LOTAIP">
+		<label colspan="4" nolabel="1" string="Este wizard le permite a usted actualizar el cargo de un empleado"/>
+		<group col="4" colspan="4">
+		  <group colspan="4">
+		    <field name="date_start" colspan="2" required="1"/>
+		    <field name="date_end" colspan="2" required="1"/>
+		    <field name="datas_fname" colspan="2" invisible="1"/>
+		    <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+		  </group>
+		  <newline/>
+		  <group col="3" colspan="1">
+		    <button icon="gtk-cancel" special="cancel"
+	        	    string="Salir" />
+		    <button name="calcular_exportar_lotaip" type="object" icon="gtk-execute"  string="Generar Formulario"/>
+		  </group>
+		</group>
+              </form>
+            </field>
+	  </record>
+	  
+	  
+      <record id="action_viatico_lotaip" model="ir.actions.act_window">
+        <field name="name">Formulario LOTAIP</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">viatico.lotaip</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_change_job"
+		icon="STOCK_EXECUTE"
+		action="action_viatico_lotaip"
+		parent="menu_main_viaticos"
+		name="Formulario LOTAIP"/>
+
+	  <!-- -->
+		<!--
+        =======================
+        Niveles para viaticos
+        =======================
+        -->
+        
+        <record id="view_viaticos_niveles_form" model="ir.ui.view">
+            <field name="name">viaticos.niveles.form</field>
+            <field name="model">viaticos.niveles</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Niveles">
+                	<group colspan="4">
+                    	<field name="name" colspan="4" required="1"/>
+                    	<group colspan="4">
+                    		<field name="cargos_ids" nolabel="1" widget="many2many">
+                    			<tree string="Cargos">
+                    				<field name="name"/>
+                    				<field name="department_id"/>
+                    			</tree>
+                    		</field>
+                    	</group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_niveles_tree" model="ir.ui.view">
+            <field name="name">viaticos.niveles.tree</field>
+            <field name="model">viaticos.niveles</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Niveles">
+                	<field name="name" select="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_viaticos_niveles" model="ir.actions.act_window">
+			<field name="name">Niveles</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.niveles</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem id="menu_viaticos_niveles" parent="menu_configuracion_viaticos" name="Niveles para viáticos" action="action_viaticos_niveles" groups="gt_doc_viaticos.group_via_administrador" sequence="5"/>
+		<!--menuitem id="menu_viaticos_niveles" parent="hr.menu_view_employee_category_configuration_form" name="Niveles" action="action_viaticos_niveles" groups="gt_doc_viaticos.group_via_administrador"/-->
+		
+		<!--
+        =======================
+        Zonas para viaticos
+        =======================
+        -->
+        
+        <record id="view_viaticos_zonas_form" model="ir.ui.view">
+            <field name="name">viaticos.zonas.form</field>
+            <field name="model">viaticos.zonas</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Zonas">
+                	<group colspan="4">
+                    	<field name="name" colspan="2" required="1"/>
+                    	<field name="salidas" colspan="2"/>
+                    	<group colspan="4">
+                    		<field name="ciudad_ids" nolabel="1" widget="many2many"/>
+                    	</group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_zonas_tree" model="ir.ui.view">
+            <field name="name">viaticos.zonas.tree</field>
+            <field name="model">viaticos.zonas</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Zonas">
+                	<field name="name" select="1"/>
+                	<field name="salidas" select="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_viaticos_zonas" model="ir.actions.act_window">
+			<field name="name">Zonificación nacional para viáticos</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.zonas</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem id="menu_viaticos_zonas" parent="menu_configuracion_viaticos" name="Zonificación nacional" action="action_viaticos_zonas" groups="gt_doc_viaticos.group_via_administrador" sequence="10"/>
+		
+		<record id="view_viaticos_zonas_internacional_coeficientes_tree" model="ir.ui.view">
+            <field name="name">viaticos.zonas.internacional.coeficientes.form</field>
+            <field name="model">viaticos.zonas.internacional.coeficientes</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <tree string="" editable="bottom">
+                	<field name="name" select="1"/>
+                	<field name="coeficiente"/>
+                </tree>
+            </field>
+        </record>
+		
+		<record id="view_viaticos_zonas_internacional_form" model="ir.ui.view">
+            <field name="name">viaticos.zonas.internacional.form</field>
+            <field name="model">viaticos.zonas.internacional</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Zonas Internacionales">
+                	<group colspan="4">
+                    	<field name="name" colspan="2" required="1" readonly="1"/>
+                    	<group colspan="4">
+                    		<field name="niveles" nolabel="1">
+                    			<tree string="Niveles" editable="top">
+                    				<field name="name"/>
+                    				<field name="valor_viatico"/>
+                    				<!--field name="valor_alimentacion"/-->
+                    				<field name="valor_subsistencia"/>
+                    			</tree>
+                    		</field>
+                    	</group>
+                    	<group colspan="4">
+                    		<field name="coeficientes" nolabel="1">
+                    			<tree string="Coeficientes por Pais" editable="top">
+                    				<field name="name"/>
+                    				<field name="coeficiente"/>
+                    			</tree>
+                    		</field>
+                    	</group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_zonas_internacional_tree" model="ir.ui.view">
+            <field name="name">viaticos.zonas.internacional.tree</field>
+            <field name="model">viaticos.zonas.internacional</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Zonas Internacionales">
+                	<field name="name" select="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_viaticos_zonas_internacional" model="ir.actions.act_window">
+			<field name="name">Tabla para viáticos internacionales</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.zonas.internacional</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem id="menu_viaticos_zonas_internacional" parent="menu_configuracion_viaticos" name="Tabla viáticos internacionales" action="action_viaticos_zonas_internacional" groups="gt_doc_viaticos.group_via_administrador" sequence="20"/>
+		
+		<!--
+        =======================
+        Tabla para viaticos
+        =======================
+        -->
+        
+        <record id="view_viaticos_tabla_form" model="ir.ui.view">
+            <field name="name">viaticos.tabla.form</field>
+            <field name="model">viaticos.tabla</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tabla para Viáticos">
+                	<group colspan="4">
+                    	<field name="name" colspan="4" required="1" readonly="1"/>
+                    	<field name="porcentaje_nacional" colspan="2"/>
+                    	<group colspan="4">
+                    		<field name="line_ids" nolabel="1"/>
+                    	</group>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_tabla_tree" model="ir.ui.view">
+            <field name="name">viaticos.tabla.tree</field>
+            <field name="model">viaticos.tabla</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tabla para viáticos">
+                	<field name="name" select="1"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="action_viaticos_tabla" model="ir.actions.act_window">
+			<field name="name">Tabla para viáticos nacionales</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.tabla</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+		<menuitem id="menu_viaticos_tabla" parent="menu_configuracion_viaticos" name="Tabla viáticos nacionales" action="action_viaticos_tabla" groups="gt_doc_viaticos.group_via_administrador" sequence="15"/>
+		
+		<!--
+        =======================
+        Linea de tabla para viaticos
+        =======================
+        -->
+        
+        <record id="view_viaticos_tabla_linea_form" model="ir.ui.view">
+            <field name="name">viaticos.tabla.line.form</field>
+            <field name="model">viaticos.tabla.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Detalle de Tabla">
+                	<group colspan="4">
+                    	<field name="zona_id" colspan="2" required="1"/>
+                    	<field name="nivel_id" colspan="2" required="1"/>
+                    	<field name="valor_viatico" colspan="2" required="1"/>
+                    	<field name="valor_subsistencia" colspan="2" required="1"/>
+                    	<field name="valor_alimentacion" colspan="2" required="1"/>
+                    	<field name="descripcion" colspan="4"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_tabla_linea_tree" model="ir.ui.view">
+            <field name="name">viaticos.tabla.line.tree</field>
+            <field name="model">viaticos.tabla.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Detalle de Tabla">
+                	<field name="zona_id"/>
+                	<field name="nivel_id"/>
+                	<field name="valor_viatico"/>
+                	<field name="valor_subsistencia"/>
+                	<field name="valor_alimentacion"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!--
+        =======================
+        Solicitud para viaticos
+        =======================
+        -->
+        
+        <record id="view_viaticos_solicitud_form_usuario" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.form.usuario</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Solicitud para Viáticos">
+                <group colspan="4">
+                  <separator colspan="4"/>
+                  <field name="state" widget="statusbar" statusbar_visible="solicitud1,solicitud2,solicitud3,informe1,informe2,done" statusbar_colors='{"draft":"black","solicitud1":"black","solicitud2":"blue","solicitud3":"blue","informe1":"blue","informe2":"blue","done":"green","end":"green","cancel":"grey","anulado":"grey"}'/>
+                  <separator colspan="4"/>
+                  <group string="Orden de Movilización" colspan="4" col="6">
+	            <field name="name" colspan="2" readonly="1"/>
+	            <field name="department_id" colspan="4" widget="selection" readonly="1"/>
+		    <newline/>
+		    <!--field name="employee_id" colspan="3" required="1" attrs="{'readonly':[('state','!=','draft')]}" domain="[('user_id.id','=',uid)]"/-->
+		    <field name="employee_id" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <field name="job_id" colspan="2" readonly="1" widget="selection"/>
+		    <field name="fecha_solicitud" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <newline/>
+		    <field name="fecha_salida" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <field name="fecha_llegada" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <field name="ciudad_comision" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <newline/>
+		    <field name="autorizado_id" string="Jefe Solicitante" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <field name="aprobado_id" string="Jefe Unidad" colspan="2" required="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+		    <field name="hora_inicio_actividades" widget='float_time' colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+                  </group>
+		  <group string="Solicitar" col='8'>
+		    <field name="is_viatico" colspan="2"/>
+		    <field name="is_movilizacion" colspan="2"/>
+		    <field name="is_subsistencia" colspan="2"/>
+		    <field name="is_alimentacion" colspan="2"/>
+		  </group>
+                  <notebook colspan="4">
+                    <!--page string="Informe"-->
+                    <page string="Informe" attrs="{'invisible':[('state','in',('draft','solicitud1','solicitud2','cancel','anulado'))]}">
+	              <group string="Datos Generales" colspan="4" col="6">
+			<field name="fecha_informe" colspan="2" attrs="{'required':[('state','=','done')]}"/>
+	              </group>
+	              <group colspan="4" col="6">
+			<!--group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+			  <field name="destinos_informe" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}">
+			    <tree string="" editable="bottom">
+			      <field name="name" on_change="resetear_destinos()" required="1"/>
+			      <field name="name" required="1"/>
+			      <field name="ciudad_id" required="1"/>
+			      <field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+			      <field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+			      <field name="fecha_salida" required="1"/>
+			      <field name="fecha_llegada" required="1"/>
+			    </tree>
+			  </field>
+			</group-->
+			<group string="Informe de actividades y productos alcanzados" colspan="4">
+			  <field name="actividades_informe" colspan="4" nolabel="1" attrs="{'required':[('state','=','done')]}"/>
+			</group>
+			<group string="Observaciones" colspan="4">
+			  <field name="observaciones" colspan="4" nolabel="1"/>
+			</group>
+		      </group>
+		      <!--group colspan="4">
+		        <field name="transporte_ids" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+		      </group-->
+		      <!--group colspan="4">
+			<field name="facturas_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}" on_change="onchange_facturas(facturas_ids)"/>
+			<newline/>
+			<group colspan="4" col="6">
+			  <group colspan="4" string="Para viáticos nacionales" col="4">
+			    <field name="total_porcentaje_facturas2" colspan="2" readonly="1"/>
+			    <field name="total_informe_facturas" colspan="2" readonly="1"/>
+			    <field name="total_porcentaje_empleado2" colspan="2" readonly="1"/>
+			    <field name="total_informe_empleado" colspan="2" readonly="1"/>
+			  </group>
+			  <group colspan="2" col="2">
+			    <field name="total_facturas" colspan="2" readonly="1"/>
+			    <field name="confirmar_facturas" colspan="2" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+			  </group>
+			</group>
+		      </group-->
+		      <!--group string="Detalle de Cálculo" colspan="4" attrs="{'invisible':[('state','not in',('done','end'))]}">
+			<field name="detalle_informe" colspan="4" nolabel="1" readonly="1"/>
+			<newline/>
+			<group colspan="4" col="6">
+			  <group colspan="4"/>
+			  <field name="total_informe" colspan="2" readonly="1"/>
+			  <group colspan="4"/>
+			  <field name="total_anticipo" colspan="2" readonly="1"/>
+			  <group colspan="4"/>
+			  <field name="total_reajuste" colspan="2" readonly="1"/>
+			</group>
+	              </group>
+	              <group colspan="4" col="8">
+	                <button name="solicitud3_informe1" type="object" string="Enviar Informe" colspan="2" states="solicitud3" icon="gtk-apply" groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria" confirm="ESTA ACCION SE ENVIA EL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	              </group-->
+		    </page>
+	            <page string="Solicitud">
+	              <group colspan="4" col="6">
+			<field name="bank_id" colspan="6"/>
+			<field name="unidad_miembros" colspan="6" attrs="{'readonly':[('state','!=','draft')]}"/>
+			<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+			  <field name="destinos_solicitud" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+			    <tree string="" editable="bottom">
+			      <field name="name" on_change="resetear_destinos()" required="1"/>
+			      <field name="tipo" required="1"/>
+			      <field name="tipo_nombre" required="1"/>
+			      <field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}"/>
+			      <field name="ruta_id" required="1"/>
+			      <!--field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+			      <field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/-->
+			      <field name="fecha_salida" required="1"/>
+			      <field name="fecha_llegada" required="1"/>
+			    </tree>
+			  </field>
+			</group>
+			<group colspan="4" string="Detalle de actividades">
+			  <field name="actividades_solicitud" colspan="4" required="1" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+			</group>
+			<!--group colspan="4" string="Gestion de Transporte">
+			    <field name="transporte_solicitud_ids" nolabel="1" readonly="1">
+			    <tree editable="bottom" string="Transporte utilizado">
+			    <field name="tipo" required="1"/>
+			    <field name="name" required="1"/>
+			    <field name="origen" required="1"/>
+			    <field name="fecha_salida" required="1" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+			    <field name="destino" required="1"/>
+			    <field name="fecha_llegada required="1"" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+			    </tree>
+			    <form string="Transporte utilizado">
+			    <field name="tipo" required="1"/>
+			    <field name="name" required="1"/>
+			    <field name="origen" required="1"/>
+			    <field name="fecha_salida" required="1" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+			    <field name="destino" required="1"/>
+			    <field name="fecha_llegada required="1"" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+			    </form>
+			    </field>
+			    </group-->
+		      </group>
+		      <!--group string="Detalle de Cálculo" colspan="4" 
+			  attrs="{'invisible':[('state','not in',('solicitud3','informe1','informe2','done','end'))]}"-->
+		      <group string="Detalle de Cálculo" colspan="4" groups="account.group_account_user,base.group_hr_manager">
+			<field name="detalle_solicitud" colspan="4" nolabel="1"/>
+			<newline/>
+			<group colspan="4" col="6">
+			  <!--group colspan="4" string="Para viáticos nacionales" col="4">
+			    <field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+			    <field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+			    <field name="total_porcentaje_empleado" colspan="2" readonly="1"/>
+			    <field name="total_solicitud_empleado" colspan="2" readonly="1"/>
+			  </group-->
+			  <group colspan="2" col="2" string="">
+			    <field name="total_solicitud" colspan="2" readonly="1"/>
+			    <!--field name="total_anticipo" colspan="2" readonly="1"/>
+			    <button name="solicitar_anticipo" colspan="2" states="solicitud1,solicitud2,solicitud3" 
+			    type="object" string="Solicitar Anticipo" icon="terp-dolar_ok!" 
+			    confirm="CON ESTA ACCION, USTED SOLICITA UN ANTICIPO DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?" 
+			    groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria"/>
+			    <field name="anticipo_id" colspan="2" readonly="1"/-->
+			  </group>
+			</group>
+	              </group>
+	              <group colspan="4" col="8">
+	                <button name="draft_solicitud1" type="object" string="Enviar Solicitud" colspan="2" states="draft" icon="gtk-apply"
+				confirm="ESTA ACCION SE ENVIA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                <button name="solicitud_draft" type="object" string="Regresar" colspan="2" states="solicitud1,done" icon="gtk-cancel"
+				confirm="DESEA REGRESAR?"/>
+			<button name="anular" type="object" string="Anular" colspan="2" states="draft,solicitud1" icon="gtk-cancel" 
+				confirm="CON ESTA ACCION, USTED ANULA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+			<button name="viatico_ejecutado" type="object" string="Realizado" colspan="2" states="solicitud1" icon="gtk-apply" 
+				confirm="CONFIRMA QUE DESEA CONTINUAR?"/>
+			<button name="viatico_pagado" type="object" string="Pagado" colspan="2" states="done" icon="gtk-apply"
+				groups="account.group_account_user"/>
+	              </group>
+		    </page>
+		    <page string="Historial">
+		      <field name="log_id" nolabel="1" readonly="1">
+			<tree string=" ">
+			  <field name="fecha"/>
+			  <field name="user_id"/>
+			  <field name="name"/>
+			</tree>
+			<form string=" ">
+			  <group colspan="4" col="4">
+			    <field name="fecha" colspan="2"/>
+			    <field name="user_id" colspan="2"/>
+			    <field name="name" colspan="4"/>
+			  </group>
+			</form>
+		      </field>
+		    </page>
+		  </notebook>
+                </group>
+              </form>
+            </field>
+          </record>
+          
+        <record id="view_viaticos_solicitud_form_secretaria" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.form.secretaria</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Solicitud para Viáticos">
+                	<group colspan="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="solicitud1,solicitud2,solicitud3,informe1,informe2,done" statusbar_colors='{"draft":"black","solicitud1":"black","solicitud2":"blue","solicitud3":"blue","informe1":"blue","informe2":"blue","done":"green","end":"green","cancel":"grey","anulado":"grey"}'/>
+                		<separator colspan="4"/>
+                		<group string="Orden de Movilización" colspan="4" col="6">
+	                    		<field name="name" colspan="2" readonly="1"/>
+	                    		<field name="department_id" colspan="4" widget="selection" readonly="1"/>
+					<newline/>
+					<field name="employee_id" colspan="3" required="1" attrs="{'readonly':[('state','!=','draft')]}" on_change="devolver_cargo(employee_id)" domain="[('department_id','child_of',department_id)]"/>
+					<field name="job_id" colspan="3" readonly="1" widget="selection"/>
+					<newline/>
+	                		<field name="fecha_solicitud" colspan="2" readonly="1"/>
+					<field name="de_sindicato" colspan="2" readonly="1"/>
+                		</group>
+                		<notebook colspan="4">
+                			<page string="Informe" attrs="{'invisible':[('state','in',('draft','solicitud1','solicitud2','cancel','anulado'))]}">
+	                			<group string="Datos Generales" colspan="4" col="6">
+			                    	<field name="fecha_informe" colspan="2" readonly="1"/>
+			                    	<newline/>
+		                			<field name="unidad_miembros" colspan="6" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+	                			</group>
+	                			<group colspan="4" col="6">
+			                    	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_informe" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+			                    	<group string="Informe de actividades y productos alcanzados" colspan="4">
+			                    		<field name="actividades_informe" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')], 'required':[('state','=','solicitud3')]}"/>
+			                    	</group>
+		                    	</group>
+		                    	<group colspan="4">
+		                    		<field name="transporte_ids" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+		                    	</group>
+		                    	<group colspan="4">
+			                    	<field name="facturas_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}" on_change="onchange_facturas(facturas_ids)"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2">
+				                    		<field name="total_facturas" colspan="2" readonly="1"/>
+				                    		<field name="confirmar_facturas" colspan="2" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+				                    	</group>
+				                    </group>
+			                    </group>
+		                    	<group string="Detalle de Cálculo" colspan="4" attrs="{'invisible':[('state','not in',('done','end'))]}">
+				                    	<field name="detalle_informe" colspan="4" nolabel="1" readonly="1"/>
+				                    	<newline/>
+				                    	<group colspan="4" col="6">
+					                    	<group colspan="4"/>
+					                    	<field name="total_informe" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_anticipo" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_reajuste" colspan="2" readonly="1"/>
+				                    	</group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="solicitud3_informe1" type="object" string="Enviar Informe" colspan="2" states="solicitud3" icon="gtk-apply" groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria" confirm="ESTA ACCION SE ENVIA EL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                			</group>
+			                </page>
+	                		<page string="Solicitud">
+	                			<group colspan="4" col="6">
+						           	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_solicitud" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+						           	<group colspan="4" string="Detalle de actividades">
+						            	<field name="actividades_solicitud" colspan="4" required="1" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+						           	</group>
+						           	<!--group colspan="4" string="Gestion de Transporte">
+						           		<field name="transporte_solicitud_ids" nolabel="1" readonly="1">
+						           			<tree editable="bottom">
+						           				<field name="tipo"/>
+							                	<field name="name"/>
+							                	<field name="origen"/>
+							                	<field name="fecha_salida" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+							                	<field name="destino"/>
+							                	<field name="fecha_llegada" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+						           			</tree>
+						           		</field>
+						           	</group-->
+		                		</group>
+		                		<!--group string="Detalle de Cálculo" colspan="4" attrs="{'invisible':[('state','not in',('solicitud3','informe1','informe2','done','end'))]}"-->
+		                			<group string="Detalle de Cálculo" colspan="4">
+			                    	<field name="detalle_solicitud" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2" string="">
+				                    		<field name="total_solicitud" colspan="2" readonly="1"/>
+				                    		<field name="total_anticipo" colspan="2" readonly="1"/>
+				                    		<button name="solicitar_anticipo" colspan="2" states="solicitud1,solicitud2,solicitud3" type="object" string="Solicitar Anticipo" icon="terp-dolar_ok!" confirm="CON ESTA ACCION, USTED SOLICITA UN ANTICIPO DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?" groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria"/>
+				                    		<field name="anticipo_id" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="draft_solicitud1" type="object" string="Enviar Solicitud" colspan="2" states="draft" icon="gtk-apply" confirm="ESTA ACCION SE ENVIA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+							        <button name="anular" type="object" string="Anular" colspan="2" states="draft" icon="gtk-cancel" confirm="CON ESTA ACCION, USTED ANULA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                			</group>
+			                </page>
+			                <page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string=" ">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string=" ">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_viaticos_solicitud_form_secretaria_sindicato" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.form.sindicato</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Solicitud para Viáticos">
+                	<group colspan="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="solicitud1,solicitud2,solicitud3,informe1,informe2,done" statusbar_colors='{"draft":"black","solicitud1":"black","solicitud2":"blue","solicitud3":"blue","informe1":"blue","informe2":"blue","done":"green","end":"green","cancel":"grey","anulado":"grey"}'/>
+                		<separator colspan="4"/>
+                		<group string="Orden de Movilización" colspan="4" col="6">
+	                    		<field name="name" colspan="2" readonly="1"/>
+	                    		<field name="department_id" colspan="4" required="1" on_change="cambiar_departamento(department_id)"/>
+					<newline/>
+					<field name="employee_id" colspan="3" required="1" attrs="{'readonly':[('state','!=','draft')]}" on_change="devolver_cargo(employee_id)" domain="[('department_id','child_of',department_id)]"/>
+					<field name="job_id" colspan="3" readonly="1" widget="selection"/>
+					<newline/>
+	                		<field name="fecha_solicitud" colspan="2" readonly="1"/>
+					<field name="de_sindicato" colspan="2" attrs="{'readonly':[('state','!=','draft')]}"/>
+                		</group>
+                		<notebook colspan="4">
+                			<page string="Informe" attrs="{'invisible':[('state','in',('draft','solicitud1','solicitud2','cancel','anulado'))]}">
+	                			<group string="Datos Generales" colspan="4" col="6">
+			                    	<field name="fecha_informe" colspan="2" readonly="1"/>
+			                    	<newline/>
+		                			<field name="unidad_miembros" colspan="6" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+	                			</group>
+	                			<group colspan="4" col="6">
+			                    	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_informe" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+			                    	<group string="Informe de actividades y productos alcanzados" colspan="4">
+			                    		<field name="actividades_informe" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')], 'required':[('state','=','solicitud3')]}"/>
+			                    	</group>
+		                    	</group>
+		                    	<group colspan="4">
+		                    		<field name="transporte_ids" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+		                    	</group>
+		                    	<group colspan="4">
+			                    	<field name="facturas_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','solicitud3')]}" on_change="onchange_facturas(facturas_ids)"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2">
+				                    		<field name="total_facturas" colspan="2" readonly="1"/>
+				                    		<field name="confirmar_facturas" colspan="2" attrs="{'readonly':[('state','!=','solicitud3')]}"/>
+				                    	</group>
+				                    </group>
+			                    </group>
+		                    	<group string="Detalle de Cálculo" colspan="4" attrs="{'invisible':[('state','not in',('done','end'))]}">
+				                    	<field name="detalle_informe" colspan="4" nolabel="1" readonly="1"/>
+				                    	<newline/>
+				                    	<group colspan="4" col="6">
+					                    	<group colspan="4"/>
+					                    	<field name="total_informe" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_anticipo" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_reajuste" colspan="2" readonly="1"/>
+				                    	</group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="solicitud3_informe1" type="object" string="Enviar Informe" colspan="2" states="solicitud3" icon="gtk-apply" groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria" confirm="ESTA ACCION SE ENVIA EL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                			</group>
+			                </page>
+	                		<page string="Solicitud">
+	                			<group colspan="4" col="6">
+						           	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_solicitud" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}" >
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+						           	<group colspan="4" string="Detalle de actividades">
+						            	<field name="actividades_solicitud" colspan="4" required="1" nolabel="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+						           	</group>
+						           	<!--group colspan="4" string="Gestion de Transporte">
+						           		<field name="transporte_solicitud_ids" nolabel="1" readonly="1">
+						           			<tree editable="bottom">
+						           				<field name="tipo"/>
+							                	<field name="name"/>
+							                	<field name="origen"/>
+							                	<field name="fecha_salida" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+							                	<field name="destino"/>
+							                	<field name="fecha_llegada" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+						           			</tree>
+						           		</field>
+						           	</group-->
+		                		</group>
+		                		<!--group string="Detalle de Cálculo" colspan="4" attrs="{'invisible':[('state','not in',('solicitud3','informe1','informe2','done','end'))]}"-->
+		                			<group string="Detalle de Cálculo" colspan="4">
+			                    	<field name="detalle_solicitud" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2" string="">
+				                    		<field name="total_solicitud" colspan="2" readonly="1"/>
+				                    		<field name="total_anticipo" colspan="2" readonly="1"/>
+				                    		<button name="solicitar_anticipo" colspan="2" states="solicitud1,solicitud2,solicitud3" type="object" string="Solicitar Anticipo" icon="terp-dolar_ok!" confirm="CON ESTA ACCION, USTED SOLICITA UN ANTICIPO DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?" groups="gt_doc_viaticos.group_via_usuario,gt_doc_viaticos.group_via_secretaria"/>
+				                    		<field name="anticipo_id" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="draft_solicitud1" type="object" string="Enviar Solicitud" colspan="2" states="draft" icon="gtk-apply" confirm="ESTA ACCION SE ENVIA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+							        <button name="anular" type="object" string="Anular" colspan="2" states="draft" icon="gtk-cancel" confirm="CON ESTA ACCION, USTED ANULA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                			</group>
+			                </page>
+			                <page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string=" ">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string=" ">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        
+        <record id="view_viaticos_solicitud_form_jefes" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.form.jefes</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Solicitud para Viáticos">
+                	<group colspan="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="solicitud1,solicitud2,solicitud3,informe1,informe2,done" statusbar_colors='{"draft":"black","solicitud1":"black","solicitud2":"blue","solicitud3":"blue","informe1":"blue","informe2":"blue","done":"green","end":"green","cancel":"grey","anulado":"grey"}'/>
+                		<separator colspan="4"/>
+                		<group string="Orden de Movilización" colspan="4" col="6">	
+	                    		<field name="name" colspan="2" readonly="1"/>
+	                    		<field name="department_id" colspan="4" widget="selection" readonly="1"/>
+					<field name="employee_id" colspan="2" required="1" readonly="1"/>
+					<field name="job_id" colspan="2" readonly="1" widget="selection"/>
+	                		<field name="fecha_solicitud" colspan="2" readonly="1"/>
+					<field name="de_sindicato" readonly="1"/>
+                		</group>
+                		<notebook colspan="4">
+                			<page string="Informe" attrs="{'invisible':[('state','in',('draft','solicitud1','solicitud2','cancel','anulado'))]}">
+	                			<group string="Datos Generales" colspan="4" col="6">
+			                    	<field name="fecha_informe" colspan="2" readonly="1"/>
+			                    	<newline/>
+		                			<field name="unidad_miembros" colspan="6" readonly="1"/>
+	                			</group>
+	                			<group colspan="4" col="6">
+			                    	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_informe" colspan="4" nolabel="1" readonly="1">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+			                    	<group string="Informe de actividades y productos alcanzados" colspan="4">
+			                    		<field name="actividades_informe" colspan="4" nolabel="1" readonly="1"/>
+			                    	</group>
+		                    	</group>
+		                    	<group colspan="4">
+		                    		<field name="transporte_ids" nolabel="1" readonly="1"/>
+		                    	</group>
+		                    	<group colspan="4">
+			                    	<field name="facturas_ids" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2">
+				                    		<field name="total_facturas" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+			                    </group>
+		                    	<group string="Detalle de Cálculo" colspan="4">
+				                    	<field name="detalle_informe" colspan="4" nolabel="1" readonly="1"/>
+				                    	<newline/>
+				                    	<group colspan="4" col="6">
+					                    	<group colspan="4"/>
+					                    	<field name="total_informe" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_anticipo" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_reajuste" colspan="2" readonly="1"/>
+				                    	</group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="informe1_informe2" type="object" string="Aprobar Informe" colspan="2" states="informe1" icon="gtk-apply" groups="gt_doc_viaticos.group_via_jefe" confirm="ESTA ACCION DA LA APROBACION DEL JEFE SUPERIOR AL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="%(action_wizard_devolver_informe_viatico)d" type="action" colspan="2" string="Devolver Informe" states="informe1" icon="gtk-go-back" groups="gt_doc_viaticos.group_via_jefe"/>
+	                			</group>
+			                </page>
+	                		<page string="Solicitud">
+	                			<group colspan="4" col="6">
+						           	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_solicitud" colspan="4" nolabel="1" readonly="1">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+						           	<group colspan="4" string="Detalle de actividades">
+						            	<field name="actividades_solicitud" colspan="4" required="1" nolabel="1" readonly="1"/>
+						           	</group>
+						           	<!--group colspan="4" string="Gestion de Transporte">
+						           		<field name="transporte_solicitud_ids" nolabel="1" readonly="1">
+						           			<tree editable="bottom">
+						           				<field name="tipo"/>
+							                	<field name="name"/>
+							                	<field name="origen"/>
+							                	<field name="fecha_salida" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+							                	<field name="destino"/>
+							                	<field name="fecha_llegada" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+						           			</tree>
+						           		</field>
+						           	</group-->
+		                		</group>
+		                		<group string="Detalle de Cálculo" colspan="4">
+			                    	<field name="detalle_solicitud" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2" string="">
+				                    		<field name="total_solicitud" colspan="2" readonly="1"/>
+				                    		<field name="total_anticipo" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="solicitud1_solicitud2" type="object" string="Aprobar Solicitud" colspan="2" states="solicitud1" icon="gtk-apply" groups="gt_doc_viaticos.group_via_jefe" confirm="ESTA ACCION DA LA APROBACION DEL JEFE SUPERIOR A LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="%(action_wizard_devolver_informe_viatico)d" type="action" colspan="2" string="Rechazar Solicitud" states="solicitud1" icon="gtk-close" groups="gt_doc_viaticos.group_via_jefe"/>
+	                				<!--button name="rechazar" type="object" string="Rechazar" colspan="2" states="solicitud1" icon="gtk-close" groups="gt_doc_viaticos.group_via_jefe" confirm="CON ESTA ACCION, SE RECHAZA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/-->
+	                				<button name="solicitud2_solicitud3" type="object" string="Aprobar Solicitud" colspan="2" states="solicitud2" icon="gtk-apply" groups="gt_doc_viaticos.group_via_prefecto" confirm="ESTA ACCION DA LA APROBACION DE PREFECTO A LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="%(action_wizard_devolver_informe_viatico)d" type="action" colspan="2" string="Rechazar Solicitud" states="solicitud2" icon="gtk-close" groups="gt_doc_viaticos.group_via_prefecto"/>
+	                				<!--button name="rechazar" type="object" string="Rechazar" colspan="2" states="solicitud2" icon="gtk-close" groups="gt_doc_viaticos.group_via_prefecto" confirm="CON ESTA ACCION, SE RECHAZA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/-->
+	                				<button name="informe1_informe2" type="object" string="Aprobar Informe" colspan="2" states="informe1" icon="gtk-apply" groups="gt_doc_viaticos.group_via_jefe" confirm="ESTA ACCION DA LA APROBACION DEL JEFE SUPERIOR AL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                			</group>
+			                </page>
+			                <page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string=" ">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string=" ">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_solicitud_form_ddaa" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.form.ddaa</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Solicitud para Viáticos">
+                	<group colspan="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="solicitud1,solicitud2,solicitud3,informe1,informe2,done" statusbar_colors='{"draft":"black","solicitud1":"black","solicitud2":"blue","solicitud3":"blue","informe1":"blue","informe2":"blue","done":"green","end":"green","cancel":"grey","anulado":"grey"}'/>
+                		<separator colspan="4"/>
+                		<group string="Orden de Movilización" colspan="4" col="6">
+	                    		<field name="name" colspan="2" readonly="1"/>
+	                    		<field name="department_id" colspan="4" widget="selection" readonly="1"/>
+					<field name="employee_id" colspan="3" required="1" readonly="1"/>
+					<field name="job_id" colspan="3" readonly="1" widget="selection"/>
+	                		<field name="fecha_solicitud" colspan="2" readonly="1"/>
+					<field name="de_sindicato" readonly="1"/>
+                		</group>
+                		<notebook colspan="4">
+                			<page string="Informe" attrs="{'invisible':[('state','in',('draft','solicitud1','solicitud2','cancel','anulado'))]}">
+	                			<group string="Datos Generales" colspan="4" col="6">
+			                    	<field name="fecha_informe" colspan="2" readonly="1"/>
+			                    	<newline/>
+		                			<field name="unidad_miembros" colspan="6" readonly="1"/>
+	                			</group>
+	                			<group colspan="4" col="6">
+			                    	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_informe" colspan="4" nolabel="1" readonly="1">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+			                    	<group string="Informe de actividades y productos alcanzados" colspan="4">
+			                    		<field name="actividades_informe" colspan="4" nolabel="1" readonly="1"/>
+			                    	</group>
+		                    	</group>
+		                    	<group colspan="4">
+		                    		<field name="transporte_ids" nolabel="1" readonly="1"/>
+		                    	</group>
+		                    	<group colspan="4">
+			                    	<field name="facturas_ids" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2">
+				                    		<field name="total_facturas" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+			                    </group>
+		                    	<group string="Detalle de Cálculo" colspan="4">
+				                    	<field name="detalle_informe" colspan="4" nolabel="1" readonly="1"/>
+				                    	<newline/>
+				                    	<group colspan="4" col="6">
+					                    	<group colspan="4"/>
+					                    	<field name="total_informe" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_anticipo" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_reajuste" colspan="2" readonly="1"/>
+				                    	</group>
+	                			</group>
+			                </page>
+	                		<page string="Solicitud">
+	                			<group colspan="4" col="6">
+						           	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_solicitud" colspan="4" nolabel="1" readonly="1">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+						           	<group colspan="4" string="Detalle de actividades">
+						            	<field name="actividades_solicitud" colspan="4" required="1" nolabel="1" readonly="1"/>
+						           	</group>
+						           	<!--group colspan="4" string="Gestion de Transporte">
+						           		<field name="transporte_solicitud_ids" nolabel="1" attrs="{'readonly':[('state','not in',('solicitud1','solicitud2','solicitud3'))]}" groups="gt_doc_viaticos.group_via_direccion_administrativa">
+						           			<tree editable="bottom">
+						           				<field name="tipo"/>
+							                	<field name="name"/>
+							                	<field name="origen"/>
+							                	<field name="fecha_salida" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+							                	<field name="destino"/>
+							                	<field name="fecha_llegada" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+						           			</tree>
+						           		</field>
+						           	</group-->
+		                		</group>
+		                		<group string="Detalle de Cálculo" colspan="4">
+			                    	<field name="detalle_solicitud" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2" string="">
+				                    		<field name="total_solicitud" colspan="2" readonly="1"/>
+				                    		<field name="total_anticipo" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+	                			</group>
+			                </page>
+			                <page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string=" ">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string=" ">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_solicitud_form_tthh" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.form.tthh</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Solicitud para Viáticos">
+                	<group colspan="4">
+                		<separator colspan="4"/>
+                		<field name="state" widget="statusbar" statusbar_visible="solicitud1,solicitud2,solicitud3,informe1,informe2,done" statusbar_colors='{"draft":"black","solicitud1":"black","solicitud2":"blue","solicitud3":"blue","informe1":"blue","informe2":"blue","done":"green","end":"green","cancel":"grey","anulado":"grey"}'/>
+                		<separator colspan="4"/>
+                		<group string="Orden de Movilización" colspan="4" col="6">
+	                    		<field name="name" colspan="2" readonly="1"/>
+	                    		<field name="department_id" colspan="4" widget="selection" readonly="1"/>
+					<field name="employee_id" colspan="3" required="1" readonly="1"/>
+					<field name="job_id" colspan="3" readonly="1" widget="selection"/>
+	                		<field name="fecha_solicitud" colspan="2" readonly="1"/>
+					<field name="de_sindicato" readonly="1"/>
+                		</group>
+                		<notebook colspan="4">
+                			<page string="Informe" attrs="{'invisible':[('state','in',('draft','solicitud1','solicitud2','cancel','anulado'))]}">
+	                			<group string="Datos Generales" colspan="4" col="6">
+			                    	<field name="fecha_informe" colspan="2" readonly="1"/>
+			                    	<newline/>
+		                			<field name="unidad_miembros" colspan="6" readonly="1"/>
+	                			</group>
+	                			<group colspan="4" col="6">
+			                    	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_informe" colspan="4" nolabel="1" readonly="1">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+			                    	<group string="Informe de actividades y productos alcanzados" colspan="4">
+			                    		<field name="actividades_informe" colspan="4" nolabel="1" readonly="1"/>
+			                    	</group>
+		                    	</group>
+		                    	<group colspan="4">
+		                    		<field name="transporte_ids" nolabel="1" readonly="1"/>
+		                    	</group>
+		                    	<group colspan="4">
+			                    	<field name="facturas_ids" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','informe2')]}" groups="base.group_hr_manager" on_change="onchange_facturas(facturas_ids)"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado2" colspan="2" readonly="1"/>
+					                    	<field name="total_informe_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2">
+				                    		<field name="total_facturas" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+			                    </group>
+		                    	<group string="Detalle de Cálculo" colspan="4">
+				                    	<field name="detalle_informe" colspan="4" nolabel="1" attrs="{'readonly':[('state','!=','informe2')]}" groups="base.group_hr_manager"/>
+				                    	<newline/>
+				                    	<group colspan="4" col="6">
+					                    	<group colspan="4"/>
+					                    	<field name="total_informe" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_anticipo" colspan="2" readonly="1"/>
+					                    	<group colspan="4"/>
+					                    	<field name="total_reajuste" colspan="2" readonly="1"/>
+				                    	</group>
+	                			</group>
+	                			<group colspan="4" col="8">
+	                				<button name="informe2_done" type="object" string="Aprobar Informe" colspan="2" states="informe2" icon="gtk-apply" confirm="ESTA ACCION DA LA APROBACION DE TALENTO HUMANO AL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="%(action_wizard_devolver_informe_viatico)d" type="action" colspan="2" string="Devolver Informe" states="informe2" icon="gtk-go-back"/>
+	                			</group>
+			                </page>
+	                		<page string="Solicitud">
+	                			<group colspan="4" col="6">
+						           	<group colspan="4" string="Detalle de localidades (para cálculo de viáticos)">
+						            	<field name="destinos_solicitud" colspan="4" nolabel="1" readonly="1">
+						            		<tree string="" editable="bottom">
+						            			<field name="name" on_change="resetear_destinos()" required="1"/>
+						            			<field name="ciudad_id" attrs="{'required':[('name','=','nacional')], 'invisible':[('name','=','internacional')]}" domain="[('zona_viaticos_id','!=',False)]"/>
+						            			<field name="pais_id" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="ciudad_internacional" attrs="{'required':[('name','=','internacional')], 'invisible':[('name','=','nacional')]}"/>
+						            			<field name="fecha_salida" required="1"/>
+						            			<field name="fecha_llegada" required="1"/>
+						            		</tree>
+						            	</field>
+						           	</group>
+						           	<group colspan="4" string="Detalle de actividades">
+						            	<field name="actividades_solicitud" colspan="4" required="1" nolabel="1" readonly="1"/>
+						           	</group>
+						           	<!--group colspan="4" string="Gestion de Transporte">
+						           		<field name="transporte_solicitud_ids" nolabel="1" readonly="1">
+						           			<tree editable="bottom">
+						           				<field name="tipo"/>
+							                	<field name="name"/>
+							                	<field name="origen"/>
+							                	<field name="fecha_salida" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+							                	<field name="destino"/>
+							                	<field name="fecha_llegada" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+						           			</tree>
+						           		</field>
+						           	</group-->
+		                		</group>
+		                		<group string="Detalle de Cálculo" colspan="4">
+			                    	<field name="detalle_solicitud" colspan="4" nolabel="1" readonly="1"/>
+			                    	<newline/>
+			                    	<group colspan="4" col="6">
+				                    	<group colspan="4" string="Para viáticos nacionales" col="4">
+				                    		<field name="total_porcentaje_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_facturas" colspan="2" readonly="1"/>
+					                    	<field name="total_porcentaje_empleado" colspan="2" readonly="1"/>
+					                    	<field name="total_solicitud_empleado" colspan="2" readonly="1"/>
+				                    	</group>
+				                    	<group colspan="2" col="2" string="">
+				                    		<field name="total_solicitud" colspan="2" readonly="1"/>
+				                    		<field name="total_anticipo" colspan="2" readonly="1"/>
+				                    	</group>
+				                    </group>
+	                			</group>
+	                			<!--group string="Anticipo" colspan="4" attrs="{'invisible':[('state','not in',('solicitud3','informe1','informe2','done','end'))]}">
+			                    	<field name="total_anticipo" colspan="2" readonly="1"/>
+			                    	<group colspan="2"/>
+	                			</group-->
+	                			<!--group colspan="4" col="8">
+	                				<button name="solicitud1_solicitud2" type="object" string="Aprobar Solicitud" colspan="2" states="solicitud1" icon="gtk-apply" groups="gt_doc_viaticos.group_via_jefe" confirm="ESTA ACCION DA LA APROBACION DEL JEFE SUPERIOR A LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="%(action_wizard_devolver_informe_viatico)d" type="action" colspan="2" string="Rechazar Solicitud" states="solicitud1" icon="gtk-close" groups="gt_doc_viaticos.group_via_jefe"/>
+	                				<button name="rechazar" type="object" string="Rechazar" colspan="2" states="solicitud1" icon="gtk-close" groups="gt_doc_viaticos.group_via_jefe" confirm="CON ESTA ACCION, SE RECHAZA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="solicitud2_solicitud3" type="object" string="Aprobar Solicitud" colspan="2" states="solicitud2" icon="gtk-apply" groups="gt_doc_viaticos.group_via_prefecto" confirm="ESTA ACCION DA LA APROBACION DE PREFECTO A LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="%(action_wizard_devolver_informe_viatico)d" type="action" colspan="2" string="Rechazar Solicitud" states="solicitud2" icon="gtk-close" groups="gt_doc_viaticos.group_via_jefe"/>
+	                				<button name="rechazar" type="object" string="Rechazar" colspan="2" states="solicitud2" icon="gtk-close" groups="gt_doc_viaticos.group_via_prefecto" confirm="CON ESTA ACCION, SE RECHAZA LA SOLICITUD DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                				<button name="informe1_informe2" type="object" string="Aprobar Informe" colspan="2" states="informe1" icon="gtk-apply" groups="gt_doc_viaticos.group_via_jefe" confirm="ESTA ACCION DA LA APROBACION DEL JEFE SUPERIOR AL INFORME DE VIATICOS, CONFIRMA QUE DESEA CONTINUAR?"/>
+	                			</group-->
+			                </page>
+			                <page string="Historial">
+			                	<field name="log_id" nolabel="1" readonly="1">
+			                		<tree string=" ">
+			                			<field name="fecha"/>
+			                			<field name="user_id"/>
+			                			<field name="name"/>
+			                		</tree>
+			                		<form string=" ">
+			                			<group colspan="4" col="4">
+				                			<field name="fecha" colspan="2"/>
+				                			<field name="user_id" colspan="2"/>
+				                			<field name="name" colspan="4"/>
+			                			</group>
+			                		</form>
+			                	</field>
+			                </page>
+		                </notebook>
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_solicitud_tree" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.tree</field>
+            <field name="model">viaticos.solicitud</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Solicitud para viáticos" colors="black:state == 'draft';blue:state in ('solicitud1','solicitud2','solicitud3','informe1','informe2');green:state in ('done','end');grey:state in ('cancel','anulado')">
+                	<field name="name"/>
+                	<field name="employee_id"/>
+                	<field name="department_id"/>
+                	<field name="job_id"/>
+                	<field name="fecha_salida"/>
+                	<field name="fecha_llegada"/>
+                	<field name="state"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_solicitud_search" model="ir.ui.view">
+          <field name="name">viaticos.solicitud.search</field>
+          <field name="model">viaticos.solicitud</field>
+          <field name="type">search</field>
+          <field name="arch" type="xml">
+            <search string="Solicitud para viáticos">
+              <!--group col='4' colspan='4'>
+                  <filter icon="gtk-edit" name="state_draft" string="Borrador" domain="[('state','=','draft')]"/>
+                  <filter icon="gtk-file" name="state_solicitud1" string="Solicitado" domain="[('state','=','solicitud1')]"/>
+                  <filter icon="gtk-file" name="state_solicitud2" string="Aprobado Jefe superior" domain="[('state','=','solicitud2')]"/>
+                  <filter icon="gtk-file" name="state_solicitud3" string="Aprobado Prefecto" domain="[('state','=','solicitud3')]"/>
+                  <filter icon="gtk-file" name="state_informe1" string="Informe ingresado" domain="[('state','=','informe1')]"/>
+                  <filter icon="gtk-file" name="state_informe2" string="Informe aprobado jefe superior" domain="[('state','=','informe2')]"/>
+                  <filter icon="gtk-file" name="state_done" string="Aprobado por TTHH" domain="[('state','=','done')]"/>
+                  <filter icon="gtk-close" name="state_cancel" string="Rechazados y Anulados" domain="[('state','in',('cancel','anulado'))]"/>
+                  <filter icon="gtk-cancel" name="state_sin_anulados" string="No mostrar Anulados" domain="[('state','!=','anulado')]"/>
+                  </group-->
+              <newline/>
+              <group col='4' colspan='4'>
+                <field name="name" string="Numero de orden"/>
+                <field name="employee_id" string="Servidor"/>
+                <field name="department_id" string="Departamento"/>
+                <field name="state" string="Estado"/>
+                <newline/>
+                <field name="fecha_salida" string="Salida desde" filter_domain="[('fecha_salida','&gt;=',self)]"/>
+                <field name="fecha_llegada" string="Llegada hasta" filter_domain="[('fecha_llegada','&lt;=',self)]"/>
+              </group>
+              <newline/>
+	      <group expand="1" string="Agrupar por..." colspan="4" col="10">
+		<filter name="group_employee_id" string="Empleado" icon="terp-personal" context="{'group_by':'employee_id'}"/>
+		<filter name="group_department_id" string="Departamento" icon="terp-partner" context="{'group_by':'department_id'}"/>
+		<filter name="group_state" string="Estado" icon="terp-stock_symbol-selection" context="{'group_by':'state'}"/>
+              </group>
+            </search>
+          </field>
+        </record>
+        
+        <record id="action_viaticos_all" model="ir.actions.act_window">
+	  <field name="name">Viaticos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">viaticos.solicitud</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+
+	<record id="action_viaticos_usr" model="ir.actions.act_window">
+	  <field name="name">Viaticos</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">viaticos.solicitud</field>
+	  <field name="view_type">form</field>
+	  <field name="domain">[('usuario_id','=',uid)]</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+
+	<record id="view_viaticos_solicitud_usuario_tree_all" model="ir.actions.act_window.view">
+	  <field eval="1" name="sequence"/>
+	  <field name="view_mode">tree</field>
+	  <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	  <field name="act_window_id" ref="action_viaticos_all"/>
+	</record>
+	
+	<record id="view_viaticos_solicitud_usuario_form_all" model="ir.actions.act_window.view">
+	  <field eval="1" name="sequence"/>
+	  <field name="view_mode">form</field>
+	  <field name="view_id" ref="view_viaticos_solicitud_form_usuario"/>
+	  <field name="act_window_id" ref="action_viaticos_all"/>
+	</record>
+
+	<record id="view_viaticos_solicitud_usuario_tree_usr" model="ir.actions.act_window.view">
+	  <field eval="1" name="sequence"/>
+	  <field name="view_mode">tree</field>
+	  <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	  <field name="act_window_id" ref="action_viaticos_usr"/>
+	</record>
+	
+	<record id="view_viaticos_solicitud_usuario_form_usr" model="ir.actions.act_window.view">
+	  <field eval="1" name="sequence"/>
+	  <field name="view_mode">form</field>
+	  <field name="view_id" ref="view_viaticos_solicitud_form_usuario"/>
+	  <field name="act_window_id" ref="action_viaticos_usr"/>
+	</record>
+        <!-- Action de vista de usuario -->
+        
+        <record id="action_viaticos_solicitud" model="ir.actions.act_window">
+	  <field name="name">Ordenes de Movilización</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">viaticos.solicitud</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+		
+	<record id="view_viaticos_solicitud_usuario_tree" model="ir.actions.act_window.view">
+	  <field eval="1" name="sequence"/>
+	  <field name="view_mode">tree</field>
+	  <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	  <field name="act_window_id" ref="action_viaticos_solicitud"/>
+	</record>
+	
+	<record id="view_viaticos_solicitud_usuario_form" model="ir.actions.act_window.view">
+	  <field eval="2" name="sequence"/>
+	  <field name="view_mode">form</field>
+	  <field name="view_id" ref="view_viaticos_solicitud_form_usuario"/>
+	  <field name="act_window_id" ref="action_viaticos_solicitud"/>
+	</record>
+	
+	    <!-- Action de vista de secretaria -->
+		
+		<record id="action_viaticos_solicitud_secretaria" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">{'search_default_state_sin_anulados':1}</field>
+		</record>
+		
+		<record id="view_viaticos_solicitud_secretaria_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_secretaria"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_secretaria_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_secretaria"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_secretaria"/>
+	    </record>
+
+
+		<record id="action_viaticos_solicitud_secretaria_sindicato" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="context">{'search_default_state_sin_anulados':1}</field>
+		</record>
+		
+		<record id="view_viaticos_solicitud_secretaria_sindicato_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_secretaria_sindicato"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_secretaria_sindicato_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_secretaria_sindicato"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_secretaria_sindicato"/>
+	    </record>
+
+	    
+	    <!-- Action de vista de jefe -->
+		
+		<record id="action_viaticos_solicitud_jefe" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('de_sindicato','!=',True),('state','in',('solicitud1','solicitud2','solicitud3','informe1','informe2','done','end','cancel'))]</field>
+			<field name="context">{'search_default_group_employee_id':1,'search_default_state_solicitud1':1}</field>
+		</record>
+		
+		<record id="view_viaticos_solicitud_jefe_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_jefe"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_jefe_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_jefes"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_jefe"/>
+	    </record>
+
+	    <record id="action_viaticos_solicitud_jefe_sindicato" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('de_sindicato','=',True),('state','in',('solicitud1','solicitud2','solicitud3','informe1','informe2','done','end','cancel'))]</field>
+			<field name="context">{'search_default_group_employee_id':1,'search_default_state_solicitud1':1,'search_default_state_informe1':1}</field>
+		</record>
+		
+		<record id="view_viaticos_solicitud_jefe_sindicato_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_jefe_sindicato"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_jefe_sindicato_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_jefes"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_jefe_sindicato"/>
+	    </record>
+	    
+	    <record id="action_viaticos_informe_jefe" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('employee_id.user_id.id','!=',uid),('state','in',('solicitud1','solicitud2','solicitud3','informe1','informe2','done','end','cancel'))]</field>
+			<field name="context">{'search_default_group_employee_id':1,'search_default_state_informe1':1}</field>
+		</record>
+		
+		<record id="view_viaticos_informe_jefe_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_informe_jefe"/>
+	    </record>
+		
+		<record id="view_viaticos_informe_jefe_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_jefes"/>
+	        <field name="act_window_id" ref="action_viaticos_informe_jefe"/>
+	    </record>
+	    
+	    <!-- Action de vista de prefecto -->
+		
+		<record id="action_viaticos_solicitud_prefecto" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('state','in',('solicitud2','solicitud3','informe1','informe2','done','end','cancel'))]</field>
+			<field name="context">{'search_default_group_employee_id_id':1,'search_default_state_solicitud2':1}</field>
+			<!--field name="context">{'search_default_state_solicitud1':1,'search_default_group_employee_id':1}</field-->
+		</record>
+		
+		<record id="view_viaticos_solicitud_prefecto_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_prefecto"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_prefecto_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_jefes"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_prefecto"/>
+	    </record>
+	    
+	    <!-- Action de vista de talento humano -->
+		
+	    <record id="action_viaticos_solicitud_tthh" model="ir.actions.act_window">
+	      <field name="name">Ordenes de Movilización</field>
+	      <field name="type">ir.actions.act_window</field>
+	      <field name="res_model">viaticos.solicitud</field>
+	      <field name="view_type">form</field>
+	      <field name="view_mode">tree,form</field>
+	      <field name="domain">[('state','in',('solicitud3','informe1','informe2','done','end','cancel'))]</field>
+	      <field name="context">{'search_default_state_informe2':1,'search_default_group_employee_id':1}</field>
+	    </record>
+	    
+	    <record id="view_viaticos_solicitud_tthh_tree" model="ir.actions.act_window.view">
+	      <field eval="1" name="sequence"/>
+	      <field name="view_mode">tree</field>
+	      <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	      <field name="act_window_id" ref="action_viaticos_solicitud_tthh"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_tthh_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_tthh"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_tthh"/>
+	    </record>
+	    
+	    <!-- Action de vista de direccion administrativa -->
+		
+		<record id="action_viaticos_solicitud_direccion_administrativa" model="ir.actions.act_window">
+			<field name="name">Ordenes de Movilización</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">viaticos.solicitud</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="domain">[('state','in',('solicitud1','solicitud2','solicitud3','informe1','informe2','done','end','cancel'))]</field>
+			<field name="context">{'search_default_state_solicitud1':1,'search_default_state_solicitud2':1,'search_default_state_solicitud3':1,'search_default_group_employee_id':1}</field>
+		</record>
+		
+		<record id="view_viaticos_solicitud_ddaa_tree" model="ir.actions.act_window.view">
+	        <field eval="1" name="sequence"/>
+	        <field name="view_mode">tree</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_tree"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_direccion_administrativa"/>
+	    </record>
+		
+		<record id="view_viaticos_solicitud_ddaa_form" model="ir.actions.act_window.view">
+	        <field eval="2" name="sequence"/>
+	        <field name="view_mode">form</field>
+	        <field name="view_id" ref="view_viaticos_solicitud_form_ddaa"/>
+	        <field name="act_window_id" ref="action_viaticos_solicitud_direccion_administrativa"/>
+	    </record>
+		
+<!--menuitem id="menu_viaticos_solicitud_direccion_administrativa" parent="menu_viaticos" name="Gestion de Transporte" action="action_viaticos_solicitud_direccion_administrativa" groups="gt_doc_viaticos.group_via_direccion_administrativa" sequence="3"/-->
+
+		<menuitem id="menu_viaticos_solicitud" parent="menu_viaticos" name="Ordenes de Movilización" action="action_viaticos_all" sequence="1"/>
+		<menuitem id="menu_viaticos_solicitud_conta" parent="account.menu_finance" name="Viaticos" action="action_viaticos_all" sequence="1"/>
+		<!--menuitem id="menu_viaticos_solicitud_conta_tthh" parent="menu_main_viaticos" name="Viaticos" action="action_viaticos_all" sequence="1"/-->
+		<menuitem id="menu_viaticos_solicitud_documental" parent="gt_document_manager.menu_document_manager" 
+			  name="Viaticos" sequence="1"/>
+		<menuitem id="menu_viaticos_solicitud_documental_sol" parent="menu_viaticos_solicitud_documental" 
+			  name="Solicitud" action="action_viaticos_usr" sequence="1"/>
+		<menuitem id="menu_viaticos_solicitud_documental_all" parent="menu_viaticos_solicitud_documental" 
+			  name="Todos" action="action_viaticos_all" sequence="2" groups="gt_government_procedure.group_administrative"/>
+		<!--menuitem id="menu_viaticos_solicitud_secretaria" parent="menu_viaticos" name="Movilizaciones departamento" action="action_viaticos_solicitud_secretaria" groups="gt_doc_viaticos.group_via_secretaria" sequence="2"/>
+		<menuitem id="menu_viaticos_sindicato_secretaria" parent="menu_viaticos" name="Movilizaciones SINDICATO" action="action_viaticos_solicitud_secretaria_sindicato" groups="gt_doc_viaticos.group_via_secresindicato" sequence="3"/>
+		<menuitem id="menu_viaticos_solicitud_jefe_sindicato" parent="menu_viaticos" name="Aprobaciones SINDICATO" action="action_viaticos_solicitud_jefe_sindicato" groups="gt_doc_viaticos.group_via_jefesindicato" sequence="4"/>
+		
+		<menuitem id="menu_viaticos_solicitud_jefe" parent="menu_viaticos" name="Aprobaciones Jefe (Solicitud)" action="action_viaticos_solicitud_jefe" groups="gt_doc_viaticos.group_via_jefe" sequence="5"/>
+		<menuitem id="menu_viaticos_solicitud_prefecto" parent="menu_viaticos" name="Aprobaciones Prefecto" action="action_viaticos_solicitud_prefecto" groups="gt_doc_viaticos.group_via_prefecto" sequence="6"/>
+		<menuitem id="menu_viaticos_informe_jefe" parent="menu_viaticos" name="Aprobaciones Jefe (Informe)" action="action_viaticos_informe_jefe" groups="gt_doc_viaticos.group_via_jefe" sequence="7"/>
+		<menuitem id="menu_viaticos_solicitud_tthh" parent="menu_viaticos" name="Aprobación de informe TTHH" action="action_viaticos_solicitud_tthh" groups="base.group_hr_manager" sequence="8"/-->
+		
+		<!-- Detalle de gastos -->
+		
+		<record id="view_viaticos_solicitud_line_form" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.line.form</field>
+            <field name="model">viaticos.solicitud.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Detalle">
+                	<group colspan="4">
+                    	<field name="detalle" colspan="4" required="1"/>
+                    	<field name="cantidad" colspan="2" required="1"/>
+                    	<field name="valor" colspan="2" required="1"/>
+                    	<!--field name="state" colspan="2" required="1" readonly="1"/>
+                    	<newline/>
+                    	<button name="draft_aprobado" type="object" string="Aprobar"/-->
+                    </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_solicitud_line_tree" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.line.tree</field>
+            <field name="model">viaticos.solicitud.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Detalle de Solicitud" editable="bottom">
+                	<field name="detalle"/>
+                	<field name="cantidad"/>
+                	<field name="valor"/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Detalle de transporte -->
+        
+        <record id="view_viaticos_solicitud_transporte_tree" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.transporte.tree</field>
+            <field name="model">viaticos.solicitud.transporte</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Transporte utilizado" editable="bottom">
+                	<field name="tipo" required="1"/>
+                	<field name="name" required="1"/>
+                	<field name="origen" required="1"/>
+                	<field name="fecha_salida" required="1" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+                	<field name="destino" required="1"/>
+                	<field name="fecha_llegada" required="1" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+                	<field name="reembolso"/>
+                	<field name="valor" attrs="{'invisible':[('reembolso','=',False)]}"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_solicitud_transporte_form" model="ir.ui.view">
+            <field name="name">viaticos.solicitud.transporte.form</field>
+            <field name="model">viaticos.solicitud.transporte</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Transporte utilizado">
+                	<field name="tipo" required="1"/>
+                	<field name="name" required="1"/>
+                	<field name="origen" required="1"/>
+                	<field name="fecha_salida" required="1" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+                	<field name="destino" required="1"/>
+                	<field name="fecha_llegada" required="1" on_change="validar_tiempo(fecha_salida,fecha_llegada)"/>
+                	<field name="reembolso"/>
+                	<field name="valor" attrs="{'invisible':[('reembolso','=',False)]}"/>
+                </form>
+            </field>
+        </record>
+        
+        <!-- Detalle de facturas -->
+        
+        <record id="view_viaticos_facturas_tree" model="ir.ui.view">
+            <field name="name">viaticos.facturas.tree</field>
+            <field name="model">viaticos.facturas</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Facturas" editable="bottom">
+                	<field name="tipo_id"/>
+                	<field name="name"/>
+                	<field name="city_id"/>
+                	<field name="fecha"/>
+                	<field name="proveedor"/>
+                	<field name="descripcion"/>
+                	<field name="valor"/>
+                </tree>
+            </field>
+        </record>
+        
+        <record id="view_viaticos_facturas_form" model="ir.ui.view">
+            <field name="name">viaticos.facturas.form</field>
+            <field name="model">viaticos.facturas</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Facturas">
+                	<field name="tipo_id" colspan="2"/>
+                	<field name="name" colspan="2"/>
+                	<field name="city_id" colspan="2"/>
+                	<field name="fecha" colspan="2"/>
+                	<field name="proveedor" colspan="2"/>
+                	<field name="valor" colspan="2"/>
+                	<field name="descripcion" colspan="4"/>
+                </form>
+            </field>
+        </record>
+        
+        <!-- CONFIGURACION FINANCIEAR -->
+        
+        <!--record model="ir.ui.view" id="view_tree_viaticos_account">
+		  <field name="name">viaticos.account.tree</field>
+		  <field name="model">viaticos.account</field>
+		  <field name="type">tree</field>
+		  <field name="arch" type="xml">
+			<tree string="Cuentas para Viaticos">
+			  <field name="journal_id"/>
+			  <field name="active"/>
+			  <field name="pay_account_id"/>
+			  <field name="expense_account_id"/>
+			</tree>
+		  </field>
+		</record>
+		
+    	<record model="ir.ui.view" id="view_form_viaticos_account">
+		  <field name="name">viaticos.account.form</field>
+		  <field name="model">viaticos.account</field>
+		  <field name="type">form</field>
+		  <field name="arch" type="xml">
+			<form string="Cuentas para Viaticos">
+			  <field name="journal_id" colspan="2" required="1"/>
+			  <field name="active" colspan="2"/>
+			  <newline/>
+			  <field name="pay_account_id" colspan="2" required="1"/>
+			  <field name="expense_account_id" colspan="2" required="1"/>
+			</form>
+		  </field>
+		</record>
+		
+		<record id="view_search_viaticos_account" model="ir.ui.view">
+		  <field name="name">viaticos.account.search</field>
+		  <field name="model">viaticos.account</field>
+		  <field name="type">search</field>
+		  <field name="arch" type="xml">
+		    <search string="Cuentas para Viaticos">
+			  <field name="journal_id"/>
+			  <field name="pay_account_id"/>
+			  <field name="expense_account_id"/>
+		      <newline />
+		      <group expand="1" string="Agrupar por...">
+		        <filter string="Diario" icon="STOCK_OPEN" domain="[]" context="{'group_by':'journal_id'}"/>
+		        <filter string="Cuenta por Pagar" icon="STOCK_EDIT" domain="[]" context="{'group_by':'pay_account_id'}"/>
+		        <filter string="Cuenta de Gasto" icon="STOCK_EDIT" domain="[]" context="{'group_by':'expense_account_id'}"/>
+		      </group>
+		    </search>
+		  </field>
+		</record>
+    	
+    	<record model="ir.actions.act_window" id="action_viaticos_account">
+		  <field name="name">Configuracion de Cuentas</field>
+		  <field name="res_model">viaticos.account</field>
+		  <field name="view_type">form</field>
+		  <field name="view_mode">tree,form</field>
+		</record>
+
+		<menuitem name="Cuentas para Viaticos" id="menu_viaticos_account" parent="menu_configuracion_viaticos" sequence="100" action="action_viaticos_account"/-->
+		
+	
+	</data>
+</openerp>

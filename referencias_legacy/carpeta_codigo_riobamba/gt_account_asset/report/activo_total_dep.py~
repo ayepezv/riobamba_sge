@@ -1,0 +1,86 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+class activo_total_dep(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(activo_total_dep, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_categories_total_dep': self.get_categories_total_dep,
+            'get_name_total_dep':self.get_name_total_dep,
+            'get_act_total_dep':self.get_act_total_dep,
+            'get_total_dep':self.get_total_dep,
+        })
+
+    def get_total_dep(self,o):
+        asset_obj = self.pool.get('account.asset.asset')
+        aux = 0
+        return aux
+
+    def get_act_total_dep(self,o ,categ_id):
+        categ_obj = self.pool.get('account.asset.category')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close')),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close')),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open')])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close')])
+        aux = 0 
+        if asset_ids:
+            for asset_id in asset_ids:
+                asset = asset_obj.browse(self.cr, self.uid, asset_id)
+                if asset.state=='open':
+                    aux += asset.valor_actual
+                elif asset.state=='close':
+                    if asset.baja_date:
+                        if asset.baja_date>=o.date_stop:
+                            aux += asset.valor_actual
+        return aux
+
+    def get_name_total_dep(self, categ_id):
+        categ_obj = self.pool.get('account.asset.category')
+        categ = categ_obj.browse(self.cr, self.uid, categ_id)
+        if categ.code:
+            aux = categ.code + ' - ' + categ.name
+        else:
+            aux = categ.name
+        return aux
+
+    def get_categories_total_dep(self, this):
+        categ_obj = self.pool.get('account.asset.category')
+        categ_ids = categ_obj.search(self.cr, self.uid, [])
+        return categ_ids
+       
+report_sxw.report_sxw('report.activo_total_dep',
+                       'activo.total.dep', 
+                       'addons/gt_account_asset/report/activo_total_dep.mako',
+                       parser=activo_total_dep,
+                       header=False)
+

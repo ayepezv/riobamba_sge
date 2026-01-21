@@ -1,0 +1,198 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Account Module - Ecuador
+#    Copyright (C) 2013 GnuThink Software All Rights Reserved
+#    info@gnuthink.com
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+from tools.translate import _
+import decimal_precision as dp
+
+class cpc(osv.Model):
+    _name = 'cpc.code'
+
+    def name_get(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        if not ids:
+            return []
+        res = []
+        reads = self.browse(cr, uid, ids, context=context)
+        for record in reads:
+            #if record.employee_id.employee_lastname and record.employee_id.name:
+            #    name = '%s %s' % (record.employee_id.employee_lastname, record.employee_id.name)
+                name = record.name + " - " + record.desc
+                res.append((record.id, name))
+        return res
+
+    _columns = dict(
+        name = fields.char('Código',size=10,required=True),
+        desc = fields.char('Descripción',size=256,required=True),
+        )
+
+class templateModified(osv.Model):
+    _inherit = 'product.template'
+    _columns = dict(
+        standard_price = fields.float('Cost Price', required=True, digits=(10,10), 
+                                      help="Product's cost for accounting stock valuation. It is the base price for the supplier price."),
+#        uom_po_id = fields.related('uom_id','id', type='many2one', 
+ #                                           relation='product.uom',string='UdMC', store=True)
+        )
+
+templateModified()
+
+class productModified(osv.Model):
+    _inherit = 'product.product'
+
+    def create(self, cr, uid, vals, context=None):
+        if not vals.has_key('default_code')or not vals.has_key('location_id_id'):
+            raise osv.except_osv(('Error de usuario'), ('No puede crear un producto sin codigo o bodega'))
+        return super(productModified, self).create(cr, uid, vals, context=None)
+
+    def name_get(self, cr, user, ids, context=None):
+        if context is None:
+            context = {}
+        if not len(ids):
+            return []
+        def _name_get(d):
+            name = d.get('name','')
+            code = d.get('default_code',False)
+            qty = d.get('qty_available','')
+            udm = d.get('udm')
+            iva = d.get('iva')
+            if code:
+                name = '[%s] %s [%s] [%s] [%s]' % (code,name,qty,udm,iva)
+            if d.get('variants'):
+                name = name + ' - %s' % (d['variants'],)
+            return (d['id'], name)
+
+        partner_id = context.get('partner_id', False)
+
+        result = []
+        for product in self.browse(cr, user, ids, context=context):
+            sellers = filter(lambda x: x.name.id == partner_id, product.seller_ids)
+            iva = 'SIN IVA'
+            if product.supplier_taxes_id:
+                for impuesto in product.supplier_taxes_id:
+                    if impuesto.tax_group == 'vat':
+                        iva = 'CON IVA'
+            if sellers:
+                for s in sellers:
+                    mydict = {
+                              'id': product.id,
+                              'name': s.product_name or product.name,
+                              'default_code': s.product_code or product.default_code,
+                              'variants': product.variants,
+                              'qty_available':product.qty_available,
+                              'udm':product.uom_id.name,
+                              'iva':iva,
+                              }
+                    result.append(_name_get(mydict))
+            else:
+                mydict = {
+                          'id': product.id,
+                          'name': product.name,
+                          'default_code': product.default_code,
+                          'variants': product.variants,
+                          'qty_available':product.qty_available,
+                          'udm':product.uom_id.name,
+                          'iva':iva,
+                          }
+                result.append(_name_get(mydict))
+        return result
+
+#    def name_get(self, cr, uid, ids, context=None):
+#        # return product with stock 
+#        res = {}
+#        for m in self.browse(cr, uid, ids, context=context):
+#            if m.default_code:
+#                aux = m.default_code + m.name + str(m.qty_available)
+#            else:
+#                aux = m.name + str(m.qty_available)
+#            aux = m.name
+ #           res[m.id] = aux
+ #       return res.items  
+
+    def _account_expense(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        for this in self.browse(cr, uid, ids, context=context):
+            res[this.id] = this.property_account_expense.id 
+        return res    
+
+    def _stock_value(self, cr, uid, ids, prop, arg, context=None):
+        res = {}
+        for line in self.browse(cr, uid, ids, context=context):
+            res[line.id] = line.standard_price * line.qty_available
+        return res
+
+    _columns = dict(
+        stock_value = fields.function(_stock_value, type="float", store=True,string='Valorado', digits_compute= dp.get_precision('Account')),
+        uid_id = fields.many2one('res.users','Usuario'),
+        location_id_id = fields.many2one('stock.location','Bodega'),
+        cpc_id = fields.many2one('cpc.code','CPC'),
+        expense_account_id = fields.function(_account_expense, type='many2one', relation='account.account',
+                                             store=True,string='Acc Expense'),
+        categ_id_program = fields.many2one('product.category','Linea Programa'),
+#        qty_av = fields.function(_product_qty_available_, type='float', store=True,string='Quantity On Hand'),
+        )
+
+    def _get_uid(self, cr, uid, ids, context=None):
+        return uid
+
+    def _check_product_code(self, cr, uid, ids, context=None):
+        for this in self.browse(cr, uid, ids):
+            if this.type in ('service','asset'):
+                return True
+            code = this.default_code
+            if len(code)>7:
+                raise osv.except_osv(('Error de usuario'), ('El codigo debe ser maximo de 7 caracteres'))
+            id_bodega = this.location_id_id.name[0:2]
+            if code[0:2] != id_bodega:
+                raise osv.except_osv(('Error de usuario'), ('Los primero dos numeros del codigo debe coincidir con la bodega'))
+            if code[2:3] != '_':
+                raise osv.except_osv(('Error de usuario'), ('El tercer caracter del codigo debe ser guion bajo'))
+        return True
+
+    _constraints = [
+#        (_check_product_code,'El código de producto no coincide con la bodega o formato establecido, debe ser 7 caracteres, el formato es identificador de bodega _ codigo del producto',[]),
+        ]     
+
+    _defaults = dict(
+        sale_ok = False,
+        uid_id = _get_uid,
+        )
+
+class gpa_product_category(osv.osv):
+
+    _inherit = 'product.category'
+    ## def name_get(self, cr, uid, ids, context=None):
+    ##     if not len(ids):
+    ##         return []
+    ##     reads = self.read(cr, uid, ids, ['name','parent_id'], context=context)
+    ##     res = []
+    ##     for record in reads:
+    ##         name = record['name']
+    ##         #if record['parent_id']:
+    ##         #    name = record['parent_id'][1]+' / '+name
+    ##         res.append((record['id'], name))
+    ##     return res
+    
+
+gpa_product_category()

@@ -1,0 +1,550 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+<!-- Dias contrato -->
+      <record id="view_dias_contrato" model="ir.ui.view">
+        <field name="name">Reporte Dias Contrato</field>
+        <field name="model">dias.contrato</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente actualización de cargo de empleado">
+	    <group colspan="4">
+	      <field name="opcion" colspan="2" required="1"/>
+	      <field name="fecha" invisible="1" colspan="2"/>
+	      <field name="tipo_contrato" colspan="2"/>
+	      <newline/>
+	    </group>
+	    <newline/>
+	    <field name="line_ids" readonly="1" colspan="4" nolabel="1">
+	      <tree>
+		<field name="employee_name"/>
+		<!--field name="contract_id"/-->
+		<field name="dias"/>
+	      </tree>
+	    </field>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="compute_dias_contrato" type="object" icon="gtk-execute"  string="Calcular"/>
+	      <!--button name="print_dias_contrato" type="object" icon="gtk-execute"  string="Imprimir"/-->
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_dias_contrato" model="ir.actions.act_window">
+        <field name="name">Reporte Dias contrato</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">dias.contrato</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_dias_contrato"
+		icon="STOCK_EXECUTE"
+		action="action_dias_contrato"
+		parent="hr.menu_hr_main"
+		sequence="12"
+		name="Reporte Dias Contrato"/>
+
+<!-- PROJECTION LINE
+VIEWS: FORM, TREE 
+-->
+<record model="ir.ui.view" id="view_projection_anual_form">
+  <field name="name">hr.anual.projection.form</field>
+  <field name="model">hr.anual.projection</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Proyeccion Imp. Renta">
+      <field name="name" required="1" select="1"/>
+      <field name="fy_id" required="1"/>
+      <field name="total" readonly="1"/>
+      <newline/>
+      <field name="line_ids" nolabel="1" colspan="4"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_anual_projection_tree_view">
+  <field name="name">hr.anual.projection.tree</field>
+  <field name="model">hr.anual.projection</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Imp. Renta">
+      <field name="name"/>
+      <field name="total"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_anuel_projection_tree">
+  <field name="name">hr.anual.rent.tax.view.tree</field>
+  <field name="model">hr.anual.rent.tax</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Imp. Renta">
+      <field name="name"/>
+      <field name="fy_id"/>
+      <field name="start_computed"/>
+      <field name="mensual"/>
+      <field name="end_computed"/>
+    </tree>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_anual_rent_tax_form">
+  <field name="name">hr.anual.rent.tax.form</field>
+  <field name="model">hr.anual.rent.tax</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Imp. Renta">
+      <field name="name" required="1" select="1"/>
+      <field name="fy_id" required="1"/>
+      <field name="start_computed"/>
+      <field name="mensual"/>
+      <field name="end_computed"/>
+      <newline/>
+      <field name="line_ids" nolabel="1" colspan="4"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_projection_line_form">
+  <field name="name">hr.projection.line.form</field>
+  <field name="model">hr.projection.line</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Proyeccion Imp. Renta">
+      <field name="projection_id" required="1" select="1" widget="selection"/>
+      <field name="value" required="1" sum="TOTAL"/>
+    </form>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_projection_line_tree">
+  <field name="name">hr.projection.line.view.tree</field>
+  <field name="model">hr.projection.line</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Proyeccion Imp. Renta">
+      <field name="projection_id" select="1" widget="selection"/>
+      <field name="value" select="1"/>
+    </tree>
+  </field>
+</record>
+
+<!--
+        ================
+        contract subtype
+        ================
+        -->
+        
+        <record id="action_gt_contract_subtype" model="ir.actions.act_window">
+			<field name="name">Tipo de Contrato</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">hr.contract.type.type</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		
+        <record id="view_gt_contract_subtype_form" model="ir.ui.view">
+            <field name="name">Tipo de Contrato - Form</field>
+            <field name="model">hr.contract.type.type</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Tipo de Contrato">
+                  <group colspan="4">
+                    <field name="name" colspan="2" required="1"/>
+                    <field name="type_id" colspan="2" required="1" widget="selection"/>
+                    <field name="account_id" colspan="2"/>
+                  </group>
+                </form>
+            </field>
+        </record>
+        
+        <record id="view_gt_contract_subtype_tree" model="ir.ui.view">
+            <field name="name">Tipo de Contrato - Tree</field>
+            <field name="model">hr.contract.type.type</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tipo de Contrato">
+                	<field name="name"/>
+                	<field name="type_id"/>
+                </tree>
+            </field>
+        </record>
+        
+		<menuitem id="menu_contract_subtype" parent="hr_contract.next_id_56" name="Tipo de Contratoo" action="action_gt_contract_subtype"/>
+
+		<!-- contract type -->
+
+<record model="ir.ui.view" id="view_contract_type_vacations">
+  <field name="name">hr.contract.type.view.form</field>
+  <field name="model">hr.contract.type</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="hr_contract.hr_contract_type_view_form"/>
+  <field name="arch" type="xml">
+	<xpath expr="/form/field[@name='name']" position="after">
+	  <group string="Formulas para vacaciones" colspan="4" col="4">
+	    <field name="formula_normales" required="True" colspan="4"/>
+	    <field name="formula_adicionales" required="True" colspan="4"/>
+	  </group>
+    </xpath>
+  </field>
+</record>
+		
+		<!-- contract -->
+
+<record model="ir.ui.view" id="view_contract_ir_tree">
+  <field name="name">hr.contract.ir</field>
+  <field name="model">hr.contract</field>
+  <field name="type">tree</field>
+  <field name="inherit_id" ref="hr_contract.hr_contract_view_tree"/>
+  <field name="arch" type="xml">
+    <xpath expr="/tree/field[@name='employee_id']" position="replace">
+      <field name="employee_id" invisible="1"/>
+      <field name="cedula"/>
+      <field name="employee_name"/>
+      <field name="wage"/>
+    </xpath>
+    <!--xpath expr="/tree/field[@name='work_id']" position="attributes">
+      <attribute name="invisible">1</attribute>
+    </xpath-->
+    <xpath expr="/tree/field[@name='type_id']" position="after"> 
+      <field name="subtype_id"/>
+      <field name="program_id"/>
+      <field name="budget_id"/>
+      <field name='budget_ind'/>
+      <field name="department_id"/>
+      <field name="activo"/>
+      <field name="state"/>
+      <field name="fondo_reserva"/>
+      <field name="decimo_opc"/>
+      <field name="nivel_id"/>
+    </xpath>
+    <xpath expr="/tree/field[@name='date_end']" position="after"> 
+      <field name="dias_contrato"/>      
+    </xpath>
+  </field>
+</record>
+
+<!-- NEW CONTRACT VIEW WITH EVAL 1
+-->
+
+    <record id="wizard_imprime_contrato" model="ir.ui.view">
+      <field name="name">Imprime Contrato</field>
+      <field name="model">imprime.contrato</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Imprimir Contrato">
+	  <group string="Información de obra" colspan="4">
+	    <field name="contract_id" readonly="1"/>
+	    <newline/>
+	    <field name="type_id" readonly="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="imprimeContrato" string="Imprimir" type="object" icon="gtk-print"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="imprime_contrato" model="ir.actions.act_window">
+      <field name="name">Imprimir Contrato</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">imprime.contrato</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+<record id="contract_gob_form_view" model="ir.ui.view">
+  <field name="name">contract.gob.normal.form</field>
+  <field name="model">hr.contract</field>
+  <field name="type">form</field>
+  <field eval="1" name="priority"/>
+  <field name="arch" type="xml">
+    <form string="Product">
+      <group string="ESTADO">
+	<field name="state"/>
+	<field name="activo" string=":"/>
+      </group>
+      <group colspan="4" col="8" string="Información Laboral">
+	<field name="name" colspan="2" string="#Contrato/Acción Personal"/>
+	<field name="employee_id" colspan="6" on_change="onchange_employee(employee_id)"/>
+	<field name="type_id" required="1" string="Tipo de Relación Laboral"  colspan="2" widget="selection"/>
+	<field name="subtype_id" required="1" colspan="3" widget="selection"/>
+	<field name="ocupational_id" colspan="3"/>
+	<field name="nivel_id" colspan="3"/>
+      </group>
+      <group colspan="4" col="8" string="Información Orgánico Funcional">
+	<field name="department_id" colspan="4"/>
+	<field name="job_id" colspan="4" required="1"/>
+      </group>
+      <notebook colspan="4">
+	<page string="Informacion General">
+	  <group colspan="4" col="2">
+	    <group colspan="1">
+	      <separator string="Duracion/Fechas" colspan="2"/>
+	      <newline/>
+	      <field name="program_id" colspan="2" required="1" on_change="onchange_pcontract(program_id)" />
+	      <newline/>
+	      <field name="budget_id" colspan="2" required="1" domain="[('program_id','=',program_id),('state','=','open')]"/>
+	      <newline/>
+	      <field name="budget_ind" colspan="2"/>
+	      <!--field name="project_id" colspan="2"/>
+		  <newline/>
+		  <field name="activity_id" colspan="2"/-->
+	      <newline/>
+	      <field name="date_start" colspan="2"/>
+	      <newline/>
+	      <field name="date_end" colspan="2"/>
+	      <newline/>
+	      <field name="work_id" colspan="2"/>
+	      <newline/>
+	      <field name="sindicalizado" colspan="2"/>
+	      <newline/>
+	      <field name="asociacion" colspan="2"/>
+	      <newline/>
+	      <field name="date_asociacion" colspan="2" attrs="{'invisible': [('asociacion', '=',False)],'required': [('asociacion', '=',True)]}"/>
+	      <newline/>
+	      <!--field name="porcentaje_anticipo" colspan="2"/>
+	      <newline/-->
+	      <separator string="Periodo Pruebas" colspan="2"/>
+	      <newline/>
+	      <field name="trial_date_start" colspan="2"/>
+	      <newline/>
+	      <field name="trial_date_end" colspan="2"/>
+	      <newline/>
+	      <field name="oficio" colspan="2"/>
+	      <newline/>
+	      <field name="informe" colspan="2"/>
+	      <newline/>
+	      <field name="financia_id" colspan="2"/>
+	    </group>
+	    <group colspan="1">
+	      <separator string="Informacion Rol" colspan="2"/>
+	      <newline/>
+	      <field name="wage" colspan="2"/>
+	      <newline/>
+	      <field name="costo_hora" colspan="2"/>
+	      <newline/>
+	      <field name="struct_id" colspan="2" required="1"/>
+	      <newline/>
+	      <field name="derecho_fr" colspan="2"/>
+	      <newline/>
+	      <field name="fondo_reserva" colspan="2" required="1"/>
+	      <newline/>
+	      <field name="decimo_opc" colspan="2" required="1"/>
+	      <newline/>
+	      <field name="dias_fr" colspan="2" required="1"/>
+	      <newline/>
+	      <field name="sindicato_choferes" colspan="2"/>
+	      <newline/>
+	      <!--field name="activo" colspan="2"/-->
+	      <newline/>
+	      <field name="dias_contrato" colspan="2"/>
+	      <newline/>
+	      <separator string="Min. Rel. Laborales" colspan="2"/>
+	      <newline/>
+	      <field name="fecha_legalizacion" colspan="2"/>
+	      <newline/>
+	      <field name="codigo" colspan="2"/>
+	      <newline/>
+	      <field name="fecha_informe" colspan="2"/>
+	      <newline/>
+	      <!--button name="%(imprime_contrato)d" colspan="1" string="Imprime Contrato" 
+		      type="action" icon="gtk-execute"/-->
+	      <!--button name="crear_proyecciones" string="Crear proyecciones de contratos activos" type="object"/-->
+	    </group>
+	  </group>
+	</page>
+	<page string="Extra Rol">
+	  <field name="aportable_ids" nolabel="1">
+	    <tree>
+	      <field name="name" readonly="1"/>
+	      <field name="period_id" readonly="1"/>
+	      <field name="derecho_fr" readonly="1"/>
+	      <field name="cobro_fr" readonly="1"/>
+	      <field name="decimo_rol" readonly="1"/>
+	    </tree>
+	  </field>
+	</page>
+	<page string="Historial">
+	  <notebook>
+	    <page string="Salario">
+	      <field colspan="4" name="wage_hist_ids" nolabel="1" readonly="1">
+		<tree string="Historial">
+				  <field name="name"/>
+				  <field name="wage"/>
+				  <field name="new_wage"/>
+		</tree>
+				<form>
+				  <field name="name" colspan="4"/>
+				  <field name="wage" colspan="2"/>
+				  <field name="new_wage" colspan="2"/>
+				</form>
+			  </field>
+			</page>
+			<page string="Puestos Trabajo">
+			  <field colspan="4" name="job_hist_ids" nolabel="1"  readonly="1">
+				<tree string="Historial">
+				  <field name="name"/>
+				  <field name="date_end"/>
+				  <field name="job_id"/>
+				  <field name="new_job"/>
+				</tree>
+				<form>
+				  <field name="name" colspan="2"/>
+				  <field name="date_end" colspan="2"/>
+				  <field name="job_id" colspan="2"/>
+				  <field name="new_job" colspan="2"/>
+				</form>
+			  </field>
+			</page>
+		  </notebook>
+		</page>
+		<page string="Rubro Partida">
+		  <field name='config_rubro_ids' nolabel="1"/>
+		</page>
+      </notebook>
+	</form>
+  </field>
+</record>
+
+<!-- ANTERIOR
+-->
+<record model="ir.ui.view" id="view_contract_ir_form">
+  <field name="name">hr.contract.ir</field>
+  <field name="model">hr.contract</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+  <field name="arch" type="xml">
+	<field name="name" position="replace"><field name="name" string="#Contrato/Acción Personal"/></field>
+	<xpath expr="/form/group/field[@name='type_id']" position="before">
+	  <field name="costo_hora"/>
+      <!--field name="active"/-->
+    </xpath>
+    <xpath expr="/form/group/field[@name='job_id']" position="replace">
+    	<!--field name="budget_line_id"/-->
+    	<field name="department_id" required="1"/>
+    	<field name="project_id"/>
+	<field name="activity_id"/>
+	<field name="job_id" required="1"/>
+	<field name="ocupational_id"/>
+    </xpath>
+    <xpath expr="/form/group/field[@name='type_id']" position="replace">
+      <field name="type_id" required="1" string="Tipo de Relación Laboral"/>
+      <field name="subtype_id" required="1" domain="[('type_id','=',type_id)]"/>
+    </xpath>
+    <field name="notes" position="replace"/>
+    <xpath expr="/form/notebook/page/separator[@string='Notes']" position="replace"/>
+    <xpath expr="/form/notebook/page/group/field[@name='working_hours']" position="replace">
+    	<field name="working_hours" invisible="1"/>
+    	<field name="work_id"/>
+    	<field name="marc_employee"/>
+    </xpath>
+    <xpath expr="/form/notebook/page/group[@name='right_column']/separator[@name='advantages']" position="replace">
+		<separator name="advantages" colspan="2" string="Advantages" invisible="1"/>
+    </xpath>
+    <xpath expr="/form/notebook/page/group[@name='right_column']/field[@name='advantages']" position="replace">
+	<field name="advantages" nolabel="1" colspan="2" invisible="1"/>
+    </xpath>
+    <xpath expr="/form/notebook/page/group[@name='right_column']/field[@name='advantages']" position="after">
+    	<separator colspan="2" string="Informacion Adicional"/>
+    	<field name="fecha_legalizacion"/>
+    	<field name="codigo"/>
+	<button name="crear_proyecciones" string="Crear proyecciones de contratos activos" type="object"/>
+    </xpath>
+    <xpath expr="/form/notebook/page[@string='Work Permit']" position="replace"/>
+    <notebook position="inside">
+      <page string="Historial">
+	<notebook>
+	  <page string="Salario">
+	    <field colspan="4" name="wage_hist_ids" nolabel="1">
+	      <tree string="Historial">
+		<field name="name"/>
+		<field name="wage"/>
+		<field name="new_wage"/>
+	      </tree>
+	      <form>
+		<field name="name" colspan="4"/>
+		<field name="wage" colspan="2"/>
+		<field name="new_wage" colspan="2"/>
+	      </form>
+	    </field>
+	  </page>
+	  <page string="Puestos Trabajo">
+	    <field colspan="4" name="job_hist_ids" nolabel="1">
+	      <tree string="Historial">
+		<field name="name"/>
+		<field name="date_end"/>
+		<field name="job_id"/>
+		<field name="new_job"/>
+	      </tree>
+	      <form>
+		<field name="name" colspan="2"/>
+		<field name="date_end" colspan="2"/>
+		<field name="job_id" colspan="2"/>
+		<field name="new_job" colspan="2"/>
+	      </form>
+	    </field>
+	  </page>
+	</notebook>
+      </page>
+    </notebook>
+  </field>
+</record>
+
+
+<record id="hr_contract_view_search_modified" model="ir.ui.view">
+  <field name="name">hr.contract.view.search.modified</field>
+  <field name="model">hr.contract</field>
+  <field name="inherit_id" ref="hr_contract.hr_contract_view_search"/>
+  <field name="arch" type="xml">
+    <!--xpath expr="/search/group/filter[@string='Current']" position="before">
+      <filter string="Activos" icon="terp-check" name="active" domain="[('active','=',True)]" help="Contratos activos"/>
+      <filter string="Inactivos" icon="terp-dialog-close" name="active_false" domain="[('active','=',False)]" help="Contratos inactivos"/>
+    </xpath-->
+    <xpath expr="/search/group/field[@name='date_end']" position="after">
+      <field name="nivel_id"/>
+      <newline/>
+      <field name="department_id"/>
+      <field name="type_id" string="Tipo de relación laboral"/>
+      <field name="subtype_id" string="Tipo de contrato"/>
+      <field name="program_id" string="Programa"/>
+      <field name="budget_id" string="Partida"/>
+      <field name="activo"/>
+      <field name="decimo_opc"/>
+      <field name="fondo_reserva"/>
+      <!--filter name="imprimir_pantalla" type="object" string="Empleado" icon="terp-personal" context="{'group_by':'employee_id','context':{'filtro':'aplica'}}"/-->
+    	<!--button name="imprimir_pantalla" type="object" string="Imprimir Pantalla"/-->
+    </xpath>
+    <xpath expr="/search/group[@expand='0']/filter[@string='Contract Type']" position="replace">
+      <filter string="Departamento" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'department_id'}"/>
+    	<filter string="Tipo de relación laboral" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'type_id'}"/>
+    	<filter string="Tipo de contrato" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'subtype_id'}"/>
+    	<filter string="Programa" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'program_id'}"/>
+	<filter string="Partida" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by':'budget_id'}"/>
+    </xpath>
+  </field>
+</record>
+
+
+<!--record id="hr_contract.action_hr_contract" model="ir.actions.act_window">
+  <field name="name">Contracts</field>
+  <field name="res_model">hr.contract</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+  <field name="domain">[]</field>
+  <-field name="context">{'search_default_active':1}</field->
+  <field name="search_view_id" ref="hr_contract.hr_contract_view_search"/>
+</record-->
+
+    </data>
+</openerp>

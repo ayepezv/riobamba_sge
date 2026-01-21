@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <report 
+    	auto="True"
+        id="report_payment_request"
+        model="payment.request"
+        name="payment_request"
+        file="gt_payment_request/report/report_payment_request.mako"
+        string="Solicitud de Pago"
+        header="True" report_type="webkit" menu="False"/>
+
+    </data>  
+	      
+</openerp>

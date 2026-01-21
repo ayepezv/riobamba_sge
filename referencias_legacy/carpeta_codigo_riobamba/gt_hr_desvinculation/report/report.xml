@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+
+    <report auto="False" id="hr.liquidation" model="hr.liquidation.compute"
+            name="hr.liquidation.compute" rml="gt_hr_desvinculation/report/liquidacion.mako"
+            usage="default" string="Liquidacion" header="True" report_type="webkit"/>
+    
+
+  </data>
+</openerp>

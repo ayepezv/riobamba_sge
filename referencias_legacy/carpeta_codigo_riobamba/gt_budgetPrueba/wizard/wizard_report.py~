@@ -1,0 +1,114 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2011-2013 Gnuthink Software Labs Cia. Ltda.
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from lxml import etree
+
+from osv import osv, fields
+from datetime import date
+
+class reportBudgetCard(osv.Model):
+   _name = 'report.budget.card'
+   _description = "Cédula Presupuestaria"
+   
+#   _MONTHS = [('1','Enero'),('2','Febrero'),
+#              ('3','Marzo'),('4','Abril'),
+#              ('5','Mayo'),('6','Junio'),
+#              ('7','Julio'),('8','Agosto'),
+#              ('9','Septiembre'),('10','Octubre'),
+#              ('11','Noviembre'),('12','Diciembre')]
+
+   
+   _columns = dict(
+        project = fields.boolean('Proyecto'),
+        project_id = fields.many2one('project.project' ,'Proyecto', domain=[('state','=','exec')]),          
+        fiscalyear = fields.many2one('account.fiscalyear', 'Fiscal year', ),
+        period_from = fields.many2one('account.period', 'Start period'),
+        period_to = fields.many2one('account.period', 'End period'),
+        )
+   
+   def onchange_fiscalyear(self, cr, uid, ids, fiscalyear_id=False, context=None):
+        res = {}
+        if fiscalyear_id:
+            start_period = end_period = False
+            cr.execute('''
+                SELECT * FROM (SELECT p.id
+                               FROM account_period p
+                               LEFT JOIN account_fiscalyear f ON (p.fiscalyear_id = f.id)
+                               WHERE f.id = %s
+                               ORDER BY p.date_start ASC
+                               LIMIT 1) AS period_start
+                UNION ALL
+                SELECT * FROM (SELECT p.id
+                               FROM account_period p
+                               LEFT JOIN account_fiscalyear f ON (p.fiscalyear_id = f.id)
+                               WHERE f.id = %s
+                               AND p.date_start < NOW()
+                               ORDER BY p.date_stop DESC
+                               LIMIT 1) AS period_stop''', (fiscalyear_id, fiscalyear_id))
+            periods =  [i[0] for i in cr.fetchall()]
+            if periods and len(periods) > 1:
+                start_period = periods[0]
+                end_period = periods[1]
+            res['value'] = {'period_from': start_period, 'period_to': end_period}
+        else:
+            res['value'] = {'period_from': False, 'period_to': False}
+        return res
+ 
+   def _get_fiscalyear(self, cr, uid, context=None):
+        """Return default Fiscalyear value"""
+        return self.pool.get('account.fiscalyear').find(cr, uid, context=context)
+
+   def _get_budget(self, cr, uid, context):     
+       if 'active_ids' in context:
+               return context['active_ids']
+           
+           
+   def print_report(self, cr, uid, ids, context):
+        if context is None:
+            context = {}     
+        if 'report_name' in context:               
+            report_name = context['report_name']
+        data = self.read(cr, uid, ids, [], context=context)[0]
+        data['budget_id'] = context['active_id']
+        data['type_report'] = 'gasto'
+        certificate = self.browse(cr, uid, ids, context)[0]            
+        datas = {'ids': [certificate.id], 'model': 'report.budget.card',
+                 'form': data, 'type_report': 'gasto',
+                 'budget_id': context.get('active_id'),
+                 'project': False}
+        if certificate.project:
+            datas.update({'project_id': certificate.project_id.id,
+                          'project': True,
+                          'project_name': '%s %s'% (certificate.project_id.code, certificate.project_id.name)})
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'BudgetCard',
+            'model': 'report.budget.card',
+            'datas': datas,
+            'nodestroy': True,                              
+            }
+   
+   _defaults = dict(       
+        project = False,        
+        fiscalyear= _get_fiscalyear        
+        )
+
+reportBudgetCard()

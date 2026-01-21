@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False"
+        id="rol_alimentacion"
+        model="hr.payslip.run"
+        name="rol_alimentacion"
+        file="mod_riobamba/report/rol_alimentacion.mako"
+        string="Rol Alimentacion"
+        report_type="webkit"
+	/>
+
+
+    <report auto="False"
+        id="rol_transporte"
+        model="hr.payslip.run"
+        name="rol_transporte"
+        file="mod_riobamba/report/rol_transporte.mako"
+        string="Rol Transporte"
+        report_type="webkit"
+	/>
+
+
+    <report auto="False" id="gt_hr_base.accion_personal" model="hr.accion.personal"
+            name="accion_personal" rml="mod_riobamba/report/accion.mako"
+            usage="default" string="Accion Personal" header="True" report_type="webkit"/>
+
+    <record model="ir.ui.view" id="view_accion_personal_rio_form">
+      <field name="name">hr.accion.personal.form</field>
+      <field name="model">hr.accion.personal</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="gt_hr_base.view_accion_personal_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='date_from']" position="after">
+	  <field name="autoridad_id" required="1"/>
+	</xpath>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_accion_personal_rio_tree">
+      <field name="name">hr.accion.personal.tree</field>
+      <field name="model">hr.accion.personal</field>
+      <field name="type">tree</field>
+      <field name="inherit_id" ref="gt_hr_base.view_accion_personal_tree"/>
+      <field name="arch" type="xml">
+	<xpath expr="/tree/field[@name='date']" position="after">
+	  <field name="autoridad_id"/>
+	</xpath>
+      </field>
+    </record>
+
+<record id="gt_hr_base.view_accion_personal_search" model="ir.ui.view">
+  <field name="name">hr.accion.personal.search</field>
+  <field name="model">hr.accion.personal</field>
+  <field name="type">search</field>
+  <field name="arch" type="xml">
+    <search string="Accion personal">
+      <group>
+        <field name="name"/>
+        <field name="date"/>
+	<field name="autoridad_id"/>
+        <field name="tipo"/>
+        <field name="contract_id"/>
+      </group>
+      <newline/>
+      <group expand="1" string="Agrupar por...">
+	<filter name="group_contract_id" string="Funcionario" icon="terp-personal" domain="[]" context="{'group_by':'contract_id'}"/>
+	<filter name="group_tipo" string="Tipo" icon="terp-personal" domain="[]" context="{'group_by':'tipo'}"/>
+	<filter name="group_date" string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+	<filter name="group_state" string="Estado" icon="terp-go-home" domain="[]" context="{'group_by':'state'}"/>
+      </group>
+    </search>
+  </field>
+</record>
+    
+    
+  </data>
+</openerp>

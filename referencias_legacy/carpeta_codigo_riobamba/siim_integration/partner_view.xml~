@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <record id="base.view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Partners" col='1'>
+            <group col="6" colspan="4">
+              <group colspan="5" col="6">
+                <field name="name" select="1"/>
+				<field name="direccion" colspan="4"/>
+                <field name="lang" invisible="1"/>
+              </group>
+              <group colspan="1" col="2">
+				<field name="supplier" invisible="1"/>
+                <field name="customer" select="1"/>
+              </group>
+            </group>
+            <notebook colspan="4">
+              <page string="Sales &amp; Purchases">
+                <separator string="General Information" colspan="4"/>
+                <field name="user_id"/>
+                <field name="active" groups="base.group_extended"/>
+                <field name="website" widget="url"/>
+                <field name="date"/>
+                <field name="parent_id" groups="base.group_extended"/>
+                <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                <newline/>
+              </page>
+              <page string="History" groups="base.group_extended" invisible="True">
+              </page>
+              <page string="Notes">
+                <field colspan="4" name="comment" nolabel="1"/>
+              </page>
+            </notebook>
+          </form>
+        </field>
+      </record>
+	  
+            
+
+    </data>
+</openerp>

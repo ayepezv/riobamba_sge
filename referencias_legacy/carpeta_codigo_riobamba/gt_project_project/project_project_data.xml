@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="template_edi_project" model="email.template">
+      <field name="name">Automated Invoice Notification Mail</field>
+      <field name="email_from">${object.user_id.user_email or 'noreply@localhost'}</field>
+      <field name="subject">Proyecto: ${object.description}</field>
+      <field name="email_to">noreply@localhost</field>
+      <field name="model_id" ref="project.model_project_project"/>
+      <field name="auto_delete" eval="True"/>
+      <field name="body_html"><![CDATA[
+<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: #FFF; ">
+
+  <p>Estimado,</p>
+    
+  <p>El Proyecto: ${object.description} necesita su revisión y aprobación.</p>
+  <p>Si tiene alguna pregunta no dude en contactarme.</p>
+  <p>Atentamente, ${object.user_id.name}</p>
+      ]]></field>
+      <field name="body_text"><![CDATA[
+      Estimado,
+      El proyecto:
+      ${object.name}
+      ${object.description}
+      de la Dirección / Coordinación: ${object.department_id.name}
+      que encuentra en la etapa de
+      % if object.state == 'exec':
+      <b>Ejecución</b>
+      % endif
+      necesita su revisión y aprobación.
+      Si tiene alguna pregunta no dude en contactarme.
+      
+      Atentamente,
+      ${object.user_id.name}
+      ]]></field>
+    </record>    
+    
+
+  </data>
+</openerp>

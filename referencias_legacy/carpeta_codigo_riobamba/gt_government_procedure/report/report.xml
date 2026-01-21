@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+<report 
+   auto="False" 
+   id="gt_government_procedure.public_purchase" 
+   model="purchase.public.process" 
+   name="public.purchase.pdf" 
+   rml="gt_government_procedure/report/public_purchase.rml" 
+   string="Compra Publica" />
+
+<!-- Quitar solicitud de presupuest, oc y solic de compra -->
+
+<delete model="ir.actions.report.xml" search="[('report_name','=','purchase.quotation')]" />
+<delete model="ir.actions.report.xml" search="[('report_name','=','purchase.requisition')]" />
+<delete model="ir.actions.report.xml" search="[('report_name','=','purchase.order')]" />
+
+<!-- Agregar reporte de solicitud de compra y de orden de compra-->
+
+<!--report 
+   auto="False" 
+   id="purchase_req" 
+   model="purchase.requisition" 
+   name="purchase.req" 
+   rml="gt_government_procedure/report/requisition.rml" 
+   string="Solicitud compra" /-->
+
+<report 
+   auto="False" 
+   id="purchase_order_m" 
+   model="purchase.order" 
+   name="purchase.order.m" 
+   rml="gt_government_procedure/report/order.rml" 
+   string="Orden compra" />
+
+  </data>
+</openerp>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+<!-- Quitar solicitud de presupuest, oc y solic de compra -->
+
+<delete model="ir.actions.report.xml" search="[('report_name','=','stock.picking.list')]" />
+
+<report id="report_picking_list_gpa" model="stock.picking" name="stock.picking.gpa" string="Comprobante" rml="gt_stock_gpa/report/picking.rml"/>
+
+  </data>
+</openerp>

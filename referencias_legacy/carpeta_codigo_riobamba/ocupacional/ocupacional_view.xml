@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_ocupacional_config" 
+	      parent="oemedical.oemedical_root_sub" 
+	      name="Salud Ocupacional"/>
+    
+    <menuitem id="menu_ocupacional" 
+	      parent="oemedical.oemedical_root" 
+	      name="Salud Ocupacional"/>
+
+    <!-- CONFIGURACIONES -->
+
+      <!-- INCIDENTE
+		-->
+      <record model="ir.ui.view" id="view_ocupacional_incidente_form">
+	<field name="name">ocupacional.incidente.form</field>
+	<field name="model">ocupacional.incidente</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+	  <form string="Registro Incidente">
+	    <group col="4" colspan="4">
+	      <button name="genera_consulta_incidente" colspan="2" string="Generar Consulta Medica" type="object" icon="gtk-execute"/>
+	      <field name="registrado_por" colspan="4" readonly="1"/>
+	      <field name="name" colspan="2" readonly="1"/>
+	      <field name="fecha" colspan="2" required="1"/>
+	      <field name="employee_id" colspan="2" required="1"/>
+	      <field name="parte_afectada_id" colspan="2" required="1"/>
+	      <field name="riesgo_id" colspan="4" required="1"/>
+	      <field name="lugar" colspan="2" required="1"/>
+	      <field name="actividad" colspan="2" required="1"/>
+	      <field name="oficio_habitual" colspan="2"/>
+	      <field name="is_habitual" colspan="2"/>
+	      <field name="consulta_id" colspan="2" readonly="1"/>
+	      <field name="genero_consulta" colspan="2" readonly="1"/>
+	    </group>
+	    <group col="2" colspan="4">
+	      <group colspan="4" string='Descripcion de los hechos'>
+		<field name="detalle" required="1" nolabel="1"/>
+	      </group>
+	      <group colspan="4" string='Causas'>
+		<field name="causas" required="1" nolabel="1"/>
+	      </group>
+	    </group>
+	  </form>
+	</field>
+      </record>
+	  
+      <record id="view_ocupacional_incidente_tree" model="ir.ui.view">
+	<field name="name">ocupacional.incidente.tree</field>
+	<field name="model">ocupacional.incidente</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+	  <tree string="Incidentes">
+	    <field name="name"/>
+	    <field name="employee_id"/>
+	    <field name="fecha"/>
+	    <field name="parte_afectada_id"/>
+	    <field name="lugar"/>
+	    <field name="actividad"/>
+	  </tree>
+	</field>
+      </record>
+
+      <record id="view_ocupacional_incidente_filter" model="ir.ui.view">
+	<field name="name">ocupacional.incidente.search</field>
+	<field name="model">ocupacional.incidente</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Incidentes">
+	    <field name="name"/>
+	    <field name="employee_id"/>
+	    <field name="fecha"/>
+	    <field name="parte_afectada_id"/>
+	    <field name="lugar"/>
+	    <field name="actividad"/>
+	    <newline />
+	    <group expand="1" string="Agrupar por...">
+	      <filter name="employee_id" string="Funcionario" icon="STOCK_INDENT" domain="[]" context="{'group_by':'employee_id'}"/>
+	      <filter name="fecha" string="Fecha" icon="STOCK_INDENT" domain="[]" context="{'group_by':'fecha'}"/>
+	      <filter name="parte_afectada_id" string="Parte Afectada" icon="STOCK_INDENT" domain="[]" context="{'group_by':'parte_afectada_id'}"/>
+	      <filter name="lugar" string="Lugar" icon="STOCK_INDENT" domain="[]" context="{'group_by':'lugar'}"/>
+	      <filter name="actividad" string="Actividad" icon="STOCK_INDENT" domain="[]" context="{'group_by':'actividad'}"/>
+	    </group>
+	  </search>
+	</field>
+      </record>
+	  
+      <record id="action_ocupacional_incidente" model="ir.actions.act_window">
+	<field name="name">Incidente</field>
+	<field name="res_model">ocupacional.incidente</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field>
+      </record>
+	  
+      <menuitem id="menu_ocupacional_incidente"
+		action="action_ocupacional_incidente"
+		parent="menu_ocupacional"
+		name="Incidentes"
+		/>
+      
+    </data>
+</openerp>

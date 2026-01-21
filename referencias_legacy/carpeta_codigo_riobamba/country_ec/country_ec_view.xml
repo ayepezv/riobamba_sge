@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+	<!-- Vista de Ciudades -->
+	
+	<record model="ir.actions.act_window" id="action_country_ec_country_state">
+	  <field name="name">Ciudades</field>
+	  <field name="domain">[]</field>
+	  <field name="res_model">res.country.state.city</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_tree_country_ec_country_state">
+	  <field name="name">VistaTreeCountry_ec_Country_State_Canton_City</field>
+	  <field name="model">res.country.state.city</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Ciudades">
+	      <field name="name"/>
+	      <field name="code"/>
+	      <field name="state_id"/>
+	      <field name="country_id"/>
+	    </tree>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_form_country_ec_country_state">
+	  <field name="name">VistaTreeCountry_ec_Country_State_Canton_City</field>
+	  <field name="model">res.country.state.city</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Ciudades">
+	      <group colspan="4" col="5">
+		<field name="country_id"/>
+		<newline/>
+		<field name="state_id" domain="[('country_id','=',country_id)]"/>
+		<newline/>
+		<field name="name" colspan="2"/>
+		<newline/>
+		<field name="code" colspan="2"/>
+	      </group>
+	    </form>
+	  </field>
+	</record>
+
+        <record id="view_city_filter" model="ir.ui.view">
+          <field name="name">Ciudad</field>
+          <field name="model">res.country.state.city</field>
+          <field name="type">search</field>
+          <field name="arch" type="xml">
+            <search string="Ciudades">
+              <separator orientation="vertical"/>
+              <field name="name"/>
+	      <field name="code"/>
+              <field name="state_id" widget="selection"/>
+	      <newline />
+              <group expand="1" string="Agrupar por...">
+              	<filter string="Pais" icon="terp-personal+" domain="[]" context="{'group_by':'country_id'}"/>
+                <filter string="Provincia" icon="terp-personal+" domain="[]" context="{'group_by':'state_id'}"/>
+              </group>
+            </search>
+          </field>
+        </record>
+	
+	<!-- CANTONES
+	  -->
+	
+	<record model="ir.actions.act_window" id="action_country_ec_country_canton">
+	  <field name="name">Cantones</field>
+	  <field name="domain">[]</field>
+	  <field name="res_model">res.country.state.canton</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_tree_country_ec_country_state_canton">
+	  <field name="name">VistaTreeCountry_ec_Country_State_Canton</field>
+	  <field name="model">res.country.state.canton</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Cantones">
+	      <field name="name"/>
+	      <field name="code"/>
+	      <field name="state_id"/>
+	      <field name="country_id"/>
+	    </tree>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_form_country_ec_country_state_canton">
+	  <field name="name">VistaTreeCountry_ec_Country_State_Canton</field>
+	  <field name="model">res.country.state.canton</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Cantones">
+	      <group colspan="4" col="5">
+		<field name="country_id"/>
+		<newline/>
+		<field name="state_id" domain="[('country_id','=',country_id)]"/>
+		<newline/>
+		<newline/>
+		<field name="name" colspan="2"/>
+		<newline/>
+		<field name="code" colspan="2"/>
+	      </group>
+	    </form>
+	  </field>
+	</record>
+	
+        <record id="view_canton_filter" model="ir.ui.view">
+          <field name="name">Canton</field>
+          <field name="model">res.country.state.canton</field>
+          <field name="type">search</field>
+          <field name="arch" type="xml">
+            <search string="Cantones">
+              <separator orientation="vertical"/>
+              <field name="name"/>
+	      <field name="code"/>
+	      <field name="state_id" widget="selection"/>
+	      <newline />
+              <group expand="1" string="Agrupar por...">
+              	<filter string="Pais" icon="terp-personal+" domain="[]" context="{'group_by':'country_id'}"/>
+                <filter string="Provincia" icon="terp-personal+" domain="[]" context="{'group_by':'state_id'}"/>
+              </group>
+            </search>
+          </field>
+        </record>
+
+
+	<!-- Vista de Parroquias -->
+	
+	<record model="ir.actions.act_window" id="action_country_ec_parish">
+	  <field name="name">Parroquias</field>
+	  <field name="domain">[]</field>
+	  <field name="res_model">res.country.state.parish</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_tree_country_ec_parish">
+	  <field name="name">VistaTreeCountry_ec_Country_State_Canton_Parish</field>
+	  <field name="model">res.country.state.parish</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Parroquias">
+	      <field name="name"/>
+	      <field name="code"/>
+	      <field name="canton_id"/>
+	      <field name="state_id"/>
+	      <field name="country_id"/>
+	    </tree>
+	  </field>
+	</record>
+	
+	<record model="ir.ui.view" id="view_form_country_ec_parish">
+	  <field name="name">VistaTreeCountry_ec_Country_State_Canton_Parish</field>
+	  <field name="model">res.country.state.parish</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Parroquias">
+	      <group colspan="4" col="5">
+		<field name="country_id"/>
+		<newline/>
+		<field name="state_id" domain="[('country_id','=',country_id)]"/>
+		<newline/>
+		<field name="canton_id" domain="[('state_id','=',state_id)]"/>
+		<newline/>
+		<field name="name" colspan="2"/>
+		<newline/>
+		<field name="code" colspan="2"/>
+	      </group>
+	    </form>
+	  </field>
+	</record>
+
+        <record id="view_parish_filter" model="ir.ui.view">
+          <field name="name">Parroquias</field>
+          <field name="model">res.country.state.parish</field>
+          <field name="type">search</field>
+          <field name="arch" type="xml">
+            <search string="Parroquias">
+              <separator orientation="vertical"/>
+              <field name="name"/>
+	      <field name="code"/>
+              <field name="state_id" widget="selection"/>
+              <field name="canton_id" widget="selection"/>
+	      <newline />
+              <group expand="1" string="Agrupar por...">
+                <filter string="Provincia" icon="terp-personal+" domain="[]" context="{'group_by':'state_id'}"/>
+                <filter string="Canton" icon="terp-personal+" domain="[]" context="{'group_by':'canton_id'}"/>
+              </group>
+            </search>
+          </field>
+        </record>
+
+<!-- MENUS
+  -->
+<menuitem action="action_country_ec_country_canton" id="menu_country_canton_city" parent="base.menu_localisation" sequence="4"/>
+<menuitem action="action_country_ec_country_state" id="menu_country_city" parent="base.menu_localisation" sequence="5"/>
+<menuitem action="action_country_ec_parish" id="menu_country_parish" parent="base.menu_localisation" sequence="6"/>
+
+
+</data>
+</openerp>

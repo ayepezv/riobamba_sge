@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record id="group_via_usuario" model="res.groups">
+      <field name="name">Viáticos y Salidas / Usuario</field>
+    </record>
+	
+    <record id="group_via_secretaria" model="res.groups">
+      <field name="name">Viáticos y Salidas / Secretaria</field>
+    </record>
+	
+    <record id="group_via_jefe" model="res.groups">
+      <field name="name">Viáticos y Salidas / Jefe Superior</field>
+    </record>
+	
+    <record id="group_via_coordinador" model="res.groups">
+      <field name="name">Viáticos y Salidas / Coordinador</field>
+    </record>
+
+    <record id="group_via_prefecto" model="res.groups">
+      <field name="name">Viáticos y Salidas / Prefecto</field>
+    </record>
+    
+    <record id="group_via_direccion_administrativa" model="res.groups">
+      <field name="name">Viáticos y Salidas / Dirección Administrativa</field>
+    </record>
+    
+    <record id="group_via_administrador" model="res.groups">
+      <field name="name">Viáticos y Salidas / Administrador</field>
+    </record>
+    
+    <record id="group_via_calculadora" model="res.groups">
+      <field name="name">Viáticos y Salidas / Calculadora</field>
+    </record>
+
+    <record id="group_via_secresindicato" model="res.groups">
+      <field name="name">Viáticos y Salidas / Secretaria Sindicato</field>
+    </record>
+
+    <record id="group_via_jefesindicato" model="res.groups">
+      <field name="name">Viáticos y Salidas / Jefe Sindicato</field>
+    </record>
+
+</data>
+</openerp>

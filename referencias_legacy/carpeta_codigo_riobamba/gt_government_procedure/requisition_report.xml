@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <!-- Reporte de solicitud de compra -->
+
+    <report auto="False" id="purchase_req_cuadro5" model="purchase.requisition"
+            name="purchase.req.cuadro5" file="gt_government_procedure/report/cuadro5.mako"
+            usage="default" string="Cuadro" header="True" report_type="webkit" />
+
+    <report auto="False" id="purchase_req_cuadroAut5" model="purchase.requisition"
+            name="purchase.req.cuadroAut5" file="gt_government_procedure/report/cuadro_aut5.mako"
+            usage="default" string="Cuadro" header="True" report_type="webkit" />
+
+    <report auto="False" id="purchase_requisition_report" model="purchase.requisition"
+            name="purchase.requisition.report" file="gt_government_procedure/report/solicitud.mako"
+            usage="default" string="Reporte Solicitud Compra" header="True" report_type="webkit" />
+
+    <report auto="False" id="purchase_acta_report" model="purchase.order"
+            name="purchase.acta.report" file="gt_government_procedure/report/acta.mako"
+            usage="default" string="Acta Entrega Recepcion" header="True" report_type="webkit" />
+
+  </data>
+</openerp>

@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# GADMLI
+#
+##############################################################################
+
+{
+    "name" : "MECANICA",
+    "version" : "1.0",
+    "author" : 'limon',
+    "description": """
+    MOUDLO PARA LA GSECTOION DE VEHIDULOS Y EL USO DE COMBUSTIBLES
+    """,
+    "category" : "MECANICA MUNICIPAL",
+    "website" : "http://gnuthink.com",
+    "depends" : ['gt_hr_base','gt_stock','gt_requisition_ext','gt_document_manager'],
+    "init_xml" : [],
+    "demo_xml" : [],
+    "update_xml" : [
+        "security/mecanica_group.xml",
+        "security/ir.model.access.csv",
+        'vehiculo_view.xml',
+        'maquinaria_view.xml',
+        'varios_view.xml',
+        'wizard/reportes_lubricacion_mantenimiento_view.xml',
+        'wizard/reportes_combustible_view.xml',
+        'wizard/mecanica_varios_reportes_combustible_view.xml',
+        'report/report_webkit_html_view.xml',
+],
+    "installable": True,
+}

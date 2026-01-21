@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+from time import strftime, strptime
+from osv import osv, fields
+
+class revalCotiza(osv.Model):
+    _name = 'reval.cotiza'
+    _colums = dict(
+        rev_id = fields.manyone('account.asset.reval','Revalorizacion'),
+        name = fields.manyone('res.partner','Proveedor'),
+        num = fields.char('Numero Cotizacion',size=10),
+        monto = fields.float('Valor'),
+    )
+recalCotiza()
+
+class assetRevalLine(osv.Model):
+    _name = 'account.asset.reval'
+    _columns = dict(
+        name = fields.char('Numero',size=5),
+        asset_id = fields.many2one('account.asset.asset','Activo',required=True),
+        date = fields.date('Fecha Revalorizacion'),
+        perito_id = fields.many2one('res.partner','Evaluador',required=True),
+        autorizado_id = fields.many2one('hr.employee','Autorizado por'),
+        comision_ids = fields.many2one('hr.employee','r_p_id','r_id','p_id','Comision'),
+        valor_ant = fields.float('Valor Anterior $'),
+        fecha_ant = fields.date('Fecha Anterior'),
+        dep_acumulada_ant = fields.float('Dep. Acumulada Anterior'),
+        residual_ant = fields.float('Residual Anterior'),
+        actual_ant = fields.float('Valor Actual Anterior'),
+        valor = fields.float('Nuevo Valor $'),
+        fecha = fields.date('Fecha compra'),
+        residual_actual = fields.float('Residual'),
+        depreciacion = fields.integer('Anios Depreciacion'),
+        state = fields.selection([('Borrador','Borrador'),('Autorizado','Autorizado'),('Ejecutado','Ejecutado')],'Estado'),
+        move_id = fields.many2one('account.move','Asiento Contable'),
+        cotiza_ids = fields.one2many('reval.cotiza','rev_id','Detalle Cotizaciones'),
+    )
+    _defaults = dict(
+        state = 'Borrador',
+    )
+
+assetRevalLine()
+
+class assetReval(osv.Model):
+    _inherit = 'account.asset.asset'
+    _columns = dict(
+        revalorizado = fields.boolean('Revalorizado'),
+        rev_ids = fields.one2many('account.asset.reval','asset_id','Detalle Revalorizacion'),
+    )
+assetReval()

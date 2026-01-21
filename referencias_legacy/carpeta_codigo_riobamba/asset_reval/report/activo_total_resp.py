@@ -1,0 +1,314 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+
+class activo_totalrev(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(activo_totalrev, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_categories_total': self.get_categories_total,
+            'get_name_total':self.get_name_total,
+            'get_numero_total':self.get_numero_total,
+            'get_adq_total':self.get_adq_total,
+            'get_act_total':self.get_act_total,
+            'get_total_1':self.get_total_1,
+            'get_total_2':self.get_total_2,
+            'get_total_3':self.get_total_3,
+        })
+
+    def get_total_3(self,o):
+        reval_obj = self.pool.get('account.asset.reval')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close')),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close')),('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close'))])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close'),('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close'),('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close')])
+        aux  = 0
+        for asset_id in asset_ids:
+            aux_reval = aux_diferencia = 0
+            reval_ids = reval_obj.search(self.cr, self.uid, [('asset_id','=',asset_id),('date','<=',o.date_stop),('state','=','Ejecutado')])
+            if reval_ids:
+                for reval_id in reval_ids:
+                    aux_resta = 0
+                    reval = reval_obj.browse(self.cr, self.uid, reval_id)
+                    aux_resta = reval.valor - reval.nueva_depreciacion
+                    aux_reval += aux_resta
+                    aux_diferencia = reval.diferencia
+            asset = asset_obj.browse(self.cr, self.uid, asset_id)
+            if asset.state=='open':
+                #aux += (asset.valor_actual+aux_reval)
+                aux += (asset.valor_actual+aux_diferencia)
+            elif asset.state=='close':
+                if asset.baja_date:
+                    if asset.baja_date>o.date_stop: #estaba >= y deberia ser solo mayor
+                        #aux += (asset.valor_actual+aux_reval)
+                        aux += (asset.valor_actual+aux_diferencia)
+#            if asset.baja_date:
+#                if asset.baja_date
+#            aux += asset.valor_actual
+        return aux
+
+    def get_total_2(self,o):
+        reval_obj = self.pool.get('account.asset.reval')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close')),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close')),('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','open')])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close'),('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close'),('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close')])
+        aux  = 0
+        for asset_id in asset_ids:
+            aux_reval = 0
+            reval_ids = reval_obj.search(self.cr, self.uid, [('asset_id','=',asset_id),('date','<=',o.date_stop),('state','=','Ejecutado')])
+            if reval_ids:
+                for reval_id in reval_ids:
+                    aux_resta = 0
+                    reval = reval_obj.browse(self.cr, self.uid, reval_id)
+                    aux_resta = reval.valor - reval.nueva_depreciacion
+                    aux_reval += aux_resta
+            asset = asset_obj.browse(self.cr, self.uid, asset_id)
+            if asset.state=='open':
+                aux += asset.purchase_value
+                #aux += (asset.purchase_value+aux_reval)
+            elif asset.state=='close':
+                if asset.baja_date:
+                    if asset.baja_date>o.date_stop:
+                        aux += asset.purchase_value
+                        #aux += (asset.purchase_value+aux_reval)
+        return aux
+
+    def get_total_1(self,o):
+        reval_obj = self.pool.get('account.asset.reval')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close')),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','in',('open','close')),('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','open')])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close'),('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close'),('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('state','=','close')])
+        return len(asset_ids) 
+
+    def get_act_total(self,o ,categ_id):
+        reval_obj = self.pool.get('account.asset.reval')
+        categ_obj = self.pool.get('account.asset.category')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close')),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close')),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open')])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close')])
+        aux = 0 
+        if asset_ids:
+            for asset_id in asset_ids:
+                aux_reval = aux_diferencia = 0
+                reval_ids = reval_obj.search(self.cr, self.uid, [('asset_id','=',asset_id),('date','<=',o.date_stop),('state','=','Ejecutado')])
+                if reval_ids:
+                    for reval_id in reval_ids:
+                        aux_resta = 0
+                        reval = reval_obj.browse(self.cr, self.uid, reval_id)
+                        aux_resta = reval.valor - reval.nueva_depreciacion
+                        aux_reval += aux_resta
+                        aux_diferencia = reval.diferencia
+                asset = asset_obj.browse(self.cr, self.uid, asset_id)
+                if asset.state=='open':
+                    aux += (asset.valor_actual+aux_diferencia)
+                    #aux += (asset.valor_actual+aux_reval)
+                elif asset.state=='close':
+                    if asset.baja_date:
+                        if asset.baja_date>o.date_stop:
+                            aux += (asset.valor_actual+aux_diferencia)
+                            #aux += (asset.valor_actual+aux_reval)
+        return aux
+
+    def get_adq_total(self, o,categ_id):
+        reval_obj = self.pool.get('account.asset.reval')
+        categ_obj = self.pool.get('account.asset.category')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close')),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close')),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','in',('open','close'))])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close')])
+        aux = 0 
+        if asset_ids:
+            for asset_id in asset_ids:
+                aux_reval = aux_diferencia = 0
+                reval_ids = reval_obj.search(self.cr, self.uid, [('asset_id','=',asset_id),('date','<=',o.date_stop),('state','=','Ejecutado')])
+                if reval_ids:
+                    for reval_id in reval_ids:
+                        aux_resta = 0
+                        reval = reval_obj.browse(self.cr, self.uid, reval_id)
+                        aux_resta = reval.valor - reval.nueva_depreciacion
+                        aux_reval += aux_resta
+                        aux_diferencia = reval.diferencia
+                asset = asset_obj.browse(self.cr, self.uid, asset_id)
+                if asset.state=='open':
+                    aux += (asset.purchase_value+aux_diferencia)
+                    #aux += (asset.purchase_value+aux_reval)
+                elif asset.state=='close':
+                    if asset.baja_date:
+                        if asset.baja_date>o.date_stop: #<
+                            aux += (asset.purchase_value+aux_diferencia)
+                            #aux += (asset.purchase_value+aux_reval)
+        return aux
+
+    def get_numero_total(self, o,categ_id):
+        categ_obj = self.pool.get('account.asset.category')
+        asset_obj = self.pool.get('account.asset.asset')
+        if o.opcion=='Operativos':
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open'),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','open')])
+        else:
+            if o.opc:
+                if o.date_start:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','>=',o.date_start),('purchase_date','<=',o.date_stop)])
+                else:
+                    asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close'),
+                                                                     ('purchase_date','<=',o.date_stop)])
+            else:
+                asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id),('state','=','close')])
+        return len(asset_ids) 
+
+    def get_name_total(self, categ_id):
+        categ_obj = self.pool.get('account.asset.category')
+        categ = categ_obj.browse(self.cr, self.uid, categ_id)
+        if categ.code:
+            aux = categ.code + ' - ' + categ.name
+        else:
+            aux = categ.name
+        return aux
+
+    def get_categories_total(self, this):
+        categ_obj = self.pool.get('account.asset.category')
+        categ_ids = categ_obj.search(self.cr, self.uid, [])
+        return categ_ids
+
+    def get_categories_total1(self,this):
+        todo = []
+        linea = []
+        reval_obj = self.pool.get('account.asset.reval')
+        asset_obj = self.pool.get('account.asset.asset')
+        categ_obj = self.pool.get('account.asset.category')
+        categ_ids = categ_obj.search(self.cr, self.uid, [])
+        for categ_id in categ_ids:
+            linea = []
+            aux_numero = 0 
+            asset_ids = asset_obj.search(self.cr, self.uid, [('category_id','=',categ_id)])
+            if asset_ids:
+                aux_categ = categ_obj.browse(self.cr, self.uid, categ_id).name
+                aux_numero = len(asset_ids)
+                aux_vadq = aux_vaac = 0
+                for asset_id in asset_ids:
+                    aux_reval = aux_diferencia = 0
+                    reval_ids = reval_obj.search(self.cr, self.uid, [('asset_id','=',asset_id),('date','<=',o.date_stop),('state','=','Ejecutado')])
+                    if reval_ids:
+                        for reval_id in reval_ids:
+                            aux_resta = 0
+                            reval = reval_obj.browse(self.cr, self.uid, reval_id)
+                            aux_resta = reval.valor - reval.nueva_depreciacion
+                            aux_reval += aux_resta
+                            aux_diferencia = reval.diferencia
+                    asset = asset_obj.browse(self.cr, self.uid, asset_id)
+                    aux_vadq += asset.purchase_value
+#                    aux_vadq += (asset.purchase_value+aux_reval)
+                    aux_vaac += (asset.valor_actual+aux_diferencia)
+                    #aux_vaac += (asset.valor_actual+aux_reval)
+            linea.append(aux_categ)
+            linea.append(aux_numero)
+            linea.append(aux_vadq)
+            linea.append(aux_vaac)
+            todo.append(linea)
+        return todo
+       
+report_sxw.report_sxw('report.activo_totalrev',
+                       'activo.total', 
+                       'addons/gt_account_asset/report/activo_total.mako',
+                       parser=activo_totalrev,
+                       header=False)
+

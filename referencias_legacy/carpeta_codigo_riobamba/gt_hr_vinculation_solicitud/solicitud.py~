@@ -1,0 +1,101 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2012-now Gnuthink Software Labs Co. Ltd. (<http://www.gnuthink.com>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+from tools import ustr
+from gt_tool import tool
+from datetime import date, datetime, timedelta
+import time
+
+class jobInheritSelec(osv.Model):
+    _inherit = 'hr.job'
+    _columns = dict(
+        autorizado = fields.boolean('Autorizado'),
+        )
+jobInheritSelec()
+
+    
+class hrSolicitudPersonal(osv.Model):
+    _name = 'hr.sol.personal'
+
+    def sol_in_progress(self, cr, uid, ids, context=None):
+        obj_sequence = self.pool.get('ir.sequence')
+        emp_obj = self.pool.get('hr.employee')
+        #vals['name'] = obj_sequence.get(cr, uid, 'hr.vinculation')
+        self.write(cr, uid, ids, {'state': 'solicitado',
+                                  'name': obj_sequence.get(cr, uid, 'hr.vinculation')} ,context=context)
+        vinc_obj = self.pool.get('hr.vinculation')
+        for this in self.browse(cr, uid, ids):
+            vinc_obj.create(cr, uid, {'solicitud_id':this.id,
+                                      'solicitant_id':this.solicitant_id.employee_id.id,
+                                      'create_id':this.solicitant_id.id,
+                                      'date_start':this.solicitant_id.id,
+                                      'name':this.name,
+                                      'job_id':this.job_id.id,
+                                      'department_id':this.department_id.id,
+                                      'number':this.number,
+                                      'has_sol':True,
+                                      })
+        return True
+    
+
+    _columns = dict(
+        name = fields.char('Referencia',size=32,readonly=True),
+        solicitant_id = fields.many2one('res.users','Creado por',readonly=True,required=True),
+        date_create = fields.datetime('Fecha hora creación'),
+        department_id = fields.related('solicitant_id', 'context_department_id', type='many2one', relation='hr.department', 
+                                       string='Unidad Requiriente', required=True),
+        job_id = fields.many2one('hr.job','Puesto Req.',required=True),
+        number = fields.integer('Cantidad'),
+        note = fields.text('Descripción',size=128,required=True),
+        state = fields.selection([('draft','Borrador'),('solicitado','Solicitado'),
+                                  ('en_proceso','En proceso de Selección'),('contratado','Contratado'),
+                                  ('anulado','Anulado')], 'Estado',readonly=True),
+        name_doc_solicitud = fields.char('Nombre doc. Solicitud', size=50),
+        doc_solicitud = fields.binary('Doc. Solicitud'),
+        )
+
+    def _get_department(self, cr, uid, ids, context=None):
+        user_obj = self.pool.get('res.users')
+        usuario = user_obj.browse(cr, uid, uid, context)
+        return usuario.context_department_id.id
+    
+    def _get_solicitant(self, cr, uid, ids, context=None):
+        return uid
+
+    def _check_number(self, cr, uid, ids, context=None):
+        for this in self.browse(cr, uid, ids):
+            if this.number < 1:
+                return False
+        return True
+
+    _constraints = [
+        (_check_number,'La cantidad debe ser mayor a cero',['Cantidad']),
+        ]  
+    
+    _defaults = dict(
+        date_create = time.strftime('%Y-%m-%d'),
+        state = 'draft',
+        solicitant_id = _get_solicitant,
+        department_id = _get_department,
+        )
+
+hrSolicitudPersonal()

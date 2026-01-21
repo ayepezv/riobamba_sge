@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+  <data>
+
+    <!-- REVISAR INFORMACION DE LOS EMPLEADOS DEL GADMLI -->
+    <record id="view_verificar_fondo" model="ir.ui.view">
+      <field name="name">Verificar Informacion del Empleado</field>
+      <field name="model">verificar.funcionario</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Verificar informacion del Empleado">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="empleado_id" colspan="4" on_change="onchange_verificar_funcionario(empleado_id)" readonly="1"/>
+              <field name="departamento" colspan="4" readonly="1"/>
+              <field name="puesto" colspan="4" readonly="1"/>
+              <field name="direccion" colspan="4" readonly="1"/>
+              <field name="telefonocasa" colspan="4" readonly="1"/>
+              <field name="telefonocelular" colspan="4" readonly="1"/>
+              <field name="cumple" colspan="4" readonly="1"/>
+              <field name="correop" colspan="4" readonly="1"/>
+              <field name="correot" colspan="4" readonly="1"/>
+              <field name="diasd" colspan="4" readonly="1"/>
+              <field name="diast" colspan="4" readonly="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel" string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_verificar_funcionario" model="ir.actions.act_window">
+        <field name="name">Verificar Informacion del Funcionario</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">verificar.funcionario</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+   <menuitem id="menu_empleados_docs" name="Empleados" parent="gt_document_manager.menu_document_manager"/>
+      
+      <menuitem id="menu_empleados_verificar_docs" icon="STOCK_EXECUTE" action="action_verificar_funcionario"
+		parent="menu_empleados_docs" name="Verificar Informacion"/>
+
+      <!-- Hab. Gastos Personales -->
+      <record model="ir.ui.view" id="view_hr_work_period_gastos_personales">
+	<field name="name">hr.work.period.gastos.form</field>
+	<field name="model">hr.work.period</field>
+	<field name="type">form</field>
+	<field name="inherit_id" ref="gt_hr_base.view_hr_work_period_form"/>
+	<field name="arch" type="xml">
+	  <field name='basic_wage' position='after'>
+	    <field name='habilita_proyeccion'/>
+	  </field>
+	</field>
+      </record>
+
+
+      <!-- GASTOS PERSONALES EN DOCUMENTAL -->
+
+      <record id="view_funcionario_proyeccion_tree" model="ir.ui.view">
+      <field name="name">Gastos personales</field>
+      <field name="model">funcionario.proyeccion</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+	<tree>
+	  <field name="state" colspan="2" readonly="1"/>
+	  <field name="creado_id" colspan="2" readonly="1"/>
+          <field name="name" colspan="2" readonly="1"/>
+          <field name="year_id" colspan="2" required="1"/>
+          <field name="projection_id" colspan="2" required="1"/>
+          <field name="amount" colspan="2" required="1"/>
+        </tree>
+      </field>
+    </record>
+      
+      
+    <record id="view_funcionario_proyeccion" model="ir.ui.view">
+      <field name="name">Gastos personales</field>
+      <field name="model">funcionario.proyeccion</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Registro de gastos personales">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="state" colspan="2" readonly="1"/>
+	      <field name="creado_id" colspan="2" readonly="1"/>
+              <field name="name" colspan="2" readonly="1"/>
+              <field name="year_id" colspan="2" required="1" widget='selection'/>
+              <field name="projection_id" colspan="2" required="1" widget='selection'/>
+              <field name="amount" colspan="2" required="1"/>
+	    </group>
+	    <group colspan="4">
+	      <button icon="gtk-execute" type="object" name="proyeccionRegistro" states="Borrador" string="Registrar" confirm="Seguro Registrar ?"/>
+	      <button icon="gtk-ok" type="object" name="proyeccionRevisado" groups="base.group_hr_manager" 
+		      states="Registrado" string="Revisado" confirm="Seguro Revisado ?"/>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_registra_personales" model="ir.actions.act_window">
+        <field name="name">Registrar Mis Gastos Personales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">funcionario.proyeccion</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	<field name="domain">[('creado_id','=',uid)]</field>
+      </record>
+
+      <record id="action_revisa_personales" model="ir.actions.act_window">
+        <field name="name">Revisar Gastos Personales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">funcionario.proyeccion</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	<field name="domain">[('state','=',('Registrado'))]</field>
+      </record>
+
+      <menuitem id="menu_empleados_personales" name="Gastos Personales" parent="menu_empleados_docs" sequence="0"/>
+      
+      <menuitem id="menu_empleados_registro_personales" icon="STOCK_EXECUTE" action="action_registra_personales"
+		parent="menu_empleados_personales" name="Registrar" sequence="0"/>
+
+      <menuitem id="menu_empleados_revisa_personales" icon="STOCK_EXECUTE" action="action_revisa_personales"
+		parent="menu_empleados_personales" name="Revisar" sequence="1" groups="base.group_hr_manager"/>
+
+
+      <!-- GASTOS PERSONALES EN TTHH -->
+
+      <menuitem id="menu_tthh_gastos_personales" name="Gastos Personales" parent="hr.menu_hr_root" sequence="10"/>
+      
+      <menuitem id="menu_tthh_revisa_personales" icon="STOCK_EXECUTE" action="action_revisa_personales"
+		parent="menu_tthh_gastos_personales" name="Revisar" sequence="1" groups="base.group_hr_manager"/>
+
+      <record id="view_notifica_personales" model="ir.ui.view">
+        <field name="name">Notifica Personales</field>
+        <field name="model">notifica.personales</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente para enviar notificacion via email de carga de gastos personales">
+	    <label colspan="4" nolabel="1" string="Este asistente permite enviar notificaciones via email a los funcionarios"/>
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="period_id" colspan="4" required="1" widget='selection'/>
+	      </group>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="send_personal_notification" type="object" icon="gtk-execute"  string="Enviar Notificacion" 
+			confirm="Esta seguro que desea enviar notificacion"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+      <record id="action_notifica_personales" model="ir.actions.act_window">
+        <field name="name">Notifica gastos personales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">notifica.personales</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+      <menuitem id="menu_tthh_notifica_personales" icon="STOCK_EXECUTE" action="action_notifica_personales"
+		parent="menu_tthh_gastos_personales" name="Notificar Funcionarios" sequence="2" groups="base.group_hr_manager"/>
+
+  </data>
+</openerp>

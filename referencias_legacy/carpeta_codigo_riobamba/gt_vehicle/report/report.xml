@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+      
+<report 
+   auto="False" 
+   id="report_vehiculo" 
+   model="vehicle.vehicle" 
+   name="Choferes"
+   usage="default" 
+   rml="gt_vehicle/report/vehicle_driver.rml" 
+   string="Choferes"
+   groups="group_vehicle_manager" 
+   header="True"/>
+   
+   <report 
+   auto="False" 
+   id="report_vehiculo_incident" 
+   model="vehicle.vehicle" 
+   name="Incidentes"
+   usage="default" 
+   rml="gt_vehicle/report/vehicle_incident.rml" 
+   string="Incidentes" 
+   groups="group_vehicle_manager"/>
+   
+   <report 
+   auto="False" 
+   id="report_vehiculo_list" 
+   model="vehicle.vehicle" 
+   name="ListadoVehiculos"
+   usage="default" 
+   rml="gt_vehicle/report/vehicle_list.rml" 
+   string="Listado Vehículos"
+   groups="group_vehicle_manager" 
+   />
+   
+   <report 
+   auto="False" 
+   id="report_movilization_list" 
+   model="movilization.order" 
+   name="ListadoSolicitudes"
+   usage="default" 
+   rml="gt_vehicle/report/movilization_list.rml" 
+   string="Listado Solicitudes"
+   groups="group_vehicle_manager" />
+   
+   
+    <!--report 
+   auto="False" 
+   id="report_vehiculo_route" 
+   model="movilization.order" 
+   name="vehicleRoute" 
+   rml="gt_vehicle/report/vehicle_route.rml" 
+   string="Órden de Movilización"
+   usage="default"
+    /-->
+
+	<report id="report_vehicle_resumen_all"
+                string="Recorrido Mensual"
+                model="vehicle.vehicle"                
+                name="Recorrido"
+                rml="gt_vehicle/report/vehicle_resumen.rml"
+                auto="False"
+                menu="False"
+                groups="group_vehicle_manager"/>
+
+<record id="salvoconducto1_report_id" model="ir.actions.report.xml">
+  <field name="name">Salvoconducto</field>
+  <field name="type">ir.actions.report.xml</field>
+  <field name="model">movilization.order</field>
+  <field name="report_name">Salvoconducto</field>
+  <field name="report_type">pdf</field>
+  <field name="report_rml">gt_vehicle/report/salvoconducto1.rml</field>
+  <field name="parser_state">default</field>
+  <field name="tml_source">file</field>
+</record>
+
+   
+<record id="salvoconducto2_report_id" model="ir.actions.report.xml">
+  <field name="name">Salvoconducto</field>
+  <field name="type">ir.actions.report.xml</field>
+  <field name="model">movilization.order</field>
+  <field name="report_name">SalvoconductoAsignado</field>
+  <field name="report_type">pdf</field>
+  <field name="report_rml">gt_vehicle/report/salvoconducto2.rml</field>
+  <field name="parser_state">default</field>
+  <field name="tml_source">file</field>
+</record>
+
+<record id="vehicleRoute_id" model="ir.actions.report.xml">
+  <field name="name">Órden de Movilización</field>
+  <field name="type">ir.actions.report.xml</field>
+  <field name="model">movilization.order</field>
+  <field name="report_name">vehicleRoute</field>
+  <field name="report_type">pdf</field>
+  <field name="report_rml">gt_vehicle/report/vehicle_route.rml</field>
+  <field name="parser_state">default</field>
+  <field name="tml_source">file</field>
+</record>
+
+  </data>
+  
+</openerp>

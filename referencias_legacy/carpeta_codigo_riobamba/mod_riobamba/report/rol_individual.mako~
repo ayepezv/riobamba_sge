@@ -1,0 +1,176 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>	
+  %for payslip in objects:
+  <table style="page-break-inside:avoid">
+  <table width="100%" style="page-break-inside:avoid">
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;"><b>ROL DE PAGO DE ${payslip.contract_id.subtype_id.name or  ''} - ${payslip.period_id.name} </b></td>
+    </tr>
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;"><b>DESDE ${payslip.date_from or  ''} - ${payslip.date_to} </b></td>
+    </tr>
+    <tr>
+      <!-- COLUMNA 1 -->
+      <table style="text-align:left;font-size:10px" width="100%" style="page-break-inside:avoid">
+	<tr>
+    	  <th width="25%"><b>Servidor:</b></th>
+    	  <td width="75%">${payslip.employee_id.name} - ${payslip.employee_id.complete_name}</td>
+    	</tr><tr>
+    	  <th width="25%"><b>Departamento:</b></th>
+    	  <td width="75%">${payslip.department_id.name}</td>
+    	</tr><tr>
+    	  <th width="25%"><b>Cargo:</b></th>
+    	  <td width="75%">${payslip.job_id.name}</td>
+    	</tr>
+      </table>
+      <table style="text-align:left;font-size:10px" width="100%" border="1" style="page-break-inside:avoid">
+    	<tr>
+    	  <th width="50%"><center><b>INGRESOS</b></center></th>
+    	  <td width="50%"><center><b>EGRESOS</b></center></th>
+</tr>
+<tr>
+  <td width="50%">
+    %for line in payslip.line_ids:
+    <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+      %if (line.category_id.code == 'APT') or (line.category_id.code == 'BASIC') or (line.category_id.code == 'ING'):
+      <tr>
+	<td width="75%">${line.name}</td>
+	<td width="25%">${line.amount}</td>
+      </tr>
+      %endif
+    </table>
+    %endfor
+</th>
+<td width="50%">
+  %for line in payslip.line_ids:
+  <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+    %if (line.category_id.code == 'EGR'):
+    <tr>
+      <td width="75%">${line.name}</td>
+      <td width="25%">${line.amount}</td>
+    </tr>
+    %endif
+  </table>
+  %endfor
+</th>
+</tr><tr>
+  <th width="50%">
+    <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+      <tr>
+	<td width="75%"><b>TOTAL INGRESOS</b></td>
+	<td width="25%"><b>${payslip.basic+payslip.aportable+payslip.allowance}</b></td>
+      </tr>
+    </table>
+  </th>
+  <td width="50%">
+    <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+      <tr>
+	<td width="75%"><b>TOTAL EGRESOS</b></td>
+	<td width="25%"><b>${payslip.deduction}</b></td>
+      </tr>
+    </table>
+</th>
+</tr><tr><td colspan="2"><b>TOTAL/ NETO A RECIBIR: ${payslip.net}</b></td></tr>
+
+</table>
+<!-- FIN COLUMNA 1 -->
+<!-- COLUMNA 2 -->
+
+</table>
+<br></br><br></br>
+<!-- FIN COLUMNA 2 -->
+</table>
+    %endfor
+</br></br></br>
+
+
+  %for payslip in objects:
+  <table style="page-break-inside:avoid">
+  <table width="100%" style="page-break-inside:avoid">
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;"><b>ROL DE PAGO DE ${payslip.contract_id.subtype_id.name or  ''} - ${payslip.period_id.name} </b></td>
+    </tr>
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;"><b>DESDE ${payslip.date_from or  ''} - ${payslip.date_to} </b></td>
+    </tr>
+    <tr>
+      <!-- COLUMNA 1 -->
+      <table style="text-align:left;font-size:10px" width="100%" style="page-break-inside:avoid">
+	<tr>
+    	  <th width="25%"><b>Servidor:</b></th>
+    	  <td width="75%">${payslip.employee_id.name} - ${payslip.employee_id.complete_name}</td>
+    	</tr><tr>
+    	  <th width="25%"><b>Departamento:</b></th>
+    	  <td width="75%">${payslip.department_id.name}</td>
+    	</tr><tr>
+    	  <th width="25%"><b>Cargo:</b></th>
+    	  <td width="75%">${payslip.job_id.name}</td>
+    	</tr>
+      </table>
+      <table style="text-align:left;font-size:10px" width="100%" border="1" style="page-break-inside:avoid">
+    	<tr>
+    	  <th width="50%"><center><b>INGRESOS</b></center></th>
+    	  <td width="50%"><center><b>EGRESOS</b></center></th>
+</tr>
+<tr>
+  <td width="50%">
+    %for line in payslip.line_ids:
+    <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+      %if (line.category_id.code == 'APT') or (line.category_id.code == 'BASIC') or (line.category_id.code == 'ING'):
+      <tr>
+	<td width="75%">${line.name}</td>
+	<td width="25%">${line.amount}</td>
+      </tr>
+      %endif
+    </table>
+    %endfor
+</th>
+<td width="50%">
+  %for line in payslip.line_ids:
+  <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+    %if (line.category_id.code == 'EGR'):
+    <tr>
+      <td width="75%">${line.name}</td>
+      <td width="25%">${line.amount}</td>
+    </tr>
+    %endif
+  </table>
+  %endfor
+</th>
+</tr><tr>
+  <th width="50%">
+    <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+      <tr>
+	<td width="75%"><b>TOTAL INGRESOS</b></td>
+	<td width="25%"><b>${payslip.basic+payslip.aportable+payslip.allowance}</b></td>
+      </tr>
+    </table>
+  </th>
+  <td width="50%">
+    <table width="100%" style="text-align:left;font-size:10px" style="page-break-inside:avoid">
+      <tr>
+	<td width="75%"><b>TOTAL EGRESOS</b></td>
+	<td width="25%"><b>${payslip.deduction}</b></td>
+      </tr>
+    </table>
+</th>
+</tr><tr><td colspan="2"><b>TOTAL/ NETO A RECIBIR: ${payslip.net}</b></td></tr>
+
+</table>
+<!-- FIN COLUMNA 1 -->
+<!-- COLUMNA 2 -->
+
+</table>
+<br></br><br></br>
+<!-- FIN COLUMNA 2 -->
+</table>
+    %endfor
+</br></br></br>
+</body>
+</html>

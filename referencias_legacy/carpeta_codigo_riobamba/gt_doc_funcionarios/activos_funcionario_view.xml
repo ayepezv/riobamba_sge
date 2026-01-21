@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <!-- ASISTENTE(WIZARD) DE LOS BIENES O ACTIVOS DEL EMPLEADO -->
+
+       <record id="view_activos_empleado" model="ir.ui.view">
+	 <field name="name">Activos del Empleado</field>
+	 <field name="model">activos.empleado</field>
+	 <field name="type">form</field>
+	 <field name="arch" type="xml">
+	   <form string="Activos del Empleado">
+             <group col="4" colspan="4">
+               <field name="empleado_id" readonly="1" colspan="2"  string="Empleado:"/> 
+               <field name="tipo" colspan="2" required="1"/>
+               <field name="estado" colspan="2" required="1"/>
+               
+	     </group>  
+	     <newline/>
+	     <field name='line_ids' readonly="1" colspan="4" nolabel="1">
+	       <tree>
+                 <field name='code'/>
+                 <field name='name'/>       
+                 <field name='otros'/>      
+                 <field name='valor_compra'/>
+                 <field name='valor_actual'/>
+                 <field name='condicion'/>
+                 <field name='employee_is' invisible = "1"/>
+	       </tree>
+	     </field>
+	     <newline/>
+             <newline/>
+	     <group col="3" colspan="4">
+	       <button icon="gtk-cancel" special="cancel" string="Salir" />
+               <button name="mostrar_activos" type="object" icon="gtk-execute"  string="Generar"/>
+               <button name="printCustodioValorado" type="object" icon="gtk-execute"  string="Imprimir"/>
+	     </group>
+           </form>
+        </field>
+      </record>
+
+
+      <record id="action_activos_empleado" model="ir.actions.act_window">
+        <field name="name">Activos del Empleado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">activos.empleado</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+  
+      <!--esta en menu de la izquierda empleados y este dentro del menu principal gestion de documentos-->
+      <menuitem id="menu_empleados_docs" name="Empleados" parent="gt_document_manager.menu_document_manager"/>
+      <!-- menu -->
+      <menuitem id="menu_activos_empleados" icon="STOCK_EXECUTE" action="action_activos_empleado"
+		parent="menu_empleados_docs" name="Activos a su cargo"/>
+
+
+    </data>
+</openerp>

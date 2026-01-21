@@ -1,0 +1,24 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+{
+    "name" : "",
+    "version" : "1.0",
+    "author" : 'Mario Chogllo',
+    "description": """ 
+    """,
+    "category" : "Budget",
+    "website" : "http://www.goberp.com",
+    "depends" : ['gt_budget','gt_project_project','account_base'],
+    "init_xml" : [],
+    "demo_xml" : [],
+    "update_xml" : [
+        'budget_sequence.xml',
+        'budget_view.xml',
+        ],
+    "installable": True,
+}

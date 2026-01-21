@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <record id="group_holidays_register" model="res.groups">
+        <field name="name">Ausencias - Registrar</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+    <record id="group_holidays_approve" model="res.groups">
+        <field name="name">Ausencias - Aprobar</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+    <record id="group_holidays_validate" model="res.groups">
+        <field name="name">Ausencias - Validar</field>
+        <field name="category_id" ref="base.module_category_human_resources"/>
+    </record>
+
+</data>
+</openerp>

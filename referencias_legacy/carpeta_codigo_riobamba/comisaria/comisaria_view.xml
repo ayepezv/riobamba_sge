@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <menuitem id="menu_comisaria" 
+			   
+			  name="Comisaria"
+/>
+
+      <!-- comisaria vistas
+		-->
+	<!-- formulario de ingreso del cliente
+		-->
+      <record model="ir.ui.view" id="view_cliente_form">
+		<field name="name">cliente.form</field>
+		<field name="model">cliente</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		  <form string="Cliente">
+			<group col="4" colspan="4">
+			  <field name="cedula" colspan="2"/>
+                          <field name="type_ced_ruc" colspan="2"/>
+			  <field name="name" colspan="2" />
+			  <field name="direccion" colspan="2" />
+			  <field name="telefono" colspan="2" />
+			  <field name="sexo" colspan="2" />
+			</group>
+			
+		  </form>
+		</field>
+      </record>
+	<!-- formulario de vista de los clientes
+		-->	  
+      <record id="view_cliente_tree" model="ir.ui.view">
+		<field name="name">cliente.tree</field>
+		<field name="model">cliente</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+		  <tree string="Clientes" >
+			<field name="cedula"/>
+                        <field name="type_ced_ruc"/>
+			<field name="name"/>
+			<field name="direccion"/>
+			<field name="telefono"/>
+			<field name="sexo"/>
+		  </tree>
+		</field>
+      </record>
+	<!-- formulario de vista para la busqueda de los clientes
+		-->
+      <record id="view_cliente_filter" model="ir.ui.view">
+	<field name="name">Cliente Busqueda</field>
+	<field name="model">cliente</field>
+	<field name="type">search</field>
+	<field name="arch" type="xml">
+	  <search string="Clientes">
+	    <field name="cedula"/>
+            <field name="type_ced_ruc"/>
+	    <field name="name"/>
+	    <field name="direccion"/>
+		<field name="telefono"/>
+		<field name="sexo"/>
+	    <newline />
+	  </search>
+	</field>
+      </record>
+	<!-- al hacer click se abren el formulario de ingreso del cliente
+		-->  
+      <record id="action_cliente" model="ir.actions.act_window">
+		<field name="name">Clientes</field>
+		<field name="res_model">cliente</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+      </record>
+	<!-- el menu en la parte izquierda donde aparece el cliente
+		-->   
+      <menuitem id="menu_comisaria_cliente" sequence="2"
+				action="action_cliente"
+				parent="menu_comisaria"
+				name="Clientes" />
+
+
+    </data>
+</openerp>

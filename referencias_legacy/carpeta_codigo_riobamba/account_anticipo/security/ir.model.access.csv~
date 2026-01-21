@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_account_advance_usr","hr.payroll.advance","gt_hr_advance.model_hr_payroll_advance","account.group_account_manager",1,1,1,1
+"access_account_advance_line_usr","hr.payroll.advance.line","gt_hr_advance.model_hr_payroll_advance_line","account.group_account_manager",1,1,1,1

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+	  
+	  <record model="ir.ui.view" id="vocuher_amount_search_inherit">
+		<field name="name">voucher.amount.select.inherit</field>
+		<field name="type">form</field>
+		<field name="model">account.voucher</field>
+		<field name="inherit_id" ref="account_voucher.view_voucher_filter_sale"/>
+		<field name="arch" type="xml">
+		  <xpath expr="/search/group/field[@name='partner_id']" position="after">
+			<field name="amount"/>
+		  </xpath>
+		</field>
+	  </record>
+	  
+	  <record model="ir.ui.view" id="voucher_doc_ref_search_inherit">
+		<field name="name">voucher.doc.ref.list.select.inherit</field>
+		<field name="type">form</field>
+		<field name="model">account.voucher</field>
+		<field name="inherit_id" ref="account_voucher.view_voucher_filter_vendor_pay"/>
+		<field name="arch" type="xml">
+		  <xpath expr="/search/group/field[@name='date']" position="after">
+			<field name="doc_reference"/>
+		  </xpath>
+		</field>
+	  </record>
+	  
+	  <record id="view_account_voucher_certificate_form" model="ir.ui.view">
+	    <field name="name">view.account.voucher.certificate.form</field>
+	    <field name="model">account.voucher</field>
+	    <field name="inherit_id" ref="account_voucher.view_vendor_payment_form"/>
+	    <field name="arch" type="xml">
+	      <xpath expr="//field[@name='date']" position="replace">
+		<field name="date" required="1"/>
+	      </xpath>
+	      <xpath expr="//field[@name='name']" position="after">
+		<field name="certificate_id" required="1"
+		       domain="[('state','=','commited'),('partner_id','=',partner_id)]" 
+		       context="{'certificate_id': certificate_id}"/>
+	      </xpath>
+	      <xpath 
+		  expr="/form/notebook/page[@string='Payment Information']/field[@name='line_dr_ids']/tree/field[@name='move_line_id']" 
+		  position="after">
+		<field name="budget_id" domain="[('certificate_id','=', parent.certificate_id)]"
+		       attrs="{'required':[('reconcile','=',True)]}"/>
+	      </xpath>
+	      <xpath expr="//button[@string='Unreconcile']" position="after">
+		<button name="action_print_report" string="Imprimir Comprobante" icon="gtk-print" 
+			context="{'report':'account.advances'}" type="object" 
+			attrs="{'invisible':[('state','!=','posted')]}"/>
+	      </xpath>
+	      <xpath expr="//field[@name='name']" position="attributes">
+		<attribute name="invisible">1</attribute>
+	      </xpath>
+	      <xpath expr="//field[@name='amount']" position="attributes">
+		<attribute name="invisible">1</attribute>
+	      </xpath>
+	      <xpath expr="//field[@name='payment_option']" position="attributes">
+		<attribute name="invisible">1</attribute>               
+	      </xpath>
+	      <xpath expr="//field[@name='writeoff_amount']" position="attributes">
+		<attribute name="invisible">1</attribute>               
+	      </xpath>
+	      <xpath expr="//separator[@string='Payment Options']" position="attributes">
+		<attribute name="invisible">1</attribute>          
+	      </xpath>   
+	      <xpath expr="//field[@name='analytic_id']" position="attributes">
+		<attribute name="invisible">1</attribute>          
+	      </xpath>
+	    </field>
+	  </record>
+	  
+	  <record id="view_account_voucher_purchase_certificate_form" model="ir.ui.view">
+	    <field name="name">view.account.voucher.purchase.certificate.form</field>
+		<field name="model">account.voucher</field>
+		<field name="inherit_id" ref="account_voucher.view_purchase_receipt_form"/>
+		<field name="arch" type="xml">
+		  <xpath expr="//field[@name='name']" position="after">
+			<field name="certificate_id" 
+				   domain="[('state','=','compromised'),('project_id.type_budget','=','gasto'),
+						   ('partner_id','in',[partner_id,False])]"/>
+		  </xpath>
+		  <xpath expr="/form/notebook/page[@string='Bill Information']/field[@name='line_dr_ids']/tree/field[@name='account_id']"
+				 position="after">
+			<field name="budget_id"/>
+		  </xpath>
+		  <xpath expr="/form/notebook/page[@string='Bill Information']/field[@name='line_dr_ids']/tree/field[@name='account_id']" 
+				 position="attributes">
+			<attribute name="on_change">onchange_account_id(account_id,parent.certificate_id,context)</attribute>
+			<attribute name="context">{'type': parent.type}</attribute>
+		  </xpath>
+		</field>
+	  </record>
+	  
+	  <record id="view_invoice_line_budget_form" model="ir.ui.view">
+		<field name="name">view.account.invoice.line.budget.form</field>
+		<field name="model">account.invoice.line</field>
+		<field name="inherit_id" ref="account.view_invoice_line_form"/>
+		<field name="arch" type="xml">
+		  <!--xpath expr="//field[@name='account_id']" position="after">
+			<field name="budget_id" required="1"/>
+		  </xpath-->
+		  <xpath expr="//separator[@string='Notes']" position="attributes">
+			<attribute name="invisible">1</attribute>          
+		  </xpath>
+		  <xpath expr="//separator[@string='Taxes']" position="attributes">
+			<attribute name="string">Impuestos</attribute>          
+		  </xpath>
+		  <xpath expr="//field[@name='account_analytic_id']" position="attributes">
+			<attribute name="domain">[('usage','in',['cost'])]</attribute>
+			<attribute name="string">Centro de Costos</attribute>
+		  </xpath>        	  
+		</field>
+	  </record>
+	  
+  
+  <!-- Wizard pago de impuestos -->
+  
+  <record id="view_wizard_payment_taxes" model="ir.ui.view">
+    <field name="name">wizard.payment.taxes.form</field>
+    <field name="model">wizard.payment.taxes</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Pago de Impuestos">
+		<group string="Información de Consulta" colspan="4">
+		  <field name="fiscalyear_id" required="1" widget="selection"/>
+		  <field name="period_from" required="1" string="Mes" domain="[('fiscalyear_id','=',fiscalyear_id),('special','=',False)]"/>
+		  <field name="partner_id" required="1"/>
+		  <field name="date"/>
+		  <field name="journal_id" domain="[('type','in', ['bank','cash'])]"/>
+		  <field name="certificate_id" domain="[('partner_id','=',partner_id),('state','=','compromised')]" required="0"/>
+		</group>
+		<group colspan="4">
+		  <button special="cancel" string="Cerrar" icon="gtk-cancel"/>
+		  <button name="action_payment_taxes" type="object" string="Generar Pago" icon="gtk-execute"/>
+		</group>	  
+      </form>
+    </field>
+  </record>
+  
+  <record id="action_payment_taxes" model="ir.actions.act_window">
+    <field name="name">Pago de Impuestos</field>
+    <field name="type">ir.actions.act_window</field>
+    <field name="res_model">wizard.payment.taxes</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+  
+  <!--menuitem action="action_payment_taxes" id="menu_payment_taxes" parent="account.menu_finance_bank_and_cash" sequence="40"/-->
+  
+  <!-- Menu anticipos de empleados y proveedores -->
+  
+  <menuitem id="menu_finance_anticipos" name="Anticipos" parent="account.menu_finance"/>
+  
+  <record id="action_anticipo_empleado" model="ir.actions.act_window">
+    <field name="name">Anticipo Funcionarios</field>
+    <field name="res_model">account.voucher</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form,graph</field>
+    <field name="domain">[('internal_type','=','AS')]</field>
+    <field name="context">{'type':'payment', 'extra_type': 'advances','default_internal_type':'AS'}</field>
+    <field name="search_view_id" ref="account_voucher.view_voucher_filter_vendor_pay"/>
+    <field name="view_id" eval="False"/>
+    <field name="target">current</field>
+  </record>
+  <record id="action_anticipo_empleado_tree" model="ir.actions.act_window.view">
+    <field eval="1" name="sequence"/>
+    <field name="view_mode">tree</field>
+    <field name="act_window_id" ref="action_anticipo_empleado"/>
+  </record>
+  <record id="action_anticipo_empleado_form" model="ir.actions.act_window.view">
+    <field eval="2" name="sequence"/>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="account_advances.view_account_advance_supp_form"/>
+    <field name="act_window_id" ref="action_anticipo_empleado"/>
+  </record>
+  <record id="action_anticipo_proveedor" model="ir.actions.act_window">
+    <field name="name">Anticipo Proveedores</field>
+    <field name="res_model">account.voucher</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form,graph</field>
+    <field name="domain">[('internal_type','=','AP')]</field>
+    <field name="context">{'type':'payment', 'extra_type': 'advances','default_internal_type':'AP'}</field>
+    <field name="search_view_id" ref="account_voucher.view_voucher_filter_vendor_pay"/>
+    <field name="view_id" eval="False"/>
+    <field name="target">current</field>
+  </record>
+  <record id="action_anticipo_proveedor_tree" model="ir.actions.act_window.view">
+    <field eval="1" name="sequence"/>
+    <field name="view_mode">tree</field>
+    <field name="act_window_id" ref="action_anticipo_proveedor"/>
+  </record>
+  <record id="action_anticipo_proveedor_form" model="ir.actions.act_window.view">
+    <field eval="2" name="sequence"/>
+    <field name="view_mode">form</field>
+    <field name="view_id" ref="account_advances.view_account_advance_supp_form"/>
+    <field name="act_window_id" ref="action_anticipo_proveedor"/>
+  </record>
+  
+  <menuitem action="action_anticipo_empleado" icon="STOCK_JUSTIFY_FILL" sequence="12"
+            id="menu_action_anticipo_empleado"  parent="menu_finance_anticipos"/>
+  
+  <menuitem action="action_anticipo_proveedor" icon="STOCK_JUSTIFY_FILL" sequence="12"
+            id="menu_action_anticipo_proveedor"  parent="menu_finance_anticipos"/>
+
+    </data>
+</openerp>
+

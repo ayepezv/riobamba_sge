@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+    <openerp>
+        <data>
+            <report 
+                id="reporte_cliente_report"
+                string="Reporte Clientes"
+                model="cliente"
+                report_type="qweb-pdf"
+                file="comisaria.comisaria_cliente"
+                name="comisaria.comisaria_cliente"
+                menu="True"
+            />
+        </data>
+    </openerp>
+
+

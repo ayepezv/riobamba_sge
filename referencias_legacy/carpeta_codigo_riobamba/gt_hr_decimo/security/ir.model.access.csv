@@ -1,0 +1,17 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_hr_decimo_tercero","hr.decimo.tercero","model_hr_decimo_tercero","base.group_hr_manager",1,1,1,1
+"access_hr_decimo_tercero","hr.decimo.tercero","model_hr_decimo_tercero","base.group_hr_user",1,1,1,1
+"access_hr_decimo_cuarto","hr.decimo.cuarto","model_hr_decimo_cuarto","base.group_hr_manager",1,1,1,1
+"access_hr_decimo_cuarto","hr.decimo.cuarto","model_hr_decimo_cuarto","base.group_hr_user",1,1,1,1
+"access_hr_decimo_tercero_line","hr.decimo.tercero.line","model_hr_decimo_tercero_line","base.group_hr_manager",1,1,1,1
+"access_hr_decimo_tercero_line","hr.decimo.tercero_line","model_hr_decimo_tercero_line","base.group_hr_user",1,1,1,1
+"access_hr_decimo_cuarto_line","hr.decimo.cuarto_line","model_hr_decimo_cuarto_line","base.group_hr_manager",1,1,1,1
+"access_hr_decimo_cuarto_line","hr.decimo.cuarto_line","model_hr_decimo_cuarto_line","base.group_hr_user",1,1,1,1
+"access_hr_decimo_tercero_acc","hr.decimo.tercero","model_hr_decimo_tercero","account.group_account_manager",1,1,1,0
+"access_hr_decimo_tercero_line_acc","hr.decimo.tercero.line","model_hr_decimo_tercero_line","account.group_account_manager",1,1,1,0
+"access_hr_decimo_cuarto_acc","hr.decimo.cuarto","model_hr_decimo_cuarto","account.group_account_manager",1,1,1,0
+"access_hr_decimo_cuarto_line_acc","hr.decimo.cuarto_line","model_hr_decimo_cuarto_line","account.group_account_manager",1,1,1,0
+"access_hr_decimo_tercero_fn","hr.decimo.tercero","model_hr_decimo_tercero","account.group_account_manager",1,0,0,0
+"access_hr_decimo_tercero_line_fn","hr.decimo.tercero.line","model_hr_decimo_tercero_line","account.group_account_manager",1,0,0,0
+"access_hr_decimo_cuarto_fn","hr.decimo.cuarto","model_hr_decimo_cuarto","account.group_account_manager",1,0,0,0
+"access_hr_decimo_cuarto_line_fn","hr.decimo.cuarto.line","model_hr_decimo_cuarto_line","account.group_account_manager",1,0,0,0

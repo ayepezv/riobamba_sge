@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="account.act_open" model="workflow.activity">
+            <field name="wkf_id" ref="account.wkf"/>
+            <field name="name">open</field>
+            <field name="action">action_date_assign()
+action_budget_apply()
+action_move_create()
+action_number()
+action_retention_create()
+create_expedient_task()
+write({'state':'open'})</field>
+            <field name="kind">function</field>
+        </record>
+
+        <!-- agregar para invoice-->
+    </data>
+</openerp>

@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+	  	  
+    <record model="ir.ui.view" id="view_report_mayor_cuenta_form">
+      <field name="name">Mayor Cuenta</field>    
+      <field name="model">mayor.cuenta</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Mayor Cuenta">
+          <group  colspan="4">
+	    <field name="fiscalyear_id" on_change="onchange_fiscalyear(fiscalyear_id)"/>
+	    <field name='tipo' required="1"/>
+	    <newline/>
+	    <field name="name" colspan="4" required="1" on_change="onchange_mayor_acc(name)"/>
+	    <field name="name_to" colspan="4" required="1"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	    <field name="partner_id" colspan="4"/>
+	  </group>
+	  <group colspan="4" col="6">
+	    <field name="all_hijas" colspan="2"/>
+	    <field name="agua" colspan="2"/>
+	    <field name="datas_fname" colspan="2" invisible="1"/>
+	    <field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	  </group>
+	  <group  colspan="4" col='8'>
+	    <button name="loadMayor" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_mayor_cta" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	    <button name="exportaExcel" string="Exportar Excel" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_mayor_cta_saldo" string="Imprimir(Saldo>0)" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <group colspan="4" col="6">
+	    <field name="debe_m" readonly="1" colspan="2"/>
+	    <field name="haber_m" readonly="1" colspan="2"/>
+	    <field name="saldo_m" readonly="1" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" readonly="1" nolabel="1">
+		<tree>
+		  <field name="account_id"/>
+		  <field name="saldo_anterior"/>
+		  <field name="debe" sum="TOTAL"/>
+		  <field name="haber" sum="TOTAL"/>
+		  <field name="saldo_final" sum="TOTAL"/>
+		  <field name="line_line_ids" readonly="1" nolabel="1">
+		    <tree>
+		      <field name="name"/>
+		      <field name="date"/>
+		      <field name="debit" sum="TOTAL DEBE"/>
+		      <field name="credit" sum="TOTAL HABER"/>
+		      <field name="saldo" sum="TOTAL SALDO"/>
+		    </tree>
+		  </field>
+		</tree>
+
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_report_mayorcta">
+	  <field name="name">Mayor Cuenta</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">mayor.cuenta</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="report_mayor_cta"
+	   sequence="0"
+	   parent="account.menu_finance_entries"
+	   action="action_report_mayorcta"/>
+
+	<!-- mayor y asientos en budget -->
+	<menuitem
+	   id="report_mayor_cta_budget"
+	   sequence="0"
+	   parent="gt_budget.menu_budget_queries_base"
+	   action="action_report_mayorcta"/>
+
+    <record id="action_account_moves_less_afectacion_budget" model="ir.actions.act_window">
+      <field name="name">Comprobantes Contables</field>
+      <field name="res_model">account.move</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="search_view_id" ref="view_account_move_search_less_afectacion"/>
+    </record>
+    
+    <!--record id="action_move_less_tree_afectacion_budget" model="ir.actions.act_window.view">
+      <field name="view_mode">tree</field>
+      <field name="view_id" ref="view_move_less_tree_afectacion_budget"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion"/>
+    </record>
+    
+    <record id="action_move_less_form_afectacion_budget" model="ir.actions.act_window.view">
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="view_move_less_form_afectacion"/>
+      <field name="act_window_id" ref="action_account_moves_less_afectacion"/>
+    </record-->
+    
+    <menuitem
+        action="action_account_moves_less_afectacion_budget"
+        icon="STOCK_JUSTIFY_FILL"
+	name="Comprobantes Contables"
+        id="menu_action_account_moves_prf_budget"
+        parent="gt_budget.menu_budget_queries_base"
+        sequence="0"
+        />
+	<!-- -->
+
+    <record model="ir.ui.view" id="view_report_balace_cedula_form">
+      <field name="name">Verificacion Balance - Cedulas</field>    
+      <field name="model">balance.cedula</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Balance - Cedula">
+          <group  colspan="4">
+	    <field name="fiscalyear_id" widget="selection" colspan="4" required="1"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	    <!--	    <field name="account_ids" colspan="2">
+		<tree>
+		<field name="code"/>
+		<field name="name"/>
+		</tree>
+		</field> -->
+	    <!--	    <field name="budget_ids" colspan="2">
+		<tree>
+		<field name="code"/>
+		<field name="name"/>
+		</tree>
+		</field> -->
+	    <!--field name="account_txt" colspan="2" required="0"/>
+	    <field name="budget_txt" colspan="2" required="0"/>
+	    <button name="generar_datos" string="Generar datos" icon="gtk-execute" type="object" colspan="2"/>	    
+	    <button name="imprimir_datos" string="Imprimir" icon="gtk-print" type="object" colspan="2"/-->
+	    <button name="generar_diccionarios" string="Generar Archivos ESIGEF (no se requiere llenar los campos Cuenta y Partida)" icon="gtk-execute" type="object" colspan="4"/>
+	    <!--button groups="base.group_erp_manager" name="validar_asientos" string="Validar asientos" icon="gtk-execute" type="object" colspan="4"/-->
+	    <notebook colspan="4">
+	      <!--page string="Datos Balance - Cedula">
+		<field name="line_balance_ids" colspan="2" readonly="1" nolabel="1">
+		  <tree>
+		    <field name="code"/>
+		    <field name="desc"/>
+		    <field name="debe_flujo"/>
+		    <field name="haber_flujo"/>
+		  </tree>
+		</field>
+		<field name="line_cedula_ids" colspan="2" readonly="1" nolabel="1">
+		  <tree>
+		    <field name="code"/>
+		    <field name="desc"/>
+		    <field name="commited_amount"/>
+		    <field name="devengado_amount"/>
+		    <field name="paid_amount"/>
+		  </tree>
+		</field>
+	      </page-->
+	      <page string="ARCHIVOS ESIGEF">
+		<field name="filename_balance" invisible="1"/>
+		<field name="data_balance" filename="filename_balance" colspan="4"/>
+		<field name="filename_cedulas" invisible="1"/>
+		<field name="data_cedulas" filename="filename_cedulas" colspan="4"/>
+		<field name="filename_transferencias" invisible="1"/>
+		<field name="data_transferencias" filename="filename_transferencias" colspan="4"/>
+		<field name="mensajes" colspan="4"/>
+		<field name="filename_balance_xls" invisible="1"/>
+		<field name="data_balance_xls" filename="filename_balance_xls" colspan="4"/>
+	      </page>
+	      <page string="ARCHIVOS BEDE">
+		<field name="filename_balance_be" invisible="1"/>
+		<field name="data_balance_be" filename="filename_balance_be" colspan="4"/>
+		<field name="filename_cedulas_bi" invisible="1"/>
+		<field name="data_cedulas_bi" filename="filename_cedulas_bi" colspan="4"/>
+		<field name="filename_cedulas_be" invisible="1"/>
+		<field name="data_cedulas_be" filename="filename_cedulas_be" colspan="4"/>
+	      </page>
+	      <!--page string="Validacion asientos">
+		<group groups="base.group_erp_manager">
+		  <field name="mensajes2" colspan="4"/>
+		</group>
+	      </page-->
+	    </notebook>
+	    </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_report_balance_cedula">
+      <field name="name">Reporte Balance - Cedula</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">balance.cedula</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record model="ir.ui.view" id="view_rel_partida_cuenta_form">
+      <field name="name">Validacion Cuentas Partida</field>    
+      <field name="model">rel.partida.cuenta</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Validacion Cuentas Partida">
+          <group  colspan="4" col="6">
+	    <field name="fiscalyear_id" widget="selection" colspan="2" required="1"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string='Relacion Partida Cuenta'>
+	      <field name='line_ids' colspan="4" readonly="1" nolabel="1">
+		<tree>
+		  <field name="partida"/>
+		  <field name="cuenta"/>
+		  <field name="debe"/>
+		  <field name="haber"/>
+		  <field name="devengado"/>
+		  <field name="pagado"/>
+		  <field name="dif_devengado"/>
+		  <field name="dif_pagado"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string='Relacion Entre Cuentas'>
+	      <field name='line2_ids' readonly="1" colspan="4" nolabel="1">
+		<tree>
+		  <field name="partida"/>
+		  <field name="cuenta"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	  <group>
+	    <button name="computeRelCuentas" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_rel_partida_cuenta">
+      <field name="name">Validacion Cuentas Partida</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">rel.partida.cuenta</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem
+	id="balance_cedula_menu"
+	sequence="1"
+	parent="account.menu_finance_entries"
+	name="Revision Balance-Cedula"
+	string="Revision Balance-Cedula"/>
+    
+    <menuitem
+	id="report_balance_cedula"
+	sequence="1"
+	parent="balance_cedula_menu"
+	action="action_report_balance_cedula"/>
+
+
+    <menuitem
+	id="report_rel_partida_cuenta"
+	sequence="2"
+	parent="balance_cedula_menu"
+	action="action_rel_partida_cuenta"/>
+
+    <record model="ir.ui.view" id="view_report_regla_esigef_form">
+      <field name="name">Regla Esigef Form</field>    
+      <field name="model">regla.line</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Regla Esigef">
+          <group  colspan="4">
+	    <field name="name" colspan="2" required="1"/>
+	    <field name="agrupa" colspan="2" required="1"/>
+	    <field name="texto" colspan="4" required="1"/>
+	    <field name="regla" colspan="4" required="1"/>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_report_regla_esigef_tree">
+      <field name="name">Regla Esigef tree</field>    
+      <field name="model">regla.line</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">         
+        <tree string="Regla Esigef">
+	  <field name="name" colspan="2" required="1"/>
+	  <field name="agrupa" colspan="2" required="1"/>
+	  <field name="texto" colspan="2" required="1"/>
+	  <field name="regla" colspan="4" required="1"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_report_regla_esigef_search">
+      <field name="name">Regla Esigef Filter</field>    
+      <field name="model">regla.line</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">         
+        <search string="Regla Esigef">
+	  <field name="name" colspan="2" required="1"/>
+	  <field name="agrupa" colspan="2" required="1"/>
+	  <field name="texto" colspan="2" required="1"/>
+	  <field name="regla" colspan="4" required="1"/>
+        </search>
+      </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_regla_line">
+      <field name="name">Reglas Esigef</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">regla.line</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem
+	id="reglas_esigef"
+	sequence="1"
+	parent="balance_cedula_menu"
+	action="action_regla_line"/>  
+    
+    <report auto="False" id="mayor_cuenta" model="mayor.cuenta"
+	    name="mayor.cuenta" rml="retention/report/mayor.mako" header="True"
+	    usage="default" string="Mayor Cuenta" report_type="webkit"/>
+
+    <report auto="False" id="mayor_cuenta_saldo" model="mayor.cuenta"
+	    name="mayor.cuenta.saldo" rml="retention/report/mayor_saldo.mako" header="True"
+	    usage="default" string="Mayor Cuenta Saldo" report_type="webkit"/>
+
+    <report auto="False" id="mayor_cuentam" model="mayor.cuenta"
+	    name="mayor.cuentam" rml="retention/report/mayorm.mako" header="True"
+	    usage="default" string="Mayor Cuenta" report_type="webkit"/>
+    
+    <report auto="False" id="balance_cedula_mako" model="balance.cedula"
+	    name="BalanceCedula" file="retention/report/balance_cedula.mako" header="True"
+	    usage="default" string="Balance - Cedula" report_type="webkit"/>
+    
+
+  </data>
+  
+</openerp>

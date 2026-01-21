@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+   <report auto="False" id="cxp_partner" model="cxp.partner"
+            name="cxp.partner" rml="retention/report/cxp_partner.mako"
+            usage="default" string="Por pagar" header="False" report_type="webkit"/>
+
+   <report auto="False" id="saldo_anticipo" model="saldo.anticipo"
+            name="saldo.anticipo" rml="retention/report/saldo_anticipo.mako"
+            usage="default" string="Por cobrar anticipos" header="False" report_type="webkit"/>
+
+   <report auto="False" id="pagar_sri" model="pagar.sri"
+            name="pagar.sri" rml="retention/report/pagar_sri.mako"
+            usage="default" string="Por pagar SRI" header="False" report_type="webkit"/>
+
+   <report auto="False" id="cxc_partner" model="cxc.partner"
+            name="cxc.partner" rml="retention/report/cxc_partner.mako"
+            usage="default" string="Por cobrar" header="False" report_type="webkit"/>
+
+    <report auto="False"
+	    id="report_saldo_caja_bancos"
+	    model="caja.bancos"
+	    name="caja_bancos"
+	    file="retention/report/caja_bancos.mako"
+	    string="Saldo Caja bancos"
+	    report_type="webkit"
+	    webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+
+    <report auto="False"
+	    id="report_lineavalidacion"
+	    model="validate.move"
+	    name="validate.move"
+	    file="retention/report/lineavalidacion.mako"
+	    string="Listado asientos por validar"
+	    report_type="webkit"
+	    webkit_header="report_webkit.ir_header_webkit_basesample0"/>
+    
+    <report auto="False"
+	    id="report_account_move_detalle" 
+	    model="account.move"
+	    multi="True"
+	    name="account.move.detalle" 
+	    rml="retention/report/report_move_detalle.rml" string="Comprobante Contable Detalle"
+	    header="True"/>
+    
+    <report auto="False"
+	    id="report_account_move" 
+	    model="account.move"
+	    name="account.move"
+	    multi="True"
+	    rml="retention/report/report_move.rml" string="Comprobante Contable"
+	    header="True"/>
+
+    <report auto="False" id="account_bank_statement" model="account.bank.statement"
+            name="bank.statement" rml="retention/report/bank_statement.mako"
+            usage="default" string="Conciliación" header="False" report_type="webkit"/>
+
+    <report auto="False" id="account.retention" model="account.retention"
+            name="account.retention" rml="retention/report/account_retention.mako"
+            usage="default" string="Retención" header="False" report_type="webkit"/>
+    
+    <report auto="False" id="account.account_invoices" model="account.invoice"
+            name="account.invoice2" rml="retention/report/account_invoice.mako"
+            usage="default" string="Factura" header="True" report_type="webkit"/>
+
+   <!--report auto="False" id="account.account_liq" model="account.invoice"
+            name="account.liq" rml="retention/report/account_liq.mako"
+            usage="default" string="Liquidación" header="False" report_type="webkit"/-->
+    
+  </data>
+</openerp>

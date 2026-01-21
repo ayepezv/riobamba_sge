@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_hr_change_job" model="ir.ui.view">
+        <field name="name">Actualizar Cargo</field>
+        <field name="model">hr.change.job</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente actualización de cargo de empleado">
+			<label colspan="4" nolabel="1" string="Este wizard le permite a usted actualizar el cargo de un empleado"/>
+			<group col="4" colspan="4">
+			  <group colspan="4">
+				<field name="contract_id" colspan="4" on_change="onchange_contract(contract_id)"/>
+			  </group>
+			  <newline/>
+			  <group colspan="4">
+				<field name="job_ant" colspan="2"/>
+				<field name="job_new" colspan="2"/>
+				<field name="date" colspan="2" required="1"/>
+				<newline/>
+			  </group>
+			  <newline/>
+			  <group col="3" colspan="1">
+				<button icon="gtk-cancel" special="cancel"
+	        			string="Salir" />
+				<button name="update_job" type="object" icon="gtk-execute"  string="Actualizar" 
+						confirm="Esta seguro que desea modificar el salario"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_hr_change_job" model="ir.actions.act_window">
+        <field name="name">Actualizar Cargo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.change.job</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_hr_change_job"
+		icon="STOCK_EXECUTE"
+		action="action_hr_change_job"
+		parent="menu_hr_wizard"
+		name="Actualizar Cargo"/>
+
+
+</data>
+</openerp>

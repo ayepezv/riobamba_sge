@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+from osv import fields, osv
+
+
+class departamentoValor(osv.TransientModel):
+   _name = 'departamento.valor'
+   _columns = dict(
+      dept_ids = fields.many2many('hr.department','d_v_id','d_id','v_id','Departamentos'),
+      categ_ids = fields.many2many('account.asset.category','d_c_id','d_id','c_id','Categorias'),
+      tipo = fields.selection([('Todos','Todos'),('Seleccionar','Seleccionar')],'Opcion'),
+      valor = fields.selection([('Adquisicion','Adquisicion'),('Actual','Actual')],'Valor'),
+   )
+
+
+   def printActivoValorado(self, cr, uid, ids, context=None):
+        if not context:
+            context = {}
+        report = self.browse(cr, uid, ids, context)[0]
+        datas = {'ids': [report.id], 'model': 'departamento.valor'}
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'activo_valorado',
+            'model': 'departamento.valor',
+            'datas': datas,
+            'nodestroy': True,                        
+            }
+
+   _defaults = dict(
+      tipo = 'Todos',
+      valor = 'Adquisicion',
+   )
+
+departamentoValor()

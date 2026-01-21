@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# mario chogllo
+#
+##############################################################################
+
+
+{
+    'name': "Stock - Extendido",
+    'version': '1.0',
+    'category': 'Stock',
+    'complexity': "easy",
+    'description': """
+Agrega la informacion de:
+=============================================================
+    * Objeto receptor
+    * Vario reportes
+    """,
+    'author': 'mario chogllo',
+    'website': 'www.mariofchogllo.com',
+    'images': [],
+    'depends': ['gt_stock'],
+    'init_xml': [],
+    'update_xml': [
+                   'stock_view.xml',
+        ],
+    'demo_xml': [],
+    'test': [],
+    'installable': True,
+    'auto_install': False,
+}

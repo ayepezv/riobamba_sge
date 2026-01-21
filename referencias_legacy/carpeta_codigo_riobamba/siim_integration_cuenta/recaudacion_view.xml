@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <report auto="False" id="recant" model="recaudado.partida.ant"
+            name="recant" rml="siim_integration_cuenta/report/recant.mako"
+            usage="default" string="Recaudacion" header="True" report_type="webkit"/>
+
+      <record id="view_recaudacion_ext" model="ir.ui.view">
+        <field name="name">account.recaudacion.ext.form</field>
+        <field name="model">account.recaudacion</field>
+        <field name="inherit_id" ref="siim_integration.view_account_recaudacion_form"/>
+        <field name="arch" type="xml">
+          <button name="cargar_recaudado" position="replace">
+	    <button name="resumen_recaudado" states="Borrador" 
+		    string="Consolidar/Resumir" type="object" icon="gtk-execute"/>
+          </button>
+	  <xpath expr="//page[@string='Detalle Recaudacion']" position="replace">
+	  </xpath>
+	  <xpath expr="//field[@name='valor_detalle']" position="replace">
+	  </xpath>
+        </field>
+      </record>
+
+      <record id="view_post_emision_ext" model="ir.ui.view">
+        <field name="name">budget.post.emision.form</field>
+        <field name="model">budget.post</field>
+        <field name="inherit_id" ref="gt_budget.view_budget_post_form"/>
+        <field name="arch" type="xml">
+	  <xpath expr="//field[@name='venta']" position="before">
+	    <field name="is_emision"/>
+	  </xpath>
+        </field>
+      </record>
+
+      <!-- partida con actual y anterior -->
+      
+      <record id="view_recaudado_partida" model="ir.ui.view">
+      <field name="name">Recaudado partida detalle</field>
+      <field name="model">recaudado.partida.ant</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detale">
+	  <group col="4" colspan="4">
+	    <field name="poa_id" widget="selection" colspan="2" required="1"/>
+	    <field name="is_conta"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2" required="1"/>
+	    <field name="item_id" colspan="4" required="1" domain="[('type_budget','=','ingreso'),('poa_id','=',poa_id)]"/>
+	  </group>
+	  <newline/>
+	  <group col="4" colspan="1">
+	    <button name="computeRecAnt" type="object" icon="gtk-execute"  string="Generar"/>
+	    <button name="printRecAnt" type="object" icon="gtk-print"  string="Imprimir"/>
+	  </group>
+	  <newline/>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		<field name="date"/>
+		<field name="move_id"/>
+		<field name="desc"/>
+		<field name="actual" sum='Total'/>
+		<field name="anterior" sum='Total'/>
+		<field name="total" sum='Total'/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+      </record>
+
+
+      <record id="action_recaudacion_anterior" model="ir.actions.act_window">
+        <field name="name">Recaudado Partida detalle</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">recaudado.partida.ant</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+      <menuitem action="action_recaudacion_anterior" icon="STOCK_JUSTIFY_FILL" sequence="2"
+		id="menu_action_recaudacion_budget_anterior"  parent="siim_integration.menu_action_recaudacion_budget_root" groups="gt_budget.group_budget_manager"/>
+
+    </data>
+</openerp>

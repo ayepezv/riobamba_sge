@@ -1,0 +1,58 @@
+<openerp>
+<data>
+	
+    <record model="ir.ui.view" id="picking_expedient_in_form">
+        <field name="name">picking.expedient.in.form</field>
+        <field name="type">form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="gt_stock.view_picking_in_form_modified2"/>
+        <field name="arch" type="xml">
+          <field name="date" position="after">
+			<field name="tramite_id" colspan="2" domain="[('state','=','created')]" 
+				   attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+		  </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="picking_expedient_internal_form">
+        <field name="name">picking.expedient.internal.form</field>
+        <field name="type">form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="gt_stock.view_picking_internal_form_modified"/>
+        <field name="arch" type="xml">
+          <field name="date" position="after">
+			<field name="tramite_id" colspan="2" domain="[('state','=','created')]" 
+				   attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+		  </field>
+        </field>
+    </record>
+            
+	<record model="ir.ui.view" id="picking_expedient_out_form">
+        <field name="name">picking.expedient.out.form</field>
+        <field name="type">form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="gt_stock.view_picking_out_form_modified2"/>
+        <field name="arch" type="xml">
+          <field name="date" position="after">
+			<field name="tramite_id" colspan="2" domain="[('state','=','created')]" 
+				   attrs="{'readonly': [('state', 'not in',('draft','assigned','confirmed'))]}"/>
+		  </field>
+        </field>
+    </record>
+           
+
+    <record model="ir.ui.view" id="picking_req_expedient_form">
+        <field name="name">picking.req.expedient.form</field>
+        <field name="type">form</field>
+        <field name="model">stock.requisition</field>
+        <field name="inherit_id" ref="gt_stock.view_requisition_picking_form"/>
+        <field name="arch" type="xml">
+          <field name="date" position="after">
+			<field name="tramite_id" colspan="2" domain="[('state','=','created')]" 
+				   attrs="{'readonly': [('state', 'not in',('Borrador'))]}"/>
+		  </field>
+        </field>
+    </record>
+
+</data>
+</openerp>

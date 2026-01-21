@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_activate_vehicle" model="ir.ui.view">
+        <field name="name">Activar/Desactivar Vehículo</field>
+        <field name="model">vehicle.activate</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Asistente activar/desactivar vehículo">
+          	<group col="4" colspan="4" string="Activar/Desactivar Vehículo">
+			
+			<separator colspan="4" />            
+              <field name="vehicle_id" on_change="onchange_vehicle_id(vehicle_id)" domain="[('estado','!=','low')]"/>
+			  <field name="option"/>
+			  <newline/>
+			</group>
+			  <group col="3" colspan="4">
+				<button icon="gtk-cancel" special="cancel"
+	        			string="Salir" />
+				<button name="activate_vehicle" type="object" icon="gtk-execute"  string="Actualizar"/>			  
+			 </group>
+          </form>
+        </field>
+      </record>
+	  
+
+      <record id="action_active_vehicle" model="ir.actions.act_window">
+        <field name="name">Activar/Desactivar Vehículo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.activate</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_activate_vehicle"
+		icon="STOCK_EXECUTE"
+		action="action_active_vehicle"
+		parent="menu_vehicle_actions"
+		name="Activar/Desactivar Vehículo"/>
+
+
+</data>
+</openerp>

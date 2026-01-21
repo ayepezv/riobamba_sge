@@ -1,0 +1,11 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_budget_programa_unidad,programa.unidad,model_programa_unidad,gt_budget.group_budget_manager,1,1,1,1
+access_budget_programa_unidad_line,programa.unidad.line,model_programa_unidad_line,gt_budget.group_budget_manager,1,1,1,1
+access_partida_financia,partida.financia,model_partida_financia,gt_budget.group_budget_manager,1,1,1,1
+access_budget_concejo,budget.concejo,model_budget_concejo,gt_budget.group_budget_manager,1,1,1,1
+access_budget_concejo_line,budget.concejo.line,model_budget_concejo_line,gt_budget.group_budget_manager,1,1,1,1
+access_partida_financia_head,partida.financia.head,model_partida_financia_head,gt_budget.group_budget_manager,1,1,1,1
+access_budget_pac,budget.pac,model_budget_pac,gt_budget.group_budget_manager,1,1,1,1
+access_budget_pac_line,budget.pac.line,model_budget_pac_line,gt_budget.group_budget_manager,1,1,1,1
+access_financia_reforma,financia.reforma,model_financia_reforma,gt_budget.group_budget_manager,1,1,1,1
+access_partida_financia conta,partida.financia,model_partida_financia,account.group_account_manager,1,0,0,0

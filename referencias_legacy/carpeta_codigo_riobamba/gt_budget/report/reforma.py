@@ -1,0 +1,82 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+import time
+from report import report_sxw
+from osv import fields, osv
+from gt_tool import XLSWriter
+import re
+from tools import ustr
+import operator
+
+class reform_programa(report_sxw.rml_parse):
+    def __init__(self, cr, uid, name, context):
+        super(reform_programa, self).__init__(cr, uid, name, context=context)
+        self.localcontext.update({
+            'time': time,
+            'cr':cr,
+            'uid': uid,
+            'get_programa_reforma': self.get_programa_reforma,
+            'get_programa_reforma2': self.get_programa_reforma2,
+            'get_programa_name': self.get_programa_name,
+            'get_line_ids': self.get_line_ids,
+            'get_line_ids2': self.get_line_ids2,
+        })
+
+
+    def get_programa_name(self, p_id):
+        program_obj = self.pool.get('project.program')
+        aux = ''
+        programa = program_obj.browse(self.cr, self.uid, p_id)
+        aux = programa.sequence + ' - ' + programa.name
+        return aux
+
+    def get_line_ids2(self, p_id,o):
+        aux = []
+        line_obj = self.pool.get('mass.reform.line')
+        program_obj = self.pool.get('project.program')
+        programa = program_obj.browse(self.cr, self.uid, p_id)
+        line_ids = line_obj.search(self.cr, self.uid, [('project_id.program_id','=',p_id),('mass_id2','=',o.id)])
+        if line_ids:
+            for line_id in line_ids:
+                line = line_obj.browse(self.cr, self.uid, line_id)
+                aux.append(line)
+        return aux
+
+    def get_line_ids(self, p_id,o):
+        aux = []
+        line_obj = self.pool.get('mass.reform.line')
+        program_obj = self.pool.get('project.program')
+        programa = program_obj.browse(self.cr, self.uid, p_id)
+        line_ids = line_obj.search(self.cr, self.uid, [('project_id.program_id','=',p_id),('mass_id','=',o.id)])
+        if line_ids:
+            for line_id in line_ids:
+                line = line_obj.browse(self.cr, self.uid, line_id)
+                aux.append(line)
+        return aux
+
+
+    def get_programa_reforma(self, reforma):
+        programa_list = []
+        for line in reforma.line_ids:
+            if not line.budget_id.program_id.id in programa_list:
+                programa_list.append(line.budget_id.program_id.id)
+        return programa_list
+
+    def get_programa_reforma2(self, reforma):
+        programa_list = []
+        for line in reforma.line_ids2:
+            if not line.budget_id.program_id.id in programa_list:
+                programa_list.append(line.budget_id.program_id.id)
+        return programa_list
+
+report_sxw.report_sxw('report.reform_programa',
+                       'mass.reform', 
+                       'addons/gt_budget/report/reforma_programa.mako',
+                       parser=reform_programa,
+                       header=True)
+

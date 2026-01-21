@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+
+    <report auto="False"
+            id="sobregiro"
+            model="budget.sobregiro"
+            name="sobregiro"
+            file="gt_project_project/report/sobregiro.mako"
+            string="Partida Sobregiradas"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="buget_card_expense4"
+            model="budget.poa"
+            name="esigef4"
+            file="gt_project_project/report/esigef4.mako"
+            string="Cédula de gastos Esigef"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="esigef_detalle"
+            model="esigef.detalle"
+            name="esigef_detalle"
+            file="gt_project_project/report/esigef_detalle.mako"
+            string="Esigef Detalle"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="esigef_detalle_in"
+            model="esigef.detalle"
+            name="esigef_detalle_in"
+            file="gt_project_project/report/esigef_detalle_in.mako"
+            string="Esigef Detalle Ingreso"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="esigef_detalle_gas"
+            model="esigef.detalle"
+            name="esigef_detalle_gas"
+            file="gt_project_project/report/esigef_detalle_gas.mako"
+            string="Esigef Detalle Gastos"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+   <report auto="False" id="ajeno_budget" model="ajeno.budget"
+            name="ajeno_budget" rml="gt_project_project/report/ajeno_budget.mako"
+            usage="default" string="Fondos Ajenos" header="True" report_type="webkit"/>  	
+
+   <report auto="False" id="efectiva_budget" model="recaudacion.efectiva"
+            name="efectiva" rml="gt_project_project/report/efectiva.mako"
+            usage="default" string="Recaudacion Efectiva" header="True" report_type="webkit"/>  	
+
+   <report auto="False" id="distributivo" model="distributivo.budget"
+            name="distributivo" rml="gt_project_project/report/distributivo.mako"
+            usage="default" string="Distributivo" header="True" report_type="webkit"/>  	
+
+   <report auto="False" id="recurso_tthh" model="recurso.tthh"
+            name="recurso_tthh" rml="gt_project_project/report/recurso_tthh.mako"
+            usage="default" string="Recurso TTHH" header="True" report_type="webkit"/>  	
+
+   <report auto="False" id="fondo_programa" model="fondo.programa"
+            name="fondo.programa" rml="gt_project_project/report/fondo_programa.mako"
+            usage="default" string="Fondos Programa" header="False" report_type="webkit"/>  	
+
+   <report auto="False" id="rf_programa" model="rf.programa"
+            name="rf.programa" rml="gt_project_project/report/rf_programa.mako"
+            usage="default" string="Reforma Programa" header="True" report_type="webkit"/>  	
+
+    <report auto="False"
+            id="evaluacion_pingreso"
+            model="evaluacion.budgeti"
+            name="evaluacion_pingreso"
+            file="gt_project_project/report/evaluacion_pingreso.mako"
+            string="Evaluacion Prespuestaria de ingreso"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_pgasto"
+            model="evaluacion.budget"
+            name="evaluacion_pgasto"
+            file="gt_project_project/report/evaluacion_pgasto.mako"
+            string="Evaluacion Prespuestaria de Gastos"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_proyecto"
+            model="evaluacion.proyecto"
+            name="evaluacion_proyecto"
+            file="gt_project_project/report/evaluacion_proyecto.mako"
+            string="Evaluacion Prespuestaria de Gastos Proyecto"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_proyecto_comprometido"
+            model="evaluacion.proyecto.comprometido"
+            name="evaluacion_proyecto_comprometido"
+            file="gt_project_project/report/evaluacion_proyecto_comprometido.mako"
+            string="Evaluacion Prespuestaria de Gastos Proyecto Comprometido"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_programa"
+            model="evaluacion.programa"
+            name="evaluacion_programa"
+            file="gt_project_project/report/evaluacion_programa.mako"
+            string="Evaluacion Prespuestaria de Gastos Programa"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_programa_cons"
+            model="evaluacion.programa.cons"
+            name="evaluacion_programa_cons"
+            file="gt_project_project/report/evaluacion_programa_cons.mako"
+            string="Evaluacion Prespuestaria de Gastos Programa Consolidado"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_programa_comprometido"
+            model="evaluacion.programa.comprometido"
+            name="evaluacion_programa_comprometido"
+            file="gt_project_project/report/evaluacion_programa_comprometido.mako"
+            string="Evaluacion Prespuestaria de Gastos Programa Comprometido"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="evaluacion_programa_comprometido_cons"
+            model="evaluacion.programa.cons.comprometido"
+            name="evaluacion_programa_comprometido_cons"
+            file="gt_project_project/report/evaluacion_programa_comprometido_cons.mako"
+            string="Evaluacion Prespuestaria de Gastos Programa Consolidado Comprometido"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="cta_financiera"
+            model="cta.financiera"
+            name="cta_financiera"
+            file="gt_project_project/report/cta_financiera.mako"
+            string="Cuenta Financiera"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="cta_financierac"
+            model="cta.financiera"
+            name="cta_financierac"
+            file="gt_project_project/report/cta_financierac.mako"
+            string="Cuenta Financiera Comprometido"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+<report auto="False"
+        id="cta_financierac_gastado"
+            model="cta.financiera.gastado"
+            name="cta_financierac_gastado"
+            file="gt_project_project/report/cta_financierac_gastado.mako"
+            string="Cuenta Financiera Gastado"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False"
+            id="cta_financiera_gastado"
+            model="cta.financiera.gastado"
+            name="cta_financiera_gastado"
+            file="gt_project_project/report/cta_financiera_gastado.mako"
+            string="Cuenta Financiera Gastado"
+            header="True" report_type="webkit" menu="False"
+	    />
+
+    <report auto="False" id="report_reforma_programa" model="reform.programa" name="reforma_programa"
+            file="gt_project_project/report/reforma_programa.mako" string="Reforma Programa" report_type="webkit" webkit_header=""/>
+    <!-- Reporte de proyectos -->
+    <report auto="False" id="project.project" model="project.project"
+            name="project.project" rml="gt_project_project/report/project_project.mako"
+            usage="default" string="Imprimir Proyecto(s)" header="True" report_type="webkit"/>
+    <!-- Reporte de listado de proyectos consolidado por department-->
+    <report auto="False" id="project_project_list" model="project.project" menu="False"
+            name="project_report_list" rml="gt_project_project/report/project_project_list.mako"
+            usage="default" string="Listado de Proyectos" header="False" report_type="webkit"/>
+
+    <report auto="False" id="project_report_kpi_bars" model="project.project" menu="False"
+            name="project_report_kpi_bars" rml="gt_project_project/report/project_report_kpi_bars.mako"
+            usage="default" string="Imprimir Proyecto" header="False" report_type="webkit"/>
+
+    <!-- Reporte de presupuestos -->
+    <report auto="False" id="project_budget_plan_report" model="project.project"
+            name="project_budget_plan_report" file="gt_project_project/report/project_budget_plan.mako"
+            usage="default" string="Reporte de Presupuesto" header="True" report_type="webkit" />
+    <!-- Reporte de indicadores-->
+    <report auto="False" id="project_kpi_report" model="project.project"
+            name="project_kpi_report" file="gt_project_project/report/project_report_kpi.mako"
+            usage="default" string="Reporte de Indicadores" header="True" report_type="webkit"/>
+    <!-- Reporte de actividades -->
+    <report auto="False" id="project_tasks_report" model="project.project"
+            name="project_tasks_report" rml="gt_project_project/report/project_report_tasks.mako"
+            usage="default" string="Reporte de Actividades" header="True" report_type="webkit"/>    
+    <!-- Reporte por Direccion -->
+    <report auto="False" id="project_state_report" model="project.project"
+            name="project_state_report" rml="gt_project_project/report/project_report_state.mako"
+            usage="default" string="Proyectos por Dirección" header="False" report_type="webkit"/>    
+    <!-- Reporte por Eje -->
+    <report auto="False" id="project_by_axis" model="project.project"
+            name="project_by_axis" rml="gt_project_project/report/project_by_axis.mako"
+            usage="default" string="Proyectos por Eje Estrategico" header="True" report_type="webkit"/>    
+    <!-- Reporte por Estrategia -->
+    <report auto="False" id="project_by_estrategy" model="project.project"
+            name="project_by_estrategy" rml="gt_project_project/report/project_by_estrategy.mako"
+            usage="default" string="Proyectos por Estrategia" header="True" report_type="webkit"/>    
+    <!-- Reporte por Programa -->
+    <report auto="False" id="project_by_program" model="project.project"
+            name="project_by_program" rml="gt_project_project/report/project_by_program.mako"
+            usage="default" string="Proyectos por Programa" header="True" report_type="webkit"/>    
+    <!-- Reporte de barras para avance -->
+    <report auto="False" id="project_bars_general" model="project.project"
+            name="project_bars_general" rml="gt_project_project/report/project_report_general.mako"
+            usage="default" string="Análisis de Avance" header="True" report_type="webkit"/>
+    <!-- Reporte de barras para cumplimiento -->
+    <report auto="False" id="project_compliance_report" model="project.project"
+            name="project_compliance_report" rml="gt_project_project/report/project_compliance_report.mako"
+            usage="default" string="Análisis de Cumplimiento" header="True" report_type="webkit"/>
+
+    <!-- Reporte de Infraestructura Vial -->
+    <report auto="False" id="project_infvial1_report" model="project.project"
+            name="project_infvial1_report" file="gt_project_project/report/project_report_infvial.mako"
+            string="Reporte Mensual de Labores" report_type="webkit" menu="False" header="False"/>
+
+    <report auto="False" id="project_infvial2_report" model="project.project"
+            name="project_infvial2_report" file="gt_project_project/report/project_report_infvial_semanal.mako"
+            string="Reporte Semanal de Labores" report_type="webkit" menu="False" header="False"/>
+
+        <report auto="False"
+                id="crossovered_buget_certificate_request"
+                model="budget.certificate"
+                name="budget.certificate"
+                file="gt_project_project/report/report_certificate.mako"
+                string="Certificado Presupuestario"
+                header="True" report_type="webkit" menu="False"/>
+
+		<!-- ok -->
+        <report auto="False"
+                id="crossovered_buget_certificate_compromise"
+                model="budget.certificate"
+                name="budget.compromise"
+                file="gt_project_project/report/report_compromise.mako"
+                string="Compromiso Presupuestario"
+                header="True" report_type="webkit" menu="False"/>
+
+		<report auto="False"
+				id="crossovered_buget_card"
+                model="budget.poa"
+                name="BudgetCard"
+                file="gt_project_project/report/report_budget_card.mako"
+                string="Ejecución Presupuestaria"
+                header="True" report_type="webkit" menu="False"/>
+
+       <report auto="False"
+                id="crossovered_buget_card_income_group"
+                model="budget.poa"
+                name="BudgetCardIncome"
+                file="gt_project_project/report/report_budget_card_income.mako"
+                string="Cédula de Ingresos"
+                header="True" report_type="webkit" menu="False"
+		/>
+
+       <report auto="False"
+                id="crossovered_buget_card_expense"
+                model="budget.poa"
+                name="BudgetCardExpense"
+                file="gt_project_project/report/report_budget_card_expense.mako"
+                string="Cédula de Gastos"
+                header="True" report_type="webkit" menu="False"
+		/>
+
+
+       <report auto="False"
+                id="crossovered_buget_card_income_group_r"
+                model="budget.poa"
+                name="BudgetCardIncomeR"
+                file="gt_project_project/report/report_budget_card_income_r.mako"
+                string="Cédula de Ingresos solo asignacion inicial"
+                header="True" report_type="webkit" menu="False"
+		/>
+       <report auto="False"
+               id="proforma_presupuestaria_ingreso"
+               model="proforma.presupuestaria.ingreso"
+               name="proforma_presupuestaria_ingreso"
+               file="gt_project_project/report/report_proforma_ingreso.mako"
+               string="Proforma Presupuestaria Ingreso"
+               header="True" report_type="webkit" menu="False"
+	       />
+
+       <report auto="False"
+               id="proforma_presupuestaria_gasto"
+               model="proforma.presupuestaria.gasto"
+               name="proforma_presupuestaria_gasto"
+               file="gt_project_project/report/report_proforma_gasto.mako"
+               string="Proforma Presupuestaria Gasto"
+               header="True" report_type="webkit" menu="False"
+	       />
+       <report auto="False"
+               id="proforma_presupuestaria_ingreso_resumen"
+               model="proforma.presupuestaria.ingreso.resumen"
+               name="proforma_presupuestaria_ingreso_resumen"
+               file="gt_project_project/report/report_proforma_ingreso_resumen.mako"
+               string="Proforma Presupuestaria Ingreso Resumen"
+               header="True" report_type="webkit" menu="False"
+	       />
+
+       <report auto="False"
+               id="proforma_presupuestaria_gasto_resumen"
+               model="proforma.presupuestaria.gasto.resumen"
+               name="proforma_presupuestaria_gasto_resumen"
+               file="gt_project_project/report/report_proforma_gasto_resumen.mako"
+               string="Proforma Presupuestaria Gasto Resumen"
+               header="True" report_type="webkit" menu="False"
+	       />
+
+       <report auto="False"
+                id="crossovered_buget_card_expense_r"
+                model="budget.poa"
+                name="BudgetCardExpenseR"
+                file="gt_project_project/report/report_budget_card_expense_r.mako"
+                string="Cédula de Gastos solo asignacion inicial"
+                header="True" report_type="webkit" menu="False"
+		/>       
+
+       <!--report auto="False"
+                id="crossovered_buget_card_expense_group"
+                model="budget.poa"
+                name="BudgetCardExpenseGroup"
+                file="gt_project_project/report/report_budget_card_expense_group.mako"
+                string="Cédula Presupuestaria de Gastos"
+                header="True" report_type="webkit" menu="False"/-->
+
+
+  </data>
+</openerp>

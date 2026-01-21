@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style type="text/css">
+    .line {
+    border-bottom:1pt solid black;
+    }
+  </style>
+</head>
+<body>
+%for o in objects:
+<table width="100%" style="border:thin solid;">
+  <thead>
+    <h4 colspan="2" style="text-align:center">COMPROMISO PRESUPUESTARIO No. ${ o.name }</h4>
+    <tr>
+      <th style="text-align:left;font-size:10px">Fecha de Emision : ${ formatLang(o.date_commited, date=True) }</th>
+    </tr>
+    <tr>
+      <th style="text-align:left;font-size:10px">Beneficiario : ${ o.partner_id.name } - ${ o.partner_id.ced_ruc }</th>
+    </tr>
+    
+    <tr>
+      <th></th>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>                
+  </thead>
+  <tbody>
+    <table width="100%">
+      <tr style="text-align:left;font-size:10px">
+        <b>DETALLE</b>
+      </tr>
+      <tr style="text-align:left;font-size:10px">
+	<td style="text-align:left;font-size:10px">${ o.notes }</td>
+      </tr>
+    </table>
+    <table width="100%" style="border:thin solid;text-align:center;font-size:10px">
+      <tr>
+        <tr>
+          <th width="50%">PARTIDA PRESUPUESTARIA</th>
+          <th width="35%">PROYECTO</th>
+          <th width="10%">MONTO COMPROMETIDO</th>
+          <th width="5%">TIPO</th>
+        </tr>
+      </tr>
+      <%
+	 aux_total_commited = 0
+	 %>
+      %for line in o.line_ids:
+      <%
+	 aux_total_commited+=line.amount_commited
+	 %>
+      <tbody>
+        <tr>
+	  %if line.budget_post.id!=line.budget_id_aux.id:
+          <td style="text-align:left;font-size:10px">${line.budget_id.code } ${ line.budget_id.name } - ${ line.budget_id_aux.name }</td>
+	  %else:
+          <td style="text-align:left;font-size:10px">${line.budget_id.code } ${ line.budget_id.name }</td>
+	  %endif
+          <td style="text-align:left;font-size:10px">${line.project_id.name }</td>
+          <td style="text-align:right;font-size:10px">$ ${ '{:,.2f}'.format(line.amount_commited) }</td>
+          <td style="text-align:right;font-size:10px">${ line.tipo_invoice }</td>
+        </tr>
+      </tbody>
+      %endfor
+      %if o.item2_ids:
+      %for line in o.item2_ids:
+      <%
+	 aux_total_commited+=line.commited_amount
+	 %>
+      <tbody>
+        <tr>
+          <td style="text-align:left;font-size:10px">${line.budget_item_id.code } ${ line.budget_item_id.name }</td>
+          <td style="text-align:left;font-size:10px">${line.budget_item_id.project_id.name }</td>
+          <td style="text-align:right;font-size:10px">$ ${ '{:,.2f}'.format(line.commited_amount) }</td>
+          <td style="text-align:right;font-size:10px">Reajuste</td>
+        </tr>
+      </tbody>
+      %endfor
+      %endif
+      <tfoot>
+        <tr>
+	  <td></td>
+          <td style="text-align:right;"><strong>TOTAL:</strong></td>
+          <td style="text-align:right;"><strong>${ '{:,.2f}'.format(aux_total_commited) }</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </tbody>
+  <tfoot>
+    <br>
+    <br>
+    <br>
+    <br>
+    <table width="100%">
+      <tr>
+	<th width="50%" style="text-align:center;font-size:10px">________________________</th>
+	<th width="50%" style="text-align:center;font-size:10px">________________________</th>
+      </tr>
+      <tr>
+	<th width="50%" style="text-align:center;font-size:10px">CERTIFICO</th>
+	<th width="50%" style="text-align:center;font-size:10px">APROBADO</th>
+      </tr>
+    </table>
+    <br>
+    <br>
+    <table width="100%">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+	<td width="50%" style="text-align:center;font-size:10px">JEFE PRESUPUESTO</td>
+	<td width="50%" style="text-align:center;font-size:10px">DIRECTOR FINANCIERO</td>
+      </tr>
+    </table>
+  </tfoot>
+</table>  
+%endfor
+</body>
+</html>

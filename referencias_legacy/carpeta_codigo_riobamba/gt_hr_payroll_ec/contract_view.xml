@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+<record model="ir.ui.view" id="view_contract_ir_form_contract">
+  <field name="name">hr.contract.ir</field>
+  <field name="model">hr.contract</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="hr_payroll.hr_contract_form_inherit"/>
+  <field name="arch" type="xml">
+	<xpath expr="/form/notebook/page/group/field[@name='schedule_pay']" position="replace"/>
+  </field>
+</record>
+
+<record model="ir.ui.view" id="view_contract_fr_form">
+  <field name="name">hr.contract.fr</field>
+  <field name="model">hr.contract</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="hr_payroll.hr_contract_form_inherit"/>
+  <field name="arch" type="xml">
+	<field name="struct_id" position="after">
+		<field name="extension_iess"/>
+		<field name="tiene_continuidad"/>
+		<field name="contrato_anterior" domain="[('employee_id','=',employee_id),('id','!=',id),('date_end','&lt;=',date_start)]" attrs="{'invisible':[('tiene_continuidad','=',False)],'required':[('tiene_continuidad','=',True)]}" on_change="obtener_dias_fr(contrato_anterior)"/>
+		<field name="continuidad_desde" readonly="1" attrs="{'invisible':[('tiene_continuidad','=',False)]}"/>
+		<field name="fondo_reserva"/>
+		<field name="dias_fr"/>
+	</field>
+  </field>
+</record>
+
+<record model="ir.actions.act_window" id="view_hr_job_line_menu">
+  <field name="name">Nombre Puesto Trabajo</field>
+  <field name="res_model">hr.job.line</field>
+  <field name="view_mode">tree,form</field>
+</record> 
+
+<menuitem name="Nombre Puesto Trabajo" 
+		  id="hr_job_line" 
+		  parent="hr_payroll.payroll_configure"
+		  action="view_hr_job_line_menu"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,359 @@
+<?xml version="1.0"?>
+<document filename="test.pdf">
+  <template pageSize="(595.0,842.0)" title="Test" author="Martin Simon" allowSplitting="20">
+    <pageTemplate id="first">
+      <frame id="first" x1="57.0" y1="57.0" width="481" height="728"/>
+    </pageTemplate>
+  </template>
+  <stylesheet>
+    <blockTableStyle id="Standard_Outline">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table4">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="2,-1" stop="2,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table1">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Tabla1">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBEFORE" colorName="#000000" start="0,0" stop="0,-1"/>
+      <lineStyle kind="LINEAFTER" colorName="#000000" start="0,0" stop="0,-1"/>
+      <lineStyle kind="LINEABOVE" colorName="#000000" start="0,0" stop="0,0"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table6">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="2,-1" stop="2,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="3,-1" stop="3,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table7">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table10">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table2">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="0,-1" stop="0,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="1,-1" stop="1,-1"/>
+      <lineStyle kind="LINEBELOW" colorName="#000000" start="2,-1" stop="2,-1"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table3">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Table5">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <blockTableStyle id="Tabla2">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
+    <initialize>
+      <paraStyle name="all" alignment="justify"/>
+    </initialize>
+    <paraStyle name="P1" fontName="Helvetica" fontSize="10.0" leading="13"/>
+    <paraStyle name="P2" fontName="Helvetica-Bold" fontSize="10.0" leading="13" alignment="CENTER"/>
+    <paraStyle name="P3" fontName="Helvetica" fontSize="8.0" leading="10"/>
+    <paraStyle name="P4" fontName="Helvetica" fontSize="8.0" leading="10" alignment="CENTER"/>
+    <paraStyle name="P5" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
+    <paraStyle name="P6" fontName="Helvetica-Bold" fontSize="8.0" leading="10"/>
+    <paraStyle name="P7" fontName="Helvetica" fontSize="8.0" leading="10"/>
+    <paraStyle name="P8" fontName="Helvetica" fontSize="2.0" leading="3"/>
+    <paraStyle name="P9" fontName="Helvetica" fontSize="8.0" leading="10"/>
+    <paraStyle name="P10" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="RIGHT"/>
+    <paraStyle name="P11" fontName="Helvetica-Bold" fontSize="8.0" leading="10" alignment="RIGHT"/>
+    <paraStyle name="Standard" fontName="Helvetica"/>
+    <paraStyle name="Heading" fontName="Helvetica" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Text body" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="List" fontName="Helvetica" spaceBefore="0.0" spaceAfter="6.0"/>
+    <paraStyle name="Caption" fontName="Helvetica" fontSize="12.0" leading="15" spaceBefore="6.0" spaceAfter="6.0"/>
+    <paraStyle name="Index" fontName="Helvetica"/>
+    <paraStyle name="Table Contents" fontName="Helvetica"/>
+    <paraStyle name="terp_header" fontName="Helvetica-Bold" fontSize="12.0" leading="15" alignment="LEFT" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="terp_default_8" fontName="Helvetica" fontSize="8.0" leading="10" alignment="LEFT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="Table Heading" fontName="Helvetica" alignment="CENTER"/>
+    <paraStyle name="Heading 1" fontName="Helvetica-Bold" fontSize="115%" leading="NaN" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Heading 2" fontName="Helvetica-BoldOblique" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <paraStyle name="Heading 3" fontName="Helvetica-Bold" fontSize="14.0" leading="17" spaceBefore="12.0" spaceAfter="6.0"/>
+    <images/>
+  </stylesheet>
+  <story>
+    <para style="P9">[[repeatIn(objects,'o')]]</para>
+    <para style="P2">Trámite para pago de Viáticos y Subsistencias</para>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <para style="P7"><font face="Helvetica">Orden de </font><font face="Helvetica">Movilización</font><font face="Helvetica">:</font> [[ o.name or '' ]]</para>
+    <para style="P7"><font face="Helvetica">Servidor:</font> [[ o.employee_id.employee_lastname or '' ]] [[ o.employee_id.name or '' ]]</para>
+    <para style="P7"><font face="Helvetica">Departamento:</font> [[ o.department_id.name or '' ]]</para>
+    <para style="P7"><font face="Helvetica">Cargo:</font> [[ o.job_id.name or '' ]]</para>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <para style="P6">Localidades:</para>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <blockTable colWidths="245.0,118.0,118.0" style="Table4">
+      <tr>
+        <td>
+          <para style="P5">Lugar</para>
+        </td>
+        <td>
+          <para style="P5">Fecha de llegada</para>
+        </td>
+        <td>
+          <para style="P5">Fecha de salida</para>
+        </td>
+      </tr>
+    </blockTable>
+    <section>
+      <para style="P3">[[repeatIn(o.destinos_informe,'destino')]]</para>
+      <blockTable colWidths="245.0,118.0,118.0" style="Table1">
+        <tr>
+          <td>
+            <para style="P3">([[ destino.name or '' ]]) [[ destino.pais_id.name.name or '' ]] [[ destino.ciudad_id.name or '' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ destino.fecha_llegada or '' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ destino.fecha_salida or '' ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      <para style="P8">
+        <font color="white"> </font>
+      </para>
+    </section>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <para style="P6">Actividades:</para>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <blockTable colWidths="482.0" style="Tabla1">
+      <tr>
+        <td>
+          <para style="P7">[[ o.actividades_informe or '' ]]</para>
+        </td>
+      </tr>
+    </blockTable>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <para style="P5">Facturas:</para>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <blockTable colWidths="64.0,85.0,276.0,56.0" style="Table6">
+      <tr>
+        <td>
+          <para style="P5">Tipo</para>
+        </td>
+        <td>
+          <para style="P5">Num. factura</para>
+        </td>
+        <td>
+          <para style="P5">Descripción</para>
+        </td>
+        <td>
+          <para style="P5">Valor</para>
+        </td>
+      </tr>
+    </blockTable>
+    <section>
+      <para style="P3">[[repeatIn(o.facturas_ids,'factura')]]</para>
+      <para style="P3">
+        <font color="white"> </font>
+      </para>
+      <blockTable colWidths="64.0,85.0,276.0,56.0" style="Table7">
+        <tr>
+          <td>
+            <para style="P3">[[ factura.tipo_id.name or '' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ factura.name or '' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ factura.descripcion or '' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ factura.valor or '0' ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+    </section>
+    <blockTable colWidths="301.0,125.0,56.0" style="Table10">
+      <tr>
+        <td>
+          <para style="P3">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P11">Total:</para>
+        </td>
+        <td>
+          <para style="P3">[[ o.total_facturas or '0' ]]</para>
+        </td>
+      </tr>
+    </blockTable>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <para style="P7">
+      <font color="white"> </font>
+    </para>
+    <para style="P6">Detalle:</para>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <blockTable colWidths="301.0,91.0,91.0" style="Table2">
+      <tr>
+        <td>
+          <para style="P5">Descripción</para>
+        </td>
+        <td>
+          <para style="P5">Cantidad</para>
+        </td>
+        <td>
+          <para style="P5">Valor</para>
+        </td>
+      </tr>
+    </blockTable>
+    <section>
+      <para style="P3">[[repeatIn(o.detalle_informe,'detalle')]]</para>
+      <blockTable colWidths="301.0,91.0,91.0" style="Table3">
+        <tr>
+          <td>
+            <para style="P3">[[ detalle.detalle or '' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ detalle.cantidad or '0' ]]</para>
+          </td>
+          <td>
+            <para style="P3">[[ detalle.valor or '0' ]]</para>
+          </td>
+        </tr>
+      </blockTable>
+      <para style="P8">
+        <font color="white"> </font>
+      </para>
+    </section>
+    <blockTable colWidths="275.0,117.0,91.0" style="Table5">
+      <tr>
+        <td>
+          <para style="P3">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P11">Total <font face="Helvetica">calculado:</font></para>
+        </td>
+        <td>
+          <para style="P3">[[ o.total_informe or '0' ]]</para>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <para style="P3">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P10">Necesita justificación:</para>
+        </td>
+        <td>
+          <para style="P3">[[ o.total_informe_facturas or '0' ]]</para>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <para style="P3">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P10">Anticipo:</para>
+        </td>
+        <td>
+          <para style="P3">[[ o.total_anticipo or '0' ]]</para>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <para style="P3">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P11">Total a pagar:</para>
+        </td>
+        <td>
+          <para style="P3">[[ o.total_reajuste or '0' ]]</para>
+        </td>
+      </tr>
+    </blockTable>
+    <para style="P3">
+      <font color="white"> </font>
+    </para>
+    <para style="P1">
+      <font color="white"> </font>
+    </para>
+    <para style="P1">
+      <font color="white"> </font>
+    </para>
+    <blockTable colWidths="161.0,161.0,161.0" style="Tabla2">
+      <tr>
+        <td>
+          <para style="P4">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P4">
+            <font color="white"> </font>
+          </para>
+          <para style="P4">________________________</para>
+          <para style="P4">ELABORADO POR</para>
+        </td>
+        <td>
+          <para style="P4">
+            <font color="white"> </font>
+          </para>
+        </td>
+      </tr>
+    </blockTable>
+    <para style="P1">
+      <font color="white"> </font>
+    </para>
+  </story>
+</document>
+

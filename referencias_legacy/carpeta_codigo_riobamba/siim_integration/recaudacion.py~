@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    Autor
+#    Mario Chogllo
+#
+##############################################################################
+
+from osv import osv, fields
+
+class partnerSiim(osv.Model):
+    _inherit = 'res.partner'
+
+    def create(self, cr, uid, vals, context=None):
+        partner_obj = self.pool.get('res.partner')
+        direccion_obj = self.pool.get('res.partner.address')
+        direccion = vals['direccion'] 
+        phone = vals['telefono']
+        id_creado = super(partnerSiim, self).create(cr, uid, vals, context=None)
+        direccion_obj.create(cr, uid, {
+                'type':'default',
+                'active':True,
+                'partner_id':id_creado,
+                'street':direccion,
+                'phone':phone,
+                })
+        return id_creado
+    
+    _columns = dict(
+        direccion = fields.char('Direccion',size=256,required=True),
+        telefono = fields.char('Telefono',size=10,required=True),
+        )
+partnerSiim()
+

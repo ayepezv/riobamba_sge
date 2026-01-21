@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+<!-- NEW ACTION AND VIEW TO PRODUCT
+-->
+
+
+<record id="gpa_product_product_form_view" model="ir.ui.view">
+  <field name="name">gpa.product.normal.form</field>
+  <field name="model">product.product</field>
+  <field name="type">form</field>
+  <field eval="1" name="priority"/>
+  <field name="arch" type="xml">
+    <form string="Product">
+      <group colspan="4" col="8">
+        <group colspan="4" col="2">
+          <separator string="Name" colspan="2"/>
+          <field name="name"/>
+		  <field name="location_id_id" string="Bodega" domain="[('usage','=','internal'),('usuario_ids','in',[uid])]"
+				 attrs="{'required': [('type', 'not in',['service'])],'invisible': [('type', 'in',['service'])]}"/>
+		  <field name="cpc_id" attrs="{'required': [('type', 'not in',['service'])],'invisible': [('type', 'in',['service'])]}"/>
+          <field groups="product.group_product_variant" name="variants" />
+        </group>
+        <group colspan="1" col="2">
+          <separator string="Codes" colspan="2"/>
+          <field name="default_code" string="Código" required="1"/>
+          <field name="sale_ok" string="Venta" 
+				 groups="account.group_account_user,account.group_account_manager"/>
+          <field name="purchase_ok" string="Compra"
+				 groups="account.group_account_user,account.group_account_manager"/>
+		</group>
+        <group colspan="1" col="1">
+          <field name="product_image" widget='image' nolabel="1"/>
+        </group> 
+      </group>
+      <notebook colspan="4">
+        <page string="Information">
+          <group colspan="2" col="2">
+            <separator string="Propiedades" colspan="2"/>
+            <field name="type"/>
+			<field name="categ_id" string="Linea Normal/Proyecto" domain="[('type','=','normal')]"/>
+			<field name="categ_id_program" string="Linea Programa" domain="[('type','=','normal')]"/>
+			<field name="uom_id" on_change="onchange_uom(uom_id,uom_po_id)"/>
+            <field name="active"/>
+            <field name="supply_method" invisible="1"/>
+          </group>
+          <group colspan="2" col="2">
+            <separator string="Base Prices" colspan="2"/>
+            <field name="list_price" groups="account.group_account_user,account.group_account_manager"/>
+            <field groups="base.group_extended" name="cost_method"/>
+            <field name="standard_price" string="Precio Costo" 
+				   attrs="{'readonly':[('cost_method','=','average')]}"
+                   groups="base.group_extended"/>
+            <newline/>
+            <field name="price_margin" groups="product.group_product_variant"/>
+            <field name="price_extra" groups="product.group_product_variant"/>
+          </group>
+          <group colspan="2" col="3">
+            <separator string="Stock" colspan="4"/>
+			<field name="qty_available"/>
+			<button name="%(stock.action_view_change_product_quantity)d" string="Actualizar" attrs="{'invisible': [('type', '=', 'service')]}"
+					type="action" icon="gtk-execute" groups="stock.group_stock_manager,stock.group_stock_user"/>
+			<newline/>
+            <field name="virtual_available" colspan="2" string="Stock en proceso"/>
+          </group>
+          <group colspan="2" col="2" name="store">
+            <separator string="Storage Localisation" colspan="2"/>
+            <field name="loc_rack" attrs="{'readonly':[('type','=','service')]}" />
+            <field name="loc_row" attrs="{'readonly':[('type','=','service')]}" string="Columna"/>
+            <field name="loc_case" attrs="{'readonly':[('type','=','service')]}" string="Fila"/>
+          </group>
+          <field name="uom_po_id" invisible="1"/>
+		  <group colspan="2" col="2" name="uos" groups="product.group_uos">
+            <separator string="Second UoM" colspan="2"/>
+            <field name="uos_id"/>
+            <field name="uos_coeff"/>
+            <field name="mes_type"/>
+          </group>
+		</page>
+        <!--page string="Abastecimiento">
+          <group colspan="4" string="Reglas de stock mínimo">
+			<field name="orderpoint_ids" nolabel="1"/>
+          </group>
+        </page-->
+		<page string="Administración Financiera" groups="account.group_account_user,account.group_account_manager,stock.group_stock_manager">
+		  <separator string="Inventory Valuation" colspan="4"/>
+          <group colspan="2" col="2">
+            <field name="valuation" colspan="2" attrs="{'readonly':[('type', '=', 'service')]}"/>
+			<field name="property_account_income" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" attrs="{'readonly':[('sale_ok','=',0)]}"  groups="base.group_extended"/>
+			<field name="property_account_expense" domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" attrs="{'readonly':[('purchase_ok','=',0)]}"  groups="base.group_extended"/>
+          </group>
+          <group colspan="2" col="2">
+            <field name="property_stock_account_input" attrs="{'readonly':[('valuation', '!=', 'real_time')]}"
+                   domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" groups="base.group_extended"/>
+            <field name="property_stock_account_output" attrs="{'readonly':[('valuation', '!=', 'real_time')]}"
+                   domain="[('type','&lt;&gt;','view'),('type','&lt;&gt;','consolidation')]" groups="base.group_extended"/>
+          </group>
+		  <newline/>
+		  <newline/>
+		  <group colspan="4">
+			<separator string="Sale Taxes" colspan="2"/>
+			<separator string="Purchase Taxes" colspan="2"/>
+			<field name="taxes_id" nolabel="1" colspan="2" attrs="{'readonly':[('sale_ok','=',0)]}"/>
+			<field name="supplier_taxes_id" nolabel="1" colspan="2" attrs="{'readonly':[('purchase_ok','=',0)]}"/>
+		  </group>
+		</page>
+      </notebook>
+    </form>
+  </field>
+</record>
+
+<!-- Product MODIFIED -->
+      
+<record id="product_form_view_modified" model="ir.ui.view">
+  <field name="name">Producto Modificado</field>
+  <field name="model">product.product</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="product.product_normal_form_view"/>
+  <field name="arch" type="xml">
+	<field name="name" position="after">
+	  <field name="location_id_id" string="Bodega" domain="[('usage','=','internal')]"/>
+	  <field name="cpc_id" required="1"/>
+	</field>
+	<field name="ean13" position="replace"/>
+	<field name="sale_ok" position="replace"><field name="sale_ok" invisible="1"/></field>
+	<field name="purchase_ok" position="replace"><field name="purchase_ok" invisible="1"/></field>
+	<xpath expr="/form/group/group/separator[@string='Characteristics']" position="replace"></xpath>
+	<!--xpath expr="//page[@string='Procurement &amp; Locations']" position="replace"></xpath-->
+	<xpath expr="//page[@string='Packaging']" position="replace"></xpath>
+	<xpath expr="//page[@string='Descriptions']" position="replace"></xpath>
+	<field name="procure_method" position="replace"><field name="active"/>
+	  <separator string="Ubicación" colspan="4"/>
+	  <field name="loc_rack" position="replace"><field name="lock_rack"/></field>
+	  <field name="loc_row" position="replace"><field name="loc_row"/></field>
+	  <field name="loc_case" position="replace"><field name="lock_case"/></field>
+	</field>
+	<!--field name="supply_method" position="replace"/-->
+	<!--field name="cost_method" position="replace"/><field name="cost_method" readonly="1"></field-->
+	<!--field name="categ_id" position="replace"/><field name="categ_id" domain="[('type','=','normal')]"></field-->
+	<xpath expr="/form/notebook/page/group/separator[@string='Weights']" position="replace"></xpath>
+	<field name="volume" position="replace"/>
+	<field name="weight" position="replace"/>
+	<field name="weight_net" position="replace"/>
+	<field name="state" position="replace"/>
+	<field name="product_manager" position="replace"/>
+	<field name="uom_po_id" position="replace"/>
+	<field name="supply_method" position="replace"><field name="supply_method" invisible="1"/></field>
+	<field name="produce_delay" position="replace"/>
+	<field name="warranty" position="replace"/>
+	<field name="loc_rack" position="replace"/>
+	<field name="sale_delay" position="replace"><field name="orderpoint_ids"/></field>
+	<xpath expr="//separator[@string='Delays']" position="replace">
+	  <separator string="Reglas de stock mínimo" colspan="4"/>
+	</xpath>
+  </field>
+</record>
+
+<record id="product_template_form_view_modified_2" model="ir.ui.view">
+  <field name="name">Producto Temp Modificado</field>
+  <field name="model">product.template</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="product.product_template_form_view"/>
+  <field name="arch" type="xml">
+	<field name="supply_method" position="replace"><field name="supply_method" invisible="1"/></field>
+	<field name="cost_method" position="replace"/><field name="cost_method" readonly="1"></field>
+	<field name="categ_id" position="replace"/><field name="categ_id" domain="[('type','=','normal')]"></field>
+	<field name="uom_po_id" position="replace"></field>
+	<field name="state" position="replace"><field name="state" invisible="1"/></field>
+	<field name="product_manager" position="replace"></field>
+	<field name="loc_rack" position="replace"/>
+  </field>
+</record>
+
+<record id="product_property_view_modified" model="ir.ui.view">
+  <field name="name">Producto Modificado</field>
+  <field name="model">product.product</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="stock.view_normal_stock_property_form"/>
+  <field name="arch" type="xml">
+	<xpath expr="//separator[@string='Expected Stock Variations']" position="replace"></xpath>
+	<field name="incoming_qty" position="replace"/>
+	<field name="outgoing_qty" position="replace"/>
+	<xpath expr="//separator[@string='Lots']" position="replace"></xpath>
+	<field name="track_production" position="replace"/>
+	<field name="track_incoming" position="replace"/>
+	<field name="track_outgoing" position="replace"/>
+	<field name="virtual_available" position="replace"><field name="virtual_available" string="Stock Proceso"/></field>
+  </field>
+</record>
+
+<record id="product_product_req_view_modified" model="ir.ui.view">
+  <field name="name">Producto Modificado Req</field>
+  <field name="model">product.product</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="purchase_requisition.product_normal_form_view_inherit"/>
+  <field name="arch" type="xml">
+	<field name="purchase_requisition" position="replace"/>
+  </field>
+</record>
+
+<!-- STOCK LOCATION VIEW MODIFIED>
+-->
+
+<record id="stock_location_view_modified_gpa" model="ir.ui.view">
+  <field name="name">Bodega Modificado</field>
+  <field name="model">stock.location</field>
+  <field name="type">form</field>
+  <field name="inherit_id" ref="stock.view_location_form"/>
+  <field name="arch" type="xml">
+	<field name="scrap_location" position="replace"/>
+	<xpath expr="//separator[@string='Chained Locations']" position="replace"></xpath>
+	<field name="chained_location_type" position="replace"/>
+    <field name="chained_location_id" position="replace"/>
+    <field name="chained_auto_packing" position="replace"/>
+    <field name="chained_delay" position="replace"/>
+    <field name="chained_journal_id" position="replace"/>
+    <field name="chained_picking_type" position="replace"/>
+    <field name="chained_company_id" widget="selection" position="replace"/>
+	<xpath expr="//separator[@string='Localization']" position="replace"></xpath>
+    <field name="posx" position="replace"/>
+    <field name="posy" position="replace"/>
+    <field name="posz" position="replace"/>
+	<xpath expr="//separator[@string='Accounting Information']" position="replace"></xpath>
+    <field name="valuation_in_account_id" position="replace"/>
+    <field name="valuation_out_account_id" position="replace"/>
+    <field name="icon" position="replace"/>
+	<xpath expr="/form/separator[@string='Additional Information']" position="replace"></xpath>
+    <field name="comment" position="replace"/>
+  </field>
+</record>
+
+<!-- VISTA DE TREE MODIFICADA DE PRODUCTO
+-->
+
+<record model="ir.ui.view" id="product_base_gpa_inherit">
+  <field name="name">product.base.gpa.inherit</field>
+  <field name="type">form</field>
+  <field name="model">product.product</field>
+  <field name="inherit_id" ref="product.product_product_tree_view"/>
+  <field name="arch" type="xml">
+    <xpath expr="/tree/field[@name='virtual_available']" position="replace">
+	  <field name="virtual_available" invisible="1"/>
+	</xpath>
+    <!--xpath expr="/tree/field[@name='lst_price']" position="replace"></xpath-->
+    <xpath expr="/tree/field[@name='standard_price']" position="after">
+	  <field name="stock_value"/>
+	</xpath>
+    <!--xpath expr="/tree/field[@name='state']" position="replace"></xpath-->
+  </field>
+</record>
+
+    </data>
+</openerp>
+

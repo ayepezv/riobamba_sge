@@ -1,0 +1,40 @@
+<html>
+<head>
+    <style type="text/css">
+        ${css}
+    </style>
+</head>
+<body>
+  %for o in objects:
+  <table WIDTH="100%">
+    <tr>
+      <td width="100%" style="font-size:14;text-align:center;">DETALLE CUENTAS BANCO PAGO</td>	  	  
+    </tr>	
+  </table>
+  <p></p>
+  <table WIDTH="100%" border="1" cellpadding="2" cellspacing="0"  bordercolor="#000000" style="border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr>
+        <th style="font-size:11px" width="5%">NUMERO</th>
+        <th style="font-size:11px" width="45%">FUNCIONARIO</th>
+        <th style="font-size:11px" width="30%">BANCO</th>
+        <th style="font-size:11px" width="10%">CUENTA</th>
+        <th style="font-size:11px" width="10%">MONTO</th>
+      </tr>
+    </thead>
+    <% a=0
+       %>
+    %for line in o.slip_ids:
+    <% a+=1
+       %>
+    <tr>
+      <td width="5%" style="font-size:11px;text-align:left">${ a }</td>
+      <td width="45%" style="font-size:11px;text-align:left">${line.employee_id.name} - ${line.employee_id.complete_name}</td>
+      <td width="30%" style="font-size:11px;text-align:left">${ get_banco(line) } </td>
+      <td width="10%" style="font-size:11px;text-align:right">${ get_cta(line) }</td>
+      <td width="10%" style="font-size:11px;text-align:right">${line.net}</td>
+    </tr>
+    %endfor      
+  </table>
+  %endfor
+</html>

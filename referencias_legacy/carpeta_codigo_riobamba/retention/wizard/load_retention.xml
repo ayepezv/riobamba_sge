@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_wizard_load_retention" model="ir.ui.view">
+            <field name="name">Actualizar</field>
+            <field name="model">wizard.load.retention</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+              <form string="Actualizar">
+		<field name="dataspdf_fname" colspan="2" invisible="1"/>
+		<field name="dataspdf" filename="dataspdf_fname" colspan="4"/>
+		<field name="datas_fname" colspan="2" invisible="1"/>
+		<field name="datas" filename="datas_fname" colspan="4"/>
+	        <newline/>
+                <separator colspan="4"/>
+                <group col="2" colspan="4">
+                  <button icon='gtk-cancel' special="cancel"
+                          string="Cancelar" />
+                  <button name="load_retention" string="Actualizar"
+                          colspan="1" type="object" icon="gtk-ok" />
+                </group>
+                </form>
+            </field>
+        </record>
+      
+      
+      <record id="load_retention" model="ir.actions.act_window">
+	<field name="name">Actualizar</field>
+	<field name="type">ir.actions.act_window</field>
+	<field name="res_model">wizard.load.retention</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">form</field>
+	<field name="target">new</field>
+    </record>
+    
+    </data>
+</openerp>

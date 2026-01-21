@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_pac,product.pac,model_product_pac,gt_government_procedure.group_purchase_basic,1,1,1,1
+access_product_pac_usr,product.pac,model_product_pac,purchase_requisition.group_purchase_requisition_user,1,1,1,1
+access_product_pac_line,product.pac.line,model_product_pac_line,gt_government_procedure.group_purchase_basic,1,1,1,1
+access_product_pac_line_usr,product.pac.line,model_product_pac_line,purchase_requisition.group_purchase_requisition_user,1,1,1,1
+access_purchase_pac,purchase.pac,model_purchase_pac,gt_government_procedure.group_purchase_basic,1,1,1,1
+access_purchase_pac_usr,purchase.pac,model_purchase_pac,purchase_requisition.group_purchase_requisition_user,1,1,1,1

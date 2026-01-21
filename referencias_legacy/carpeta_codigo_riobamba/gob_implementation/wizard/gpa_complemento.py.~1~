@@ -1,0 +1,123 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    HHRR Module
+#    Copyright (C) 2009 GnuThink Software  All Rights Reserved
+#    info@gnuthink.com
+#    $Id$
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+import time
+
+from osv import osv
+from osv import fields
+import base64
+import pooler
+from XLSWriter import XLSWriter
+import StringIO
+import xlrd
+import netsvc
+
+#class update_presupuestaria_imp(osv.osv_memory):
+#    _name = 'update.presupuestaria.imp'
+#    _columns = dict(
+#        name = fields.char('Desc.',size=32),
+#        )###
+
+#    def import_complemento(self, cr, uid, ids, context=None):
+#        print "Actualiza las partidads presp"
+#        accan_obj = self.pool.get('account.analytic.account')
+#        acc_ids = accan_obj.search(cr, uid, [])
+#        for acc_id in acc_ids:
+#            acc = accan_obj.browse(cr, uid, acc_id)
+#            code = acc.code[0:2]
+#            if code=='53':
+#                corriente
+#            if code=='73':
+#                inversion
+#            if code=='84':
+#                bienes de larga duracion inv
+#            if code=='57':
+#                otros gastos corriente
+#            if code=='75':
+#                obras publicas inversion
+#            if code=='77':
+#                gastos de inversion
+#            if code=='78':
+#                transf. de inversion#
+
+#update_presupuestaria()
+
+class import_complemento(osv.osv_memory):
+
+    _name='import.complemento'
+    
+    _columns={
+        'name':fields.char('Observaciones',size=128),
+        'archivo':fields.binary('Archivo', required=True),
+        }
+
+    def _bad_archivo(self, cr, uid, ids, arch,context=None):
+        result=True
+        acc_obj=self.pool.get('account.account')
+        arch_xls = base64.b64decode(arch)
+        book = xlrd.open_workbook(file_contents=arch_xls)
+        sh = book.sheet_by_name(book.sheet_names()[0])
+        j=i=0
+        for r in range(sh.nrows)[1:]:
+            i+=1
+            if sh.cell(r,0).value and sh.cell(r,1).value:
+ #               import pdb
+ #               pdb.set_trace()
+                cta_id = acc_obj.search(cr, uid, [('code','=',sh.cell(r,0).value)])
+                cta_comp_id=acc_obj.search(cr, uid, [('code','=',sh.cell(r,1).value)])
+                if not len(cta_id)>0: 
+                    raise osv.except_osv(('Error de archivo!'),'La cta %s , en la linea numero %d no corresponde a nigun empleado'%((str(sh.cell(r,1).value)),i+1))
+                if not len(cta_comp_id)>0: 
+                    raise osv.except_osv(('Error de archivo!'),'La cta %s comp, en la linea numero %d no corresponde a nigun empleado'%((str(sh.cell(r,1).value)),i+1))
+            else:
+                raise osv.except_osv(('Error de archivo!'),'Existe un campo que esta vacio en la linea %s '%(r))
+#        if j==sh.nrows:
+#            result=False
+        return result
+
+    def import_complemento(self, cr, uid, ids, context=None):
+        acc_obj=self.pool.get('account.account')
+        data = self.read(cr, uid, ids)[0]
+        self._bad_archivo(cr, uid, ids, data['archivo'],context=context)
+        if context is None:
+            context = {}
+        if data['archivo']:
+            arch = data['archivo']
+            arch_xls = base64.b64decode(arch)
+            book = xlrd.open_workbook(file_contents=arch_xls)
+            sh = book.sheet_by_name(book.sheet_names()[0])
+            context={}
+            for r in range(sh.nrows)[1:]:
+                cta_id = acc_obj.search(cr, uid, [('code','=',sh.cell(r,0).value)])
+                cta_comp_id=acc_obj.search(cr, uid, [('code','=',sh.cell(r,1).value)])
+                if cta_id and cta_comp_id:
+                    acc_obj.write(cr, uid, cta_id[0],{
+                            'account_comp_id':cta_comp_id[0],
+                            })
+        else:
+            raise osv.except_osv(('Error de usuario!'),'No ha seleccionado ningun archivo.')
+        return {'type':'ir.actions.act_window_close' }
+
+import_complemento()
+
+

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+     		
+      <record model="ir.ui.view" id="view_audittrail_mass">
+	<field name="name">audittrail.rule.mass</field>
+	<field name="model">audittrail.rule</field>
+	<field name="type">form</field>
+	<field name="inherit_id" ref="audittrail.view_audittrail_rule_form"/>
+	<field name="arch" type="xml">
+	  <field name="log_workflow" position="replace">
+	    <!--button name="create_rules_mass" string="Suscribir masivo" type="object" icon="gtk-go-forward"
+		confirm="Confirmar desea ejecutar?"/-->
+	  </field>
+	  <field name="log_action" position="replace"></field>
+	  <field name="log_read" position="replace"></field>
+	</field>
+      </record>
+      
+      <record id="view_audittrail_log_inherit_search" model="ir.ui.view">
+	<field name="name">audittrail.log.inherit.search</field>
+	<field name="model">audittrail.log</field>
+	<field name="type">search</field>
+	<field name="inherit_id" ref="audittrail.view_audittrail_log_search"/>
+	<field name="arch" type="xml">
+	  <field name="name" position="replace"/>
+	  <field name="object_id" position="after" >
+	    <field name="method"/>
+	    <field name="res_id"/>
+	    <field name="timestamp"/>
+          </field>
+	</field>
+      </record>      
+      
+    </data>
+</openerp>

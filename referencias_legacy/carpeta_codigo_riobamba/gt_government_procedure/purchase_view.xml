@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+	  <delete id="purchase.menu_action_picking_tree4" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_action_picking_tree_in_move" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_procurement_management_inventory" model="ir.ui.menu"/>
+
+	  <delete id="purchase.menu_procurement_management_pending_invoice" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_purchase_line_order_draft" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_action_picking_tree4_picking_to_invoice" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_procurement_management_invoice" model="ir.ui.menu"/>
+
+	  <delete id="purchase.menu_action_stock_move_report_po" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_board_purchase" model="ir.ui.menu"/>
+	  <delete id="purchase.menu_purchase_deshbord" model="ir.ui.menu"/>
+
+	  <delete id="purchase.menu_purchase_rfq" model="ir.ui.menu"/>
+
+	  
+	  
+	  
+<!--
+MENU DE OCS, ACTIVAS E INACTIVAS
+-->
+<!--record id="purchase_rfq_req" model="ir.actions.act_window">
+  <field name="name">Cotizaciones</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">purchase.order</field>
+  <field name="domain">[('select','=',False)]</field>
+  <field name="view_mode">tree,form,graph,calendar</field>
+  <field name="search_view_id" ref="purchase.view_request_for_quotation_filter"/>
+</record>
+
+<menuitem action="purchase_rfq_req" id="purchase.menu_purchase_rfq"
+          parent="purchase.menu_procurement_management"
+		  string="Cotizaciones"
+          sequence="6"/-->
+
+<record id="purchase_form_action_req" model="ir.actions.act_window">
+  <field name="name">Órdenes de compra</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">purchase.order</field>
+  <field name="view_mode">tree,form,graph,calendar</field>
+  <field name="domain">[('select','=',True),('is_finish','=',True)]</field>
+  <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+</record>
+
+<menuitem action="purchase_form_action_req" id="purchase.menu_purchase_form_action" string="Órdenes de compra" 
+		  parent="purchase.menu_procurement_management" />
+
+<record id="purchase_form_action_req_all" model="ir.actions.act_window">
+  <field name="name">Órdenes de compra(Todas)</field>
+  <field name="type">ir.actions.act_window</field>
+  <field name="res_model">purchase.order</field>
+  <field name="view_mode">tree,form,graph,calendar</field>
+  <field name="domain">[('state','!=','draft')]</field>
+  <field name="search_view_id" ref="purchase.view_purchase_order_filter"/>
+</record>
+
+<menuitem action="purchase_form_action_req_all" id="purchase.menu_purchase_all_form_action" string="Órdenes de compra(Todas)" 
+		  parent="purchase.menu_procurement_management" sequence="10"/>
+
+<!--
+VIEW OCS MODIFIED
+-->
+    <record model="ir.ui.view" id="purchase_form_modified">
+      <field name="name">purchase.order.modified</field>
+      <field name="type">form</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.purchase_order_form"/>
+      <field name="arch" type="xml">
+      	<xpath expr="//field[@name='amount_tax']" position="before">
+      	  <field name="iva_value" readonly="1"/>
+      	  <field name="ice_value" readonly="1"/>
+      	  <field name="imp_verde" readonly="1"/>
+      	</xpath>
+        <xpath expr="//page[@string='Notes']" position="replace">
+          <page string="Observaciones">
+	    <field name="notes" colspan="4" nolabel="1"/>
+	  </page>
+	</xpath>
+	<field name="name" position="replace"><field name="name" string="Código" readonly="1"/></field>
+	<field name="partner_address_id" position="replace"><field name="partner_address_id" invisible="1"/></field>
+	<field name="pricelist_id" position="replace"></field>
+	<field name="origin" position="replace"></field>
+	<field name="warehouse_id" position="replace"></field>
+	<field name="partner_ref" position="replace"></field>
+        <xpath expr="/form/notebook/page/group[@col='11']/button[@string='Print']" position="replace">
+	</xpath>
+	<xpath expr="/form/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+          <!--field name="is_group"/>
+	      <field name="qty_available"/-->
+	</xpath>
+	<!--button name="purchase_cancel" position="replace"></button-->
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="purchase_order_form_inherit_2">
+        <field name="name">purchase.order.form.inherit2</field>
+        <field name="type">form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase_requisition.purchase_order_form_inherit"/>
+        <field name="arch" type="xml">
+	  <field name="invoice_method" position="replace"></field>
+	  <field name="dest_address_id" position="replace"></field>
+	  <field name="location_id" position="replace"></field>
+	  <field name="invoice_ids" position="replace">
+	    <field name="invoice_ids" readonly="1" nolabel="1" colspan="4"/>
+	  </field>
+	  <field name="fiscal_position" position="replace">
+	    <field name="fiscal_position" readonly="1"/>
+	  </field>
+          <field name="requisition_id" position="replace">
+	    <field name="requisition_select_id" readonly="1"/>
+	    <field name="presp_ref" attrs="{'readonly': [('state', 'not in',('draft'))]}"/>
+	    <field name="date_acta"/>
+	    <!--field name="order_ref" readonly="1"/>
+		<field name="is_son" readonly="1"/-->
+          </field>
+          <xpath expr="//field[@name='amount_tax']" position="before">
+      	    <field name="iva_value" readonly="1"/>
+      	    <field name="ice_value" readonly="1"/>
+      	    <field name="imp_verde" readonly="1"/>
+      	  </xpath>
+          
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="purchase_line_form_modified">
+      <field name="name">purchase.order.line.modified</field>
+      <field name="type">form</field>
+      <field name="model">purchase.order.line</field>
+      <field name="inherit_id" ref="purchase.purchase_order_line_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="/form/notebook/page/field[@name='price_unit']" position="after">
+          <field name="select"/>
+		  <field name="is_group"/>
+		</xpath>
+      </field>
+    </record>
+
+    <record id="purchase.purchase_order_tree" model="ir.ui.view">
+      <field name="name">purchase.order.tree</field>
+      <field name="model">purchase.order</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree colors="grey:state=='cancel';blue:state in ('wait','confirmed');red:state in ('except_invoice','except_picking')" string="Purchase Order">
+          <field name="name" string="Código"/>
+          <field name="date_order" />
+          <field name="partner_id"/>
+          <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+          <field name="minimum_planned_date" invisible="context.get('quotation_only', False)"/>
+          <field name="origin"/>
+          <field name="invoiced_rate" widget="progressbar" invisible="context.get('quotation_only', False)"/>
+          <field name="shipped_rate" widget="progressbar" invisible="context.get('quotation_only', False)"/>
+          <field name="amount_untaxed" sum="Total Untaxed amount"/>
+          <field name="amount_total" sum="Total amount"/>
+          <field name="state"/>
+        </tree>
+      </field>
+    </record>
+	
+<!-- search view modified
+-->
+
+<record model="ir.ui.view" id="po_search_modified">
+  <field name="name">purchase.order.search.modified</field>
+  <field name="type">search</field>
+  <field name="model">purchase.order</field>
+  <field name="inherit_id" ref="purchase.view_purchase_order_filter"/>
+  <field name="arch" type="xml">
+    <xpath expr="/search/group/filter[@name='draft']" position="replace"></xpath>
+	<xpath expr="/search/group/filter[@name='to_approve']" position="replace"></xpath>
+    <xpath expr="/search/group/filter[@name='approved']" position="replace"></xpath>
+    <xpath expr="/search/group/filter[@string='Done']" position="replace"></xpath>
+    <xpath expr="/search/group/filter[@name='exception']" position="replace"></xpath>
+    <xpath expr="/search/group/filter[@name='not_invoiced']" position="after">
+      <filter icon="terp-gtk-go-back-rtl" name="not_invoiced" string="Not invoiced" domain="[('invoice_ids','=', False)]"  help="Purchase orders that include lines not invoiced." groups="base.group_extended" invisible="1"/>
+    </xpath>
+     <xpath expr="/search/group/field[@name='create_uid']" position="after">
+	  <field name="amount_total"/>
+	</xpath>
+  </field>
+</record>
+
+    </data>
+</openerp>

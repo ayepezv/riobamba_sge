@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+      
+      <!-- quitado menu de bancos: Extracto bancario, registradores de efectivo, journal items -->
+      <delete id="account.journal_cash_move_lines" model="ir.ui.menu"/>
+      <delete id="account.menu_bank_statement_tree" model="ir.ui.menu"/>
+      <delete id="account.menu_action_account_moves_bank" model="ir.ui.menu"/>
+
+      <delete id="account.menu_manual_reconcile" model="ir.ui.menu"/>
+      <delete id="account.menu_automatic_reconcile" model="ir.ui.menu"/>
+      <delete id="account.periodical_processing_reconciliation" model="ir.ui.menu"/>
+      
+      <delete id="account.menu_menu_Bank_process" model="ir.ui.menu"/>
+      <delete id="account.menu_account_pp_statements" model="ir.ui.menu"/>
+      <delete id="base.menu_action_currency_form" model="ir.ui.menu"/>
+      <delete id="account.menu_email_templates" model="ir.ui.menu"/>
+      <delete id="account.menu_action_payment_term_form" model="ir.ui.menu"/>
+      <delete id="account.menu_action_model_form" model="ir.ui.menu"/>
+      <delete id="account.menu_configuration_misc" model="ir.ui.menu"/>
+
+      <!-- Conciliacion Check -->
+    <record id="wizard_conciliar_form" model="ir.ui.view">
+      <field name="name">Conciliar</field>
+      <field name="model">wizard.conciliar</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Conciliacion">
+	  <group string="Referencia BCE">
+	    <field name="tipo_id" required="1"/>
+	    <field name="ref" required="1"/>
+	    <field name="hoja" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_conciliar" string="Conciliar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="action_conciliar" model="ir.actions.act_window">
+      <field name="name">Conciliar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.conciliar</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+      <record model="ir.ui.view" id="view_bank_conciliation_form">
+	<field name="name">Marcaje Documentos Bancarios</field>
+	<field name="model">bank.conciliation.mark</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">         
+          <form string="Marcaje Documentos Bancarios">
+            <group  colspan="3">
+	      <field name="period_id" colspan="2"/>
+	      <field name="name" colspan="2"/>
+            </group>
+	    <group  colspan="3">
+	      <field name="account_id" colspan="2"/>
+	      <newline/>
+	    </group>
+	    <group  colspan="3">
+	      <button string="Conciliados" colspan="1" name="bank_concilied" type="object" icon="gtk-ok" />
+	      <button string="Sin Conciliar" colspan="1" name="bank_unconcilied" type="object" icon="gtk-cancel" />			
+	      <button string="Todos" colspan="1" name="bank_all" type="object" icon="gtk-execute" />			
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<field name="line_ids" colspan="4" nolabel="1" readonly="1">
+		  <tree editable="bottom">
+		    <button name="%(action_conciliar)d" string="Conciliar" icon="gtk-execute" type="action" colspan="2"/>
+		    <field name="concilied_ok" readonly="1"/>
+		    <field name="tipo_conciliacion" readonly="1"/>
+		    <field name="num_concilied" readonly="1"/>
+		    <field name="hoja" readonly="1"/>
+		    <field name="num_comp" string="Numero Comprobante" readonly="1"/>
+		    <field name="name" string="Referencia" readonly="1"/>
+		    <field name="date" string="Fecha" readonly="1"/>
+		    <field name="partner2_id" string="Beneficiario" readonly="1"/>
+		    <field name="debit" readonly="1"/>
+		    <field name="credit" readonly="1"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+          </form>
+	</field>
+      </record>
+      
+      <record model="ir.actions.act_window" id="action_bank_conciliation_mark">
+	<field name="name">Marcaje Documentos</field>
+	<field name="type">ir.actions.act_window</field>
+	<field name="res_model">bank.conciliation.mark</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">form</field>
+      </record>
+      
+      <menuitem name="Conciliacion Bancaria" id="menu_bank_conciliation" sequence='30' 
+		parent="account.menu_finance_bank_and_cash"/>
+      <menuitem name="Marcaje Documentos" id="menu_bank_conciliation_mark" parent="menu_bank_conciliation" sequence='1' 
+		action="action_bank_conciliation_mark"/>       
+    </data>      
+</openerp>

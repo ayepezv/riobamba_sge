@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+  <record id="view_project_payment_request_form" model="ir.ui.view">
+    <field name="name">view.project.payment.request.form</field>
+    <field name="model">project.payment.request</field>
+    <field name="type">form</field>
+    <field name="arch" type="xml">
+      <form string="Solicitud de Pago">
+        <group string="Información" colspan="6">
+          <field name="sequence"/>
+          <field name="user_id"/>
+          <field name="date"/>
+        </group>
+        <group string="Información de Proyecto" colspan="4">
+          <field name="certificate_id" domain="[('state','in',['draft','request','certified']),('user_id','=',user_id)]"/>
+        </group>
+        <group string="Información de Factura" colspan="4">
+          <field name="partner_id"/>
+          <field name="date_invoice"/>
+          <field name="invoice_number"/>
+          <field name="amount"/>
+        </group>
+        <group colspan="6">
+          <field name="state" widget="statusbar"/>
+          <button name="action_cancel" string="Anular" icon="gtk-cancel" type="object" states="draft"/>
+          <button name="action_request" string="Solicitar" icon="gtk-go-forward" type="object" states="draft"/>
+          <button name="action_approve" string="Aprobar" icon="gtk-ok" type="object" states="draft"/>
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_project_payment_request_tree" model="ir.ui.view">
+    <field name="name">view.project.payment.request.tree</field>
+    <field name="model">project.payment.request</field>
+    <field name="type">tree</field>
+    <field name="arch" type="xml">
+      <tree string="Solicitudes de Pago">
+        <field name="sequence"/>
+        <field name="date"/>
+        <field name="partner_id"/>
+        <field name="amount"/>
+        <field name="project_id"/>
+        <field name="certificate_id"/>
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_payment_request_filter" model="ir.ui.view">
+    <field name="name">view.payment.request.select</field>
+    <field name="model">project.payment.request</field>
+    <field name="type">search</field>
+    <field name="arch" type="xml">
+      <search string="Buscar Solicitudes de Pago">
+        <group>
+          <field name="name"/>
+          <field name="user_id" string="Solicitante"/>
+          <field name="project_id"/>
+        </group>
+        <newline/>
+        <group expand="1" string="Agrupar por...">
+          <filter string="Proveedor" icon="terp-partner" domain="" context="{'group_by': 'partner_id'}"/>
+          <filter string="Proyecto" icon="terp-project" domain="" context="{'group_by': 'project_id'}"/>
+          <filter string="Solicitante" icon="terp-partner" domain="[]" context="{'group_by':'user_id'}"/>
+          <separator orientation="vertical"/>
+          <filter string="Fecha" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'date'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+  
+  <record id="action_project_payment_request_tree" model="ir.actions.act_window">
+    <field name="name">Solicitud de Pago</field>
+    <field name="res_model">project.payment.request</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+    <field name="search_view_id" ref="view_payment_request_filter"/>
+  </record>
+
+  <!--menuitem id="menu_request_payment"
+            parent="menu_budget_project_main" action="action_project_payment_request_tree" groups="project.group_project_manager"/-->
+
+  </data>
+</openerp>

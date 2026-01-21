@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <record id="view_project_obra_inherit" model="ir.ui.view">
+      <field name="name">project.obra.inherit</field>
+      <field name="model">project.project</field>
+      <field name="inherit_id" ref="project.edit_project"/>
+      <field name="arch" type="xml">
+	<xpath expr="//page[@string='Usuarios del Proyecto']" position="before">
+	  <page string="Obras/Contratos">
+	    <field name='obra_ids' nolabel="1" readonly="1"></field>
+	  </page>
+	</xpath>
+      </field>
+    </record>
+
+<!-- cobra anticipo -->
+
+
+    <record id="wizard_cobra_anticipo" model="ir.ui.view">
+      <field name="name">Cobra Anticipo</field>
+      <field name="model">wizard.cobra.anticipo</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Seleccionar">
+	  <group string="Documento" colspan="4">
+	    <field name="date" colspan="4" required="1"/>
+	    <field name="bank_id" colspan="4" required="1"/>
+	    <field name="account_id" colspan="4"/>
+	    <field name="account_id2" colspan="4"/>
+	    <field name="monto" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_cobra_anticipo" string="Cobrar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="cobra_anticipo" model="ir.actions.act_window">
+      <field name="name">Cobrar</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.cobra.anticipo</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_cobro_voucher_inherit" model="ir.ui.view">
+      <field name="name">account.voucher.cobro.inherit</field>
+      <field name="model">account.voucher</field>
+      <field name="inherit_id" ref="account_advances.view_account_advance_supp_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//button[@name='proforma_voucher']" position="before">
+	  <button name="%(cobra_anticipo)d" colspan="1" string="Cobrar" 
+		  type="action" icon="gtk-execute"/>
+	</xpath>
+      </field>
+    </record>
+<!-- -->
+
+   <record model="ir.ui.view" id="view_cxp_obra_form">
+      <field name="name">Cuentas por pagar/Reporte Obras</field>    
+      <field name="model">ejec.contrato</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Cuentas por pagar/Reporte Obras">
+          <group  colspan="4">
+	    <field name="partner_id" colspan="4"/>
+	  </group> 
+	  <group  colspan="4">
+	    <button name="load_contratos" string="Generar" icon="gtk-execute" type="object" colspan="2"/>
+	    <button name="print_cxp_obra" string="Imprimir" icon="gtk-print" type="object" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Detalle">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		  <field name="partner_id" readonly="1"/>
+		  <field name="num_contratos" readonly="1"/>
+		</tree>
+		<form>
+		  <field name="partner_id" readonly="1"/>
+		  <field name="num_contratos" readonly="1"/>
+		  <field name="total_contrato" readonly="1"/>
+		  <field name="total_anticipo" readonly="1"/>
+		  <field name="total_devengado" readonly="1"/>
+		  <field name="saldo_por_devengar" readonly="1"/>
+		  <field name="line_ids" widget='one2many_list'>
+		    <tree>
+		      <field name='obra_id'/>
+		      <field name='date'/>
+		    </tree>
+		    <form>
+		      <field name='obra_id'/>
+		    </form>
+		  </field>
+		</form>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_cxp_obra">
+      <field name="name">Cuentas por pagar/Repeorte Obras</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">ejec.contrato</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <menuitem
+	id="cxp_partner_menu_obra"
+	sequence="6"
+	parent="account.menu_finance_entries"
+	action="action_cxp_obra"/>
+
+
+    <!-- Agrupa Invoice-->
+    <record model="ir.ui.view" id="view_group_move_form">
+      <field name="name">Agrupar Comprobantes</field>    
+      <field name="model">group.move</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">         
+        <form string="Agrupar">
+          <group  colspan="4">
+	    <field name="partner_id" required="1"/>
+	    <field name="certificate_id" required="1" domain="[('partner_id','=',partner_id),('state','=','commited')]" />
+	    <newline/>
+	    <group  colspan="4" col='6'>
+	      <button name="agrupaMoves" string="Agrupar" icon="gtk-execute" type="object" colspan="2"/>
+	    </group>
+	  </group> 
+	  <separator string='COMPROBANTES'/>
+	  <field name="move_ids" colspan="4" required="1" 
+		 domain="[('state','!=','anulado'),('ref','!=','Resultado Agrupacion'),('certificate_id','=',certificate_id)]" nolabel="1"/>
+        </form>
+      </field>
+    </record>
+
+	<record model="ir.actions.act_window" id="action_group_invoice">
+	  <field name="name">Agrupar Comprobantes</field>
+	  <field name="type">ir.actions.act_window</field>
+	  <field name="res_model">group.move</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">form</field>
+	  <field name="target">new</field>
+	</record>
+	
+	<menuitem
+	   id="group_invoice"
+	   sequence="5"
+	   parent="account.menu_finance_entries"
+	   action="action_group_invoice"/>
+    <!-- -->
+    <record id="view_make_pay_wizard_inherit" model="ir.ui.view">
+      <field name="name">Pagar</field>
+      <field name="model">make.pay</field>
+      <field name="inherit_id" ref="retention.view_make_pay_wizard"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='other']" position="before">
+	  <field name="amount_ord"/>
+	  <field name="amount_inc"/>
+	  <field name="genera_cxc"/>
+	</xpath>
+      </field>
+    </record>
+
+    <!-- -->
+    <record id="view_account_anticipo_form" model="ir.ui.view">
+      <field name="name">view.account.voucher.anticipo.form</field>
+      <field name="model">account.voucher</field>
+      <field name="inherit_id" ref="account_advances.view_account_advance_supp_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='amount']" position="after">
+	  <field name="devengado" readonly="1"/>
+	  <field name="saldo" readonly="1"/>
+	  <field name="tipo" required="1"/>
+	</xpath>
+	<xpath expr="//page[@string='Detalle Contable']" position="after">
+	  <page string="Devengado Anticipo">
+	    <field name="dev_ids" nolabel="1">
+	      <tree>
+		<field name="name"/>
+		<field name="date"/>
+		<field name="monto" sum="TOTAL"/>
+	      </tree>
+	      <form>
+		<field name="name"/>
+		<field name="date"/>
+		<field name="monto" sum="TOTAL"/>
+		<field name="is_migrado" groups="base.group_erp_manager"/>
+	      </form>
+	    </field>
+	  </page>
+	</xpath>
+      </field>
+    </record>
+    <!-- DEVENGAR ANTICIPO EN COMPROBANTE-->
+    
+    <record id="wizard_comprobante_anticipo" model="ir.ui.view">
+      <field name="name">Devengar Anticipo</field>
+      <field name="model">load.anticipo</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Devengar Anticipo">
+	  <group colspan="4">
+	    <field name="bank_id" colspan="4" invisible='1'/>
+	  </group>
+	  <group string="Anticipo" colspan="4">
+	    <field name="certificate_line_id" invisible="1"/>
+	    <field name="partner_id" readonly="1" colspan="4" invisible="1"/>
+	    <field name="move_id" readonly="1" invisible="1" colspan="4"/>
+	    <field name="anticipo_id" required="1" domain="[('partner_id','=',partner_id),('internal_type','=','AP')]" 
+		   on_change="onchange_loadanticipo(anticipo_id,move_id)" colspan="4"/>
+	    <field name="anio" readonly="1" colspan="2"/>
+	    <field name="tipo" colspan="2" required="1"/>
+	    <field name="account_id" colspan="2" required="1"/>
+	    <field name="account_id2" colspan="2" attrs="{'invisible': [('anio', '=','Actual')],'required': [('anio', '!=','Actual')]}"/>
+	  </group>
+	  <group string="Cuentas por pagar" colspan="2">
+	    <field name="line_ids" nolabel="1">
+	      <tree editable="top">
+		<field name="account_id" readonly="1"/>
+		<field name="account_id2"/>
+		<!--field name="account_id2" domain="[('type','!=','view'),('code','like','212')]"/-->
+		<field name="monto"/>
+		<field name="to_pay"/>
+	      </tree>
+	    </field>
+	  </group>
+	  <group string="Anticipo - Gastos Gestion - Recuperar IVA - Otros Descuentos" colspan='2'>
+	    <field name="monto_devengar" required="1" colspan="2"/>
+	    <newline/>
+	    <field name="monto_anticipo" readonly="1" colspan="2"/>
+	    <newline/>
+	    <field name="saldo_anticipo" readonly="1" colspan="2"/>
+	    <newline/>
+	    <field name="gestion" colspan="2"/>
+	    <newline/>
+	    <field name="acc_g1" colspan="2"/>
+	    <newline/>	    
+	    <field name="acc_g2" colspan="2"/>
+	    <newline/>
+	    <field name="genera_cxc" colspan="2"/>
+	    <newline/>
+	    <field name="amount_ord" colspan="2"/>
+	    <newline/>
+	    <field name="amount_inc" colspan="2"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="devengaAnticipo" string="Devengar" type="object" icon="gtk-execute"/>
+	  </group>
+	  
+	</form>
+      </field>
+    </record>
+
+    <record id="action_comprobante_anticipo" model="ir.actions.act_window">
+      <field name="name">Devengar Anticipo</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">load.anticipo</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_move_anticipo_afectacion" model="ir.ui.view">
+      <field name="name">account.move.anticipo.form</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_move_less_form_afectacion"/>
+      <field name="arch" type="xml">
+	<xpath expr="/form/notebook/page/field[@name='line_id']/tree/field[@name='name']" position="after">
+	  <button name="%(action_comprobante_anticipo)d" string="Devengar Anticipo" 
+		  attrs="{'invisible': [('budget_accrued', '=',False)]}"
+		  icon="gtk-execute" type="action" colspan="2"/>
+		 <!-- attrs="{'invisible': [('budget_accrued', '=',False),('state','!=','draft')]}"-->
+		  
+	</xpath>
+      </field>
+    </record>
+    <!-->
+	AGREGA BOTON EN FACTURA PARA RELACIONAR A LA OBRA
+	<-->
+    <record id="wizard_rel_obra" model="ir.ui.view">
+      <field name="name">Relacionar Obra</field>
+      <field name="model">wizard.rel.obra</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Crear Anticipo">
+	  <group string="Información de obra" colspan="4">
+	    <field name="partner_id" readonly="1"/>
+	    <newline/>
+	    <field name="obra_id" required="1" domain="[('partner_id','=',partner_id)]"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_relObra" string="Relacionar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="rel_Obra" model="ir.actions.act_window">
+      <field name="name">Relacionar Obra</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.rel.obra</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_retention_obra_form" model="ir.ui.view">
+      <field name="name">account.invoice.obra.form</field>
+      <field name="model">account.invoice</field>
+      <field name="inherit_id" ref="account.invoice_supplier_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//label[@string='(keep empty to use the current period)']" position="replace"></xpath>
+      </field>
+    </record>    
+
+    <record id="view_move_obra_form" model="ir.ui.view">
+      <field name="name">account.move.obra.form</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_move_less_form_afectacion"/>
+      <field name="arch" type="xml">
+	<field name="certificate_id" position="after">
+	  <button name="%(rel_Obra)d" colspan="1" string="Relacionar Obra" 
+		  type="action" icon="gtk-execute"/>
+	  <field name="obra_id" colspan="4" readonly="1"/>
+	</field>
+      </field>
+    </record>
+
+    <record id="view_move_obra_form_afec" model="ir.ui.view">
+      <field name="name">account.move.obra.form</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_move_less_form"/>
+      <field name="arch" type="xml">
+	<field name="type2_id" position="after">
+	  <button name="%(rel_Obra)d" colspan="1" string="Relacionar Obra" 
+		  type="action" icon="gtk-execute"/>
+	  <field name="obra_id" colspan="4" readonly="1"/>
+	</field>
+      </field>
+    </record>
+
+    <record id="view_move_less_tree_obra" model="ir.ui.view">
+      <field name="name">account.move.less.tree</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_move_less_tree"/>
+      <field name="arch" type="xml">
+	<field name="journal_id" position="after">
+	  <field name="obra_id" colspan="4" readonly="1"/>
+	</field>
+      </field>
+    </record>
+    <record id="view_account_move_search_less_obra" model="ir.ui.view">
+      <field name="name">account.move.search.less.obra</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_account_move_search_less"/>
+      <field name="arch" type="xml">
+	<field name="journal_id" position="replace">
+	  <field name="obra_id"/>
+	</field>
+      </field>
+    </record>
+    <record id="view_move_less_tree_afectacion_obra" model="ir.ui.view">
+      <field name="name">account.move.less.afectacion.tree</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_move_less_tree_afectacion"/>
+      <field name="arch" type="xml">
+	<field name="certificate_id" position="after">
+	  <field name="obra_id" colspan="4" readonly="1"/>
+	</field>
+      </field>
+    </record>
+    <record id="view_account_move_search_less_afectacion_obra" model="ir.ui.view">
+      <field name="name">account.move.search.less.afectacion.obra</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="retention.view_account_move_search_less_afectacion"/>
+      <field name="arch" type="xml">
+	<field name="journal_id" position="replace">
+	  <field name="obra_id"/>
+	</field>
+      </field>
+    </record>
+<!-- Menu y vista de Obras -->
+    
+    <menuitem id="menu_obras" parent="account.menu_finance" 
+	      name="Obras/Contratos"/>
+
+    <record model="ir.ui.view" id="view_garantia_form">
+      <field name="name">garantia.garantia.view.form</field>
+      <field name="model">garantia.garantia</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name="name"/>
+	  <field name="account_id"/>
+	  <field name="account_id2"/>
+	  <field name="porcentaje"/>
+	</form>
+      </field>
+    </record>
+
+    <record id="wizard_create_anticipo" model="ir.ui.view">
+      <field name="name">Generar Anticipo</field>
+      <field name="model">wizard.create.anticipo</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Crear Anticipo">
+	  <group string="Información de Pago" colspan="4">
+	    <field name="date" required="1"/>
+	    <newline/>
+	    <field name="account_id" required="1"/>
+	    <newline/>
+	    <field name="bank_id" required="1"/>
+	    <newline/>
+	    <field name="garantia"/>
+	    <newline/>
+	    <field name="g_id" attrs="{'invisible': [('garantia', '=',False)],'required': [('garantia', '!=',False)]}"/>
+	    <newline/>
+	    <field name="monto_g" attrs="{'invisible': [('garantia', '=',False)],'required': [('garantia', '!=',False)]}"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_create_anticipoObra" string="Pagar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="crear_anticipoObra" model="ir.actions.act_window">
+      <field name="name">Generar Anticipo</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.create.anticipo</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_obra_form">
+      <field name="name">obra.obra.view.form</field>
+      <field name="model">obra.obra</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name='secuencia' colspan='2'/>
+	  <field name='num_contrato' colspan='2' required="1"/>
+	  <field name='num_proceso' colspan='2' required="1"/>
+	  <field name="name" colspan="4"/>
+	  <field name="project_id" domain="[('type_budget','=','gasto')]"/>
+	  <field name="financiamiento" required="1" colspan='2'/>
+	  <field name="tipo_fondo" required="1" colspan='2'/>
+	  <field name="partner_id"/>
+	  <field name="certificate_id" required="1" colspan="2" domain="[('partner_id','=',partner_id)]"/>
+	  <field name="tipo" required="1"/>
+	  <newline/>
+	  <group string="Informacion General" colspan="4">
+	    <field name="administrador_id" required="1"/>
+	    <field name="fiscalizador_id" required="1"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="plazo" colspan="2" required="1"/>
+	    <field name="date_end" colspan="2"/>
+	    <field name="date_anticipo" colspan="2" required="1"/>
+	    <field name="monto" colspan="2" required="1"/>
+	    <field name="total_reajuste" colspan="2" required="1"/>
+	    <field name="inc_iva" colspan="2" required="1"/>
+	    <field name="monto_sin_iva" colspan="2" required="1"/>
+	    <field name="porcentaje_iva" colspan="2" required="1"/>
+	    <field name="iva" colspan="2" required="1"/>
+	    <field name="porcentaje_anticipo" colspan="2" required="1"/>
+	    <field name="anticipo_entregado" colspan="2"/>
+	    <field name="total" colspan="2" required="1"/>
+	    <field name="total_pagado" colspan="2"/>
+	    <field name="saldo" colspan="2"/>
+	  </group>
+	  <notebook colspan="4">
+	    <page string="Pagos Realizados">
+	      <field name="pago_ids" nolabel="1">
+		<tree>
+		  <field name="name"/>
+		  <field name="date"/>
+		  <field name="narration"/>
+		  <field name="amount"/>
+		  <field name="total_banco" sum="TOTAL PAGADO"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string="Reajustes">
+	      <field name="reajuste_ids" nolabel="1">
+		<tree editable="bottom">
+		  <field name="name" required="1"/>
+		  <field name="fecha" required="1"/>
+		  <field name="valor" sum="TOTAL" required="1"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string="Garantias">
+	      <field name="garantia_ids" nolabel="1">
+		<tree editable="bottom">
+		  <field name="name"/>
+		  <field name="aseguradora_id"/>
+		  <field name="fecha_inicio"/>
+		  <field name="fecha_fin"/>
+		  <field name="state"/>
+		  <field name="porcentaje"/>
+		  <field name="monto"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string="Observaciones">
+	      <field  name="observaciones" nolabel="1" colspan="4"/>
+	    </page>
+	    <!--page string="Certificados/Comprimisos presupuestarios">
+	      <field name="certificate_ids" nolabel="1">
+		<tree>
+		  <field name="name"/>
+		  <field name="date_commited"/>
+		</tree>
+	      </field>
+	    </page-->
+	  </notebook>
+	  <group colspan="4" col="5">
+	    <field name="state" readonly="1"/>
+	    <button name="iniciar_obra" states="Borrador" string="Iniciar Obra" 
+		    type="object" icon="gtk-ok"/>
+	    <button name="%(crear_anticipoObra)d" states="Ejecucion" string="Crear Anticipo/Garantia" 
+		    type="action" icon="gtk-execute"/>
+	    <button name="imprimir_obra" string="Imprimir" 
+		    type="object" icon="gtk-print"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+    
+    <record id="view_obra_obra_filter" model="ir.ui.view">
+      <field name="name">obra.obra.select</field>
+      <field name="model">obra.obra</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Obras">
+          <group>
+	  <field name="num_contrato"/>
+	  <field name="num_proceso"/>
+	  <field name="tipo"/>
+	  <field name="financiamiento"/>
+	  <field name="tipo_fondo"/>
+	  <field name="monto"/>
+	  <field name="project_id"/>
+	  <field name="partner_id"/>
+	  <field name="name"/>
+	  <field name="date_start"/>
+	  <field name="plazo"/>
+	  <field name="date_anticipo"/>
+	  <field name="porcentaje_anticipo"/>
+	  <field name="anticipo_entregado"/>
+	  <field name="total_pagado"/>
+          </group>
+          <newline/>
+          <group expand="1" string="Agrupar por...">
+            <filter string="Proyecto" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'project_id'}"/>
+            <filter string="Contratista" icon="terp-stage" context="{'group_by': 'partner_id'}"/>
+            <filter string="Tipo Fondo" icon="terp-stage" context="{'group_by': 'tipo_fondo'}"/>
+            <filter string="Financiamiento" icon="terp-stage" context="{'group_by': 'financiamiento'}"/>
+            <filter string="Tipo Contrato" icon="terp-stage" context="{'group_by': 'tipo'}"/>
+	    <filter string="Fecha" icon="terp-stage" context="{'group_by': 'date_start'}"/>
+          </group>
+        </search>
+      </field>
+    </record>    
+
+    <record model="ir.ui.view" id="view_obra_tree">
+      <field name="name">obra.obra.view.tree</field>
+      <field name="model">obra.obra</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree>
+	  <field name="num_contrato"/>
+	  <field name="num_proceso"/>
+	  <field name="tipo"/>
+	  <field name="monto"/>
+	  <field name="project_id"/>
+	  <field name="partner_id"/>
+	  <field name="name"/>
+	  <field name="date_start"/>
+	  <field name="plazo"/>
+	  <field name="date_anticipo"/>
+	  <field name="porcentaje_anticipo"/>
+	  <field name="anticipo_entregado"/>
+	  <field name="total_pagado"/>
+	</tree>
+      </field>
+    </record>
+    
+	  
+    <record model="ir.actions.act_window" id="obra_action">
+      <field name="name">Obras/Contratos</field>
+      <field name="res_model">obra.obra</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record> 
+    
+    <menuitem name="Obras/Contratos" 
+	      id="menu_obra_obra" 
+	      parent="menu_obras" 
+	      action="obra_action"/>
+
+    <!-- Obras para presupuestos -->
+    <menuitem name="Obras/Contratos" 
+	      id="menu_obra_obra_budget" 
+	      parent="gt_budget.menu_main_budget_gob" 
+	      action="retention_ext.obra_action"/>
+
+    <!-- Obras para tesoria -->
+    <menuitem name="Obras/Contratos" 
+	      id="menu_obra_obra_tesoreria" 
+	      parent="gt_spi.menu_finance_tesoreria_pagos" 
+	      action="retention_ext.obra_action"/>
+
+    <!-- Obras para compras -->
+    <menuitem name="Obras/Contratos" 
+	      id="menu_obra_obra_purchase" 
+	      parent="base.menu_purchase_root" 
+	      action="retention_ext.obra_action"/>
+    
+    <!-- MENU DE GESTION DE POLIZAS -->
+
+    <record id="wizard_comprobante_garantia" model="ir.ui.view">
+      <field name="name">Generar Comprobante Garantia</field>
+      <field name="model">wizard.comprobante.garantia</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Crear Comprobante Garantia">
+	  <group string="Información Garantia" colspan="4">
+	    <field name="account_id" required="1"/>
+	    <field name="account_id2" required="1"/>
+	  </group>
+	  <group colspan="4">
+	    <button string="Cerrar" special="cancel" icon="gtk-cancel"/>
+	    <button name="action_create_garantiaObra" string="Generar" type="object" icon="gtk-execute"/>
+	  </group>
+	</form>
+      </field>
+    </record>
+
+    <record id="crear_garantiaObra" model="ir.actions.act_window">
+      <field name="name">Generar Comprobante Garantia</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">wizard.comprobante.garantia</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+        <record model="ir.ui.view" id="view_poliza_form">
+      <field name="name">obra.garantia.view.form</field>
+      <field name="model">obra.garantia</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+  	<form>
+	  <field name="numero" colspan="2" required="1"/>
+	  <field name="carpeta" colspan="2" required="1"/>
+	  <field name="partner_id" colspan="4" required="1"/>
+	  <field name="obra_id" colspan="4"/>
+	  <field name="name" colspan="4"  required="1"/>
+	  <field name="aseguradora_id" colspan="4" required="1"/>
+	  <field name="fecha_inicio" colspan="2" required="1"/>
+	  <field name="fecha_fin" colspan="2" required="1"/>
+	  <field name="porcentaje" colspan="2" required="1"/>
+	  <field name="monto" colspan="2" required="1"/>
+	  <field name="desc" colspan="4" required="1"/>
+	  <notebook colspan="4">
+	    <page string="Renovaciones">
+	      <field name="oficio"/>
+	      <field name="dias_renova"/>
+	      <field name="renovacion_ids" nolabel="1" colspan="4">
+		<tree editable='top'>
+		  <field name="date_start" required="1"/>
+		  <field name="date_end" required="1"/>
+		  <field name="monto" required="1"/>
+		  <field name="name" readonly="1"/>
+		  <button name="tomaSecuenciaRenovacion" string="Genera Secuencia" type="object" icon="gtk-execute"/>
+		  <button name="imprimeRenovacion" string="Imprimir" type="object" icon="gtk-print"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+	  <field name="state" colspan="2" readonly="1"/>
+	  <button name="finalizaPoliza" string="Finalizar" type="object" icon="gtk-execute"/>
+	  <button name="%(crear_garantiaObra)d" colspan="2" states="En Tramite" string="Generar comprobante garantia" 
+		  type="action" icon="gtk-execute"/>
+	</form>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_poliza_tree">
+      <field name="name">obra.garantia.view.tree</field>
+      <field name="model">obra.garantia</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+  	<tree colors="red:fecha_fin&lt;current_date">
+	  <field name="numero"/>
+	  <field name="carpeta"/>
+	  <field name="obra_id"/>
+	  <field name="name"/>
+	  <field name="proceso_cp"/>
+	  <field name="partner_id"/>
+	  <field name="aseguradora_id"/>
+	  <field name="fecha_inicio"/>
+	  <field name="fecha_fin"/>
+	  <field name="porcentaje"/>
+	  <field name="monto"/>
+	  <field name="state"/>
+	</tree>
+      </field>
+    </record>
+    
+    <record id="view_obra_garantia_filter" model="ir.ui.view">
+      <field name="name">obra.garantia.select</field>
+      <field name="model">obra.garantia</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Polizas">
+          <group>
+            <filter icon="terp-go-month" name="7 Dias" string="A vencer 7 Dias"
+                    domain="[('fecha_fin','&lt;=', (datetime.date.today() + relativedelta(days=7)).strftime('%%Y-%%m-%%d')),
+			    ('fecha_fin','&gt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d'))]"/>
+	    <filter icon="terp-go-month" name="15 Dias" string="A vencer 15 Dias"
+		    domain="[('fecha_fin','&lt;=', (datetime.date.today() + relativedelta(days=15)).strftime('%%Y-%%m-%%d')),
+			    ('fecha_fin','&gt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d'))]"/>
+	    <filter icon="terp-go-month" name="30 Dias" string="A vencer 30 Dias"
+                    domain="[('fecha_fin','&lt;=', (datetime.date.today() + relativedelta(days=30)).strftime('%%Y-%%m-%%d')),
+			    ('fecha_fin','&gt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d'))]"/>
+	    <field name="numero"/>
+	    <field name="carpeta"/>
+	    <field name="obra_id"/>
+	    <field name="name"/>
+	    <field name="aseguradora_id"/>
+	    <field name="proceso_cp"/>
+	    <newline/>
+	    <field name="fecha_inicio"/>
+	    <field name="fecha_fin"/>
+	    <field name="porcentaje"/>
+	  <field name="monto"/>
+	  <field name="state"/>
+          </group>
+          <newline/>
+          <group expand="1" string="Agrupar por...">
+            <filter string="Obra" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'obra_id'}"/>
+            <filter string="Contratista" icon="terp-stage" context="{'group_by': 'partner_id'}"/>
+            <filter string="Aseguradora" icon="terp-stage" context="{'group_by': 'aseguradora_id'}"/>
+            <filter string="Fecha Inicio" icon="terp-stage" context="{'group_by': 'fecha_inicio'}"/>
+            <filter string="Fecha fin" icon="terp-stage" context="{'group_by': 'fecha_fin'}"/>
+	    <filter string="Estado" icon="terp-stage" context="{'group_by': 'state'}"/>
+          </group>
+        </search>
+      </field>
+    </record>    
+	  
+    <record model="ir.actions.act_window" id="poliza_action">
+      <field name="name">Garantias/Polizas</field>
+      <field name="res_model">obra.garantia</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record> 
+    
+    <menuitem name="Garantias/Polizas" 
+	      id="menu_poliza" 
+	      parent="menu_obras" 
+	      action="poliza_action"/>
+    <!-- TESORERIA -->
+	  
+    <menuitem name="Garantias/Polizas" 
+	      id="menu_poliza_spi" 
+	      parent="gt_spi.menu_finance_tesoreria_pagos" 
+	      action="poliza_action"/>
+
+    <!-- DOCUMENTAL -->
+	  
+    <menuitem name="Garantias/Polizas" 
+	      id="menu_poliza_documental"
+	      groups='group_tesoreria_poliza'
+	      parent="gt_document_manager.menu_document_manager" 
+	      action="poliza_action"/>
+
+    </data>
+</openerp>

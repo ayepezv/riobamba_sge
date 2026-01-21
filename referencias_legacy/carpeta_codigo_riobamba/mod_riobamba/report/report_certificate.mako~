@@ -1,0 +1,111 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style type="text/css">
+    .line {
+    border-bottom:1pt solid black;
+    }
+  </style>
+</head>
+<body>
+%for o in objects:
+<table width="100%" style="border:thin solid;">
+  <thead>
+    <h4 colspan="2" style="text-align:center">CERTIFICACION PRESUPUESTARIA No. ${ o.name }</h4>
+    <tr>
+      <th style="text-align:left;font-size:10px">Lugar y Fecha de Emision : ${company.city} - ${ formatLang(o.date, date=True) }</th>
+    </tr>
+    <tr>
+      <th style="text-align:left;font-size:10px">Solicitado por : ${o.solicitant_id.complete_name}</th>
+    </tr>
+    <tr>
+      <th style="text-align:left;font-size:10px">Unidad Operativa/Departamento : ${o.department_id.name}</th>
+    </tr>
+    <tr>
+      <th style="text-align:left;font-size:10px">Notas : ${o.notes}</th>
+    </tr>
+    <tr>
+      <th></th>
+    </tr>
+    <tr>
+      <td style="text-align:left;font-size:10px">El/La Suscrito(a) ${o.user_id.employee_id.job_id.name or ''} del ${company.name or ''} en atencion a: ${o.ref_doc or ''} suscrito por ${o.solicitant_id.complete_name or ''} - ${o.solicitant_id.job_id.name or ''}</td>
+    </tr>
+    <h3 colspan="2" style="text-align:center">CERTIFICA</h3>
+    <tr>
+      <td style="text-align:left;font-size:10px">QUE: en el presupuesto codificado del ${company.name or ''} para el <%! from time import strftime as time %>
+ ${"%Y" | time}.</td>
+    </tr>
+    <tr>
+      <td style="text-align:left;font-size:10px">consta(n) la(s) siguiente(s) partidas(s) presupuestaria(s): </td>
+    </tr>
+    <tr>
+    </tr>
+    <tr>
+    </tr>                
+  </thead>
+  <tbody>
+    <table width="100%" style="border:thin solid;text-align:center;font-size:10px">
+      <tr>
+        <tr>
+          <th width="40%">PROYECTO</th>
+          <th width="50%">PARTIDA PRESUPUESTARIA</th>
+          <th width="10%">MONTO CERTIFICADO</th>
+        </tr>
+      </tr>
+      %for line in o.line_ids:
+      <tbody>
+        <tr>
+          <td style="text-align:left;font-size:10px">${line.project_id.name }</td>
+          <td style="text-align:left;font-size:10px">${line.budget_id.code } ${ line.budget_id.name }</td>
+          <td style="text-align:right;font-size:10px">$ ${ line.amount_certified }</td>
+        </tr>
+      </tbody>
+      %endfor
+      <tfoot>
+        <tr>
+	  <td></td>
+          <td style="text-align:right;"><strong>TOTAL:</strong></td>
+          <td style="text-align:right;"><strong>${o.amount_certified}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+  </tbody>
+  <tfoot>
+    <br>
+    <table width="100%">
+      <tr>
+	<td style="text-align:left;font-size:10px"><b>Certifico la Disponibilidad Presupuestaria; revisada y aprobada por la Direccion Financiera, a esta fecha, por la suma de $ ${o.amount_certified}. </b></td>
+      </tr>
+    </table>
+    <br>
+    <br>
+    <br>
+    <table width="100%">
+      <tr>
+	<th width="33%" style="text-align:center;font-size:10px">CERTIFICADO:</th>
+	<th width="33%" style="text-align:center;font-size:10px">APROBADO:</th>
+      </tr>
+      <tr>
+	<th width="33%" style="text-align:center;font-size:10px">JEFE DE PRESUPUESTOS</th>
+	<th width="33%" style="text-align:center;font-size:10px">DIRECTOR FINANCIERO</th>
+      </tr>
+      <BR/><BR/>
+    </table>
+    <br>
+    <br>
+    <table width="100%">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+    <table width="100%">
+      <tr>
+	<td style="text-align:justify;font-size:10px">NOTA: Los valores y la calidad de la información proporcionada para la emisión de la certificación presupuestaria es responsabilidad del funcionario/área requirente y debe estar enmarcada en el cumplimiento de las leyes, reglamentos y normativas legales vigentes incluidas las No rmas de Control Interno de la Contraloría General del Estado, por lo que se entiende que al solicitar la presente Certificación Presupuestaria existe el Control Previo correspondiente y el estricto apego al CUMPLIMIENTO de la ley de parte del solicitante.</td>
+      </tr>
+    </table>
+  </tfoot>
+</table>  
+%endfor
+</body>
+</html>

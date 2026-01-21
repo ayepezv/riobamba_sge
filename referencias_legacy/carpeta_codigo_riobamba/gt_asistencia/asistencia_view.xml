@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data> 		
+
+	<!--MENU TIPOS DE SANCION-->
+	<record id="view_form_gt_clock_name" model="ir.ui.view">
+	  <field name="name">Reloj</field>
+	  <field name="model">gt.clock.name</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Reloj">
+	      <field name="name" colspan="2"/>
+	      <field name="ip" colspan="2"/>					  				
+	    </form>
+	  </field>
+	</record>	
+	<record id="view_tree_gt_clock_name" model="ir.ui.view" >
+	  <field name="name">Reloj</field>
+	  <field name="model">gt.clock.name</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Reloj" toolbar="1">
+	      <field name="name" /> 
+				<field name="ip"/>				 
+			</tree>
+		</field>
+	</record>
+	<record id="action_gt_clock_name" model="ir.actions.act_window">
+    	<field name="name">Reloj</field>             
+        <field name="res_model">gt.clock.name</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>	
+	
+	
+	<!--MENU TIPOS DE SANCION-->
+	<record id="view_form_gt_assent_type" model="ir.ui.view">
+		<field name="name">Tipos de Sanción</field>
+	    <field name="model">gt.assent.type</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form string="Tipo de Sanción">
+				<group colspan="4" col="4" >
+					<field name="name" colspan="2"/>        		
+					<field name="code" colspan="2"/>					  
+					<!--field name="range" colspan="2"/--> 				
+					<field name="min_assent" colspan="2" attrs="{'invisible': [('max_assent', '=',True)]}"/>
+					<field name="max_assent" colspan="2" attrs="{'invisible': [('min_assent', '=',True)]}"/>				 						  								
+					<field name="notification" colspan="1" attrs="{'invisible': [('min_assent', '=',True)]}"/>
+					<field name="notification_type" colspan="1" attrs="{'invisible': [('notification', '=',False),('min_assent', '=',True)],
+						'required': [('notification', '=',True)]}"/>
+				</group >
+				<newline/>
+				<separator orientation="horizontal"/>
+				<group colspan="4" col="4"  string = "Por acumulación de sanciones">
+					<field name="next_assent_id" colspan="2"/> 
+					<field name="number_max" colspan="2"/>
+				</group >
+				<newline/>
+				<separator orientation="horizontal"/>
+				<group colspan="4" col="4"  string = "Por acumulación de tiempo">
+					<field name="max_month" colspan="1"/>  								
+					<field name="minutes_max_month" colspan="1" attrs="{'invisible': [('max_month', '=',False)],
+						'required': [('max_month', '=',True)]}"/>
+					<field name="max_anual" colspan="1"/>  								
+					<field name="minutes_max_anual" colspan="1" attrs="{'invisible': [('max_anual', '=',False)],
+						'required': [('max_anual', '=',True)]}"/>
+				</group>  
+
+			</form>
+		</field>
+	</record>
+	<record id="view_tree_gt_assent_type" model="ir.ui.view" >
+		<field name="name">Tipos de Sanción</field>
+		<field name="model">gt.assent.type</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Tipo de Sanción" toolbar="1">
+				<field name="name" colspan="1" string = 'Nombre de Sancion'/> 
+				<field name="code" colspan="1"/>
+				<field name="number_max" colspan="2"/>
+				<field name="next_assent_id" colspan="2"/>  
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_assent_type" model="ir.ui.view">
+		<field name="name">Tipos de Sanción</field>
+        <field name="model">gt.assent.type</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Tipos de Sanción">
+            	<group>
+                	<field name="name" />
+                	<field name="code"/>											
+				</group>              			  		
+			</search>
+		</field>
+	</record>	
+	<record id="action_gt_assent_type" model="ir.actions.act_window">
+    	<field name="name">Tipos de Sanción</field>             
+        <field name="res_model">gt.assent.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>        
+
+	<!--MENU HISTORIAL-->	
+	<record id="view_form_gt_history" model="ir.ui.view">
+		<field name="name">Registro</field>
+	    <field name="model">gt.history</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form string="Registro">
+				<group colspan="2" col="8">
+					<field name="name" colspan="3" readonly="1"/>   
+					<field name="employee_id" colspan="3" readonly="1"/>
+					<field name="start_date" colspan="2" readonly="1"/>
+					<field name="end_date" colspan="3" readonly="1"/>     		
+					<field name="anual_minute" colspan="3" />
+					<field name="month_minute" colspan="2"/>
+				</group>
+				<newline/>
+				<group colspan="2" col="8" string="Conteo de sanciones">
+					<field name="counter_assent" colspan="2"/>
+					<field name="type_assent_id" colspan="2"/>
+					<field name="counter_assent_acu" colspan="2"/>
+					<field name="type_assent_id_acu" colspan="2"/>
+				</group>
+				<newline/>
+				<field name="event_ids" colspan="4" nolabel="1">
+					<tree string="Asistencia" editable="top">				
+						<field name="action" colspan="1" select="1"/>		
+						<field name="action_type" colspan="1" select="1"/>													
+						<field name="assent_type_id" colspan="1" select="1"/>
+						<field name="name" colspan="1" select="1"/>
+						<field name="date_spetial" colspan="1" select="1"/>
+						<field name="not_normal" colspan="1" select="1"/>
+						<field name="indicted" colspan="1" />
+						<field name="state" colspan="1" select="1" readonly="1"/>
+						
+					</tree>
+							
+				</field>
+				<field name="state" colspan="4"/>	
+				<newline/>
+				<!--group colspan="4" col="6">
+                	<field name="state"/>
+                	<button name="gt_gpa_history_open" string="Abrir" states="draft" icon="gtk-go-forward"/>
+                	<button name="gt_gpa_history_close" string="Cerrar" states="open" icon="gtk-jump-to"
+                		confirm="Cierra el historial"/>                
+            	</group--> 			
+			</form>
+		</field>
+	</record>
+	<record id="view_tree_gt_history" model="ir.ui.view" >
+		<field name="name">Registro</field>
+		<field name="model">gt.history</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Registro" toolbar="1">
+				<field name="name" colspan="1" string="Nombre de Registro"/>        		
+				<field name="employee_id" string = "Apellido de empleado"/>
+				<field name="start_date" colspan="1" string ="Fecha en que inicia"/>
+				<field name="end_date" colspan="1" string = "Fecha en que finaliza"/>	
+				<field name="state"/>
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_history" model="ir.ui.view">
+    	<field name="name">Registro</field>
+        <field name="model">gt.history</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Search Curso">
+				<group>					
+					<field name="name" string="Nombre de Registro"/>	
+					<field name="employee_id" string = "Empleado"/>
+					<field name="start_date"  string ="Fecha en que inicia"/>
+					<field name="end_date" string = "Fecha en que finaliza"/>									
+				</group>
+				<newline/>
+	            <group expand="1"  string="Group By...">	                       
+		        	<filter string="Empleado" icon="terp-go-home" domain="[]" context="{'group_by' : 'employee_id'}" />
+		            <separator orientation="vertical"/>	                                              
+		            <filter string="Fecha inicio" icon="terp-go-month" domain="[]" context="{'group_by' : 'start_date'}" />
+		            <separator orientation="vertical"/>	 
+		            <filter string="Fecha fin" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'end_date'}" />
+		            <separator orientation="vertical"/>
+		            <filter string="Estado" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'state'}" />
+		            <separator orientation="vertical"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	<record id="action_gt_history" model="ir.actions.act_window">
+    	<field name="name">Registro</field>             
+        <field name="res_model">gt.history</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+	<!-- MENU EVENTOS -->     
+	<record id="view_form_gt_attendance" model="ir.ui.view">
+      	<field name="name">Evento</field>
+      	<field name="model">hr.attendance</field>
+		<field name="type">form</field>
+		<field name="priority">10</field>
+		<field name="arch" type="xml">
+		<form string="Evento"> <!--attrs="{'readonly':[('state','in',['close','open'])]}"-->
+			<group colspan="4" col="4" >
+				<field name="name" colspan="4" string='Fecha de Procesamiento' readonly = "1"/>        		
+				<field name="action" colspan="2" select="1"/>				
+				<field name="action_type" colspan="2"/>								
+				<!--field name="state" colspan="2"  attrs="{'readonly':[('state','=','open')]}" /-->
+				<!--field name="out" colspan="2" readonly = "1" /-->
+				<field name="date_dbo" colspan="2"/>
+				<field name="date_spetial" colspan="2"/><!-- attrs="{ 'invisible':[('date_dbo','!=','')],  'required':[('date_dbo','=','')]}"/-->	
+				<!--field name="date_activate" colspan="4" readonly = "1"/-->
+				<field name="reason" colspan="4"  attrs="{ 'required':[('state','=','cancel')]}"  />
+				<field name="who_cancel" colspan="2"  attrs="{ 'invisible':[('state','!=','cancel')],  'required':[('state','=','cancel')]}"  />
+				<field name="history_cancel" colspan="2"  attrs="{ 'invisible':[('state','!=','cancel')],  'required':[('state','=','cancel')]}"  />
+			</group>
+				<!--button name="cancel_history" colspan="1" type="object" icon="gtk-execute" string="Cancelar en historial"  states="cancel"/-->
+			<newline/>
+			<group colspan="4" col="6" string= "Detalle">
+				<field name="gt_employee_id" colspan="3" string='Usuario' readonly="1" attrs="{'required': [('date_dbo', '!=','')]}"/>        		
+				<field name="employee_id" colspan="3" string='Empleado'/>
+				<field name="day" colspan="1"/>
+				<field name="hour_reference" colspan="1" readonly="1"/>				
+				<field name="address" colspan="1"/>
+				<field name="not_normal" colspan="2"/>
+				<field name="indicted" colspan="2" readonly="1" attrs="{ 'invisible':[('not_normal','!=',True)]}"/>
+				<field name="mins_delay" colspan="1" readonly="1"
+					attrs="{'invisible': [('action_type', 'in',['marc','assent','notification'])], 'required': [('action_type', 'in',['delay','before'])]}"/>												
+				<field name="assent_type_id" colspan="3" readonly="1" attrs="{'invisible':[('action','!=','action')]}"/>
+				<field name="attendance_id" colspan="3" domain="[('employee_id','=',employee_id)]"  attrs="{'readonly':[('action_type','!=','excuse')]}"/>	
+				<field name="body" colspan="6" readonly="1"  
+					attrs="{'required': [('action_type', '=','notification')], 'invisible':[('action_type','=','marc')]}"/>
+				<newline/>
+				<field name="notes" colspan="6"/>
+				<field name="state" colspan="6"/>					
+			</group>			
+		</form>
+		</field>
+	</record>    
+
+	<record id="view_search_gt_attendance" model="ir.ui.view">
+		<field name="name">hr.attendance</field>
+        <field name="model">hr.attendance</field>
+        <field name="type">search</field>
+	<field name="priority">10</field>
+        <field name="arch" type="xml">
+        	<search string="Marcaciones">
+            	<group>                		
+					<field name="action" colspan="1" />				
+					<field name="action_type" colspan="1"/>              	
+					<field name="gt_employee_id" colspan="1" string='Usuario' readonly="1"/>        		
+					<field name="employee_id" colspan="1" string='Empleado'/>			
+					<!--field name="date_spetial" colspan="1" domain="[('date_spetial','>',date_spetial)]"/>
+					<field name="date_spetial" colspan="1"/-->
+					<field name="date_spetial" string="Fecha Desde" filter_domain="[('date_spetial','&gt;=',self)]"/>
+					<field name="date_spetial" string="Fecha hasta" filter_domain="[('date_spetial','&lt;=',self)]"/>
+					<field name="not_normal" colspan="1"/>
+				</group>
+				<newline/>
+	            <group expand="1"  string="Group By...">		            	                       
+		        	<filter string="Accion" icon="terp-go-home" domain="[]" context="{'group_by' : 'action'}" />
+		            <separator orientation="vertical"/>	                                              
+		            <filter string="Razon de Accion" icon="terp-go-month" domain="[]" context="{'group_by' : 'action_type'}" />
+		            <separator orientation="vertical"/>	
+		            <filter string="Usuario" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'gt_employee_id'}" />
+		            <separator orientation="vertical"/> 
+		            <filter string="Empleado" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'employee_id'}" />
+		            <separator orientation="vertical"/>
+		            <filter string="Fecha Accion" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'date_spetial'}" />
+		            <separator orientation="vertical"/>  
+		            <filter string="Estado" icon="terp-gtk-jump-to-ltr" domain="[]" context="{'group_by' : 'state'}" />
+		            <separator orientation="vertical"/>
+		             
+				</group>				           			  		
+			</search>
+		</field>
+	</record>
+	<record id="view_tree_gt_attendance" model="ir.ui.view" >
+		<field name="name">Evento</field>
+		<field name="model">hr.attendance</field>
+		<!--field name="inherit_id" ref="hr_attendance.view_attendance_tree"/-->
+		<field name="type">tree</field>
+		<field name="priority">10</field>
+		
+		<field name="arch" type="xml">
+			<!--xpath expr="/tree/field[@name='name']" position="replace"-->
+			<tree string="Evento" toolbar="1">    				 	
+                    <field name="action"/>
+                    <field name="action_type"/>            	              	
+					<field name="gt_employee_id" colspan="1" string='Usuario' readonly="1"/>        		
+					<field name="employee_id" colspan="1" string='Empleado'/>			
+					<field name="date_spetial" colspan="1"/>
+					<field name="not_normal" colspan="1"/>
+					<field name="indicted" colspan="1"/>
+					<field name="state" colspan="1"/>
+			</tree>
+			<!--/xpath-->
+		</field>
+	</record>         	
+	
+	<record id="action_gt_attendance" model="ir.actions.act_window">
+		<field name="name">Evento</field>             
+        <field name="res_model">hr.attendance</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="view_tree_gt_attendance"/>
+		<!--field name="view_id" ref="view_form_gt_attendance"/-->
+	</record>  
+	<!--MENU TIPOS DE REPORTE-->
+	<record id="view_form_gt_report_type" model="ir.ui.view">
+		<field name="name">Tipos de Notificaciones</field>
+	    <field name="model">gt.report.type</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+			<form string="Tipo de Notificaciones">
+				<group>
+					<field name="name"/>
+				</group>										
+				<group colspan="4" col="4" string="CONTENIDO" >											 
+					<field name="body_1" colspan="4" nolabel="1"/>
+					<field name="body_2" colspan="4" nolabel="1"/>
+					<!--field name="body_3" colspan="4" readonly="1" nolabel="1"/-->					
+					<!--field name="body_4" colspan="4" readonly='1' nolabel="1" />
+					<field name="closure" colspan="4" nolabel="1"/-->    												
+				</group >
+			</form>
+		</field>
+	</record>
+	<record id="view_tree_gt_report_type" model="ir.ui.view" >
+		<field name="name">Tipos de Notificaciones</field>
+		<field name="model">gt.report.type</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Tipo de Sanción" toolbar="1">
+				<field name="name" colspan="1" string="Nombre de Sanción"/> 
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_report_type" model="ir.ui.view">
+		<field name="name">Tipos de Notificaciones</field>
+        <field name="model">gt.report.type</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Tipos de Sanción">
+            	<group>
+                	<field name="name" />											
+				</group>              			  		
+			</search>
+		</field>
+	</record>	
+	<record id="action_gt_report_type" model="ir.actions.act_window">
+    	<field name="name">Tipos de Notificaciones</field>             
+        <field name="res_model">gt.report.type</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>    
+	<!--REPORTE de CREACION DE HISTORIALES-->	
+	<record  id="view_form_create_hisroty" model="ir.ui.view">
+		<field name="name">Creación de Registros</field>
+		<field name="model">gt.wizard.history</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Creación de Registros">
+			<group  colspan="4" col="6">
+				<field name="name" colspan="3" readonly="1"/>
+				<field name="employee_id" colspan="3" readonly="1"/>
+				<field name="regime" colspan="2" attrs="{'readonly':[('state','in',['close','open','cancel'])]}" required="1"/>
+				<field name="first_history" colspan="2" attrs="{'readonly':[('state','in',['close','open','cancel'])]}"/>
+				<field name="indicted" colspan="2"/>				
+				
+
+			</group>
+			<group colspan="4" col="6" string= "Registro Previo" 
+				attrs="{'invisible': [('first_history', '=',True)], 'required': [('first_history', '=',False)]}">
+				<!--field name="prev_history" colspan="2" on_change="load_date(prev_history)" domain="[('indicted','=',False)]" attrs="{'required': [('first_history', '=',False)], 'readonly':[('state','in',['close','open','cancel'])] }"/-->
+				<field name="prev_history" colspan="2" on_change="load_date(prev_history)" domain="[('indicted','=',False),('regime','=',regime)]" attrs="{'required': [('first_history', '=',False)], 'readonly':[('state','in',['close','open','cancel'])] }"/>
+				<field name="prev_start_date" colspan="2" 
+					on_change="load_date_start(prev_end_date)"/>
+				<field name="prev_end_date" colspan="2" attrs="{'required': [('first_history', '=',False)], 'readonly':[('state','in',['close','open','cancel'])]}"/>
+			</group>
+			<group colspan="4" col="6" string= "Nuevo Registro">
+				<field name="name_history" colspan="2" attrs="{'readonly':[('state','in',['close','open','cancel'])]}"/>
+				<field name="start_date" colspan="2" attrs="{'readonly':[('state','in',['close','open','cancel'])]}" />
+				<field name="end_date" colspan="2" attrs="{'readonly':[('state','in',['close','open','cancel'])]}"/>
+			</group>	
+			<group colspan="2" col="4">	
+				<button name="create_history" states="draft" colspan="2" type="object" icon="gtk-execute" string="Confirmar Información"
+					attrs="{'readonly':[('state','in',['close','open'])]}"/>		
+				<button icon="gtk-cancel" states="draft" type="object" name="abrir_manual" string="Abrir Manual" colspan="2"
+					confirm='Esta solicitand abrir el registro de historiales manualmente.    Desea continuar'/>
+				<button name="unique_his" states="open" colspan="1" type="object" icon="gtk-execute" string="Agregar Registro individual"
+					attrs="{'readonly':[('state','in',['draft','close'])]}"/>																																														
+			</group>
+			<group colspan="2" col="4">
+				<button icon="gtk-cancel" states="draft" type="object" name="cancelar_historial" string="Cancelar" colspan="1"
+					confirm='Esta acción no se podrá revertir.     Desea continuar'/>	
+				<button icon="gtk-cancel" states="open" type="object" name="cerrar_historial" string="Cerrar" colspan="1"
+					confirm='Esta solicitand cerrar el registro de historiales manualmente.    Desea continuar'/>
+			</group>	
+			<newline/> 
+			<group colspan="4" col="4" string= "Registros Asignados">
+				<field name="history_ids" colspan="4" nolabel="1"/>	
+				<field name="state" colspan="4" readonly="1"/>						
+			</group>				
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_create_history" model="ir.ui.view" >
+		<field name="name">Creación de Registros</field>
+		<field name="model">gt.wizard.history</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Creación de Registros" toolbar="1">
+				<field name="name" colspan="1" string="Nombre del Registro" /> 
+				<field name="employee_id" colspan="1" string="Nombre del Empleado"/>
+				<field name="name_history" colspan="4" readonly="1" string="Nombre del Registro"/>
+				<field name="regime"/>
+				<field name="state"/>
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_create_history" model="ir.ui.view">
+		<field name="name">Creación de Registros</field>
+        <field name="model">gt.wizard.history</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Creación de Registros">
+            	<group>
+                	<field name="name"  />
+                	<field name="employee_id" string="Nombre del Empleado"/>
+                	<field name="name_history" colspan="4" readonly="1" string="Nombre del Registro"/>
+                	<field name="regime"/>
+				</group> 
+				<newline/>     
+				<group expand="1"  string="Group By...">	                       
+		        	<filter string="Nombre" icon="terp-go-home" domain="[]" context="{'group_by' : 'name_history'}" />
+		            <separator orientation="vertical"/>	                                              
+		            <filter string="Régimen" icon="terp-go-month" domain="[]" context="{'group_by' : 'regime'}" />
+		            <separator orientation="vertical"/>	 		            
+				</group>        			  		
+			</search>
+		</field>
+	</record>	
+	<record id="action_create_history" model="ir.actions.act_window">
+    	<field name="name">Creación de Registros</field>             
+        <field name="res_model">gt.wizard.history</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>  
+	<!--CONFIGURACION-->	
+	<record  id="view_form_field_workable" model="ir.ui.view">
+		<field name="name">Configuracion</field>
+		<field name="model">gt.field.workable</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Configuraciones">
+			<group colspan="4" col="4" >
+				<field name="name" colspan="2" />
+				<field name="mail_copy" colspan="2" /> 			
+			</group>
+			<group colspan="4" col="4" string = "Texto para correo por atraso o salida antes" >
+				<field name="body_1" colspan="4" nolabel="1" readonly="1"/>
+				<field name="body_mail" colspan="4" nolabel="1" />
+								 				
+			</group>
+			<newline/>
+			<group colspan="4" col="4" string = "Consulta SQL" >
+				<!--field name="specific_date" colspan="4" /-->
+				<field name="start_date" colspan="2"  />	
+				<button name="create_from_button_" colspan="4" type="object" icon="gtk-execute" string="Procesar registros" 
+						 />			
+				
+				<!--field name="consult" colspan="4" nolabel="1"/-->	
+			</group>											
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_field_workable" model="ir.ui.view" >
+		<field name="name">Configuracion</field>
+		<field name="model">gt.field.workable</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Configuracion" toolbar="1">
+				<field name="name" colspan="1" /> 
+				<!--field name="consult" colspan="1"/-->
+				 <field name="mail_copy" colspan="1"/>
+
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_field_workable" model="ir.ui.view">
+		<field name="name">Configuracion</field>
+        <field name="model">gt.field.workable</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Configuracion">
+            	<group>
+                	<field name="name" />
+                	<!--field name="consult"/-->
+				</group> 				           			  		
+			</search>
+		</field>
+	</record>	
+	<record id="action_field_workable" model="ir.actions.act_window">
+    	<field name="name">Configuracion</field>             
+        <field name="res_model">gt.field.workable</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+	<!--LOG DE PROCESAMIENTO-->	
+	<record  id="view_form_gt_process_log" model="ir.ui.view">
+		<field name="name">Fechas Procesamiento</field>
+		<field name="model">gt.process.log</field>
+		<field name="type">form</field>
+		<field name="arch" type="xml">
+		<form string="Configuraciones">
+			<group colspan="4" col="4" >
+				<field name="name" colspan="4"  readonly="1"/>
+				<field name="date_process" colspan="4" readonly="1"/>
+				<field name="records_number" colspan="4" readonly="1"/>  			
+				
+			</group>	
+			<newline/>	
+			<field name="result" colspan="4" readonly="1"/>										
+		</form>
+		</field>
+	</record> 
+	<record id="view_tree_gt_process_log" model="ir.ui.view" >
+		<field name="name">Fechas Procesamiento</field>
+		<field name="model">gt.process.log</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Configuracion" toolbar="1">
+				<field name="name" colspan="2" />
+				<field name="date_process" colspan="2" />
+				<field name="records_number" colspan="2" />  
+
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_gt_process_log" model="ir.ui.view">
+		<field name="name">Fechas Procesamiento</field>
+        <field name="model">gt.process.log</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Configuracion">
+            	<group>
+                	<field name="name" colspan="2" />
+					<field name="date_process" colspan="2" />
+					<field name="records_number" colspan="2" />  
+				</group> 				           			  		
+			</search>
+		</field>
+	</record>	
+	<record id="action_gt_process_log" model="ir.actions.act_window">
+    	<field name="name">Fechas Procesamiento</field>             
+        <field name="res_model">gt.process.log</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+	</record>
+
+	<!--HORARIO-->	
+		<record id="view_form_gt_resource_calendar_inherit" model="ir.ui.view">
+        <field name="name"> Horarios</field>
+        <field name="model">gt.process.log</field>
+        <field name="inherit_id" ref="resource.resource_calendar_form"/>
+        <field name="arch" type="xml">
+	    <xpath expr="/form/field[@name='manager']" position="after">
+	    	<newline/>
+	    	
+	    </xpath>
+        </field>
+    </record>
+	
+	<record  id="view_form_resource_calendar" model="ir.ui.view">
+		<field name="name">Horario</field>
+		<field name="model">resource.calendar</field>
+		<field name="type">form</field>
+		<field name="priority">10</field>
+		<field name="arch" type="xml">
+		
+		<form string="Horario">
+		
+                    <field name="name"/>
+                    <!--field name="manager"/-->
+                    <field name="schedule_half" widget="float_time" />
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <separator string="" colspan="4"/>
+                    <field name="attendance_ids" colspan="4" nolabel="1"/>
+        											
+		</form>
+		</field>
+	</record>
+	<record id="view_resource_calendar_tree" model="ir.ui.view">
+            <field name="name">resource.calendar.tree</field>
+            <field name="model">resource.calendar</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Working Time">
+                    <field name="name"/>
+                    <field name="manager" select="1"/>
+                    <field name="company_id" select="1" groups="base.group_multi_company"/>
+                </tree>
+            </field>
+        </record> 	
+	<record id="view_search_resource_calendar" model="ir.ui.view">
+		<field name="name">resource.calendar.search</field>
+        <field name="model">resource.calendar</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Horarios">
+            	<group>
+                	<field name="name" />                	
+				</group> 				           			  		
+			</search>
+		</field>
+	</record>
+	<!--
+        =======================
+        Summary Assistance
+        =======================
+        -->        
+	<record id="view_resumen_diario_form" model="ir.ui.view">
+    	<field name="name">Resumen Diario - Form </field>
+        <field name="model">assistance.resumen.diario</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        	<form string="Resumen Diario">
+                <group colspan="4">
+                    <field name="name" colspan="2" required="1" readonly="1"/>
+                    <field name="date" colspan="2" required="1" readonly="1"/>
+                    <newline/>
+                    <notebook colspan="4">
+                    	<page string="Marcaciones">
+                    		<field name="marcaciones_ids" nolabel="1" readonly="1"/>
+                    	</page>
+                    	<page string="Resumen del Dia">
+                    		<field name="detalle_ids" nolabel="1" readonly="1">
+                    			<tree string="Detalle">
+                    				<field name="name"/>
+                    				<field name="tiempo"/>
+	                    		</tree>
+                    		</field>
+                    	</page>
+                    </notebook>
+				</group>
+				<button name="recalcular" colspan="4" type="object" icon="gtk-execute" string="Recalcular tiempo laborado" 
+						 />	
+			</form>
+		</field>
+	</record>
+	<record id="view_resumen_diario_tree" model="ir.ui.view">
+    	<field name="name">Resumen Diario - Tree</field>
+		<field name="model">assistance.resumen.diario</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+			<tree string="Resumen Diario">
+            	<field name="name"/>
+                <field name="date"/>
+			</tree>
+		</field>
+	</record>
+	<record id="view_search_resumen_diario_tree" model="ir.ui.view">
+		<field name="name">Resumen Diario</field>
+        <field name="model">assistance.resumen.diario</field>
+        <field name="type">search</field>
+        <field name="arch" type="xml">
+        	<search string="Resumen Diario">
+            	<group>
+                	<field name="name" />
+                	<field name="date" string="Fecha Desde" filter_domain="[('date','&gt;=',self)]"/>
+					<field name="date" string="Fecha hasta" filter_domain="[('date','&lt;=',self)]"/>										
+				</group>   
+				<newline/>     
+				<group expand="1"  string="Group By...">	                       
+		        	<filter string="Nombre" icon="terp-go-home" domain="[]" context="{'group_by' : 'name'}" />
+		            <separator orientation="vertical"/>	                                              
+		            <filter string="Fecha" icon="terp-go-month" domain="[]" context="{'group_by' : 'date'}" />
+		            <separator orientation="vertical"/>	 		            
+				</group>           			  		
+			</search>
+		</field>
+	</record>
+
+	<record id="action_resumen_diario" model="ir.actions.act_window">
+   		<field name="name">Resumen Diario</field>
+   		<field name="res_model">assistance.resumen.diario</field>
+   		<field name="view_type">form</field>
+   		<field name="view_mode">tree,form</field>
+	</record>
+
+	
+	
+	<record id="action_resource_calendar" model="ir.actions.act_window">
+    	<field name="name">Horario</field>             
+        <field name="res_model">resource.calendar</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form,tree</field>
+	</record>
+	
+	
+	<menuitem name="Asistencia" 
+    		  id="menu_asistencia" 
+    		  sequence="10"
+		  web_icon="images/asistencia_bn.png"
+		  web_icon_hover="images/asistencia.png"/>	
+	<menuitem name="Reportes" id="menu_attendance_reports" parent="menu_asistencia"/>
+	<menuitem name="Resumen Mensual" 
+    	id="menu_resumen_mensual" 
+    	parent="menu_asistencia" sequence="5"/>
+    <menuitem name="Resumen Mensual" 
+    	id="menu_historial_mensual" 
+    	action="action_gt_history" 
+    	parent="menu_resumen_mensual" sequence="5"/> 
+    <menuitem name="Creación Resumen Mensual" 
+    	id="menu_create_history" 
+    	action="action_create_history" 
+    	parent="menu_resumen_mensual" sequence="10"/>
+    <menuitem name="Registro Marcaciones" 
+    	id="menu_registro_marcaciones" 
+    	parent="menu_asistencia" sequence="10"/>
+    <menuitem name="Marcaciones diarias" 
+    	id="menu_general_attendance" action="action_gt_attendance" 
+    	parent="menu_registro_marcaciones" sequence="5"/> 
+    <menuitem name="Resumen Diario de Empleado"
+		parent="menu_registro_marcaciones" id="attendance_diary_summary"
+		action="action_resumen_diario" sequence="10"/>
+    <menuitem name="Configuraciones" 
+    	id="menu_configuracion_marcaciones" 
+    	parent="menu_asistencia" sequence="10"/>
+    <menuitem name="Sanciones" 
+    	id="menu_general_sanciones" action="action_resource_calendar" 
+    	parent="menu_configuracion_marcaciones" sequence="5"/> 
+	    <menuitem name="Tipo de Sanciones" 
+    	id="menu_tipo_sancion" 
+    	action="action_gt_assent_type" 
+    	parent="menu_general_sanciones" sequence="5"/>       	  
+    <menuitem name="Notificaciones de Sanciones" 
+    	id="menu_tipo_reporte" 
+    	action="action_gt_report_type" 
+    	parent="menu_general_sanciones" sequence="10"/>
+    <menuitem name="Fechas procesamiento" 
+    	id="menu_log_procesos" action="action_gt_process_log" 
+    	parent="menu_configuracion_marcaciones" sequence="35"/> 	  
+	<menuitem name="Configuracion Básica" 
+    	id="menu_configuracion_workable" 
+    	action="action_field_workable" 
+    	parent="menu_configuracion_marcaciones" sequence="40"/>    	    
+	<menuitem name="Horarios" 
+    	id="menu_general_horarios" action="action_resource_calendar" 
+    	parent="menu_configuracion_marcaciones" sequence="30"/>
+    <menuitem name="Reloj" 
+    	id="menu_general_reloj" action="action_gt_clock_name" 
+    	parent="menu_configuracion_marcaciones" sequence="28"/>     
+    	
+</data>
+</openerp>
+
+

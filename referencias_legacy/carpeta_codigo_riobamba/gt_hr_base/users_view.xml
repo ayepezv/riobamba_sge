@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    	
+      <record model="ir.ui.view" id="view_users_form_hr_inherit1">
+        <field name="name">res.users.form</field>
+        <field name="type">form</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="hr.view_users_form_inherit"/>
+        <field name="arch" type="xml">
+          <field name="context_department_id" position="replace">
+          </field>
+          <field name="name" position="replace">
+            <field name="name" invisible="1"/>
+            <field name="context_department_id" string="Departamento" on_change="onchange_department()"/>
+            <field name="job_id" domain="[('department_id','=',context_department_id)]" on_change="onchange_usuario(job_id,employee_id,login)"/>
+            <field name="employee_id" on_change="onchange_usuario(job_id,employee_id,login)"/>
+          </field>
+          <field name="login" position="replace">
+            <field name="login" required="1" on_change="onchange_login(job_id,employee_id,login)"/>
+          </field>
+        </field>
+      </record>
+      
+      <record model="ir.ui.view" id="view_users_tree_inherit">
+        <field name="name">res.users.tree</field>
+        <field name="type">tree</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+          <field name="context_lang" position="replace">
+            <field name="context_department_id" string="Departamento"/>
+          </field>
+        </field>
+      </record>
+      
+      <record model="ir.ui.view" id="view_users_search_inherit">
+        <field name="name">res.users.search</field>
+        <field name="type">search</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_search"/>
+        <field name="arch" type="xml">
+          <field name="login" position="after">
+            <field name="context_department_id" string="Departamento"/>
+            <field name="active" string="Usuarios"/>
+          </field>
+        </field>
+      </record>
+
+        
+	</data>
+</openerp>

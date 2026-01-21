@@ -1,0 +1,1122 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+  	
+  	<!-- Caracterisiticas
+	  -->
+
+	<record id="view_vehicle_atribute_form" model="ir.ui.view">
+      <field name="name">view.vehicle.atribute.form</field>
+      <field name="model">vehicle.atribute</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Caracteristicas">		  
+		  <field name="name"/>
+		</form>
+	  </field>
+	</record>
+	
+    <record id="view_vehicle_atribute_tree" model="ir.ui.view">
+      <field name="name">view.vehicle.atribute.tree</field>
+      <field name="model">vehicle.atribute</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Caracteristicas">
+		  <field name="name"/>
+        </tree>
+      </field>
+    </record>
+	
+
+<!-- ordenes movilizacion
+	  -->
+<record id="view_movilization_order_form" model="ir.ui.view">
+  <field name="name">view.movilization.order.form</field>
+  <field name="model">movilization.order</field>
+  <field name="priority" eval="15"/>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Solicitud de movilización" >
+      <field name="asigned_depart" attrs="{'readonly': [('state', '!=','draft')]}"/>         
+      <group  colspan="2" col="8">          	
+	<field colspan="3" name="user_id" />					
+      </group>          
+      <group string="Estado" colspan="4" col="8">
+	<field name="state" widget="statusbar" statusbar_colors='{"draft":"black","solicitado":"red","aprobado":"blue","asignado":"blue","agrupado":"grey","realizado":"green","anulado":"grey"}'/>
+	<button name="movilization_solicitar" type="object" states="draft" string="Solicitar" icon="gtk-go-forward"  confirm="¿Está seguro que desea realizar la Órden de Movilización?"/>
+	<button name="movilization_aprobar" type="object" states="solicitado" string="Aprobar" icon="gtk-apply" confirm="¿Está seguro que desea aprobar la Órden de Movilización?" groups="gt_vehicle.group_vehicle_manager,gt_vehicle.group_vehicle_leader"/>
+	<button name="movilization_asignar" type="object" states="aprobado" string="Asignar Vehículo" icon="gtk-ok" groups="gt_vehicle.group_vehicle_manager"/>
+	<button name="%(action_order_cancel)d" type="action" states="solicitado" string="Anular" icon="gtk-cancel" groups="gt_vehicle.group_vehicle_manager,gt_vehicle.group_vehicle_leader"/>			
+	<button name="movilization_realizado" type="object" states="asignado" string="Finalizar" icon="gtk-jump-to" groups="gt_vehicle.group_vehicle_manager"/>
+	<button name="print_order" type="object" states="asignado" string="Imprimir Salvoconducto" groups="gt_vehicle.group_vehicle_manager" icon="gtk-print"/>
+      </group>
+      <field name="responsable"  invisible="1"/>
+      <group colspan="4" col="5">
+	<group colspan="2" col="2" string="Datos Movilización">
+	  <field name="ref"/>
+	  <field name="movilization_date" on_change="validar_tiempo_actual(movilization_date)" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	  <field name="return_date" on_change="validar_tiempo(movilization_date,return_date)" attrs="{'readonly': [('state', '!=','draft')]}"/> 			  
+	</group>						
+	<separator orientation="vertical"/>
+	<group colspan="2" col="2" string="Datos Vehículo" attrs="{'invisible': [('asigned_depart', '=',False),('state', 'not in',['aprobado','realizado','asignado'])]}" >			
+	  <field name="vehicle_id" on_change="onchange_vehicle_id(vehicle_id)" domain="[('state','=','disponible'),('activo','=',True),('estado','!=','low')]" attrs="{'invisible': [('asigned_depart', '!=',False)],'readonly': [('state', 'not in',['draft','aprobado'])]}" />
+	  <field name="department_id_vehicle" readonly="1" attrs="{'invisible': [('asigned_depart', '=',False)]}"/>
+	  <field name="vehicle_id_asigned" on_change="onchange_vehicle_id(vehicle_id_asigned)" domain="[('state','=','asignado'),('activo','=',True),('estado','!=','low'),('department_id','=',department_id)]" 
+		 attrs="{'readonly': [('state', '!=','draft')],'invisible': [('asigned_depart', '=',False)],'required': [('asigned_depart', '!=',False)]}"/>			  
+	  <field name="km_start" readonly="1"/>
+	  <field name="chofer" readonly="1"/>
+	</group>
+	<newline/>
+	<field name='padre'  invisible='1'/>
+	<group colspan="2" col="2" string="Datos Solicitud">
+	  <group colspan="2" attrs="{'invisible': [('padre', '!=','t')]}">
+	    <label colspan="3"  string=""/>
+	    <separator string="Solicitud Padre" orientation="horizontal"/>
+	  </group> 			  				  
+	  <field name="origin" readonly="1" attrs="{'invisible': [('state', '!=','agrupado')]}"/>
+	  <field name="name"/>
+	  
+	  <field name="responsable_id" domain='[("department_id","=",department_id)]' attrs="{'readonly': ['|',('responsable','=',True),('state','!=','draft')]}" />			  
+	  <field name="department_id" readonly="1"/>
+	  <field name="responsable_vehiculo" attrs="{'readonly': [('state','!=','draft')]}" />
+	</group>
+	<group colspan="2" col="2" string="Anulación" attrs="{'invisible': [('state', '!=','anulado')]}">
+	  <field name="observaciones_anulado" attrs="{'readonly': [('state', '=','anulado')]}"/>				
+	</group>
+      </group>
+      <notebook colspan="4">
+	<page string="Ruta" >
+	  <field name="route_ids" nolabel="1"  attrs="{'readonly': [('state', 'not in',['draft'])]}">
+	    <tree editable='bottom'>
+	      <field name="sec" readonly="1" invisible='1'/>				  
+	      <field name="id_country" invisible='1'/>
+	      <field name="country_id" invisible='1'/>				                        
+              <field name="state_id_desde" attrs="{'readonly': [('id_country', '=',False)]}" domain="[('country_id','=',country_id)]"/>                                                           
+	      <field name="canton_id_desde"   attrs="{'readonly': [('id_country', '=',False)]}" domain="[('state_id','=',state_id_desde)]"/>						
+	      <field name="parroquia_id_desde" attrs="{'readonly': [('id_country', '=',False)]}" domain="[('canton_id','=',canton_id_desde)]"/>
+	      <field name="desde"/>				  
+	      <field name="state_id_hasta" attrs="{'readonly': [('id_country', '=',False)]}" domain="[('country_id','=',country_id)]"/>                                                           
+	      <field name="canton_id_hasta"   attrs="{'readonly': [('id_country', '=',False)]}" domain="[('state_id','=',state_id_hasta)]"/>						
+	      <field name="parroquia_id_hasta" attrs="{'readonly': [('id_country', '=',False)]}" domain="[('canton_id','=',canton_id_hasta)]"/>
+	      <field name="hasta"/>				  				 
+	      <field name="km_inicial" readonly="1"/>
+	      <field name="km_final" readonly="1"/>
+	      <field name="km" sum="TOTAL KM. RUTA(km)"/>
+	    </tree>
+	  </field>
+	</page>
+	<page string="Detalle Actividades">
+	  <field name="desc" nolabel="1" required="1" attrs="{'readonly': [('state', '!=','draft')]}"/>
+	</page>
+	<page string="Detalle Empleados Involucrados">
+	  <field name="employee_ids" nolabel="1" widget="many2many" attrs="{'readonly': [('state', '!=','draft')]}">
+	    <tree>
+	      <field name="name"/>
+	      <field name="complete_name"/>
+	      <field name="department_id"/>		
+	      <field name="job_id"/>	
+	    </tree>
+	  </field>
+	</page>
+	<page string="Observaciones" attrs="{'readonly': [('state', 'in',['realizado','asignado'])],'invisible': [('state', 'in',['aprobado','draft','solicitado','agrupado','anulado'])]}" >
+	  <field name="observaciones" nolabel="1" attrs="{'readonly': [('state', 'in',['anulado','agrupado'])]}"/>
+	</page>
+      </notebook>
+      <newline/>
+    </form>
+  </field>
+</record>
+
+
+<record id="view_movilization_order_form1" model="ir.ui.view">
+  <field name="name">view.movilization.order.form1</field>
+  <field name="model">movilization.order</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Solicitud de movilización">
+      <group  colspan="2" col="8">
+      </group>
+      <group  colspan="2" col="8">
+	<field colspan="3" name="user_id" />
+      </group>
+      <group string="Estado" colspan="4" col="8">
+	<field name="state" widget="statusbar" statusbar_colors='{"draft":"black","solicitado":"red","aprobado":"blue","asignado":"blue","agrupado":"grey","realizado":"green","anulado":"grey"}'/>
+	<button name="movilization_solicitar" type="object" states="draft" string="Solicitar" icon="gtk-go-forward"  confirm="¿Está seguro que desea realizar la Órden de Movilización?"/>
+	<button name="movilization_aprobar" type="object" states="solicitado" string="Aprobar" icon="gtk-apply"  confirm="¿Está seguro que desea aprobar la Órden de Movilización?" groups="gt_vehicle.group_vehicle_manager,gt_vehicle.group_vehicle_leader"/>
+	<button name="movilization_asignar" type="object" states="aprobado" string="Asignar Vehículo" icon="gtk-ok" groups="gt_vehicle.group_vehicle_manager"/>
+	<button name="%(action_order_cancel)d" type="action" states="solicitado" string="Anular" icon="gtk-cancel" groups="gt_vehicle.group_vehicle_manager,gt_vehicle.group_vehicle_leader"/>			
+	<button name="movilization_realizado" type="object" states="asignado" string="Finalizar" icon="gtk-jump-to" groups="gt_vehicle.group_vehicle_manager"/>
+	<button name="print_order" type="object" states="asignado" string="Imprimir Salvoconducto"  groups="gt_vehicle.group_vehicle_manager" icon="gtk-print"/>
+      </group>
+      
+      <group colspan="4" col="5">
+	<group colspan="2" col="2" string="Datos Movilización">
+	  <field name="ref"/>
+	  <field name="movilization_date" on_change="validar_tiempo(movilization_date,return_date)" attrs="{'readonly': [('state', '!=','aprobado')]}"/>
+	  <field name="return_date" on_change="validar_tiempo(movilization_date,return_date)" attrs="{'readonly': [('state', '!=','aprobado')]}"/> 			  
+	</group>						
+	<separator orientation="vertical"/>
+	<group colspan="2" col="2" string="Datos Vehículo" attrs="{'invisible': [('state', 'not in',['aprobado','realizado','asignado'])]}" groups="gt_vehicle.group_vehicle_manager" >
+	  <field name="vehicle_id" on_change="onchange_vehicle_id(vehicle_id)" domain="[('state','=','disponible'),('activo','=',True),('estado','!=','low')]" attrs="{'readonly': [('state', '=','aprobado')]}"/>
+			  <field name="km_start" readonly="1"/>
+			  <field name="chofer" readonly="1"/>
+			</group>
+			<newline/>
+			<field name='padre'  invisible='1'/>
+			<group colspan="2" col="2" string="Datos Solicitud">
+				<group colspan="2" attrs="{'invisible': [('padre', '!=','t')]}">
+					 <label colspan="3"  string=""/>
+					<separator string="Solicitud Padre" orientation="horizontal"/>
+				</group> 			  				  
+			  <field name="origin" readonly="1" attrs="{'invisible': [('state', '!=','agrupado')]}"/>
+			  <field name="name"/>
+			  <field name="responsable_id" domain='[("department_id","=",department_id)]' attrs="{'readonly': [('state','!=','aprobado')]}" />
+			  <field name="department_id" readonly="1"/>
+			</group>
+			<group colspan="2" col="2" string="Anulación" attrs="{'invisible': [('state', '!=','anulado')]}">
+				<field name="observaciones_anulado" attrs="{'readonly': [('state', '=','anulado')]}"/>				
+			  </group>
+		  </group>
+          <notebook colspan="4">
+			<page string="Ruta">
+			  <field name="route_ids" nolabel="1" colspan="4" attrs="{'readonly': [('state', '!=','aprobado')]}">
+				<tree editable="bottom" string="Detalle Ruta">
+				  <field name="sec" readonly="1"/>
+				  <field name="desde"/>
+				  <field name="hasta"/>
+				  <field name="km_inicial" readonly="1"/>
+				  <field name="km_final" readonly="1"/>
+				  <field name="km" sum="TOTAL KM. RUTA(km)"/>
+				</tree>
+			  </field>
+			</page>
+			<page string="Detalle Actividades">
+			  <field name="desc" nolabel="1" required="1" attrs="{'readonly': [('state', '!=','aprobado')]}"/>
+			</page>
+			<page string="Detalle Empleados Involucrados">
+			  <field name="employee_ids" nolabel="1" widget="many2many" attrs="{'readonly': [('state', '!=','aprobado')]}">
+			  	<tree>
+				  <field name="name"/>
+				  <field name="complete_name"/>
+				  <field name="department_id"/>		
+				  <field name="job_id"/>	
+				</tree>
+			  </field>
+			</page>
+			<page string="Observaciones Vehículo" attrs="{'readonly': [('state', 'in',['realizado','asignado'])],'invisible': [('state', 'in',['aprobado','draft','solicitado','agrupado','anulado'])]}" >
+			  <field name="observaciones" nolabel="1" attrs="{'readonly': [('state', 'in',['anulado','agrupado'])]}"/>
+			</page>
+		  </notebook>
+		  <newline/>
+		</form>
+      </field>
+    </record>
+    
+	
+	 <!--Solicitudes pendientes, que tienes un vehiculo asigando estas va a poder gestionar el manager-->
+    <record id="action_movilization_order_asignada_vehicle" model="ir.actions.act_window">
+      <field name="name">Solicitudes Vehículo Asignado a un Departamento</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="help">Órdenes de Movilización en estado Aprobadas</field>
+      <field name="domain">[('state','=','asignado')]</field>
+      <field name="context">{'view_id':'action_movilization_order_asignada','state_vehicle' : 'aprobado','vehicle_id' : active_id,'department_id_movi' : 'True'}</field>
+      <field name="target">new</field>  
+      <field name="view_id" ref="view_movilization_order_form1"/>    
+    </record>
+	
+    <record id="view_vehicle_vehicle_form" model="ir.ui.view">
+      <field name="name">view.vehicle.vehicle.form</field>
+      <field name="model">vehicle.vehicle</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Vehículos">		  
+		  
+		  <field name="state" readonly="1" colspan="4" widget="statusbar" statusbar_colors='{"disponible":"blue","danado":"red","ocupado":"black","asignado":"green"}'/>		  
+		  	<group string="Asignado a Departamento" colspan="5" col="8" attrs="{'invisible': [('vehicle_type', '=','contratado')]}">
+		  <field  colspan="1" name="asigned_department" attrs="{'readonly': [('state', 'in',['ocupado','danado'])]}" />		   
+		  
+		  <field colspan="4" name="department_id" attrs="{'readonly': [('state', 'in',['ocupado','danado'])],'invisible': [('asigned_department', '=',False)],'required': [('asigned_department', '=',True)]}"/>
+		  	
+		  <!--button colspan="1" name="%(action_movilization_order_asignada_vehicle)d" string="Órden de Movilización" attrs="{'invisible': ['|',('asigned_department', '=',False),('state', 'in',['ocupado','danado'])]}" type="action" states="['ocupado','danado']"/-->
+		  		 
+		  </group>
+		  <newline/>
+		  <field name="estado" invisible="1"/>
+		  <group colspan="4" col="8">
+            <group colspan="2" col="2" string="Vehículo">
+			  <field name="name" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}"/>
+			  <field name="anio" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}" />
+			  <field name="marca_id" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}" widget="selection"/>
+			  <field name="model_id" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}" widget="selection"/>
+			  <field name="color_id" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}" widget="selection"/>
+			  <field name="state_id"/>
+			  <field name="activo"/>
+			</group>
+			<group colspan="2" col="2">
+			  <group colspan="2" col="2" string="Inf. Institucional">
+				<field name="number" attrs="{'readonly': ['|',('estado', '!=','borrador'),('vehicle_type', '!=','contratado'),('vehicle_type', '!=','planta_mod')],'invisible': [('vehicle_type', '=','contratado')],'required': [('vehicle_type', '!=','contratado')]}"/>
+				<field name="vehicle_type" readonly="1"/>
+				<!--field name="tipo" invisible='1'/-->						
+			  </group>
+              <group colspan="2" col="2" string="Inf. Mecánica">
+				<field name="engine" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}"/>
+				<field name="chasis" attrs="{'readonly': [('vehicle_type', '!=','contratado')]}"/>
+				<field name="km" attrs="{'readonly': ['|',('estado', '!=','borrador'),('vehicle_type', '!=','contratado'),('vehicle_type', '!=','planta_mod')]}"/>
+				<field name="category_id" attrs="{'readonly': [('vehicle_type', '!=','contratado')],'invisible': [('vehicle_type', '!=','contratado')]}"/>
+					   
+			  </group>			  
+			</group>
+			
+            <group colspan="1" col="1" string="Foto">
+              <field name="photo" widget='image' nolabel="1"/>              
+			  <button name="%(action_repair_vehicle)d" type="action" states="disponible,asignado" help="Ingresar el vehículo a Reparación" string="En Reparación" 
+					  icon="gtk-cancel"/>
+			  <button name="%(action_repair_vehicle_ok)d" type="action" states="danado" help="Pasar el vehículo a Reparado" string="Reparado" 
+					  icon="gtk-ok"/>
+				<newline/>
+			</group>			
+		  </group>
+		  <notebook colspan="4">
+			<page string="Propietario/Choferes">
+			  <field name="owner_id" colspan="4" 
+					 attrs="{'invisible': [('vehicle_type', '!=','contratado')],'required':[('vehicle_type','=','contratado')]}"/>
+			  <newline/>
+			  <field name="driver_ids"  nolabel="1" colspan="4" context="{'tipo':vehicle_type}">
+				<tree editable="bottom" string="Detalle Choferes" >
+				  <field name="tipo" invisible='1' />					  			
+				  <field name="name" domain="[('driver_type','=',tipo)]"/>				  
+				  <field name="date_start"/>
+				  <field name="date_stop"/>
+				  <field name="actual"/>				  
+				</tree>
+			  </field>
+		    </page>
+			<page string="Caracteristicas">
+			  <field name="atribute_ids"  nolabel="1" colspan="4">
+				<tree editable="bottom" >
+				  <field name="name"/>
+				  <field name="value"/>				  
+				</tree>
+			  </field>
+		    </page>
+			<page string="Historial Viajes">
+		      <field name="historial_ids" nolabel="1" readonly="1"/>
+		    </page>
+		    <page string="Historial Actualización Km">
+		      <field name="update_ids" nolabel="1" readonly="1"/>
+			</page>
+		    <page string="Historial Reparaciones">
+		      <field name="repair_ids" nolabel="1" readonly="1"/>
+			</page>
+		    <page string="Historial Incidentes">
+		      <field name="incident_ids" colspan="4" nolabel="1" readonly="1">
+				<tree editable="bottom" string="Detalle Incidentes">
+				  <field name="user_id" readonly="1"/>
+				  <field name="driver_id"/>
+				  <field name="name"/>
+				  <field name="detail"/>
+				</tree>
+			  </field>
+			  <group col="8" colspan="4">
+                <label colspan="6"  string=""/>
+                <button name="%(action_add_incident)d" string="Agregar Incidente" type="action" icon="gtk-execute"/>
+              </group>
+			</page>
+		  </notebook>
+
+        </form>
+      </field>
+    </record>
+
+    <record id="view_vehicle_repair_tree" model="ir.ui.view">
+      <field name="name">view.vehicle.repair.tree</field>
+      <field name="model">vehicle.repair</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Detalle de Reparaciones">
+		  <field name="user_id"/>
+		  <field name="name"/>
+		  <field name="opc"/>
+		  <field name="desc"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_vehicle_vehicle_tree" model="ir.ui.view">
+      <field name="name">view.vehicle.vehicle.tree</field>
+      <field name="model">vehicle.vehicle</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Vehículos" colors="black:state=='ocupado';red:state=='danado';blue:state=='disponible';grey:activo=='False'">
+	  		<field name="name"/>
+	  		<field name="marca_id"/>
+	 		<field name="model_id"/>
+	  		<field name="color_id"/>
+	  		<field name="owner_id" colspan="4"/>
+	  		<field name="state"/>
+	  		<field name="activo" invisible="1"/>	  	
+	  		</tree>
+      </field>
+    </record>
+    
+    <record id="view_vehicle_vehicle_tree1" model="ir.ui.view">
+      <field name="name">view.vehicle.vehicle.tree1</field>
+      <field name="model">vehicle.vehicle</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">      	
+        <tree string="Vehículos" colors="green:state=='asignado';black:state=='ocupado';red:state=='danado';blue:state=='disponible';grey:activo=='False'">
+	  		<field name="name"/>
+	  		<field name="marca_id"/>
+	 		<field name="model_id"/>
+	  		<field name="color_id"/>
+	  		<field name="department_id"/>
+	  		<field name="state"/>	  		
+	  		<field name="activo" invisible="1"/>	  		
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_vehicle_vehicle_search" model="ir.ui.view">
+      <field name="name">view.vehicle.vehicle.search</field>
+      <field name="model">vehicle.vehicle</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Vehículos">
+          <group>
+            <separator orientation="vertical"/>
+			<field name="name"/>
+			<field name="marca_id"/>
+			<field name="model_id"/>
+			<field name="color_id"/>
+			<field name="state_id"/>
+			<field name="owner_id" colspan="4"/>
+			<field name="state"/>
+          </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Marca" icon="gtk-bold" context="{'group_by': 'marca_id'}"/>
+            <filter string="Modelo" icon="gtk-properties" context="{'group_by': 'model_id'}"/>
+            <filter string="Color" icon="gtk-select-color" context="{'group_by': 'color_id'}"/>
+            <separator orientation="vertical"/>            
+            <filter string="Propietario" icon="terp-partner" domain="[]" context="{'group_by':'owner_id'}"/>
+            <separator orientation="vertical"/>            
+            <filter string="Estado" icon="STOCK_CONVERT" domain="[]" context="{'group_by':'state'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+	<record id="view_vehicle_vehicle_search1" model="ir.ui.view">
+      <field name="name">view.vehicle.vehicle.search1</field>
+      <field name="model">vehicle.vehicle</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Vehículo">
+          <group>
+            <separator orientation="vertical"/>
+			<field name="name"/>
+			<field name="marca_id"/>
+			<field name="model_id"/>
+			<field name="color_id"/>
+			<field name="department_id" colspan="4"/>
+			<field name="state"/>
+          </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Marca" icon="gtk-bold" context="{'group_by': 'marca_id'}"/>
+            <filter string="Modelo" icon="gtk-properties" context="{'group_by': 'model_id'}"/>
+            <filter string="Color" icon="gtk-select-color" context="{'group_by': 'color_id'}"/>
+            <separator orientation="vertical"/>            
+            <filter string="Departamento" icon="terp-partner" domain="[]" context="{'group_by':'department_id'}"/>
+            <separator orientation="vertical"/>            
+            <filter string="Estado" icon="STOCK_CONVERT" domain="[]" context="{'group_by':'state'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+    <record id="action_vehicle_atribute" model="ir.actions.act_window">
+      <field name="name">Caracteristicas</field>
+      <field name="res_model">vehicle.atribute</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="view_vehicle_atribute_tree"/>
+    </record>
+
+    <record id="action_vehicle" model="ir.actions.act_window">
+      <field name="name">Contratados</field>
+      <field name="res_model">vehicle.vehicle</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('vehicle_type','=','contratado'),('activo','=',True)]</field>
+      <field name="context">{'vehicle_type':'contratado','create_opc':'t'}</field>
+      <field name="search_view_id" ref="view_vehicle_vehicle_search"/>
+      <field name="view_id" ref="view_vehicle_vehicle_tree"/>
+    </record>
+
+    <record id="action_vehicle_inst" model="ir.actions.act_window">
+      <field name="name">Institucionales</field>
+      <field name="res_model">vehicle.vehicle</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">['|',('vehicle_type','=','planta'),('vehicle_type','=','planta_mod'),('estado','!=','low'),('activo','=',True)]</field>
+      <field name="context">{'vehicle_type':'planta','create_opc':'f'}</field>
+      <field name="search_view_id" ref="view_vehicle_vehicle_search1"/>
+      <field name="view_id" ref="view_vehicle_vehicle_tree1"/>
+    </record>
+	<!--MODELOS,MARCAS Y COLORES-->
+    <record id="action_marca" model="ir.actions.act_window">
+      <field name="name">Marca</field>
+      <field name="res_model">vehicle.mark</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_model" model="ir.actions.act_window">
+      <field name="name">Modelo</field>
+      <field name="res_model">vehicle.model</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_color" model="ir.actions.act_window">
+      <field name="name">Color</field>
+      <field name="res_model">vehicle.color</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <!--record id="action_route" model="ir.actions.act_window">
+      <field name="name">Ruta</field>
+      <field name="res_model">vehicle.route</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+    </record-->
+
+<!--
+CHOFERES
+-->
+
+    <record id="view_vehicle_driver_form" model="ir.ui.view">
+      <field name="name">view.vehicle.driver.form</field>
+      <field name="model">vehicle.driver</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Choferes">		  
+          <group colspan="4" col="4">
+			<group string="Datos Chofer">			  
+			  <group colspan="4" col="6">
+			  	<field name="ci" colspan="2" attrs="{'readonly': [('driver_type', '!=','contratado')]}"/>
+			  	<field name="driver_type" readonly='1'/>
+			  	<newline/>
+				<field name="name" colspan="4" attrs="{'readonly': [('driver_type', '!=','contratado')]}"/>
+				<newline/>
+				<field name="sex" attrs="{'readonly': [('driver_type', '!=','contratado')]}" required='1'/>		 	
+				<field name="fec_nac" attrs="{'readonly': [('driver_type', '!=','contratado')]}" required='1'/>
+			 	<field name="direccion" colspan="4" attrs="{'readonly': [('driver_type', '!=','contratado')]}" required='1'/>
+			 	<newline/>		
+				<field name="telf" attrs="{'readonly': [('driver_type', '!=','contratado')]}" />
+				<field name="telf_oficina" attrs="{'readonly': [('driver_type', '!=','contratado')]}" />				
+				
+				
+			  </group>
+			</group>
+		  </group>
+		  <notebook colspan="4">
+			<page string="Licencia">
+			  <group colspan="4" col="6">
+				<field name="tipo_licencia"/>
+				<newline/>
+				<field name="fec_emision" required="1"/>
+				<field name="fec_caducidad" required="1"/>
+				<!--field name="emitido" />
+				<field name="renovado" /-->
+			  </group>
+			  <newline/>
+			  <field name="observaciones" colspan="4"/>
+			</page>
+			<page string="Incidentes">
+			  <field name="incident_ids" nolabel="1" colspan="4" context="{'tipo':driver_type}">
+				<tree>
+				  <field name="name"/>
+				  <field name="fecha"/>				 
+				  <field name="desc"/>
+				</tree>
+				<form string="Incidentes">
+          <field name="tipo" invisible='1'/>
+		  <field name="fecha" on_change="validar_tiempo(fecha)" colspan="2"/>
+		  <field name="name" domain="[('vehicle_type','=',tipo),('estado','!=','low')]"/>
+		  <newline/>
+		  <field name="desc"/>	
+		  <field name="driver_id" invisible='1' />				    	  		
+		</form>
+			  </field>
+			</page>
+		  </notebook>
+        </form>
+      </field>
+    </record>
+	
+    <record id="view_vehicle_driver_tree" model="ir.ui.view">
+      <field name="name">view.vehicle.driver.tree</field>
+      <field name="model">vehicle.driver</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Choferes">
+		  <field name="ci"/>
+		  <field name="name"/>
+		  <field name="telf"/>
+		  <field name="tipo_licencia"/>
+        </tree>
+      </field>
+    </record>
+	
+	<record id="view_vehicle_driver_search" model="ir.ui.view">
+      <field name="name">view.vehicle.driver.search</field>
+      <field name="model">vehicle.driver</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Chofer">
+          <group>
+            <separator orientation="vertical"/>
+            <field name="ci"/>
+			<field name="name"/>			
+			<field name="tipo_licencia"/>
+          </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Tipo Licencia" icon="stock_gantt" domain="[]" context="{'group_by':'tipo_licencia'}"/>
+          </group>
+        </search>
+      </field>
+    </record>
+
+   <record id="action_driver" model="ir.actions.act_window">
+      <field name="name">Contratados</field>
+      <field name="res_model">vehicle.driver</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('driver_type','=','contratado')]</field>
+      <field name="context">{"driver_type":"contratado"}</field>
+      <field name="search_view_id" ref="view_vehicle_driver_search"/>
+    </record>
+
+    <record id="action_driver_inst" model="ir.actions.act_window">
+      <field name="name">Institucionales</field>
+      <field name="res_model">vehicle.driver</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="domain">[('driver_type','=','planta')]</field>
+      <field name="context">{"driver_type":"planta",'view_id':'action_driver_inst'}</field>
+      <field name="search_view_id" ref="view_vehicle_driver_search"/>
+      
+    </record>    
+
+
+<!--
+Ordenes Movilizacion, Combustible y Gestion de programación vehicular
+-->
+
+    <record id="view_movilization_order_employee_form" model="ir.ui.view">
+      <field name="name">view.movilization.order.employee.form</field>
+      <field name="model">movilization.order.employee</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detalle Empleados">
+		  <field name="employee_id"/>
+		</form>
+      </field>
+    </record>
+
+    <record id="view_movilization_order_employee_tree" model="ir.ui.view">
+      <field name="name">view.movilization.order.employee.tree</field>
+      <field name="model">movilization.order.employee</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Empleados">
+		  <field name="employee_id"/>
+        </tree>
+      </field>
+    </record>
+    
+    <record id="view_movilization_order_tree" model="ir.ui.view">
+      <field name="name">view.movilization.order.tree</field>
+      <field name="model">movilization.order</field>
+      <field name="type">tree</field>
+      <field name="view_id" ref="view_movilization_order_form"/>
+      <field name="arch" type="xml">     
+        <tree string="Solicitudes de Movilización" colors="black:state=='draft';red:state=='solicitado';blue:state=='aprobado';blue:state=='asignado';grey:state=='agrupado';green:state=='realizado';grey:state=='anulado'">
+          <field name="ref"/>
+          <field name="name"/>
+	  <field name="vehicle_des"/>
+	  <field name="department_id_vehicle"  invisible="not context.get('department_visible', False)"/>		  
+	  <field name="responsable_id"/>		  
+	  <field name="state" />				  		  
+	  <button name="movilization_solicitar" type="object" states="draft" string="Solicitar" icon="gtk-go-forward" confirm="¿Está seguro que desea realizar la Órden de Movilización?"/>
+	  <button name="movilization_aprobar" type="object" states="solicitado" string="Aprobar" icon="gtk-apply" confirm="¿Está seguro que desea aprobar la Órden de Movilización?" groups="gt_vehicle.group_vehicle_manager,gt_vehicle.group_vehicle_leader"/>
+	  <button name="movilization_asignar" type="object" states="aprobado" string="Asignar Vehículo" icon="gtk-ok" groups="gt_vehicle.group_vehicle_manager"/>			
+	  <button name="%(action_order_cancel)d" type="action" states="solicitado" string="Anular" icon="gtk-cancel" groups="gt_vehicle.group_vehicle_manager,gt_vehicle.group_vehicle_leader"/>
+	  <button name="movilization_realizado" type="object" states="asignado" string="Finalizar" icon="gtk-jump-to" groups="gt_vehicle.group_vehicle_manager"/>
+	  <button name="print_order" type="object" states="asignado" string="Imprimir Salvoconducto" icon="gtk-print" groups="gt_vehicle.group_vehicle_manager"/>
+	  <button name="print_memo" type="object" states="asignado" string="Imprimir Memo" icon="gtk-print" groups="gt_vehicle.group_vehicle_manager"/>
+        </tree>
+      </field>
+    </record>
+
+	<record id="view_movilization_order_tree_consult" model="ir.ui.view">
+      <field name="name">view.movilization.order.tree.consult</field>
+      <field name="model">movilization.order</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Solicitudes de Movilización" colors="black:state=='draft';red:state=='solicitado';blue:state=='aprobado';blue:state=='asignado';grey:state=='agrupado';green:state=='realizado';grey:state=='anulado'">
+          <field name="ref"/>
+          <field name="name"/>
+		  <field name="vehicle_des"/>
+		  <field name="department_id_vehicle"  invisible="not context.get('department_visible', False)"/>		  
+		  <field name="responsable_id"/>		  
+		  <field name="state" />		  		  
+        </tree>
+      </field>
+    </record>
+
+   <record id="view_movilization_order_search" model="ir.ui.view">
+      <field name="name">view.movilization.order.search</field>
+      <field name="model">movilization.order</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Órden de Movilización">
+          <group string="Buscar por..." expand="1">
+            <field name="vehicle_des" string="Vehículo"/>	
+            <separator orientation="vertical"/>
+			<field name="department_id_vehicle" string="Departamento Vehículo"/>
+			<newline/>
+            <separator orientation="vertical"/>	  
+			<field name="ref" string="N° Movilización"/>
+			<separator orientation="vertical"/>
+			<field name="name" string="Fecha Solicitud"/>
+			<separator orientation="vertical"/>
+			<field name="responsable_id"/>									            
+			<field name="movilization_date" string="Fecha Desde" filter_domain="[('movilization_date','&gt;=',self)]"/>
+            <field name="movilization_date" string="Fecha hasta" filter_domain="[('movilization_date','&lt;=',self)]"/>
+          </group>
+          <newline/>
+          <group string="Agrupar por..." expand="1">
+          	 <filter string="Vehículo" icon="terp-tools" domain="[]" context="{'group_by':'vehicle_des'}"/>
+          	 <separator orientation="vertical"/> 
+			 <filter string="Fecha Solicitud" icon="terp-calendar" domain="[]" context="{'group_by':'name'}"/> 
+			 <filter string="Responsable" icon="terp-partner" domain="[]" context="{'group_by':'responsable_id'}"/>
+			 <separator orientation="vertical"/>
+			 <filter string="Departamento del Vehículo" icon="terp-partner" domain="[]" context="{'group_by':'department_id_vehicle'}"/>			 			 						
+          </group>
+        </search>
+      </field>
+    </record>
+
+   <record model="ir.ui.view" id="movilization_order_calendar">
+     <field name="name">movilization.order.calendar</field>
+     <field name="model">movilization.order</field>
+     <field name="type">calendar</field>
+     <field name="priority" eval="2"/>
+     <field name="arch" type="xml">
+       <calendar string="Vista Planificación" date_start="movilization_date" date_stop="return_date" color="vehicle_id">
+         <field name="ref"/>
+         <field name="name"/>               
+       </calendar>
+     </field>
+   </record>
+   
+ <!--ESTADOS DE LA ORDENES DE MOVILIZACION -->
+	 <!--Todas las movilizaciones--> 
+    <record id="action_movilization_order" model="ir.actions.act_window">
+      <field name="name">Solicitudes de Movilización</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>      
+      <field name="help">Órdenes de Movilización</field>      
+    </record>
+    
+     <!--Solicitudes pendientes, que estan en estado solicitado estas va a poder consultar el manager
+     y maneja el leader -->
+    <record id="action_movilization_order_solicitado" model="ir.actions.act_window">
+      <field name="name">Pendientes</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="help">Órdenes de Movilización Solicitadas</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>
+      <field name="domain">[('state','=','solicitado')]</field>
+      <field name="context">{'view_id':'action_movilization_order_solicitado','department_visible':False}</field>
+    </record>
+         
+    <!--Solicitudes pendientes, que estan en estado solicitado estas va a poder consultar el manager
+     y maneja el leader -->
+    <record id="action_movilization_order_solicitado_consult" model="ir.actions.act_window">
+      <field name="name">Pendientes</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree</field>
+      <field name="help">Órdenes de Movilización Solicitadas</field>
+      <field name="view_id" ref="view_movilization_order_tree_consult"/>
+      <field name="domain">[('state','=','solicitado')]</field>
+      <field name="context">{'view_id':'action_movilization_order_solicitado_consult','department_visible':False}</field>     
+    </record>
+    
+    <!--Solicitudes Aprobadas, que estan en estado aprobado estas va a poder gestionar el manager-->
+    <record id="action_movilization_order_aprobe" model="ir.actions.act_window">
+      <field name="name">Aprobadas</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="help">Órdenes de Movilización en estado Aprobadas</field>
+      <field name="domain">[('state','=','aprobado')]</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>
+      <field name="context">{'view_id':'action_movilization_order_aprobe','department_visible':False}</field>
+    </record>
+    
+    <!--Solicitudes pendientes, que tienes un vehiculo asigando estas va a poder gestionar el manager-->
+    <record id="action_movilization_order_asignada" model="ir.actions.act_window">
+      <field name="name">Vehículo Asignado</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="help">Órdenes de Movilización en estado Aprobadas</field>
+      <field name="domain">[('state','=','asignado')]</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>
+      <field name="context">{'view_id':'action_movilization_order_asignada','department_visible':True}</field>      
+    </record>
+    
+   
+    
+    <!--Borrador, son solicitudes en estado borrador pero que son creadas por el usuario activo -->    
+    <record id="action_movilization_order_user" model="ir.actions.act_window">
+      <field name="name">Borrador</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="help">Órdenes de Movilización creadas por el Usuario Activo</field>
+      <field name="domain">[('state','=','draft')]</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>
+      <field name="context">{'view_id':'action_movilization_order_user','department_visible':False}</field>
+    </record>
+    
+    <!--Borrador, son solicitudes en estado borrador que el manager va solo poder consultar-->    
+    <record id="action_movilization_order_draft" model="ir.actions.act_window">
+      <field name="name">Borrador</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree</field>
+      
+      <field name="view_id" ref="view_movilization_order_tree_consult"/>
+      <field name="help">Órdenes de Movilización en estado Borrador</field>
+      <field name="domain">[('state','=','draft')]</field>
+      <field name="context">{'view_id':'action_movilization_order_draft','department_visible':False}</field>
+    </record>
+	<!--Solicitudes Realizadas, son solicitudes en estado realizado que el manager va solo poder consultar y gestionar-->  
+	<record id="action_movilization_order_done" model="ir.actions.act_window">
+      <field name="name">Finalizadas</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="help">Órdenes de Movilización Finalizadas</field>
+      <field name="domain">[('state','=','realizado')]</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>
+      <field name="context">{'view_id':'action_movilization_order_done','department_visible':True}</field>
+      
+    </record>
+	<!--Solicitudes Anuladas/Agrupadas, son solicitudes en estado anuladas y agrupadas que el manager va solo poder consultar-->  
+	<record id="action_movilization_order_anuladas" model="ir.actions.act_window">
+      <field name="name">Anuladas/Agrupadas</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="help">Órdenes de Movilización Anuladas y Agrupadas</field>
+      <field name="domain">['|',('state','=','anulado'),('state','=','agrupado')]</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>
+      <field name="context">{'view_id':'action_movilization_order_anuladas','department_visible':False}</field>
+      
+    </record>
+	
+	<!--********************************************************************* -->
+	<!--Mis solicitudes de Movilizacion son las solicitudes pertenecientes al responsables y que esta logueado-->  
+    <record id="action_movilization_order_mine" model="ir.actions.act_window">
+      <field name="name">Mis Solicitudes de Movilización</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="domain">[('responsable_id.user_id.id','=',uid)]</field>
+      <field name="view_mode">tree,form,calendar</field>
+      <field name="search_view_id" ref="view_movilization_order_search"/>
+      <field name="context">{'view_id':'action_movilization_order_mine','department_visible':True}</field>
+      <field name="view_id" ref="view_movilization_order_tree"/>  
+    </record>
+
+    <record id="action_movilization_order_calendar" model="ir.actions.act_window">
+      <field name="name">Calendario de Movilizaciones</field>
+      <field name="res_model">movilization.order</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">calendar,form</field>  
+      <field name="context">{'view_id':'action_movilization_order_calendar'}</field> 
+      <field name="domain">['|','|',('vehicle_id','!=',False),('vehicle_id_asigned','!=',False),('state','in',['aprobado','asignado','realizado'])]</field>        
+    </record>
+
+	<record id="view_vehicle_asistencia_form" model="ir.ui.view">
+	  <field name="name">view.vehicle.asistencia.form</field>
+	  <field name="model">vehicle.asistencia</field>
+	  <field name="type">form</field>
+	  <field name="arch" type="xml">
+	    <form string="Registro de Asistencia de Vehículos Contratados">	    
+	    <group colspan="2" col="2" string="Información General">	      
+	      <field name="vehicle_id" domain="[('vehicle_type','=','contratado')]"/>
+	      <field name="responsable_id"/>
+	      </group>
+	      <group  >
+	      </group>
+	      <group colspan="2" col="2" string="Información Asistencia">	  
+	      <field colspan="2" name="fecha" on_change="validar_tiempo(fecha)" />
+	      <newline/>
+	      <field colspan="2" name="hora_entrada"  widget="float_time"/>
+	      <newline/>
+	      <field colspan="2" name="hora_salida" widget="float_time"/>	  
+		  </group>
+		  <group>	  
+		  </group>
+		 
+		</form>
+	  </field>
+	</record>
+	
+	<record id="view_vehicle_asistencia_tree" model="ir.ui.view">
+	  <field name="name">view.vehicle.asistencia.tree</field>
+	  <field name="model">vehicle.asistencia</field>
+	  <field name="type">tree</field>
+	  <field name="arch" type="xml">
+	    <tree string="Regristro de Asistencia de Vehículos Contratados">
+	      <field name="fecha"/>
+	      <field name="vehicle_id"/>
+	      <field name="responsable_id"/>	      
+	      <field name="hora_entrada"  widget="float_time"/>
+	      <field name="hora_salida" widget="float_time"/>
+	    </tree>
+	  </field>
+	</record>
+	
+	<record id="view_vehicle_asistencia_search" model="ir.ui.view">
+      <field name="name">view.vehicle.asistencia.search</field>
+      <field name="model">vehicle.asistencia</field>
+      <field name="type">search</field>
+      <field name="arch" type="xml">
+        <search string="Buscar Registro Asistencia">
+          <group>
+            <separator orientation="vertical"/>
+			<field name="fecha"/>
+			<separator orientation="vertical"/>
+			<field name="vehicle_id"/>
+			<separator orientation="vertical"/>
+			<field name="responsable_id"/>
+          </group>
+          <newline/>
+          <group string="Agrupar por...">
+            <filter string="Fecha" icon="terp-calendar" context="{'group_by': 'fecha'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Vehículo" icon="gtk-properties" context="{'group_by': 'vehicle_id'}"/>
+            <separator orientation="vertical"/>
+            <filter string="Responsable" icon="terp-partner" context="{'group_by': 'responsable_id'}"/>            
+          </group>
+        </search>
+      </field>
+    </record>
+	
+	<record id="action_vehicle_asistencia" model="ir.actions.act_window">
+	  <field name="name">Regristro de Asistencia de Vehículos Contratados</field>
+	  <field name="res_model">vehicle.asistencia</field>
+	  <field name="view_type">form</field>
+	  <field name="view_mode">tree,form</field>  
+	</record>
+
+	<menuitem id="menu_vehicle_root" name="Gestión Vehicular" sequence="10"/>	
+	<menuitem id="menu_vehicle_config" parent="menu_vehicle_root" name="Configuracion" sequence="160" /> 	
+	<menuitem id="menu_vehicle_order" parent="menu_vehicle_root" name="Solicitudes de Movilización" groups="gt_vehicle.group_vehicle_user,gt_vehicle.group_vehicle_leader" sequence="1" />
+	<menuitem id="menu_vehicle_order_gestion" parent="menu_vehicle_root" name="Gestionar Solicitudes" sequence="2" groups="gt_vehicle.group_vehicle_manager"/>
+	<menuitem id="menu_vehicle_order_consult" parent="menu_vehicle_root" name="Consultar Solicitudes" sequence="3" groups="gt_vehicle.group_vehicle_manager"/>
+	<menuitem id="menu_vehicle_order_plan" parent="menu_vehicle_root" name="Planificación" sequence="4" groups="gt_vehicle.group_vehicle_manager"/>
+	<menuitem id="menu_vehicle_vehicle" parent="menu_vehicle_root" name="Vehículos" sequence="5" groups="gt_vehicle.group_vehicle_manager"/>
+    <menuitem id="menu_vehicle_driver" parent="menu_vehicle_root" name="Choferes" sequence="6" groups="gt_vehicle.group_vehicle_manager"/>
+    <menuitem id="menu_vehicle_actions" parent="menu_vehicle_root" name="Acciones" sequence="7" groups="gt_vehicle.group_vehicle_manager"/>
+	<menuitem id="menu_movilization_action_solicitado" parent="menu_vehicle_order" action="action_movilization_order_solicitado" groups="gt_vehicle.group_vehicle_leader" sequence="11"/>	
+	<menuitem id="menu_movilization_action_aprobe" parent="menu_vehicle_order_gestion" action="action_movilization_order_aprobe" groups="gt_vehicle.group_vehicle_manager" sequence="8"/>
+	<menuitem id="menu_movilization_action_asignada" parent="menu_vehicle_order_gestion" action="action_movilization_order_asignada" groups="gt_vehicle.group_vehicle_manager" sequence="7"/>
+	<menuitem id="menu_movilization_action_done" parent="menu_vehicle_order_gestion" action="action_movilization_order_done" groups="gt_vehicle.group_vehicle_manager" sequence="5"/>	
+	<menuitem id="menu_movilization_action_user" parent="menu_vehicle_order" action="action_movilization_order_user" groups="gt_vehicle.group_vehicle_leader" sequence="6"/>
+	<menuitem id="menu_movilization_action_draft" parent="menu_vehicle_order_consult" action="action_movilization_order_draft" groups="gt_vehicle.group_vehicle_manager" sequence="8"/>
+	<menuitem id="menu_movilization_action_solicitado_consult" parent="menu_vehicle_order_consult" action="action_movilization_order_solicitado_consult" groups="gt_vehicle.group_vehicle_manager" sequence="9"/>
+	<menuitem id="menu_movilization_action_anuladas" parent="menu_vehicle_order_consult" action="action_movilization_order_anuladas" groups="gt_vehicle.group_vehicle_manager" sequence="10"/>		
+	<menuitem id="menu_movilization_action_mine" parent="menu_vehicle_order" action="action_movilization_order_mine" groups="gt_vehicle.group_vehicle_user,gt_vehicle.group_vehicle_leader"  sequence="13"/>	
+	<menuitem id="menu_movilization_action_calendar" parent="menu_vehicle_order_plan" action="action_movilization_order_calendar" groups="gt_vehicle.group_vehicle_manager" sequence="14"/>		
+    <menuitem id="menu_vehicle_action" parent="menu_vehicle_vehicle" action="action_vehicle" sequence="1"/>
+    <menuitem id="menu_vehicle_action_inst" parent="menu_vehicle_vehicle" action="action_vehicle_inst" sequence="2"/>
+    <menuitem id="menu_driver_action" parent="menu_vehicle_driver" action="action_driver" sequence="1"/>
+    <menuitem id="menu_driver_action_inst" parent="menu_vehicle_driver" action="action_driver_inst" sequence="2"/>
+	<menuitem id="menu_vehicle_action_atribute" parent="menu_vehicle_vehicle" action="action_vehicle_atribute" sequence="5"/>
+   
+    <record id="view_incident_driver_form" model="ir.ui.view">
+      <field name="name">view.incident.driver.form</field>
+      <field name="model">incident.driver</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Incidentes">
+          <field name="tipo" invisible='1'/>
+		  <field name="fecha" on_change="validar_tiempo(fecha)" colspan="2"/>
+		  <field name="name" domain="[('vehicle_type','=',tipo),('estado','!=','low')]"/>
+		  <newline/>
+		  <field name="desc"/>	
+		  <field name="driver_id" invisible='1' />				    	  		
+		</form>
+      </field>
+    </record>
+	
+	<record id="view_incident_driver_tree" model="ir.ui.view">
+      <field name="name">view.incident.driver.tree</field>
+      <field name="model">incident.driver</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Incidentes">
+		  <field name="name"/>
+		  <field name="fecha"/>
+		  <field name="desc"/>
+		  
+        </tree>
+      </field>
+    </record>    
+
+    <record id="view_vehicular_route_tree" model="ir.ui.view">
+      <field name="name">view.vehicular.route.tree</field>
+      <field name="model">vehicular.route</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Ruta">
+		  <field name="name"/>
+		  <field name="km_number" sum="Total Km."/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_vehicle_route_km_tree" model="ir.ui.view">
+      <field name="name">view.vehicle.route.km.tree</field>
+      <field name="model">vehicle.route.km</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Historial">
+	  <field name="responsable_id"/>
+	  <field name="name"/>
+	  <field name="date_start"/>
+	  <field name="date_end"/>
+	  <field name="km_start"/>
+	  <field name="km_end"/>
+        </tree>
+      </field>
+    </record>
+
+    <record id="view_vehicle_update_tree" model="ir.ui.view">
+      <field name="name">view.vehicle.update.tree</field>
+      <field name="model">vehicle.update</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Historial Actualización de Kilometraje">
+		  <field name="name"/>
+		  <field name="date"/>
+		  <field name="km_ant"/>
+		  <field name="km_new"/>
+		  <field name="note"/>
+        </tree>
+      </field>
+    </record>
+<!-- Configuration-->
+	
+<record id="view_vehicle_configuration_form" model="ir.ui.view">
+  <field name="name">view.vehicle.configuration.form</field>
+  <field name="model">vehicle.configuration</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Configuración Cuenta Activos Fijos">
+	  <field name="name"/>
+	</form>
+  </field>
+</record>
+
+<record id="view_vehicle_configuration_tree" model="ir.ui.view">
+  <field name="name">view.vehicle.configuration.tree</field>
+  <field name="model">vehicle.configuration</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Configuración Cuentas">
+	  <field name="name"/>
+    </tree>
+  </field>
+</record>
+
+<record id="action_configuration" model="ir.actions.act_window">
+  <field name="name">Cuenta Activos Fijos</field>
+  <field name="res_model">vehicle.configuration</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+<record id="view_vehicle_category_form" model="ir.ui.view">
+  <field name="name">view.vehicle.category.form</field>
+  <field name="model">vehicle.category</field>
+  <field name="type">form</field>
+  <field name="arch" type="xml">
+    <form string="Categoría de Vehículos">
+    	<group colspan="2" col="2">
+	  <field name="name"/>
+	  </group>
+	  <newline/>	  
+	  <group colspan="2" col="2" string="Costo">	  
+	  <field name="cost_day"  required="1"/>	
+	  <field name="cost_km" required="1" />
+	  </group>
+	</form>
+  </field>
+</record>
+
+<record id="view_vehicle_category_tree" model="ir.ui.view">
+  <field name="name">view.vehicle.category.tree</field>
+  <field name="model">vehicle.category</field>
+  <field name="type">tree</field>
+  <field name="arch" type="xml">
+    <tree string="Categoría de Vehículos Contratados">
+	  <field name="name"/>
+	  <field name="cost_day"/>
+	  <field name="cost_km" />
+    </tree>
+  </field>
+</record>
+
+<record id="action_category" model="ir.actions.act_window">
+  <field name="name">Categoría de Vehículos Contratados</field>
+  <field name="res_model">vehicle.category</field>
+  <field name="view_type">form</field>
+  <field name="view_mode">tree,form</field>
+</record>
+
+	<menuitem id="menu_vehicle_asistencia" action="action_vehicle_asistencia" parent="menu_vehicle_actions" name="Registro Asistencia Contratados" groups="gt_vehicle.group_vehicle_manager"/>
+    <menuitem id="menu_vehicle_configuration" parent="menu_vehicle_config" action="action_configuration" groups="gt_vehicle.group_vehicle_manager"/>
+    <menuitem id="menu_vehicle_category" parent="menu_vehicle_config" action="action_category" groups="gt_vehicle.group_vehicle_manager"/>   
+	<menuitem id="menu_marca_action" parent="menu_vehicle_config" action="action_marca" groups="gt_vehicle.group_vehicle_manager" sequence="1"/>
+    <menuitem id="menu_model_action" parent="menu_vehicle_config" action="action_model" groups="gt_vehicle.group_vehicle_manager" sequence="2"/>
+    <menuitem id="menu_color_action" parent="menu_vehicle_config" action="action_color" groups="gt_vehicle.group_vehicle_manager" sequence="3"/>
+
+<!-- solicitud relacionada
+-->
+<act_window
+   domain="[('movilization_order_id','=',active_id)]"
+   id="act_relate_movilization_order"
+   name="Solicitud Relacionada"
+   res_model="movilization.order"
+   src_model="movilization.order"
+   groups="gt_vehicle.group_vehicle_manager"/>
+
+    </data>
+</openerp>

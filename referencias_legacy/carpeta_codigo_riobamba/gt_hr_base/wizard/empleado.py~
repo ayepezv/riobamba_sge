@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+# Mario Chogllo
+# mariofchogllo@gmail.com
+#
+##############################################################################
+
+import time
+from osv import fields, osv
+from time import strftime
+
+class empleadoListaLine(osv.TransientModel):
+   _name = 'empleado.lista.line'
+   _columns = dict(
+      l_id = fields.many2one('empleado.lista','Lista'),
+      contract_id = fields.many2one('hr.contract','Contrato'),
+      employee_id = fields.many2one('hr.employee','Empleado'),
+   )
+empleadoListaLine()
+
+class empleadoLista(osv.TransientModel):
+   _name ='empleado.lista'
+   _columns = dict(
+      line_ids = fields.one2many('empleado.lista.line','l_id','Detalle'),
+   )
+   
+   def printListaEmpleado(self, cr, uid, ids, context):
+      if context is None:
+         context = {}
+      contract_obj = self.pool.get('hr.contract')
+      line_obj = self.pool.get('empleado.lista.line')
+      for this in self.browse(cr, uid, ids):
+         contract_ids=contract_obj.search(cr, uid, [('activo','=',True)])
+         if contract_ids:
+            for contract_id in contract_ids:
+               contrato = contract_obj.browse(cr, uid, contract_id)
+               line_obj.create(cr, uid, {
+                  'employee_id':contrato.employee_id.id,
+                  'contract_id':contract_id,
+                  'l_id':this.id,
+               })
+      data = self.read(cr, uid, ids, [], context=context)[0]
+      report = self.browse(cr, uid, ids, context)[0]
+      return {
+         'type': 'ir.actions.report.xml',
+         'report_name': 'lista_empleado',
+         'model': 'empleado.lista',
+         'datas': data,
+         'nodestroy': True,                        
+      }
+      return True
+
+empleadoLista()
+

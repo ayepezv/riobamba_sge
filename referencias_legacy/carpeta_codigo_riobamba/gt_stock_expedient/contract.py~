@@ -1,0 +1,354 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#    OpenERP, Open Source Management Solution
+#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+
+from osv import osv, fields
+from time import strftime
+import time
+from datetime import datetime, date
+from tools import ustr
+
+class docContractExpedient(osv.osv):
+    _inherit = "doc_contract.contract"
+
+    def relation_expedient(self, cr, uid, ids, context=None):
+        obj_expedient = self.pool.get('doc_expedient.expedient')
+        obj_task = self.pool.get('doc_expedient.task')
+        obj_employee = self.pool.get('hr.employee')
+        for contract in self.browse(cr, uid, ids):
+            try:
+                employee_id = obj_employee.search(cr, uid, [('user_id','=',contract.user_id.id)])[0]
+            except IndexError:
+                raise osv.except_osv('Mensaje de Error !', '¡El usuario actual no esta relacionado a un empleado del sistema!')
+            employee = obj_employee.browse(cr, uid, employee_id)
+            if contract.expedient_id.id:
+                task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                                   'other_action' : 'Contrato: ' + str(contract.codigo_contrato) + ' ' + 'Iniciado',
+                                                   'description': 'Contrato Iniciado ' + str(contract.codigo_contrato),
+                                                   'department': employee.department_id.id,
+                                                   'employee_id': employee.id,
+                                                   'job_id': employee.job_id.id,
+                                                   'user_id': uid,
+                                                   'expedient_id':contract.expedient_id.id,
+                                                   'state': 'done',
+                                                   'assigned_user_id':uid,
+                                                   }, context=context)
+            else:
+                descrip = ' Contrato: ' + contract.name + '\n'
+                exp_id = obj_expedient.create(cr, uid,{'name': 'Contrato: ' + str(contract.name),
+                                                       'state': 'draft',
+                                                       'ubication':'internal',
+                                                       'resumen': descrip,}, context=context)
+                task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                                   'other_action' : 'Contrato: ' + str(contract.codigo_contrato) + ' ' + 'Iniciado',
+                                                   'description': 'Contrato Iniciado ' + '\n' +
+                                                   'Unidad Requirente: ' + str(contract.department_id.name) + '\n' +
+                                                   'Contratista: ' + str(contract.partner_id.name) + '\n' +
+                                                   'Monto: ' + str(contract.amount) + '\n' +
+                                                   'Plazo: ' + str(contract.term) + '\n' +
+                                                   'Fecha Suscripción: ' + str(contract.subscription_date),          
+                                                   'department': employee.department_id.id,
+                                                   'employee_id': employee.id,
+                                                   'job_id': employee.job_id.id,
+                                                   'user_id': uid,
+                                                   'expedient_id':exp_id,
+                                                   'state': 'done',
+                                                   'assigned_user_id':uid,
+                                                   }, context=context)
+                obj_expedient.action_draft_created(cr, uid, [exp_id],context)
+                obj_task.write(cr, uid, [task_id], {'state':'done'})
+                self.write(cr, uid, ids,{'expedient_id':exp_id}) 
+        return True
+
+
+    def abrir_contrato(self, cr, uid, ids, context=None):
+        mod_obj = self.pool.get('ir.model.data')
+        act_obj = self.pool.get('ir.actions.act_window')
+        obj_historial = self.pool.get('doc.contract.historial')
+        contract_obj = self.pool.get('doc_contract.contract')
+        payment_term_obj = self.pool.get('account.payment.term')
+        term_line = self.pool.get('contract.payment.line')
+        for contract in self.browse(cr, uid, ids, context):
+            c_ids = contract_obj.search(cr, uid, 
+                                        [('codigo_contrato','=',contract.codigo_contrato),
+                                         ('state','!=','cancelled')])
+            if len(contract.ubication_ids) < 1 or len(contract.payment_lines) < 1:
+                raise osv.except_osv('Mensaje de Error !', 
+                                     'Debe por lo menos registrar una localidad y un pago')
+            aux = 0
+            for p_line in contract.payment_lines:
+                aux += p_line.amount
+            if not round(aux,2)==round(contract.amount,2):
+                raise osv.except_osv('Mensaje de Error !', 'El detalle de pagos debe ser igual al monto de contrato')
+            if len(c_ids)>1:
+                raise osv.except_osv('Mensaje de Error !', 'El código de contrato debe ser único')
+            if contract.chk_notify_admin:
+                self.action_send_mail(cr, uid, ids, context)
+                sql = "UPDATE doc_contract_contract set chk_notify_admin='%s' WHERE id=%s" % (False, contract.id)
+                cr.execute(sql)
+            if not contract.user_id:
+                self.write(cr, uid, [contract.id], {'user_id':uid}, context)
+            elif contract.user_id.id != uid:
+                raise osv.except_osv('Mensaje de Error !', 'El usuario actual no puede iniciar el contrato')
+            self.relation_expedient(cr, uid, ids, context)
+            self.create_directory(cr, uid, ids, context)              
+            self.write(cr, uid, [contract.id],{'state': 'legalizing'})
+            hid = obj_historial.create(cr, uid, {'fecha_hora':time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                 'usuario':uid,
+                                                 'name':'Contrato Iniciado',
+                                                 'contract_id':contract.id})
+        return True
+        
+    def write(self, cr, uid, ids, vals, context=None):
+        now_date = time.strftime('%Y-%m-%d')
+        obj_attachment = self.pool.get('ir.attachment')
+        obj_task = self.pool.get('doc_expedient.task')
+        obj_historial = self.pool.get('doc.contract.historial')
+        obj_employee = self.pool.get('hr.employee')
+        res = super(doc_contract_contract,self).write(cr, uid, ids, vals, context)
+        for contract in self.browse(cr, uid, ids):
+            if contract.chk_notify_admin and contract.cambiar_administrador:
+                user_obj = self.pool.get('res.users')
+                user = user_obj.browse(cr, uid, contract.admin_uid.id)
+                try:
+                    employee_id = obj_employee.search(cr, uid, [('user_id','=',contract.admin_uid.id)])[0]
+                except IndexError:
+                    raise osv.except_osv(('Mensaje de Error !'), ('El usuario %s Administrador del Contrato no esta relacionado a un empleado del sistema') %(user.name))
+                employee = obj_employee.browse(cr, uid, employee_id)
+                if employee.department_id.id and employee.job_id.id:
+                    task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                                       'other_action': 'Para su Conocimiento',
+                                                       'description': 'Estimado ' + ustr(contract.admin_uid.name) + ' '+ 'Ud. ha sido designado como Administrador del contrato: ' + ustr(contract.code),          
+                                                       'department': employee.department_id.id,
+                                                       'employee_id': employee.id,
+                                                       'job_id': employee.job_id.id,
+                                                       'user_id': uid,
+                                                       'expedient_id':contract.expedient_id.id,
+                                                       'state': 'done',
+                                                       'assigned_user_id':uid,
+                                                       }, context=context)
+                else:
+                    raise osv.except_osv('Mensaje de Error !', 'El usuario Administrador del Contrato no esta relacionado a un empleado del sistema')   
+                sql = "UPDATE doc_contract_contract set chk_notify_admin='%s',cambiar_administrador='%s' WHERE id=%s" % (False, False, contract.id)
+                cr.execute(sql)
+                hid = obj_historial.create(cr, uid, {'fecha_hora':time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                 'usuario':uid,
+                                                 'name':'Cambio de administrador',
+                                                 'contract_id':contract.id})
+            if contract.fecha_inicio:
+                if not contract.fecha_inicio >= contract.subscription_date:
+                    raise osv.except_osv(('Mensaje de Error'), ('La Fecha Inicio debe ser mayor o igual a la Fecha Suscripción'))
+            if contract.fecha_notif_anticipo:
+                if not contract.fecha_notif_anticipo >= contract.subscription_date:
+                    raise osv.except_osv(('Mensaje de Error'), ('La Fecha Notif.Anticipo debe ser mayor o igual a la Fecha Suscripción'))
+            if contract.fecha_terminacion:
+                if not contract.fecha_terminacion >= contract.fecha_inicio:
+                    raise osv.except_osv(('Mensaje de Error'), ('La Fecha Terminación debe ser mayor o igual a la Fecha Inicio'))
+            if contract.fecha_cumplimiento:
+                if not contract.fecha_cumplimiento >= contract.fecha_inicio:
+                    raise osv.except_osv(('Mensaje de Error!'), ('La Fecha Cumplimiento debe ser mayor o igual a la Fecha Inicio'))                 
+        return res
+     
+    def registrar_firma_contratista(self, cr, uid, ids, context=None):
+        obj_historial = self.pool.get('doc.contract.historial')
+        obj_task = self.pool.get('doc_expedient.task')
+        obj_employee = self.pool.get('hr.employee')
+        for contract in self.browse(cr, uid, ids, context):
+            try:
+                employee_id = obj_employee.search(cr, uid, [('user_id','=',contract.user_id.id)])[0]
+            except IndexError:
+                raise osv.except_osv('Mensaje de Error !', '¡El usuario actual no esta relacionado a un empleado del sistema!')
+            employee = obj_employee.browse(cr, uid, employee_id)
+            task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                               'other_action': 'Firma Contratista, Contrato: ' + str(contract.code),
+                                               'description': 'Se ha registrado la Firma del Contratista en el contrato',          
+                                               'department': employee.department_id.id,
+                                               'employee_id': employee.id,
+                                               'job_id': employee.job_id.id,
+                                               'user_id': uid,
+                                               'expedient_id':contract.expedient_id.id,
+                                               'state': 'done',
+                                               'assigned_user_id':uid,
+                                                      }, context=context)
+            self.write(cr, uid, [contract.id], {'firmas':'contratista',
+                                                'firma_max':True,'firma_contratista':False}, context)
+            hid = obj_historial.create(cr, uid, {'fecha_hora':time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                 'usuario':uid,
+                                                 'name':'Registro firma contratista',
+                                                 'contract_id':contract.id})
+        return True
+    
+    
+    def registrar_firma_max_autoridad(self, cr, uid, ids, context=None):
+        obj_historial = self.pool.get('doc.contract.historial')
+        obj_task = self.pool.get('doc_expedient.task')
+        obj_employee = self.pool.get('hr.employee')
+        for contract in self.browse(cr, uid, ids, context):
+            try:
+                employee_id = obj_employee.search(cr, uid, [('user_id','=',contract.user_id.id)])[0]
+            except IndexError:
+                raise osv.except_osv('Mensaje de Error !', '¡El usuario actual no esta relacionado a un empleado del sistema!')
+            employee = obj_employee.browse(cr, uid, employee_id)
+            task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                               'other_action': 'Firma Máxima Autoridad / Delegado, Contrato: ' + str(contract.code),
+                                               'description': 'Se ha registrado la Firma Máxima Autoridad / Delegado en el contrato',          
+                                               'department': employee.department_id.id,
+                                               'employee_id': employee.id,
+                                               'job_id': employee.job_id.id,
+                                               'user_id': uid,
+                                               'expedient_id':contract.expedient_id.id,
+                                               'state': 'done',
+                                               'assigned_user_id':uid,
+                                               }, context=context)
+            self.write(cr, uid, [contract.id], {'firmas':'max_autoridad',
+                                                'firma_max':False}, context)
+            hid = obj_historial.create(cr, uid, {'fecha_hora':time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                 'usuario':uid,
+                                                 'name':'Registro firma máxima autoridad / delegado',
+                                                 'contract_id':contract.id})
+        return True
+    
+    
+    def create(self, cr, uid, vals, context=None):
+        obj_employee = self.pool.get('hr.employee')
+        amount = vals['amount']
+        if amount <= 0:
+            raise osv.except_osv(('Mensaje de Advertencia!'), ('¡El monto ingresesado debe ser mayor que 0!'))
+        obj_sequence = self.pool.get('ir.sequence')
+        user_obj = self.pool.get('res.users')
+        user = user_obj.browse(cr, uid, uid)
+        try:
+            employee_id = user.employee_id.id
+        except IndexError:
+            raise osv.except_osv(('Mensaje de Error !'), ('El usuario %s Administrador del Contrato no esta relacionado a un empleado del sistema') % (user.name))
+        solicitant_id = obj_employee.browse(cr, uid, employee_id)
+        if not solicitant_id.department_id.id and solicitant_id.job_id.id:
+            raise osv.except_osv('Mensaje de Error !', 'El usuario creador no tiene departamento y/o cargo')
+        #Si no hay el tramite lo crea, con la tarea
+        resumen = 'Contrato creado: ' + vals['codigo_contrato'] + '. ' 
+        if vals['expedient_id']:
+            task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                         'other_action' : 'Para su conocimiento' ,
+                                                                         'description': 'Estimado: ' + solicitant_id.complete_name,
+                                                                         'department': solicitant_id.department_id.id,
+                                                                         'employee_id' : solicitant_id.id,
+                                                                         'job_id': solicitant_id.job_id.id,
+                                                                         'user_id': uid,
+                                                                         'expedient_id':vals['expedient_id'],
+                                                                         'state': 'done',
+                                                                         'assigned_user_id':user.id,
+                                                                         }, context=context)
+        else:
+            expedient_id= self.pool.get('doc_expedient.expedient').create(cr, uid,{'name':  str('Contrato Creado: ') + vals['name'],
+                                                                                   'state': 'draft',
+                                                                                   'ubication':'internal',
+                                                                                   'resumen': resumen}, context=context)
+            task_id= self.pool.get('doc_expedient.task').create(cr, uid,{'other_action_chk': True,
+                                                                         'other_action' : 'Para su conocimiento',
+                                                                         'description': 'Estimado: ' + solicitant_id.complete_name,
+                                                                         'department': solicitant_id.department_id.id,
+                                                                         'employee_id' : solicitant_id.id,
+                                                                         'job_id': solicitant_id.job_id.id,
+                                                                         'user_id': uid,
+                                                                         'expedient_id':expedient_id,
+                                                                         'state': 'done',
+                                                                         'assigned_user_id':user.id,
+                                                                         }, context=context)
+            vals['expedient_id']=expedient_id
+            self.pool.get('doc_expedient.expedient').action_draft_created(cr, uid, [expedient_id],context)
+        self.pool.get('doc_expedient.task').write(cr, uid, [task_id], {'state':'done'})
+        res_id = super(doc_contract_contract, self).create(cr, uid, vals, context=context)
+        return res_id
+    
+    def finalizar_etapa_distribucion(self, cr, uid, ids, context=None):
+        obj_task = self.pool.get('doc_expedient.task')
+        obj_employee = self.pool.get('hr.employee')
+        obj_historial = self.pool.get('doc.contract.historial')
+        for contract in self.browse(cr, uid, ids):
+            if len(contract.distribucion_users) < 1:
+                raise osv.except_osv('Mensaje de Error !', 
+                                     'Debe por lo menos dsitribuir a un usuario los documentos')
+            if not (contract.date_received):
+                raise osv.except_osv('Mensaje de Error !', 
+                                     'El campo "Fecha Recepción" es obligatorio..')
+            if not (contract.dispatch_office_number):
+                raise osv.except_osv('Mensaje de Error !', 
+                                     'El campo "Nro. Oficio Despacho" es obligatorio..')
+            if not contract.chk_contrato:
+                raise osv.except_osv('Mensaje de Error !',
+                                     'No se ha adjuntado el archivo copia del contrato')
+            if not contract.distribucion_users:
+                raise osv.except_osv('Mensaje de Error !', 
+                                     'Es necesario distribuir al menos a un usuario')
+            # Crea una tarea para el administrador del contrato
+            if not (contract.admin_uid):
+                raise osv.except_osv('Mensaje de Error !', 'El campo "Administrador" es obligatorio..')
+            try:
+                employee_id = obj_employee.search(cr, uid, [('user_id','=',contract.admin_uid.id)])[0]
+            except IndexError:
+                raise osv.except_osv('Mensaje de Error !', 'El usuario Administrador del Contrato no esta relacionado a un empleado del sistema')
+            employee = obj_employee.browse(cr, uid, employee_id)
+            if employee.department_id.id and employee.job_id.id:
+                task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                                   'other_action': 'Para su Conocimiento',
+                                                   'description': 'Estimado ' + ustr(contract.admin_uid.name) + ' '+ 'Ud. ha sido designado como Administrador del contrato: ' + ustr(contract.code),          
+                                                   'department': employee.department_id.id,
+                                                   'employee_id': employee.id,
+                                                   'job_id': employee.job_id.id,
+                                                   'user_id': uid,
+                                                   'expedient_id':contract.expedient_id.id,
+                                                   'state': 'done',
+                                                   'assigned_user_id':uid,
+                                                          }, context=context)
+            else:
+                raise osv.except_osv('Mensaje de Error !', 'El usuario Administrador del Contrato no esta relacionado a un empleado del sistema')
+            # Distribución de Documentos
+            for user in contract.distribucion_users:
+                try:
+                    employee_id = obj_employee.search(cr, uid, [('user_id','=',user.id)])[0]
+                except IndexError:
+                    raise osv.except_osv('Mensaje de Error !', 'El usuario actual no esta relacionado a un empleado del sistema')
+                employee = obj_employee.browse(cr, uid, employee_id)
+                if employee.department_id.id and employee.job_id.id: 
+                    task_id = obj_task.create(cr, uid,{'other_action_chk': True,
+                                                       'other_action': 'Para su Conocimiento: ',
+                                                       'description': 'Se le ha distribuido copia de contrato' + ' ' + str(contract.code),          
+                                                       'department': employee.department_id.id,
+                                                       'employee_id': employee.id,
+                                                       'job_id': employee.job_id.id,
+                                                       'user_id': uid,
+                                                       'expedient_id':contract.expedient_id.id,
+                                                       'state': 'done',
+                                                       'assigned_user_id':uid,
+                                                          }, context=context)
+                else:
+                    raise osv.except_osv('Mensaje de Error !', 'El usuario a distribuir no esta relacionado a un empleado del sistema')
+            self.write(cr, uid, [contract.id],{'state':'execution'})
+            hid = obj_historial.create(cr, uid, {'fecha_hora':time.strftime('%Y-%m-%d %H:%M:%S'),
+                                                 'usuario':uid,
+                                                 'name':'Finaliza etapa distribución',
+                                                 'contract_id':contract.id})            
+        return True
+     
+    _columns = dict(
+        expedient_id = fields.many2one('doc_expedient.expedient', 'Trámite Relacionado', 
+                                       help="Trámite relacionado, si no selecciona uno, este se creará automaticamente"),
+     )
+     
+docContractExpedient()

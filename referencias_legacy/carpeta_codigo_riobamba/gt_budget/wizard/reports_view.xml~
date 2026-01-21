@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+      <record id="view_budget_move" model="ir.ui.view">
+        <field name="name">Movimiento de partidas</field>
+        <field name="model">budget.move</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Movimiento partidas">
+	    <group col="4" colspan="4">
+	      <group colspan="4">
+		<field name="partner_id" colspan="4"/>
+		<field name="budget_id" colspan="4" required="1"/>
+	      </group>
+	      <group colspan="4" string="Fechas">
+		<field name="date_start" colspan="2" required="1"/>
+		<field name="date_end" colspan="2" required="1"/>
+	      </group>
+	      <notebook colspan="4">
+		<page string='Detalle'>
+		  <field name='line_ids' nolabel="1">
+		    <tree>
+		      <field name='seq'/>
+		      <field name='date'/>
+		      <field name='partner_id'/>
+		      <field name='move_id'/>
+		      <field name='desc'/>
+		      <field name='devengado' sum="Total devengado"/>
+		      <field name='pagado' sum="Total Pagado"/>
+		    </tree>
+		  </field>
+		</page>
+	      </notebook>
+	      <newline/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="computeBudgetMove" type="object" icon="gtk-execute"  string="Generar"/>
+		<button name="printBudgetMove" type="object" icon="gtk-execute"  string="Imprimir"/>
+	      </group>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_budget_move" model="ir.actions.act_window">
+        <field name="name">Movimiento de partidas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_budget_move"
+		icon="STOCK_EXECUTE"
+		action="action_budget_move"
+		parent="menu_budget_budget_parent"
+		sequence='5'
+		name="Movimiento Partida"/>
+
+
+</data>
+</openerp>

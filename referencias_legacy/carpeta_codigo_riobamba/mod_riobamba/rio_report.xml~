@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+
+    <report auto="False"
+        id="rol_alimentacion"
+        model="hr.payslip.run"
+        name="rol_alimentacion"
+        file="mod_riobamba/report/rol_alimentacion.mako"
+        string="Rol Alimentacion"
+        report_type="webkit"
+	/>
+
+
+    <report auto="False"
+        id="rol_transporte"
+        model="hr.payslip.run"
+        name="rol_transporte"
+        file="mod_riobamba/report/rol_transporte.mako"
+        string="Rol Transporte"
+        report_type="webkit"
+	/>
+
+
+    <record model="ir.ui.view" id="view_accion_personal_rio_form">
+      <field name="name">hr.accion.personal.form</field>
+      <field name="model">hr.accion.personal</field>
+      <field name="type">form</field>
+      <field name="inherit_id" ref="gt_hr_base.view_accion_personal_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='date_from']" position="after">
+	  <field name="autoridad_id" required="1"/>
+	</xpath>
+      </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_accion_personal_rio_tree">
+      <field name="name">hr.accion.personal.tree</field>
+      <field name="model">hr.accion.personal</field>
+      <field name="type">tree</field>
+      <field name="inherit_id" ref="gt_hr_base.view_accion_personal_tree"/>
+      <field name="arch" type="xml">
+	<xpath expr="/tree/field[@name='date']" position="after">
+	  <field name="autoridad_id"/>
+	</xpath>
+      </field>
+    </record>
+    
+    
+  </data>
+</openerp>

@@ -1,0 +1,1661 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+    <menuitem id="menu_project_project_expost" 
+              parent="base.menu_main_pm" sequence="40" name="ExPost de Proyectos"/>
+
+    <menuitem id="menu_project_project_close" 
+              parent="base.menu_main_pm" sequence="30" name="Cierre de Proyectos" groups="gt_project_project.group_close_project_manager"/>
+
+    <!--  -->
+    <record id="view_budget_sobregiro" model="ir.ui.view">
+      <field name="name">Reporte Sobregiro Partida</field>
+      <field name="model">budget.sobregiro</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detale">
+	  <group col="4" colspan="4">
+	    <field name="poa_id" widget="selection" colspan="4" required="1"/>
+	    <field name="date_to" colspan="2" required="1"/>
+	  </group>
+	  <newline/>
+	  <group col="4" colspan="1">
+	    <button name="computeSobregiro" type="object" icon="gtk-execute"  string="Generar"/>
+	    <button name="printSobregiro" type="object" icon="gtk-print"  string="Imprimir Sobregiradas"/>
+	  </group>
+	  <newline/>
+	  <notebook colspan="4">
+	    <page string="Detalle Partidas Sobregiradas">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		<field name="code"/>
+		<field name="name"/>
+		<field name="planned_amount" sum="TOTAL"/>
+		<field name="reform_amount" sum="TOTAL"/>
+		<field name="codificado_amount" sum="TOTAL"/>
+		<field name="commited_amount" sum="TOTAL"/>
+		<field name="sobregiro_commited" sum="TOTAL"/>
+		<field name="devengado_amount" sum="TOTAL"/>
+		<field name="sobregiro_devengado" sum="TOTAL"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+      </record>
+
+
+      <record id="action_budget_sobregiro" model="ir.actions.act_window">
+        <field name="name">Reporte Sobregiro Partidas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.sobregiro</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_budget_sobregiro"
+		icon="STOCK_EXECUTE"
+		action="action_budget_sobregiro"
+		parent="gt_budget.menu_budget_queries_base"
+		name="Sobregiro Partida"
+		sequence="15"/>
+    <!-- -->
+    <record id="view_esigef_detalle" model="ir.ui.view">
+      <field name="name">Reporte Esigef Detalle</field>
+      <field name="model">esigef.detalle</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Detale">
+	  <group col="4" colspan="4">
+	    <field name="poa_id" widget="selection" colspan="4" required="1"/>
+	    <field name="date_start" colspan="2" required="1"/>
+	    <field name="date_stop" colspan="2" required="1"/>
+	    <field name="datas_fname" colspan="4" invisible="1"/>
+	    <field name="datas" filename="datas_fname" colspan="4" readonly="1"/>
+	  </group>
+	  <newline/>
+	  <group col="4" colspan="1">
+	    <button name="computeEsigef" type="object" icon="gtk-execute"  string="Generar"/>
+	    <button name="printEsigef" type="object" icon="gtk-print"  string="Imprimir Completo"/>
+	    <button name="printEsigefIngreso" type="object" icon="gtk-print"  string="Imprimir Ingresos"/>
+	    <button name="printEsigefGasto" type="object" icon="gtk-print"  string="Imprimir Gastos"/>
+	  </group>
+	  <newline/>
+	  <notebook colspan="4">
+	    <page string="Ingresos">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		<field name="post_id"/>
+		<field name="inicial"/>
+		<field name="reforma"/>
+		<field name="codificado"/>
+		<field name="comprometido"/>
+		<field name="devengado"/>
+		<field name="ejecutado"/>
+		<field name="r4"/>
+		<field name="r6"/>
+		<field name="r7"/>
+		<field name="r8"/>
+		</tree>
+	      </field>
+	    </page>
+	    <page string="Gastos">
+	      <field name="line_ids2" nolabel="1">
+		<tree>
+		<field name="post_id"/>
+		<field name="inicial"/>
+		<field name="reforma"/>
+		<field name="codificado"/>
+		<field name="comprometido"/>
+		<field name="devengado"/>
+		<field name="ejecutado"/>
+		<field name="r4"/>
+		<field name="r6"/>
+		<field name="r7"/>
+		<field name="r8"/>
+		</tree>
+	      </field>
+	    </page>
+	  </notebook>
+        </form>
+      </field>
+      </record>
+
+
+      <record id="action_esigef_detalle" model="ir.actions.act_window">
+        <field name="name">Reporte Esigef Detalle</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">esigef.detalle</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_esigef_detalle"
+		icon="STOCK_EXECUTE"
+		action="action_esigef_detalle"
+		parent="menu_cedulas"
+		name="Reporte Esigef Detalle"
+		sequence="15"/>
+
+
+      <!-- -->
+      <record id="view_rf_programa" model="ir.ui.view">
+        <field name="name">Reforma Programa</field>
+        <field name="model">rf.programa</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Reforma programa">
+	    <group col="4" colspan="4">
+	      <field name="tipo" colspan="4" required="1"/>
+	      <field name="rfi_id" colspan="2" attrs="{'required': [('tipo','=','INGRESO')],'invisible': [('tipo', '=','GASTO')]}" widget="selection"/>
+	      <field name="rfg_id" colspan="2" attrs="{'required': [('tipo','=','GASTO')],'invisible': [('tipo', '=','INGRESO')]}" widget="selection"/>
+	      <field name="program_id" colspan="4" required="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	      <button name="printRfPrograma" type="object" icon="gtk-execute"  string="Imprimir"/>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_rf_programa" model="ir.actions.act_window">
+        <field name="name">Reforma Programa</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rf.programa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_rf_programa"
+		icon="STOCK_EXECUTE"
+		action="action_rf_programa"
+		parent="gt_budget.menu_budget_management"
+		name="Reforma programa"
+		sequence="15"/>
+      
+<!-- EJecucion por partida-->
+      <record id="view_ejec_budget" model="ir.ui.view">
+        <field name="name">Ejecucion partida/proyecto</field>
+        <field name="model">ejec.budget</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Ejecucion partida/proyecto">
+	    <group col="4" colspan="4">
+	      <group colspan="4" string="Fechas">
+		<field name="poa_id" colspan="2" required="1"/>
+		<field name="date_start" colspan="2" required="1"/>
+		<field name="date_end" colspan="2" required="1"/>
+	      </group>
+	      <group colspan="4">
+		<field name="budget_id" colspan="4" required="1" 
+		       on_change="onchange_budget_ejec(budget_id,date_start,date_end)"/>
+	      </group>
+	      <group colspan="4" col='12' string="Presupuesto">
+		<field name="inicial" colspan="2"/>
+		<field name="reformas" colspan="2"/>
+		<field name="codificado" colspan="2"/>
+		<field name="comprometido" colspan="2"/>
+		<field name="devengado" colspan="2"/>
+		<field name="pagado" colspan="2"/>
+		<field name="disponible" colspan="2"/>
+	      </group>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="computeEjectBudget" type="object" icon="gtk-execute"  string="Generar"/>
+		<button name="printEjecBudget" type="object" icon="gtk-execute"  string="Imprimir"/>
+	      </group>
+	      <notebook colspan="4">
+		<page string='Detalle'>
+		  <field name='line_ids' nolabel="1">
+		    <tree>
+		      <field name='budget_id'/>
+		      <field name='detalle'/>
+		      <field name='date'/>
+		      <field name='comprobante'/>
+		      <field name='comprometido' sum="Total compromiso"/>
+		      <field name='pagado' sum="Total Pagado"/>
+		    </tree>
+		  </field>
+		</page>
+	      </notebook>
+	      <newline/>
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_ejec_partida" model="ir.actions.act_window">
+        <field name="name">Ejecucion de partida/proyecto</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ejec.budget</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <!--menuitem id="menu_budget_ejec_partida"
+		icon="STOCK_EXECUTE"
+		action="action_ejec_partida"
+		parent="gt_budget.menu_budget_queries_base"
+		sequence='100'
+		name="Ejecucion Partida/Programa"/-->
+<!-- -->
+      <record id="view_budget_move" model="ir.ui.view">
+        <field name="name">Movimiento de partidas</field>
+        <field name="model">budget.move</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+          <form string="Movimiento partidas">
+	    <group col="4" colspan="4">
+	      <group colspan="4" col="8" string="Fechas">
+		<field name="date_start" colspan="2" required="1" on_change="onchange_date_budget_move(budget_id,date_start,date_end)"/>
+		<field name="date_end" colspan="2" required="1" on_change="onchange_date_budget_move(budget_id,date_start,date_end)"/>
+		<field name="is_commited" colspan="2"/>
+		<field name="all_post" colspan="2"/>
+	      </group>
+	      <group colspan="4">
+		<field name="poa_id" colspan="2" required="1"/>
+		<field name="program_id" colspan="2" attrs="{'invisible': [('all_post','=',True)],'required': [('all_post','!=',True)]}"/>
+		<field name="project_id" colspan="4" domain="[('program_id','=',program_id),('poa_id','=',poa_id)]"
+		       attrs="{'invisible': [('all_post','=',True)],'required': [('all_post','!=',True)]}"/>		
+		<field name="budget_id" colspan="4" domain="[('program_id','=',program_id),('project_id','=',project_id)]" 
+		       on_change="onchange_budget_move(budget_id,date_start,date_end)" 
+		       attrs="{'invisible': [('all_post','=',True)],'required': [('all_post','!=',True)]}"/>
+		<field name="partner_id" colspan="4"/>
+	      </group>
+	      <group colspan="4" col='8' string="Presupuesto">
+		<field name="inicial" colspan="2"/>
+		<field name="codificado" colspan="2"/>
+		<field name="comprometido" colspan="2"/>
+		<field name="devengado" colspan="2"/>
+		<field name="pagado" colspan="2"/>
+		<field name="disponible" colspan="2"/>
+		<field name="saldo_comp" colspan="2"/>
+		<field name="saldo_pay" colspan="2"/>
+	      </group>
+	      <field name="datas_fname" colspan="2" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	      <button name="exportaExcelBMove" type="object" icon="gtk-execute"  string="Excel"/>
+	      <group col="3" colspan="1">
+		<button icon="gtk-cancel" special="cancel"
+	        	string="Salir" />
+		<button name="computeBudgetMove" type="object" icon="gtk-execute"  string="Generar"/>
+		<button name="printBudgetMove" type="object" icon="gtk-execute"  string="Imprimir"/>
+	      </group>
+	      <notebook colspan="4">
+		<page string='Detalle'>
+		  <field name='line_ids' nolabel="1">
+		    <tree>
+		      <!--field name='seq'/-->
+		      <field name='date'/>
+		      <field name='partner_id'/>
+		      <field name='move_id'/>
+		      <field name='cp_id'/>
+		      <field name='desc'/>
+		      <field name='certificate_id'/>
+		      <field name='comprometido' sum="Total compromiso"/>
+		      <field name='devengado' sum="Total devengado"/>
+		      <field name='pagado' sum="Total Pagado"/>
+		    </tree>
+		  </field>
+		</page>
+	      </notebook>
+	      <newline/>
+
+	    </group>
+          </form>
+        </field>
+      </record>
+
+
+      <record id="action_budget_move" model="ir.actions.act_window">
+        <field name="name">Movimiento de partidas</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">budget.move</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_budget_move"
+		icon="STOCK_EXECUTE"
+		action="action_budget_move"
+		parent="gt_budget.menu_budget_budget_parent"
+		sequence='5'
+		name="Movimiento Partida"/>
+
+      
+      <menuitem id="menu_budget_move_query"
+		icon="STOCK_EXECUTE"
+		action="action_budget_move"
+		parent="gt_budget.menu_budget_queries_base"
+		sequence='0'
+		name="Movimiento Partida"/>
+
+<!-- CTA FINANCIERA -->
+
+    <menuitem id="menu_cta_financiera" 
+              parent="gt_budget.menu_budget_queries_base" 
+	      sequence="10" name="Cuenta Financiera"/>
+
+    <record id="view_cta_financiera_gastado" model="ir.ui.view">
+      <field name="name">Cuenta Financiera Gastado</field>
+      <field name="model">cta.financiera.gastado</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Cuenta Financiera Gastado">
+	  <group col="4" colspan="4">
+	    <group colspan="4" col="9">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	      <field name="tipo" required="1" colspan="2"/>
+	      <button icon="gtk-execute" name="calcular_financieragas" string="Calcular" type="object" colspan="1"/>
+	    </group>
+	    <newline/>
+	    <group colspan="4" col="4">
+	      <field name="datas_fname" colspan="2" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_ctag" string="Exporta Excel" type="object" colspan="1"/>
+	      <button name="printCtaFinancieraGastado" type="object" string="Imprimir" 
+					colspan="1"/>
+	    </group>
+	    <group colspan="4" col="6" string="TOTALES">
+	      <field name="recaudado"/>
+	      <field name="gastado"/>
+	      <field name="saldo"/>
+	      <field name="recaudado_sc"/>
+	      <field name="gastado_sc"/>
+	      <field name="saldo_sc"/>
+	      <field name="recaudado_t"/>
+	      <field name="gastado_t"/>
+	      <field name="saldo_t"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<field name="line_ids" nolabel="1">
+		  <tree>
+		    <field name="tipo"/>
+		    <field name="inicial" sum="TOTAL"/>
+		    <field name="reformas" sum="TOTAL"/>
+		    <field name="final" sum="TOTAL"/>
+		    <field name="ingresos" sum="TOTAL"/>
+		    <field name="compromisos" sum="TOTAL"/>
+		    <field name="saldos" sum="TOTAL"/>
+		  </tree>
+		  <form>
+		    <field name="tipo"/>
+		    <field name="line_ids" nolabel="1">
+		      <tree>
+			<field name="financia_id"/>
+			<field name="inicial" sum='Total'/>
+			<field name="reformas" sum='Total'/>
+			<field name="final" sum='Total'/>
+			<field name="ingresos" sum='Total'/>
+			<field name="compromisos" sum='Total'/>
+			<field name="saldos" sum='Total'/>
+			<field name="desc"/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+	      </page>
+	    </notebook>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_cta_financiera_gastado" model="ir.actions.act_window">
+        <field name="name">Cuenta Financiera Gastado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cta.financiera.gastado</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_cta_financiera_gastado"
+		icon="STOCK_EXECUTE"
+		action="action_cta_financiera_gastado"
+		parent="menu_cta_financiera"
+		name="Gastado"/>
+
+    <record id="view_cta_financiera" model="ir.ui.view">
+      <field name="name">Cuenta Financiera Comprometido</field>
+      <field name="model">cta.financiera</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Cuenta Financiera">
+	  <group col="4" colspan="4">
+	    <group colspan="4" col="9">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	      <field name="tipo" required="1" colspan="2"/>
+	      <button icon="gtk-execute" name="calcular_financieracomp" string="Calcular" type="object" colspan="1"/>
+	    </group>
+	    <newline/>
+	    <group colspan="4" col="4">
+	      <field name="datas_fname" colspan="2" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="2" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_ctac" string="Exporta Excel" type="object" colspan="1"/>
+	      <button name="printCtaFinanciera" type="object" string="Imprimir" 
+		      colspan="1"/>
+	    </group>
+	    <group colspan="4" col="6" string="TOTALES">
+	      <field name="recaudado"/>
+	      <field name="gastado"/>
+	      <field name="saldo"/>
+	      <field name="recaudado_sc"/>
+	      <field name="gastado_sc"/>
+	      <field name="saldo_sc"/>
+	      <field name="recaudado_t"/>
+	      <field name="gastado_t"/>
+	      <field name="saldo_t"/>
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Detalle">
+		<field name="line_ids" nolabel="1">
+		  <tree>
+		    <field name="tipo"/>
+		    <field name="inicial" sum="TOTAL"/>
+		    <field name="reformas" sum="TOTAL"/>
+		    <field name="final" sum="TOTAL"/>
+		    <field name="ingresos" sum="TOTAL"/>
+		    <field name="compromisos" sum="TOTAL"/>
+		    <field name="saldos" sum="TOTAL"/>
+		  </tree>
+		  <form>
+		    <field name="tipo"/>
+		    <field name="line_ids" nolabel="1">
+		      <tree>
+			<field name="financia_id"/>
+			<field name="inicial"  sum='Total'/>
+			<field name="reformas" sum='Total'/>
+			<field name="final" sum='Total'/>
+			<field name="ingresos" sum='Total'/>
+			<field name="compromisos" sum='Total'/>
+			<field name="saldos" sum='Total'/>
+			<field name="desc"/>
+		      </tree>
+		    </field>
+		  </form>
+		</field>
+	      </page>
+	    </notebook>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_cta_financiera" model="ir.actions.act_window">
+        <field name="name">Cuenta Financiera</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cta.financiera</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_cta_financiera_c"
+		icon="STOCK_EXECUTE"
+		action="action_cta_financiera"
+		parent="menu_cta_financiera"
+		name="Comprometido"/>
+<!-- EV GASTO -->
+
+    <record id="view_evaluacion_budget_budget" model="ir.ui.view">
+      <field name="name">Evaluacion Presupuestaria</field>
+      <field name="model">evaluacion.budget</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="nivel"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evbg" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionE" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_budget" model="ir.actions.act_window">
+        <field name="name">Gastos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.budget</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_evaluacion_budget_budget"
+		icon="STOCK_EXECUTE"
+		sequence="1"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_budget"
+		parent="gt_budget.menu_evaluacion_budget"
+		name="Gastos"/>
+
+
+    <record id="view_evaluacion_budget_proyecto" model="ir.ui.view">
+      <field name="name">Evaluacion Presupuestaria Proyecto</field>
+      <field name="model">evaluacion.proyecto</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Proyecto">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="completo" colspan="2"/>
+	      <field name="project_id" required="1" colspan="4" domain="[('poa_id','=',poa_id)]"/>	      
+	      <!--field name="budget_id" colspan="4" domain="[('project_id','=',project_id)]"/-->	      
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evpp" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionProyecto" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_budget_proyecto" model="ir.actions.act_window">
+        <field name="name">Gastado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.proyecto</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+    <record id="view_evaluacion_budget_proyecto_comprometido" model="ir.ui.view">
+      <field name="name">Evaluacion Presupuestaria Proyecto Comprometido</field>
+      <field name="model">evaluacion.proyecto.comprometido</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Proyecto Comprometido">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="completo" colspan="2"/>
+	      <field name="project_id" required="1" colspan="4" domain="[('poa_id','=',poa_id)]"/>	      
+	      <!--field name="budget_id" colspan="4" domain="[('project_id','=',project_id)]"/-->	      
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evpc" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionProyectoComprometido" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_budget_proyecto_comprometido" model="ir.actions.act_window">
+        <field name="name">Comprometido</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.proyecto.comprometido</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+      <menuitem id="menu_evaluacion_budget_proyecto"
+		icon="STOCK_EXECUTE"
+		sequence="2"
+		groups="gt_budget.group_budget_user"
+		parent="gt_budget.menu_evaluacion_budget"
+		name="Proyecto"/>
+      
+      <menuitem id="menu_evaluacion_budget_proyecto_comprometido"
+		icon="STOCK_EXECUTE"
+		sequence="0"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_budget_proyecto_comprometido"
+		parent="menu_evaluacion_budget_proyecto"
+		name="Comprometido"/>
+
+      <menuitem id="menu_evaluacion_budget_proyecto_pagado"
+		icon="STOCK_EXECUTE"
+		sequence="1"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_budget_proyecto"
+		parent="menu_evaluacion_budget_proyecto"
+		name="Pagado"/>
+
+        <!-- EVALUACION DE INGRESO-->
+
+    <record id="view_evaluacion_budget" model="ir.ui.view">
+      <field name="name">Evaluacion Presupuestaria Ingreso</field>
+      <field name="model">evaluacion.budgeti</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuestaria Ingreso">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="nivel"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evbi" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionI" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_budgeti" model="ir.actions.act_window">
+        <field name="name">Ingresos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.budgeti</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_evaluacion_budget_budgeti"
+		icon="STOCK_EXECUTE"
+		sequence="0"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_budgeti"
+		parent="gt_budget.menu_evaluacion_budget"
+		name="Ingresos"/>
+
+      <!-- EV. PRESUPUESTO PROGRAMA -->
+
+    <record id="view_evaluacion_programa" model="ir.ui.view">
+      <field name="name">Ev. Presupuesto Programa</field>
+      <field name="model">evaluacion.programa</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuesto por programa">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <newline/>
+	      <field name="program_id" required="1" colspan="4"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evprp" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionPrograma" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_programa" model="ir.actions.act_window">
+        <field name="name">Pagado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.programa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+    <record id="view_evaluacion_programa_comprometido" model="ir.ui.view">
+      <field name="name">Ev. Presupuesto Programa Comprometido</field>
+      <field name="model">evaluacion.programa.comprometido</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuesto por programa comprometido">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <newline/>
+	      <field name="program_id" required="1" colspan="4"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evprc" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="printEvaluacionProgramaComprometido" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_programa_comprometido" model="ir.actions.act_window">
+        <field name="name">Comprometido</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.programa.comprometido</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+
+      <menuitem id="menu_evaluacion_programa"
+		icon="STOCK_EXECUTE"
+		sequence="3"
+		groups="gt_budget.group_budget_user"
+		parent="gt_budget.menu_evaluacion_budget"
+		name="Programa"/>
+
+      <menuitem id="menu_evaluacion_programa_comprometido"
+		icon="STOCK_EXECUTE"
+		sequence="0"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_programa_comprometido"
+		parent="menu_evaluacion_programa"
+		name="Comprometido"/>
+
+      <menuitem id="menu_evaluacion_programa_pagado"
+		icon="STOCK_EXECUTE"
+		sequence="1"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_programa"
+		parent="menu_evaluacion_programa"
+		name="Pagado"/>
+
+
+<!-- evaluacion de programas consolidado -->
+
+    <record id="view_evaluacion_programa_cons" model="ir.ui.view">
+      <field name="name">Ev. Presupuesto Programa Consolidado</field>
+      <field name="model">evaluacion.programa.cons</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuesto por programa consolidado Pagado">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="is_program" colspan="2"/>
+	      <newline/>
+	      <field name="program_id" colspan="4" attrs="{'required': [('is_program','=',True)],'invisible': [('is_program', '=',False)]}"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evprp_cons" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-execute" name="generarCons" string="Generar" type="object" colspan="1"/>
+	      <button name="printEvaluacionProgramaCons" type="object" string="Imprimir" 
+					colspan="1"/>
+	    </group>
+	    <group colspan="4" string="Detalle">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		  <field name='programa_id'/>
+		  <field name='inicial' sum="TOTAL"/>
+		  <field name='reforma' sum="TOTAL"/>
+		  <field name='final' sum="TOTAL"/>
+		  <field name='com_mes' sum="TOTAL"/>
+		  <field name='por_mes'/>
+		  <field name='com_acum' sum="TOTAL"/>
+		  <field name='por_acum'/>
+		  <field name='saldo' sum="TOTAL"/>
+		  <field name='por_saldo'/>
+		</tree>
+	      </field>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_programa_cons" model="ir.actions.act_window">
+        <field name="name">Pagado</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.programa.cons</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+    <record id="view_evaluacion_programa_cons_comprometido" model="ir.ui.view">
+      <field name="name">Ev. Presupuesto Programa Consolidado Comprometido</field>
+      <field name="model">evaluacion.programa.cons.comprometido</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Evaluacion Presupuesto por programa consolidado comprometido">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <field name="is_program" colspan="2"/>
+	      <newline/>
+	      <field name="program_id" colspan="4" attrs="{'required': [('is_program','=',True)],'invisible': [('is_program', '=',False)]}"/>
+	      <newline/>
+	      <field name="date_from" required="1" colspan="2"/>
+	      <field name="date_to" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_evprc_cons" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button icon="gtk-execute" name="generarCompCons" string="Generar" type="object" colspan="1"/>
+	      <button name="printEvaluacionProgramaComprometidoCons" type="object" string="Imprimir" 
+					colspan="1"/>
+	    </group>
+	    <group colspan="4" string="Detalle">
+	      <field name="line_ids" nolabel="1">
+		<tree>
+		  <field name='programa_id'/>
+		  <field name='inicial' sum="TOTAL"/>
+		  <field name='reforma' sum="TOTAL"/>
+		  <field name='final' sum="TOTAL"/>
+		  <field name='com_mes' sum="TOTAL"/>
+		  <field name='por_mes'/>
+		  <field name='com_acum' sum="TOTAL"/>
+		  <field name='por_acum'/>
+		  <field name='saldo' sum="TOTAL"/>
+		  <field name='por_saldo'/>
+		</tree>
+	      </field>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_evaluacion_programa_cons_comprometido" model="ir.actions.act_window">
+        <field name="name">Comprometido</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">evaluacion.programa.cons.comprometido</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+
+
+      <menuitem id="menu_evaluacion_programa_consolidado"
+		icon="STOCK_EXECUTE"
+		sequence="3"
+		groups="gt_budget.group_budget_user"
+		parent="gt_budget.menu_evaluacion_budget"
+		name="Consolidado Programa"/>
+
+      <menuitem id="menu_evaluacion_programa_cons_comprometido"
+		icon="STOCK_EXECUTE"
+		sequence="0"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_programa_cons_comprometido"
+		parent="menu_evaluacion_programa_consolidado"
+		name="Comprometido"/>
+
+      <menuitem id="menu_evaluacion_programa_cons_pagado"
+		icon="STOCK_EXECUTE"
+		sequence="1"
+		groups="gt_budget.group_budget_user"
+		action="action_evaluacion_programa_cons"
+		parent="menu_evaluacion_programa_consolidado"
+		name="Pagado"/>
+
+
+    <!--FONDOS POR PROGRAMA -->
+    <record id="view_verificar_fondo_programa" model="ir.ui.view">
+      <field name="name">Verificar Fondos Partida Programa</field>
+      <field name="model">fondo.programa</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Verificar fondos disponibles en las partidas por programa">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <newline/>
+	      <field name="program_id" required="1" colspan="4"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="datas_fname" colspan="3" invisible="1"/>
+	      <field name="datas" filename="datas_fname" colspan="3" readonly="1"/>
+	      <button icon="gtk-execute" name="exporta_excel_fppp" string="Exporta Excel" type="object" colspan="1"/>
+	    </group>
+	    <group col="3" colspan="1">
+	      <button name="loadSaldoPrograma" type="object" string="Generar" 
+					colspan="1"/>
+	      <button name="printSaldoPrograma" type="object" string="Imprimir" 
+					colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel"
+	              string="Salir" />
+	    </group>
+	    <notebook colspan="4">
+	      <page string="Detalle Partida">
+		<field name="line_ids" nolabel="1">
+		  <tree>
+		    <field name='budget_id'/>
+		    <field name='inicial' sum="INICIAL"/>
+		    <field name='reforma' sum="REFORMA"/>
+		    <field name='codificado' sum="CODIFICADO"/>
+		    <field name='comprometido' sum="COMP."/>
+		    <field name='saldo' sum="SALDO"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_budget_verificar_fondo_programa" model="ir.actions.act_window">
+        <field name="name">Verificar Fondos partida</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">fondo.programa</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_budget_verificar_fondo_programa"
+		icon="STOCK_EXECUTE"
+		action="action_budget_verificar_fondo_programa"
+		parent="gt_budget.menu_fondo_partida_parent"
+		name="Verificar Fondos Partida Programa"/>
+
+  <menuitem id="menu_budget_verificar_fondo_programa_doc"
+		icon="STOCK_EXECUTE"
+		action="action_budget_verificar_fondo_programa"
+		parent="gt_budget.menu_budget_certificate_docs"
+		name="Verificar Fondos Partida Programa"/>
+
+    <!-- -->
+
+    <record id="view_project_exec_expost_form" model="ir.ui.view">
+      <field name="name">view.project.exec.expost.form</field>
+      <field name="model">wizard.project.expost</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Avance de Expost">
+          <group string="Registro de Avance de Indicador" colspan="4">
+            <field name="project_id" colspan="4"/>
+            <field name="kpi_id" domain="[('project_id','=',project_id)]"/>
+            <field name="plan_id" domain="[('kpi_id', '=',kpi_id)]"/>
+            <field name="executed"/>
+            <newline/>
+          </group>
+          <button string="Cerrar" icon="gtk-cancel" special="cancel" colspan="2"/>          
+          <button name="action_expost" string="Registrar" icon="gtk-execute" type="object" colspan="2" confirm="Seguro de registrar el avance ?"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_project_exec_expost" model="ir.actions.act_window">
+      <field name="name">Avance de Expost</field>
+      <field name="res_model">wizard.project.expost</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem action="action_project_exec_expost" name="Avance de ExPost" id="menu_action_project_expost" parent="menu_project_project_expost"/>
+
+    <record id="view_project_execute_kpi_form" model="ir.ui.view">
+      <field name="name">view.project.execute.kpi.form</field>
+      <field name="model">wizard.project.execute.kpi</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Registro de Avance de Meta">
+          <group string="Registro de Avance de Indicador" colspan="4">
+            <field name="project_id" colspan="4"/>
+            <newline/>
+            <field name="kpi_id" domain="[('project_id','=',project_id),('done','=',False)]" colspan="4" on_change="onchange_kpi(kpi_id,project_id)"/>
+            <field name="planned"/>
+            <field name="status"/>
+            <separator string="El registro de avance del indicador es numérico según unidad de medida registrada en el indicador" colspan="4"/>
+            <field name="name"/>
+            <field name="amount_executed"/>
+          </group>
+          <button string="Cerrar" icon="gtk-cancel" special="cancel" colspan="2"/>          
+          <button name="action_save_exec" string="Registrar" icon="gtk-execute" type="object" colspan="2"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_project_add_condition" model="ir.ui.view">
+      <field name="name">view.project.add.condition</field>
+      <field name="model">wizard.project.condition</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Registro de Condiciones de Cierre">
+          <group string="Registro de Condición de Cierre" colspan="4">
+            <field name="project_id" colspan="4"/>
+            <newline/>
+            <field name="condition_id" domain="[('project_id','=',project_id),('done','=',False)]"/>
+            <field name="ok"/>
+          </group>
+          <button string="Cerrar" icon="gtk-cancel" special="cancel" colspan="2"/>
+          <button name="action_save_ok" string="Registrar" icon="gtk-execute" type="object" colspan="2"/>          
+        </form>
+      </field>
+    </record>
+
+    <record id="view_wizard_project_report" model="ir.ui.view">
+      <field name="name">view.wizard.project.report</field>
+      <field name="model">wizard.project.report.kpi</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Asistente para Seguimiento de Proyectos">
+          <field name="state" invisible="1"/>
+          <group string="Este asistente le permitirá consultar el avance de indicadores." colspan="4" states="kpi">
+            <field name="project_id" domain="[('state','in',['exec'])]" attrs="{'required': [('state','=','kpi')]}"/>
+          </group>
+          <group string="Este asistente le permitirá consultar el avance de actividades." colspan="4" states="task">
+            <field name="project2_id" domain="[('state','in',['exec'])]" attrs="{'required': [('state','=','task')]}"/>
+          </group>          
+          <button string="Cerrar" special="cancel" icon="gtk-close"/>
+          <button name="action_print" type="object" string="Imprimir" icon="gtk-print"/>
+        </form>
+      </field>
+    </record>
+    <record id="action_project_report_kpi" model="ir.actions.act_window">
+      <field name="name">Reporte de Indicadores</field>
+      <field name="res_model">wizard.project.report.kpi</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="context">{'default_state':'kpi', 'state': 'kpi'}</field>      
+      <field name="target">new</field>
+    </record>
+    <!--menuitem id="menu_project_report_kpi" action="action_project_report_kpi" parent="menu_budget_project_report_base"/-->
+    <record id="action_project_report_task" model="ir.actions.act_window">
+      <field name="name">Reporte de Actividades</field>
+      <field name="res_model">wizard.project.report.kpi</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="context">{'default_state':'task', 'state': 'task'}</field>
+      <field name="target">new</field>
+    </record>
+    <!--menuitem id="menu_project_report_task" action="action_project_report_task" parent="menu_budget_project_report_base"/-->
+
+    <record id="view_project_import" model="ir.ui.view">
+      <field name="name">view.project.import</field>
+      <field name="model">project.wizard.import</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Importar Proyectos desde CSV">
+          <field name="filed"/>
+          <newline/>
+          <button special="cancel" icon="gtk-close" string="Cerrar"/>
+          <button name="action_import_projects" icon="gtk-execute" string="Importar" type="object"/>
+        </form>
+      </field>
+    </record>
+    <record id="action_project_import" model="ir.actions.act_window">
+      <field name="name">Importar Proyectos</field>
+      <field name="res_model">project.wizard.import</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem id="menu_project_import" action="action_project_import" parent="project.menu_definitions"/>
+
+    <record id="view_wizard_report_project_list_form" model="ir.ui.view">
+      <field name="name">view.wizard.report.project.list.form</field>
+      <field name="model">wizard.project.report.list</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reporte de Proyectos por Dirección / Coordinación">
+          <separator string="Este asistente le permite imprimir los proyectos consolidado por Dirección / Coordinación" colspan="4"/>
+          <field name="fiscalyear_id"/>
+          <field name="department_id"/>
+          <field name="state"/>
+          <newline/>
+          <button special="cancel" string="Cerrar" icon="gtk-close"/>
+          <button name="action_print_list" type="object" string="Imprimir" icon="gtk-print"/>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_project_report_list" model="ir.actions.act_window">
+      <field name="name">Proyectos por Dirección Coordinación</field>
+      <field name="res_model">wizard.project.report.list</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <record id="view_project_update_kpi_work" model="ir.ui.view">
+      <field name="name">view.project.upgrade.task.work</field>
+      <field name="model">project.update.kpi.work</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Actualizar Avance de Indicador">
+          <group string="Información de Proyecto a corregir" states="draft" colspan="4">
+            <field name="project_id" domain="[('state','=','exec')]"/>
+            <field name="kpid_id" domain="[('project_id','=',project_id)]"/>
+          </group>
+          <group string="Avance a Actualizar" states="select" colspan="4">
+            <group string="Ultimo avance registrado" colspan="4">
+              <field name="avance_id" invisible="1"/>
+              <field name="kpi_id"/>
+              <field name="name"/>
+              <field name="planned"/>
+              <field name="date"/>
+            </group>
+            <group string="Corrección de Avance" colspan="4">
+              <field name="new_avance"/>
+            </group>
+          </group>
+          <group string="Asistente" states="none">
+            <label string="No se ha registrado avance."/>
+          </group>
+          <field name="state" invisible="1"/>
+          <button special="cancel" icon="gtk-close" string="Cerrar" states="draft,select,none"/>
+          <button name="action_next" icon="gtk-go-forward" string="Siguiente" type="object" states="draft"/>          
+          <button name="action_update_work" icon="gtk-execute" string="Actualizar" type="object" states="select" confirm="Seguro de actualizar el avance ?"/>
+        </form>
+      </field>
+    </record>
+    <record id="action_project_update_kpi_work" model="ir.actions.act_window">
+      <field name="name">Corrección de Avance de Indicadores</field>
+      <field name="res_model">project.update.kpi.work</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="domain">[('user_id','=',uid)]</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem id="menu_project_update_kpi_work" action="action_project_update_kpi_work" parent="project.menu_project_management"/>
+
+    <record id="view_project_update_task_work" model="ir.ui.view">
+      <field name="name">view.project.upgrade.task.work</field>
+      <field name="model">project.update.task.work</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Actualizar Avance de Actividad">
+          <group string="Información de Proyecto a corregir" states="draft" colspan="4">
+            <field name="project_id" domain="[('state','=','exec')]"/>
+            <field name="task_id" domain="[('project_id','=',project_id)]"/>
+          </group>
+          <group string="Avance a Actualizar" states="select" colspan="4">
+            <group string="Ultimo avance registrado" colspan="4">
+              <field name="work_id" invisible="1" readonly="1"/>
+              <field name="name"/>
+              <field name="executed"/>
+              <field name="date_done"/>
+            </group>
+            <group string="Corrección de Avance" colspan="4">
+              <field name="new_avance"/>
+            </group>
+          </group>
+          <group string="Asistente" states="none">
+            <label string="No se ha registrado avance."/>
+          </group>
+          <field name="state" invisible="1"/>
+          <button special="cancel" icon="gtk-close" string="Cerrar" states="draft,select,none"/>
+          <button name="action_next" icon="gtk-go-forward" string="Siguiente" type="object" states="draft"/>          
+          <button name="action_update_work" icon="gtk-execute" string="Actualizar" type="object" states="select" confirm="Seguro de actualizar el avance ?"/>
+        </form>
+      </field>
+    </record>
+    <record id="action_project_update_task_work" model="ir.actions.act_window">
+      <field name="name">Corrección de Avance de Actividad</field>
+      <field name="res_model">project.update.task.work</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="domain">[('user_id','=',uid)]</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem id="menu_project_update_task_work" action="action_project_update_task_work" parent="project.menu_project_management"/>    
+
+    <delete model="ir.ui.menu" id="project.project_report_task"/>
+    <delete model="ir.ui.menu" id="project.menu_project_task_user_tree"/>
+    <delete model="ir.ui.menu" id="project.menu_action_view_task_history_cumulative"/>
+    <delete model="ir.ui.menu" id="project.menu_action_view_task_history_burndown"/>
+    <menuitem parent="base.menu_project_report" action="action_project_report_list" id="menu_wizard_project_report_list"/>
+
+    <record id="view_project_wizard_change_state" model="ir.ui.view">
+      <field name="name">view.project.wizard.change.state</field>
+      <field name="model">project.wizard.change.state</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Cierre por Ejercicio Fiscal de Proyectos">
+          <group states="init">
+            <field name="fy_id"/>
+            <field name="state" invisible="1"/>
+          </group>
+          <group colspan="4" col="6">
+            <group states="ok">
+              <separator string="El proceso de cierre terminó correctamente."/>
+            </group>
+            <button special="cancel" icon="gtk-close" string="Cerrar" states="init"/>
+            <button name="action_close" string="Cerrar Proyectos" icon="gtk-execute" 
+                    confirm="Seguro de cerrar los proyectos ?" type="object" states="init"/>
+            <button special="cancel" icon="gtk-close" string="Cerrar" states="ok"/>
+          </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="action_project_wizrd_change_state" model="ir.actions.act_window">
+      <field name="name">Cierre de Proyectos por Ejercicio Fisical</field>
+      <field name="res_model">project.wizard.change.state</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem parent="menu_project_project_close" action="action_project_wizrd_change_state" id="menu_wizard_project_change_state"/>
+
+    <!-- Actualizar partidas con cuentas -->
+
+    <record id="view_update_budget_post_form" model="ir.ui.view">
+      <field name="name">wizard.update.budget.post.form</field>
+      <field name="model">wizard.update.budget.post</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Importar CSV">
+          <field name="data"/>
+          <newline/>
+          <button special="cancel" icon="gtk-close" string="Cerrar"/>
+          <button name="action_update_budget" icon="gtk-execute" string="Importar" type="object"/>
+        </form>
+      </field>
+    </record>
+    <record id="action_budget_post_import" model="ir.actions.act_window">
+      <field name="name">Actualizar Partidas</field>
+      <field name="res_model">wizard.update.budget.post</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+    <menuitem id="menu_budget_post_import" action="action_budget_post_import" parent="project.menu_definitions"/>
+
+    <!-- Reportes de infraestructura vial -->
+    <menuitem id="menu_project_project_infvial"
+			  groups="group_project_infvial_report_ext"
+              parent="base.menu_main_pm" sequence="50" name="Reportes Infraestructura Vial"/>
+
+    <record id="view_project_report_infvial_form" model="ir.ui.view">
+      <field name="name">view_project_report_infvial1.form</field>
+      <field name="model">wizard.project.infv.report</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reporte de Proyectos de Infraestructura Vial">
+          <group colspan="4" col="4">
+            <field name="user_id" attrs="{'readonly':[('all_users','=',True)]}"/>
+            <field name="date"/>
+            <field name="type_id"/>
+            <field name="group_by" invisible="1"/>
+            <field name="all_users" groups="gt_project_project.group_project_infvial_report_ext"/>
+          </group>
+          <group string="Filtros" colspan="4" col="6">
+            <field name="build_id" widget="selection"/>
+            <field name="build_type_id" domain="[('program_id','=',build_id)]"/>
+            <field name="indole_id" widget="selection"/>
+            <field name="mode_id" widget="selection"/>
+            <field name="canton_id"/>
+            <field name="parish_id" domain="[('canton_id','=',canton_id)]"/>
+            <field name="state"/>
+          </group>
+          <group colspan="4" col="4">
+            <button special="cancel" icon="gtk-cancel" string="Cerrar"/>
+            <button name="print_report" icon="gtk-print" string="Imprimir" type="object"/>
+          </group>
+        </form>
+      </field>
+    </record>
+    <record id="action_project_report_infvial" model="ir.actions.act_window">
+      <field name="name">Reportes de Infraestructura Vial</field>
+      <field name="res_model">wizard.project.infv.report</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_project_report_infvial" name="Reporte de Labores Mensual" action="action_project_report_infvial" parent="menu_project_project_infvial"/>
+
+wizard.project.infv.s.report
+
+    <record id="view_project_report_infvial_semanal_form" model="ir.ui.view">
+      <field name="name">view_project_report_infvial2.form</field>
+      <field name="model">wizard.project.infv.s.report</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Reporte de Proyectos de Infraestructura Vial">
+          <group colspan="4" col="4">
+            <field name="date"/>
+            <field name="type_id"/>
+	    <field name="fy_id" widget="selection"/>
+	    <field name="weeks" required="1"/>
+          </group>
+          <group string="Filtros" colspan="4" col="6">
+            <field name="build_id" widget="selection"/>
+            <field name="build_type_id" domain="[('program_id','=',build_id)]"/>
+            <field name="indole_id" widget="selection"/>
+            <field name="mode_id" widget="selection"/>
+            <field name="canton_id"/>
+            <field name="parish_id" domain="[('canton_id','=',canton_id)]"/>
+            <field name="state"/>
+          </group>
+          <group colspan="4" col="4">
+            <button special="cancel" icon="gtk-cancel" string="Cerrar"/>
+            <button name="print_report" icon="gtk-print" string="Imprimir" type="object"/>
+          </group>
+        </form>
+      </field>
+    </record>
+    <record id="action_project_report_infvial_semanal" model="ir.actions.act_window">
+      <field name="name">Reportes de Infraestructura Vial</field>
+      <field name="res_model">wizard.project.infv.s.report</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_project_report_infvial_semanal" name="Reporte de Labores Semanal" action="action_project_report_infvial_semanal" parent="menu_project_project_infvial"/>
+
+    <!-- OTROS REPORTES -->
+    <menuitem id="menu_otros_budget" 
+              parent="gt_budget.menu_budget_queries_base" 
+	      sequence="11" name="Otros Reportes"/>
+
+    <record id="view_recurso_tthh" model="ir.ui.view">
+      <field name="name">Recursos TTHH</field>
+      <field name="model">recurso.tthh</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Recursos TTHH">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1" colspan="2" widget="selection"/>
+	      <newline/>
+	      <field name="program_id" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="2">
+	      <button name="generaRecursoTTHH" type="object" string="Generar" colspan="1"/>
+	      <button name="printRecursoTTHH" type="object" string="Imprimir" colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel" string="Salir" />
+	    </group>
+	    <newline/>
+	    <notebook>
+	      <page string="Detalle cargo">
+		<field name="line_ids" readonly="1" nolabel="1">
+		  <tree>
+		    <field name='cargo_id2'/>
+		    <field name='funcionarios'/>
+		    <field name='total' sum="TOTAL"/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_recursos_tthh" model="ir.actions.act_window">
+        <field name="name">Recursos TTHH</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">recurso.tthh</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_recursos_tthh"
+		icon="STOCK_EXECUTE"
+		action="action_recursos_tthh"
+		parent="menu_otros_budget"
+		name="Recursos TTHH"/>
+
+      <!-- AJENOS -->
+    <record id="view_ajeno_budget_form" model="ir.ui.view">
+      <field name="name">Fondos Ajenos</field>
+      <field name="model">ajeno.budget</field>
+      <field name="type">form</field>
+      <field name="arch" type="xml">
+        <form string="Fondos Ajenos">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="name" required="1" colspan="2" widget="selection"/>
+	      <field name="porcentaje" required="1" colspan="2"/>
+	    </group>
+	    <newline/>
+	    <group>
+	      <field name="line_ids">
+		<tree editable='bottom'>
+		  <field name='name' required="1"/>
+		  <field name='porcentaje'/>
+		  <field name='prevista'/>
+		  <field name='inicial_caja'/>
+		  <field name='total'/>
+		  <field name='beneficiario'/>
+		  <field name='comision'/>
+		  <field name='total_2'/>
+		</tree>
+	      </field>
+	    </group>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+    <record id="view_ajeno_budget_tree" model="ir.ui.view">
+      <field name="name">view.ajeno.budget.tree</field>
+      <field name="model">ajeno.budget</field>
+      <field name="type">tree</field>
+      <field name="arch" type="xml">
+        <tree string="Fondos Ajenos">
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+
+      <record id="action_ajenos_budget" model="ir.actions.act_window">
+        <field name="name">Fondos Ajenos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ajeno.budget</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem id="menu_ajenos_budget"
+		icon="STOCK_EXECUTE"
+		action="action_ajenos_budget"
+		parent="menu_otros_budget"
+		name="Fondos Ajenos"/>
+
+      <!-- DISTRIBUTIVO -->
+      <record id="view_distributivo_budget_tree" model="ir.ui.view">
+	<field name="name">view.distributivo.budget.tree</field>
+	<field name="model">distributivo.budget.tthh</field>
+	<field name="type">tree</field>
+	<field name="arch" type="xml">
+          <tree string="Distributivo">
+            <field name="poa_id"/>
+          </tree>
+	</field>
+      </record>
+
+      <record id="view_distributivo" model="ir.ui.view">
+	<field name="name">Distributivo</field>
+	<field name="model">distributivo.budget.tthh</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+          <form string="Distributivo">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id"/>
+	    </group>
+	    <newline/>
+	    <group col="4" colspan="4">
+	      <button name="generaDistributivo" type="object" string="Generar" colspan="1"/>
+	      <button name="creaBudgetDistributivo" type="object" string="Crear Presupuesto" colspan="1" confirm="Seguro Desea Crear proyectos de Remuneraciones"/>
+	      <button name="printDistributivo" type="object" string="Imprimir" colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel" string="Salir" />
+	    </group>
+	    <newline/>
+	    <notebook>
+	      <page string="Detalle Programa">
+		<field name="line_ids" readonly="1" nolabel="1">
+		  <tree>
+		    <field name='program_id'/>
+		    <field name='total'/>
+		  </tree>
+		</field>
+	      </page>
+	    </notebook>
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_distributivo_tthh" model="ir.actions.act_window">
+        <field name="name">Distributivo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">distributivo.budget.tthh</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      
+      <menuitem id="menu_distributivo2"
+		icon="STOCK_EXECUTE"
+		action="action_distributivo_tthh"
+		parent="menu_otros_budget"
+		name="Distributivo"/>
+
+      <!-- RECAUDACION EFECTIVA -->
+      <record id="view_efectiva" model="ir.ui.view">
+	<field name="name">Recaudacion Efectiva</field>
+	<field name="model">recaudacion.efectiva</field>
+	<field name="type">form</field>
+	<field name="arch" type="xml">
+          <form string="Recaudacion Efectiva">
+	  <group col="4" colspan="4">
+	    <group colspan="4">
+	      <field name="poa_id" required="1"/>
+	    </group>
+	    <group colspan="4">
+	      <field name="poa_ids" required="1"/>
+	    </group>
+	    <newline/>
+	    <group col="3" colspan="2">
+	      <button name="printEfectiva" type="object" string="Imprimir" colspan="1"/>
+	      <button icon="gtk-cancel" special="cancel" string="Salir" />
+	    </group>
+	    <newline/>
+	    <!--group>
+	      <field name="line_ids" readonly="1">
+		<tree>
+		  <field name='program_id'/>
+		  <field name='total'/>
+		</tree>
+	      </field>
+	    </group-->
+	  </group>
+        </form>
+      </field>
+    </record>
+
+
+      <record id="action_efectiva" model="ir.actions.act_window">
+        <field name="name">Recaudacion Efectiva</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">recaudacion.efectiva</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+      </record>
+      
+      <menuitem id="menu_efectiva"
+		icon="STOCK_EXECUTE"
+		action="action_efectiva"
+		parent="menu_otros_budget"
+		name="Recaudacion Efectiva"/>
+
+  </data>
+</openerp>

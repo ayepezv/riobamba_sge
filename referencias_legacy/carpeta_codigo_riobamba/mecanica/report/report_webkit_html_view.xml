@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+
+   <report auto="False" id="reporte_mantenimiento" model="reporte.mantenimiento"
+            name="reporte_mantenimiento" rml="mecanica/report/reporte_mantenimiento.mako"
+            usage="default" string="Reporte de Mantenimientos" header="True" report_type="webkit"/>
+
+   <report auto="False" id="reporte_combustible" model="reporte.combustible"
+            name="reporte_combustible" rml="mecanica/report/reporte_combustible.mako"
+            usage="default" string="Reporte de Combustibles" header="True" report_type="webkit"/>
+
+   <report auto="False" id="reporte_varios_combustible" model="reporte.varios.combustible"
+            name="reporte_varios_combustible" rml="mecanica/report/reporte_varios_combustible.mako"
+            usage="default" string="Reporte de Varios Combustibles" header="True" report_type="webkit"/>
+
+<!-- que diferencia hay en file con rml y el header con el webkit_header
+		
+   <report auto="False"
+	   id="report_bien_custodio"
+	   model="account.asset.asset"
+	   name="report_bien_custodio"
+	   file="gt_account_asset/report/report_bien_custodio.mako"
+	   string="Acta Bienes Custodio"
+	   report_type="webkit"
+	   webkit_header="report_webkit.ir_header_webkit_basesample0"/> --> 
+   
+ 
+	
+   
+	</data>     
+     
+</openerp>

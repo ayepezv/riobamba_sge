@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+      <menuitem id="menu_financiero_root" 
+		name="Gestion Financiera" sequence="20"
+		groups="retention.group_director_financiero"/>
+
+      <record id="action_payment_request_fn_2" model="ir.actions.act_window">
+	<field name="name">Solicitud de Pago</field>
+	<field name="res_model">payment.request</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_payment_request_financiero" parent="menu_financiero_root" 
+		name="Ordenes de Pago" sequence="1"
+		action="action_payment_request_fn_2"
+		groups="retention.group_director_financiero"/>
+
+      <!-- MENU DE SOL DE PAGO PARA CONTABLES-->
+      <record id="action_payment_request_conta_2" model="ir.actions.act_window">
+	<field name="name">Orden Pago</field>
+	<field name="res_model">payment.request</field>
+	<field name="view_type">form</field>
+	<field name="view_mode">tree,form</field> 
+      </record>
+      
+      <menuitem id="menu_payment_request_contabilidad" parent="account.menu_finance" 
+		name="Ordenes de Pago" sequence="1"
+		action="action_payment_request_conta_2"
+		/>
+
+	  
+    </data>
+</openerp>

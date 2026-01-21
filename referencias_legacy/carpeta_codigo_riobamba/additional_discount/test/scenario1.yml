@@ -1,0 +1,60 @@
+- We create a sale order with two lines and 50% discount
+- !record {model: sale.order, id: order1}:
+    name: DISCOUNT_SO1
+    partner_id: base.res_partner_agrolait
+    note: Invoice after delivery
+    payment_term: account.account_payment_term
+    add_disc: 30.0
+    order_line:
+        - name: DISCOUNT_SOL1
+          product_id: product.product_product_mb1
+          type: make_to_order
+          price_unit: 20.00
+          product_uom_qty: 8
+
+        - name: DISCOUNTED_SOL2
+          product_id: product.product_product_mb2
+          type: make_to_order
+          price_unit: 10.00
+          product_uom_qty: 4
+
+- The final price should be discounted (20*8+10*4)*(1-0.3) = 140.0
+- !assert {model: sale.order, id: order1}:
+    - amount_total == 140.0
+
+- We validate the sale order
+- !workflow {model: sale.order, action: order_confirm, ref: order1}
+
+- Run the MRP scheduler
+- !python {model: procurement.order}: |
+    model.run_scheduler(cr, uid)
+
+- Now we should have 2 draft purchase orders
+- !assert {model: purchase.order, search: "[('origin', '=', 'DISCOUNT_SO1')]", count: 2}
+
+- Both purchase order should not have any discount (or should it?)
+- !python {model: purchase.order}: |
+    ids = model.search(cr, uid, [('origin', '=', 'DISCOUNT_SO1')])
+    for po in model.browse(cr, uid, ids):
+        assert po.add_disc == 0.0, "Discount badly transmitted to the purchase"
+
+- We create the invoice manually
+- !workflow {model: sale.order, action: manual_invoice, ref: order1}
+
+- We should have an invoice with the draft state
+- !assert {model: account.invoice, search: "[('origin', '=', 'DISCOUNT_SO1')]", count: 1}
+
+- The created invoice should have a 50% discount
+- Both purchase order should not have any discount (or should it?)
+- !python {model: account.invoice}: |
+    ids = model.search(cr, uid, [('origin', '=', 'DISCOUNT_SO1')])
+    for inv in model.browse(cr, uid, ids):
+        assert inv.amount_untaxed == 200.0, "Bad amount_untaxed: %s" % inv.amount_untaxed
+        assert inv.add_disc == 30.0, "Bad discount" % inv.add_disc
+        assert inv.amount_total == 140.0, "Bad amount_total: %s" % inv.amount_total
+        assert inv.amount_net == 140.0, "Bad amount_net: %s" % inv.amount_net
+        assert inv.add_disc_amt == 60.0, "Bad add_disc_amt: %s" % inv.add_disc_amt
+
+
+
+

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_doc_manager" model="res.groups">
+      <field name="name">Tramitología / Administración</field>
+    </record>
+
+    <record id="group_doc_user" model="res.groups">
+      <field name="name">Tramitología / Usuario General</field>
+    </record>
+	
+    <record id="group_doc_readonly" model="res.groups">
+      <field name="name">Tramitología / Sólo Lectura</field>
+    </record>
+	
+    <record id="group_doc_leader" model="res.groups">
+      <field name="name">Tramitología / Lider</field>
+    </record>
+	
+    <record id="group_doc_coordinator" model="res.groups">
+      <field name="name">Tramitología / Coordinador</field>
+    </record>
+
+    <record id="group_doc_prefecture" model="res.groups">
+      <field name="name">Tramitología / Prefectura</field>
+    </record>
+    
+    <record id="group_doc_removed" model="res.groups">
+      <field name="name">Tramitología / Gestión Trámites Descartados</field>
+    </record>
+    
+    <record id="group_doc_covenant" model="res.groups">
+      <field name="name">Convenios</field>
+    </record>
+    
+    <record id="group_doc_contract" model="res.groups">
+      <field name="name">Contratos</field>
+    </record>
+    
+    <record id="group_cv_info_general" model="res.groups">
+      <field name="name">Convenios / Info General</field>
+    </record>
+    
+    <record id="group_cv_dpto_legal" model="res.groups">
+      <field name="name">Convenios / Departamento Legal</field>
+    </record>
+    
+    <record id="group_cv_distribucion" model="res.groups">
+      <field name="name">Convenios / Distribución</field>
+    </record>
+    
+    <record id="group_cv_fiscalizacion" model="res.groups">
+      <field name="name">Convenios / Ejecución</field>
+    </record>
+    
+    <record id="group_ct_info_general" model="res.groups">
+      <field name="name">Contratos / Info General</field>
+    </record>
+    
+    <record id="group_ct_distribucion" model="res.groups">
+      <field name="name">Contratos / Distribución</field>
+    </record>
+    
+    <record id="group_ct_ejecucion" model="res.groups">
+      <field name="name">Contratos / Ejecución</field>
+    </record>
+    
+</data>
+</openerp>

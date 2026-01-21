@@ -1,0 +1,5 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_obra_obra_pago","obra.obra.pago","model_obra_obra_pago","account.group_account_user",1,1,1,1
+"access_garantia_garantia","garantia.garantia","model_garantia_garantia","account.group_account_user",1,1,1,1
+"access_obra_garantia","obra.garantia","model_obra_garantia","account.group_account_user",1,1,1,1
+"access_obra_obra","obra.obra","model_obra_obra","account.group_account_user",1,1,1,1

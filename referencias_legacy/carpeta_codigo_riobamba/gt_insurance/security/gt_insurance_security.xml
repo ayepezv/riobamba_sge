@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data noupdate="0">
+
+    <record id="group_insurance_manager" model="res.groups">
+      <field name="name">Siniestros / Manager</field>
+    </record>
+    <record id="group_insurance_readonly" model="res.groups">
+      <field name="name">Siniestros / Readonly</field>
+    </record>
+	<record id="group_insurance_user" model="res.groups">
+      <field name="name">Siniestros / User</field>
+    </record>
+</data>
+</openerp>

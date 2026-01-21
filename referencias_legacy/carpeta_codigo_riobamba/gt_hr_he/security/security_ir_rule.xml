@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+	
+	<!-- HORAS EXTRA -->
+	
+	<!--record id="property_rule_horas_extra" model="ir.rule">
+        <field name="name">Horas extra - Usuario</field>
+        <field model="ir.model" name="model_id" ref="model_hr_he_register_alone"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(6,0,[ref('gt_hr_he.group_he_alone')])]"/>
+    </record>
+    
+    <record id="property_rule_horas_extra_jefe_dpto" model="ir.rule">
+        <field name="name">Horas extra - Departamento</field>
+        <field model="ir.model" name="model_id" ref="model_hr_he_register_alone"/>
+        <field name="domain_force">[('department_id.manager_id.user_id','=',user.id)]</field>
+        <field name="groups" eval="[(6,0,[ref('gt_hr_he.group_he_aprove')])]"/>
+    </record>
+    <record id="property_rule_horas_extra_tthh" model="ir.rule">
+        <field name="name">Horas Extra - Talento Humano</field>
+        <field model="ir.model" name="model_id" ref="model_hr_he_register_alone"/>
+        <field name="domain_force">[('department_id','!=',''),('employee_id','!=','')]</field>
+        <field name="groups" eval="[(6,0,[ref('base.group_hr_manager')])]"/>
+    </record-->
+
+</data>
+</openerp>
