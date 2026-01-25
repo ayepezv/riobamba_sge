@@ -7,3 +7,6 @@ django-admin-list-filter-dropdown
 pdfplumber
 django-jazzmin
 gunicorn
+mysqlclient
+openpyxl
+reportlab

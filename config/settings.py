@@ -115,7 +115,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': env.db(),
+    'legacy_activos': {
+        'ENGINE': 'config.backends.mysql_legacy',
+        'NAME': 'bld_emapar_2023',
+        'USER': 'redemapar',
+        'PASSWORD': env('LEGACY_DB_PASSWORD', default='CAMBIAR_ESTA_CLAVE'), 
+        'HOST': '192.168.2.160',
+        'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        },
+    }
 }
+
+DATABASE_ROUTERS = ['config.db_routers.ActivosRouter']
 
 
 # Password validation

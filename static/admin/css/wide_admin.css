@@ -1,0 +1,19 @@
+/* Make the main content area full width */
+#content-main {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Ensure the results table uses full width */
+.change-list .results {
+    width: 100% !important;
+    margin-right: 0 !important;
+}
+
+/* Adjust the container if necessary (Jazzmin specific tweaks might be needed) */
+.col-12 {
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+}
+
+/* Hide sidebar if needed for extra width, but user didn't ask "hide sidebar", just "wide" */
