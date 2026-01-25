@@ -31,21 +31,37 @@ class Certificacion(models.Model):
         return f"{self.codigo} - {self.descripcion[:50]}"
 
     def save(self, *args, **kwargs):
+        from django.db import transaction
         if not self.codigo:
-            # Simple auto-generation logic: CP-YYYY-XXXX
-            year = datetime.date.today().year
-            prefix = f"CP-{year}-"
-            last = Certificacion.objects.filter(codigo__startswith=prefix).order_by('codigo').last()
-            if last:
-                try:
-                    seq = int(last.codigo.split('-')[-1]) + 1
-                except ValueError:
+            # Atomic transaction to prevents race conditions
+            with transaction.atomic():
+                # Lock the table (or rows) to ensure sequential generation
+                # We filter by a dummy condition or simply lock the last record to serialize access
+                # For high contention, a separate Sequence model is better, but here we lock based on prefix.
+                
+                year = datetime.date.today().year
+                prefix = f"CP-{year}-"
+                
+                # select_for_update() locks the selected rows until the transaction ends.
+                # We look for the last created code with this prefix.
+                # Note: If no rows exist yet, select_for_update won't lock anything. 
+                # So we might need a more robust approach if massive concurrency is expected from 0.
+                # For this specific legacy-style logic:
+                last_qs = Certificacion.objects.filter(codigo__startswith=prefix).order_by('codigo').select_for_update()
+                last = last_qs.last()
+
+                if last:
+                    try:
+                        seq = int(last.codigo.split('-')[-1]) + 1
+                    except ValueError:
+                        seq = 1
+                else:
                     seq = 1
-            else:
-                seq = 1
-            self.codigo = f"{prefix}{seq:03d}"
-        
-        super().save(*args, **kwargs)
+                
+                self.codigo = f"{prefix}{seq:03d}"
+                super().save(*args, **kwargs)
+        else:
+            super().save(*args, **kwargs)
 
 
 class CertificacionDetalle(models.Model):

@@ -1,8 +1,11 @@
+import logging
 import time
 import json
 from django.utils.deprecation import MiddlewareMixin
 from django.urls import resolve
 from .models import AuditLog
+
+logger = logging.getLogger(__name__)
 
 class AuditMiddleware(MiddlewareMixin):
     def process_request(self, request):
@@ -54,8 +57,8 @@ class AuditMiddleware(MiddlewareMixin):
                     duracion=round(duration, 4)
                 )
         except Exception as e:
-            # Fail silently to not impact user experience
-            print(f"Audit Log Error: {e}")
+            # Fail silently to not impact user experience, but log the error properly
+            logger.error(f"Audit Log Error: {e}", exc_info=True)
 
         return response
 
