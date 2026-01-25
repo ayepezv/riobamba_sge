@@ -50,3 +50,6 @@ El sistema se divide estrictamente en los siguientes módulos funcionales ubicad
 - **Trazabilidad Obligatoria**: Todas las acciones de los usuarios (Creación, Edición, Eliminación, Vistas Clave) deben quedar registradas.
 - **Medición de Tiempo**: Se debe registrar el tiempo de procesamiento/operación para análisis de eficiencia.
 - **Implementación**: Todo el sistema debe pasar por el Middleware de Auditoría (`apps.auditoria.middleware.AuditMiddleware`).
+
+## Documentación y Preservación de Conocimiento
+- **Walkthroughs**: Cada vez que se generen mejoras significativas o se creen nuevos módulos, se debe generar un archivo `walkthrough.md` explicativo y guardarlo en `docs/walkthroughs/[YYYY-MM-DD]_[nombre_descriptivo].md`. Esto asegura que las decisiones técnicas y explicaciones queden en el repositorio.
