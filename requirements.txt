@@ -10,3 +10,6 @@ gunicorn
 mysqlclient
 openpyxl
 reportlab
+
+xhtml2pdf
+django-htmx

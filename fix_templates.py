@@ -1,0 +1,178 @@
+
+import os
+
+# LOGICA FINAL DE DIAGNOSTICO/REPARACIÓN:
+# 1. El usuario reporta "letras en blanco" o invisibles en subitems.
+# 2. Vamos a usar un fallback EXTREMO para encontrar CUALQUIER propiedad con texto.
+#    Chain: title -> name -> label -> object_name -> verbose_name -> (SIN DATOS)
+# 3. Y forzamos color oscuro (text-gray-900) para asegurar contraste en tema claro.
+
+APP_LIST_CONTENT = """{% load i18n unfold %}
+
+{% if sidebar_navigation %}
+    <div id="nav-sidebar-apps" class="h-0 grow overflow-auto" data-simplebar>
+        {% for group in sidebar_navigation %}
+            {% if group.items %}
+                {% has_nav_item_active group.items as has_active %}
+
+                {% if group.collapsible %}
+                    <div class="mb-1.5 has-[ol]:has-[li]:block" x-data="{ navigationOpen: {% if has_active %}true{% else %}false{% endif %} }">
+                {% else %}
+                    <div class="mb-1.5 has-[ol]:has-[li]:block">
+                {% endif %}
+                
+                    {% if group.separator %}
+                        <hr class="border-t border-base-200 mx-6 my-2 dark:border-base-800" />
+                    {% endif %}
+
+                    {% if group.title %}
+                        <h2 class="font-semibold flex flex-row group items-center mb-1 mx-3 py-1.5 px-3 select-none text-font-important-light text-sm dark:text-font-important-dark {% if group.collapsible %}cursor-pointer hover:text-primary-600 dark:hover:text-primary-500{% endif %}"
+                            {% if group.collapsible %}x-on:click="navigationOpen = !navigationOpen"{% endif %}
+                            :class="!sidebarDesktopOpen ? 'justify-center' : ''">
+                            
+                            <span x-show="sidebarDesktopOpen" class="truncate">{{ group.title }}</span>
+                            <span x-show="!sidebarDesktopOpen" class="material-symbols-outlined text-base-400" title="{{ group.title }}">more_horiz</span>
+                            {% include "unfold/helpers/app_list_badge.html" with item=group %}
+
+                            {% if group.collapsible %}
+                                <span class="material-symbols-outlined ml-auto transition-all group-hover:text-primary-600 dark:group-hover:text-primary-500" 
+                                      x-bind:class="{'rotate-90': navigationOpen}"
+                                      x-show="sidebarDesktopOpen">
+                                    chevron_right
+                                </span>
+                            {% endif %}
+                        </h2>
+                    {% endif %}
+
+                    {% if group.collapsible %}
+                        <ol class="flex flex-col gap-0.5 px-6" x-show="navigationOpen || !sidebarDesktopOpen" :class="!sidebarDesktopOpen ? 'px-2' : 'px-6'">
+                    {% else %}
+                        <ol class="flex flex-col gap-0.5 px-6" :class="!sidebarDesktopOpen ? 'px-2' : 'px-6'">
+                    {% endif %}
+                        
+                        {% for item in group.items %}
+                            {% if item.has_permission %}
+                                <li>
+                                    {% if item.items %}
+                                        {# LEVEL 2 ITEM W/ SUBITEMS #}
+                                        <div x-data="{ open: false }">
+                                            <a @click="open = !open" class="cursor-pointer flex h-[38px] items-center -mx-3 px-3 rounded-default text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 overflow-hidden" :class="!sidebarDesktopOpen ? 'justify-center' : ''" title="{{ item.title|striptags }}">
+                                                {% if item.icon %}
+                                                    <span class="material-symbols-outlined md-18 w-[18px]" :class="sidebarDesktopOpen ? 'mr-3' : ''">{{ item.icon }}</span>
+                                                {% endif %}
+                                                
+                                                <span class="flex-1 truncate" x-show="sidebarDesktopOpen">
+                                                    {# FALLBACK EXTREMO #}
+                                                    {% if item.title %}{{ item.title|safe }}{% elif item.name %}{{ item.name|safe }}{% elif item.label %}{{ item.label|safe }}{% elif item.object_name %}{{ item.object_name|safe }}{% elif item.verbose_name %}{{ item.verbose_name|safe }}{% else %}(SIN DATOS){% endif %}
+                                                </span>
+
+                                                <span class="material-symbols-outlined transition-all" :class="{'rotate-90': open}" x-show="sidebarDesktopOpen">chevron_right</span>
+                                            </a>
+                                            
+                                            <ol class="flex flex-col gap-0.5 pl-4" x-show="open" :class="!sidebarDesktopOpen ? 'pl-0' : 'pl-4'">
+                                                {% for subitem in item.items %}
+                                                    <li>
+                                                        <a href="{% if subitem.link_callback %}{{ subitem.link_callback }}{% else %}{{ subitem.link }}{% endif %}" class="flex h-[38px] items-center -mx-3 px-3 rounded-default text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-500 overflow-hidden {% if subitem.active %}bg-base-100 font-semibold text-primary-600 dark:bg-white/[.06] dark:text-primary-500 active{% endif %}" :class="!sidebarDesktopOpen ? 'justify-center' : ''" title="{{ subitem.title|striptags }}">
+                                                            {% if subitem.icon %}
+                                                                <span class="material-symbols-outlined md-18 w-[18px]" :class="sidebarDesktopOpen ? 'mr-3' : 'text-xs'">{{ subitem.icon }}</span>
+                                                            {% endif %}
+                                                            
+                                                            <span class="flex-1 truncate" x-show="sidebarDesktopOpen">
+                                                                {# FALLBACK EXTREMO #}
+                                                                {% if subitem.title %}{{ subitem.title|safe }}{% elif subitem.name %}{{ subitem.name|safe }}{% elif subitem.label %}{{ subitem.label|safe }}{% elif subitem.object_name %}{{ subitem.object_name|safe }}{% elif subitem.verbose_name %}{{ subitem.verbose_name|safe }}{% else %}(SIN SUBDATOS){% endif %}
+                                                            </span>
+
+                                                            <div x-show="sidebarDesktopOpen">{% include "unfold/helpers/app_list_badge.html" with item=subitem %}</div>
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ol>
+                                        </div>
+                                    {% else %}
+                                        {# STANDARD ITEM NO SUBITEMS #}
+                                        <a href="{% if item.link_callback %}{{ item.link_callback }}{% else %}{{ item.link }}{% endif %}" class="flex h-[38px] items-center -mx-3 px-3 rounded-default text-gray-700 dark:text-gray-200 hover:text-primary-600 dark:hover:text-primary-500 overflow-hidden {% if item.active %}bg-base-100 font-semibold text-primary-600 dark:bg-white/[.06] dark:text-primary-500 active{% endif %}" :class="!sidebarDesktopOpen ? 'justify-center' : ''" title="{{ item.title|striptags }}">
+                                            {% if item.icon %}
+                                                <span class="material-symbols-outlined md-18 w-[18px]" :class="sidebarDesktopOpen ? 'mr-3' : ''">{{ item.icon }}</span>
+                                            {% endif %}
+                                            
+                                            <span class="flex-1 truncate" x-show="sidebarDesktopOpen">
+                                                {# FALLBACK EXTREMO #}
+                                                {% if item.title %}{{ item.title|safe }}{% elif item.name %}{{ item.name|safe }}{% elif item.label %}{{ item.label|safe }}{% elif item.object_name %}{{ item.object_name|safe }}{% elif item.verbose_name %}{{ item.verbose_name|safe }}{% else %}(SIN DATOS){% endif %}
+                                            </span>
+    
+                                            <div x-show="sidebarDesktopOpen">{% include "unfold/helpers/app_list_badge.html" with item=item %}</div>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ol>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {% if sidebar_show_all_applications and app_list|length > 0 %}
+        <div class="mt-auto" x-data="{ openAllApplications: false }">
+            <a class="cursor-pointer flex items-center h-[64px] px-6 py-3 text-sm dark:text-font-default-dark hover:text-primary-600 dark:hover:text-primary-500" x-on:click="openAllApplications = !openAllApplications" :class="!sidebarDesktopOpen ? 'justify-center' : ''">
+                <span class="material-symbols-outlined md-18 mr-3" :class="sidebarDesktopOpen ? 'mr-3' : ''">apps</span>
+                <span x-show="sidebarDesktopOpen" class="truncate">{% trans "All applications" %}</span>
+            </a>
+
+            <div class="absolute bottom-0 left-0 right-0 top-0 z-50 md:left-72" x-cloak x-show="openAllApplications">
+                <div class="absolute bg-base-900/80 backdrop-blur-xs bottom-0 left-0 right-0 top-0 z-10 w-screen"></div>
+
+                <div class="bg-white flex flex-col h-full overflow-x-hidden overflow-y-auto py-5 px-8 relative text-sm w-80 z-20 dark:bg-base-900 dark:border-r dark:border-base-800" x-on:click.outside="openAllApplications = false" x-on:keydown.escape.window="openAllApplications = false" data-simplebar>
+                    {% for app in app_list %}
+                        <div class="mb-6 last:mb-0">
+                            <h2 class="mb-4 font-semibold text-font-important-light truncate dark:text-font-important-dark">{{ app.name }}</h2>
+                            <ul>
+                                {% for model in app.models %}
+                                    <li class="block mb-4 last:mb-0">
+                                        <a href="{{ model.admin_url }}" class="block truncate hover:text-primary-600 dark:hover:text-primary-500">{{ model.name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <p>
+        {% trans "You don’t have permission to view or edit anything." as error_message %}
+        {% include "unfold/helpers/messages/error.html" with error=error_message %}
+    </p>
+{% endif %}"""
+
+NAV_SIDEBAR_CONTENT = """{% load i18n unfold %}
+
+<div class="relative z-60">
+    <div class="fixed hidden xl:relative xl:block transition-all duration-300 ease-in-out {% element_classes 'navigation_wrapper' %}"
+        :style="sidebarDesktopOpen ? 'width: 288px;' : 'width: 70px;'"
+        x-bind:class="{'block!': sidebarMobileOpen}">
+
+        <div class="bg-base-50 relative z-30 dark:bg-base-900 border-r border-base-200 dark:border-base-800 h-full flex flex-col">
+            
+            {# Navigation Content #}
+            <div id="nav-sidebar" class="flex-1 overflow-y-auto overflow-x-hidden {% element_classes 'navigation' %}">
+                {% if templates.navigation %}
+                    {% include templates.navigation %}
+                {% else %}
+                    {% include "unfold/helpers/navigation.html" %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>"""
+
+path_app = r"c:\Proyectos\riobamba_sge\templates\unfold\helpers\app_list.html"
+with open(path_app, "w", encoding="utf-8") as f:
+    f.write(APP_LIST_CONTENT)
+print(f"File wrote to {path_app} with EXTENSIVE FALLBACK LOGIC.")
+
+path_nav = r"c:\Proyectos\riobamba_sge\templates\admin\nav_sidebar.html"
+with open(path_nav, "w", encoding="utf-8") as f:
+    f.write(NAV_SIDEBAR_CONTENT)
+print(f"File wrote to {path_nav} with ORIGINAL STYLES.")

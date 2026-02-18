@@ -37,13 +37,41 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    # Third party apps
+    'jazzmin',
+    'django_admin_listfilter_dropdown',
+    'guardian',
+
+    # 'widget_tweaks', # Not in requirements
+
+    
+    # Project apps
+    'apps.core',
+    'apps.planificacion',
+    'apps.compras',
+    'apps.presupuestos',
+    'apps.financiero',
+    'apps.tesoreria',
+    'apps.contabilidad',
+    'apps.talento_humano',
+    'apps.inventario',
+    'apps.activos',
+    'apps.proyectos',
+    'apps.permisos',
+    'apps.agua_potable',
+    'apps.juridico',
+    'apps.auditoria',
+    'apps.servicios',
+    'django_htmx', # HTMX integration
+    # 'apps.certificaciones', # Mentioned in legacy code rules, but seemingly incomplete
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django_htmx.middleware.HtmxMiddleware', # HTMX Middleware
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -122,4 +150,4 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'core.CustomUser'

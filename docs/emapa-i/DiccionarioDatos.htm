@@ -1,0 +1,1119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<html>
+  <head>
+  	<title>Diccionario de datos - Módulo Comercial</title>
+    <style>
+          table {border-collapse:collapse;}
+          th {background-color: #CAE4FF;}
+          tr:hover {background-color: #e0e7f9; }
+          a{color:Black;}
+          a:link {text-decoration: none;}
+          a:visited {text-decoration: none;}
+          a:active {text-decoration: none;}
+          a:hover {text-decoration: underline;}
+        </style>
+  </head>
+  <body id="DataDictionary">
+    <h2><div align="center">DICCIONARIO DE DATOS</div></h2>
+    <h3><br>Módulo Comercial</h3>
+    <table border="1" width="100%">
+      <tr>
+        <th>
+            Esquema
+          </th>
+        <th>
+            Table
+          </th>
+        <th>
+            Descripción </th>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ACL_INSPECCION">TBL_CO_ACL_INSPECCION</a>
+        </td>
+        <td>Tabla que registra los resultados de las inspecciones iniciadas por los trámites de Atención al Cliente</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ACL_ORDEN_TRABAJO_AUX">TBL_CO_ACL_ORDEN_TRABAJO_AUX</a>
+        </td>
+        <td>Orden de trabajo para las instalaciones de los contratistas</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_CONTRATISTA">TBL_CO_ATENCION_CONTRATISTA</a>
+        </td>
+        <td>Datos del contratista para las instalaciones</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_INSPECCION">TBL_CO_ATENCION_INSPECCION</a>
+        </td>
+        <td>Esta tabla se utilizó hasta le versión del 2007.</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_INSPECCION_DET">TBL_CO_ATENCION_INSPECCION_DET</a>
+        </td>
+        <td>Tabla que registra el detalle de los resultados de la inspección</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_NOVEDAD">TBL_CO_ATENCION_NOVEDAD</a>
+        </td>
+        <td>Muestra parámetros para los trámites. Se lo utilizó hasta el 2007</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_NOVEDAD_CLIENTE">TBL_CO_ATENCION_NOVEDAD_CLIENTE</a>
+        </td>
+        <td>Trámite de atención al Cliente. Se usó hasta el 2007</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_ORDEN_TRABAJO">TBL_CO_ATENCION_ORDEN_TRABAJO</a>
+        </td>
+        <td>Orden de trabajo para los contratistas.Viene de nuevas conexiones</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_ATENCION_ORDEN_TRABAJO_DET">TBL_CO_ATENCION_ORDEN_TRABAJO_DET</a>
+        </td>
+        <td>Detalle de la orden de trabajo</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CAMBIO_MEDIDOR">TBL_CO_CAMBIO_MEDIDOR</a>
+        </td>
+        <td>No se utiliza.</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CAMBIO_MEDIDOR_SOL">TBL_CO_CAMBIO_MEDIDOR_SOL</a>
+        </td>
+        <td>Registra los trámites de cambio de medidor</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CAMBIO_NOMBRE">TBL_CO_CAMBIO_NOMBRE</a>
+        </td>
+        <td>No se utiliza.</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CICLO">TBL_CO_CICLO</a>
+        </td>
+        <td>Corresponde al ciclo o red en las que se ha dividido la ciudad</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CICLO_HIS">TBL_CO_CICLO_HIS</a>
+        </td>
+        <td>La misma estructura de TBL_CO_CICLO. Su objetivo es almacenar los datos históricos de cada ciclo según el mes y año de procesamiento</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CIERRE_DIARIO_GENERAL">TBL_CO_CIERRE_DIARIO_GENERAL</a>
+        </td>
+        <td>Tabla que almacena los rubros con sus respectivos valores al momento de realizar el cierre de diario</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_COACTIVAS_NOTIFICADAS">TBL_CO_COACTIVAS_NOTIFICADAS</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_COMPONENTE">TBL_CO_COMPONENTE</a>
+        </td>
+        <td>Contiene todos los rubros que podrá facturar la empresa</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CONSUMOS_ALTOS">TBL_CO_CONSUMOS_ALTOS</a>
+        </td>
+        <td>No se utiliza desde los cambios en Atención al cliente</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CORTE">TBL_CO_CORTE</a>
+        </td>
+        <td>Almacena los datos de cortes y reconexiones del servicio</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CROQUIS">TBL_CO_CROQUIS</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_CUENTA">TBL_CO_CUENTA</a>
+        </td>
+        <td>Datos de las cuentas de los abonados</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_EJECUCION_RUTEO_LOGISTICO">TBL_CO_EJECUCION_RUTEO_LOGISTICO</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA">TBL_CO_FACTURA</a>
+        </td>
+        <td>Emisiones que contienen datos y valores de rubros de todo lo que se factura en la empresa</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_DET">TBL_CO_FACTURA_DET</a>
+        </td>
+        <td>Tabla en que la se detallan los datos correspondientes a los rubros emitidos</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SERVICIO">TBL_CO_FACTURA_SERVICIO</a>
+        </td>
+        <td>Tabla auxiliar que permite almacenar las emisiones en lote</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SERVICIO_CUENTA">TBL_CO_FACTURA_SERVICIO_CUENTA</a>
+        </td>
+        <td>Tabla auxiliar de TBL_CO_FACTURA_SERVICIO donde se almacenan las cuentas para las que se va a crear las emisiones en lote. Relación uno a varios.</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SERVICIO_DET">TBL_CO_FACTURA_SERVICIO_DET</a>
+        </td>
+        <td>Tabla auxiliar que almacena los rubros que se van crear en la emisión por lote</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SERVICIO_FACTURA">TBL_CO_FACTURA_SERVICIO_FACTURA</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI">TBL_CO_FACTURA_SRI</a>
+        </td>
+        <td>Consolida todas las emisiones emitidas hasta la fecha vigente. Toma los datos emitidos por el SRI para ser autoimpresores</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI_ABONO_MANUAL">TBL_CO_FACTURA_SRI_ABONO_MANUAL</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI_DET">TBL_CO_FACTURA_SRI_DET</a>
+        </td>
+        <td>Tabla que recopila los rubros de las emisiones que se incluye en la factura SRI</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI_PARAMETRO">TBL_CO_FACTURA_SRI_PARAMETRO</a>
+        </td>
+        <td>Tabla de parámetros de los datos de autorización del SRI para ser autoimpresor</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI_RECAUDACION">TBL_CO_FACTURA_SRI_RECAUDACION</a>
+        </td>
+        <td>Registra todos los pagos receptados por los cajeros.</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI_RECAUDACION_DET">TBL_CO_FACTURA_SRI_RECAUDACION_DET</a>
+        </td>
+        <td>Tabla en la que se registra los datos de las facturas que se están recaudando en una transacción</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FACTURA_SRI_RECAUDACION_FPAGO">TBL_CO_FACTURA_SRI_RECAUDACION_FPAGO</a>
+        </td>
+        <td>Tabla en la que se registra la forma de pago de la transacción de recaudación.Nota:los campos de cheques protestados no se utilizan pues solo se reciben cheques certificados</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FINANCIAMIENTO">TBL_CO_FINANCIAMIENTO</a>
+        </td>
+        <td>Registra los convenios cuando el abonado no puede cancelar su deuda total. Comprende abonos y financiamientos</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FINANCIAMIENTO_AUX_CUOTA">TBL_CO_FINANCIAMIENTO_AUX_CUOTA</a>
+        </td>
+        <td>Tabla auxiliar-temporal</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FINANCIAMIENTO_AUX_CUOTA_EMISION">TBL_CO_FINANCIAMIENTO_AUX_CUOTA_EMISION</a>
+        </td>
+        <td>Tabla auxiliar-temporal que almacena la redistribución de rubros  (combinando emisiones y cuotas)</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FINANCIAMIENTO_AUX_EMISION">TBL_CO_FINANCIAMIENTO_AUX_EMISION</a>
+        </td>
+        <td>Tabla auxiliar-temporal que almacena las emisiones que se van a financiar</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_FORMA_PAGO">TBL_CO_FORMA_PAGO</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_HABILITACION_SERVICIO_ONLINE">TBL_CO_HABILITACION_SERVICIO_ONLINE</a>
+        </td>
+        <td>Tabla de webservices. Habilitación</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_INDICADOR">TBL_CO_INDICADOR</a>
+        </td>
+        <td>No se utiliza con el nuevo esquema de indicadores</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_INDICADOR_LOG">TBL_CO_INDICADOR_LOG</a>
+        </td>
+        <td>No se utiliza con el nuevo esquema de indicadores</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_INSUMO">TBL_CO_INSUMO</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_INVENTARIO_SERVICIOS">TBL_CO_INVENTARIO_SERVICIOS</a>
+        </td>
+        <td>Tabla que registra servicios de atención al cliente</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_LECTURA">TBL_CO_LECTURA</a>
+        </td>
+        <td>Tabla que registra las lecturas mensuales para el cálculo de consumo</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_LOG_CONSULTAS_ONLINE">TBL_CO_LOG_CONSULTAS_ONLINE</a>
+        </td>
+        <td>Tabla que registra las consultas de búsqueda de facturas para la recaudación on-line</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_LOG_HABILITACION_SERVICIO_ONLINE">TBL_CO_LOG_HABILITACION_SERVICIO_ONLINE</a>
+        </td>
+        <td>Tabla que registra el usuario windows que habilita los webservices para la recaudación on-line</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_LOG_MAIN_ONLINE">TBL_CO_LOG_MAIN_ONLINE</a>
+        </td>
+        <td>Tabla principal de la recaudación on-line donde se detallas las acciones ejecutadas</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_LOG_TRANSACCION_ONLINE">TBL_CO_LOG_TRANSACCION_ONLINE</a>
+        </td>
+        <td>Tabla de registro de transacciones de recaudación on-line</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_MATERIAL">TBL_CO_MATERIAL</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_MEDIDOR">TBL_CO_MEDIDOR</a>
+        </td>
+        <td>Tabla que registra los datos de medidores de agua potable que se coloca en cada ubicación del abonado</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_MOVIMIENTO">TBL_CO_MOVIMIENTO</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PAGOS_PARCIALES">TBL_CO_PAGOS_PARCIALES</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PARAMETRO">TBL_CO_PARAMETRO</a>
+        </td>
+        <td>Tabla que contiene los parámtros de todo el módulo comercial</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PARAMETRO_IND">TBL_CO_PARAMETRO_IND</a>
+        </td>
+        <td>No se utiliza con el nuevo esquema de indicadores</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PERIODO">TBL_CO_PERIODO</a>
+        </td>
+        <td>No se utiliza con la nueva estructra. El período vigente se manera en cada red o ciclo</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PLIEGO_TARIF_DET">TBL_CO_PLIEGO_TARIF_DET</a>
+        </td>
+        <td>No se utiliza. Esta tabla fue abierta en dos: de agua y otros</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PLIEGO_TARIF_DET_AGUA">TBL_CO_PLIEGO_TARIF_DET_AGUA</a>
+        </td>
+        <td>Tabla que registra los valores en dólares por cada metro cúbico de agua según rango</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PLIEGO_TARIF_DET_OTROS">TBL_CO_PLIEGO_TARIF_DET_OTROS</a>
+        </td>
+        <td>Tabla que almacena todo rubro que aplica para el cálculo de consumo sin tomar en cuenta el agua potable.</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PLIEGO_TARIFARIO">TBL_CO_PLIEGO_TARIFARIO</a>
+        </td>
+        <td>Tabla que representa el Nivel 2 de los pliegos tarifarios. Corresponde a las categorías o tarifas que se les asigna a las cuentas</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PRESUPUESTO">TBL_CO_PRESUPUESTO</a>
+        </td>
+        <td>Almacena la cabecera del presupuesto para la ejecución de obras</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_PRESUPUESTO_DET">TBL_CO_PRESUPUESTO_DET</a>
+        </td>
+        <td>Registra los rubros a facturar por ejecución de obras</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_RANGO">TBL_CO_RANGO</a>
+        </td>
+        <td>No se utiliza. Se reemplazó en la tabla de parámetros</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_RECONEXION">TBL_CO_RECONEXION</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REFACTURACION">TBL_CO_REFACTURACION</a>
+        </td>
+        <td>Tabla que registra las refacturaciones</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REFACTURACION_DET">TBL_CO_REFACTURACION_DET</a>
+        </td>
+        <td>Tabla que registra el detalle de la refacturación según las emisiones marcadas</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REFACTURADAS">TBL_CO_REFACTURADAS</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REFACTURADAS_DET">TBL_CO_REFACTURADAS_DET</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REINSTALACION_MEDIDOR_SOL">TBL_CO_REINSTALACION_MEDIDOR_SOL</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REQUISITOS">TBL_CO_REQUISITOS</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REUBICACION">TBL_CO_REUBICACION</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_REVISION_MEDIDOR">TBL_CO_REVISION_MEDIDOR</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_RUTA">TBL_CO_RUTA</a>
+        </td>
+        <td>Tabla que muestra las rutas en las que se ha dividido la ciudad para una mejor ubicación de las direcciones de los abonados</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SECTOR">TBL_CO_SECTOR</a>
+        </td>
+        <td>Tabla que muestra los sectores o distritos en los que se ha dividido la ciudad para una mejor ubicación de las direcciones de los abonados</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SERVICIO_MEDIDOR_VARIOS">TBL_CO_SERVICIO_MEDIDOR_VARIOS</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SERVICIO_NI_PRESUPUESTO">TBL_CO_SERVICIO_NI_PRESUPUESTO</a>
+        </td>
+        <td>Tabla que registra el presupuesto resultado de la inspección de nuevas conexiones</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SERVICIO_NUEVA_INSTALACION">TBL_CO_SERVICIO_NUEVA_INSTALACION</a>
+        </td>
+        <td>Esta tabla almacena la información relacionada a las nuevas conexiones</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SERVICIO_NUEVA_INSTALACION_PAGO">TBL_CO_SERVICIO_NUEVA_INSTALACION_PAGO</a>
+        </td>
+        <td>Tabla que registra la forma de pago de una nueva conexión</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SERVICIO_SIN_CUENTA">TBL_CO_SERVICIO_SIN_CUENTA</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SOLICITUD">TBL_CO_SOLICITUD</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SOLICITUD_REFACTURACION">TBL_CO_SOLICITUD_REFACTURACION</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SRI_AUDITORIA">TBL_CO_SRI_AUDITORIA</a>
+        </td>
+        <td>Tabla que registra las transacciones relacionadas con facturas SRI y párametros del sistema</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SRV_CAMBIO_CATEGORIA_SOL">TBL_CO_SRV_CAMBIO_CATEGORIA_SOL</a>
+        </td>
+        <td>Tabla que registra los trámites de cambio de categoría</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SRV_CAMBIO_NOMBRE_SOL">TBL_CO_SRV_CAMBIO_NOMBRE_SOL</a>
+        </td>
+        <td>Tabla que registra los trámites por cambio de nombre</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SRV_CERTIFICADO_NO_DEUDA">TBL_CO_SRV_CERTIFICADO_NO_DEUDA</a>
+        </td>
+        <td>Tabla que registra los trámites de certificado de no adeudar</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SRV_TERCERA_EDAD_SOL">TBL_CO_SRV_TERCERA_EDAD_SOL</a>
+        </td>
+        <td>Tabla que registra los cambios de tarifa a tercera edad</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_SRV_VENTA_TANQUERO_SOL">TBL_CO_SRV_VENTA_TANQUERO_SOL</a>
+        </td>
+        <td>Tabla que registra los trámites relacionados a la venta de tanqueros. Ya no se utiliza. Ahora se trabaja con facturas de servicios</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_TAP_REC_SERVICIO">TBL_CO_TAP_REC_SERVICIO</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_TIPO_PLIEGO_TARIFARIO">TBL_CO_TIPO_PLIEGO_TARIFARIO</a>
+        </td>
+        <td>Tabla que almacena los grandes grupos de tarifas (Nivel 1)</td>
+      </tr>
+      <tr>
+        <td>dbo</td>
+        <td>
+          <a href="#dbo.TBL_CO_VAL_PEND">TBL_CO_VAL_PEND</a>
+        </td>
+        <td>No se utiliza</td>
+      </tr>
+    </table>
+    <br />
+<strong><a name="dbo.TBL_CO_ACL_INSPECCION">
+        [dbo].[TBL_CO_ACL_INSPECCION]
+      </a> :
+    </strong>Tabla que registra los resultados de las inspecciones iniciadas por los trámites de Atención al Cliente<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>ISP_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Identificar autonumérico del número de cuenta del cliente</tr><tr><td>CLE_CI_RUC</td><td>VarChar (14)</td><td>Cédula del cliente</tr><tr><td>ISP_MOTIVO</td><td>VarChar (255)</td><td>Razón por la que se ejecuta la inspección</tr><tr><td>ISP_INSPECTOR</td><td>VarChar (75)</td><td>Nombre del inspector</tr><tr><td>ISP_RESULTADO</td><td>VarChar (255)</td><td>Resultado luego de realizar la inspección</tr><tr><td>ISP_OBSERVACION</td><td>VarChar (255)</td><td>Observación de la inspección realizada</tr><tr><td>ISP_FECHA</td><td>DateTime</td><td>Fecha de registro de la información</tr><tr><td>ISP_USER</td><td>VarChar (40)</td><td>Usuario responsable del registro</tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador autonumérico que corresponda al ID del trámite</tr><tr><td>ISP_REGISTRADO</td><td>Bit</td><td>Estado. No permite cambios posteriores</tr><tr><td>TPT_ID_INI</td><td>Numeric</td><td>Categoria actual de la cuenta</tr><tr><td>TPT_ID_FIN</td><td>Numeric</td><td>Categoria nueva después del trámite de cambio de tarifa</tr><tr><td>ISP_REQUISITO</td><td>Bit</td><td>Señala si está cumpliendo o no con los requisitos</tr><tr><td>CLE_NOMBRE_INI</td><td>VarChar (255)</td><td>Antiguo nombre en el trámite de cambio de nombre</tr><tr><td>ISP_SOLICITAR</td><td>Bit</td><td>Confirma solicitud</tr><tr><td>ISP_FECHA_EJEC</td><td>SmallDateTime</td><td>Fecha de ejecución de la inspección</tr><tr><td>ISP_REQUERIDA</td><td>Bit</td><td>Bandera que indica si el trámite requiere inspección</tr><tr><td>CLE_CI_RUC_FIN</td><td>VarChar (14)</td><td>Cédula del abonado solicitante</tr><tr><td>ISP_FACTURA</td><td>VarChar (50)</td><td>Número de emisión</tr><tr><td>ISP_FACTURA_SRI</td><td>VarChar (50)</td><td>Número de factura SRI</tr><tr><td>ISP_REFACTURACION</td><td>VarChar (50)</td><td>No se utiliza ya. Almacenaba información de refacturación</tr><tr><td>CLE_NOMBRE_FIN</td><td>VarChar (255)</td><td>Nuevo nombre en el trámite de cambio de nombre</tr><tr><td>ISP_LECTURA_ANTERIOR</td><td>VarChar (50)</td><td>Lectura del último mes de procesamiento</tr><tr><td>ISP_LIMITAR</td><td>Bit</td><td>Bandera que ayuda a limitar la impresión</tr><tr><td>ISP_OBSERVACION_ANTES</td><td>VarChar (255)</td><td>Observación</tr><tr><td>ISP_OBS_REIMPRESION</td><td>VarChar (255)</td><td>Observación que aparecerá al imprimir </tr><tr><td>ISP_RFN_ID</td><td>Numeric</td><td>No se utiliza</tr><tr><td>ISP_NO_EFECTUADA</td><td>Bit</td><td>Bandera de estado: pendiente o ejecutada</tr></table><br /><strong><a name="dbo.TBL_CO_ACL_ORDEN_TRABAJO_AUX">
+        [dbo].[TBL_CO_ACL_ORDEN_TRABAJO_AUX]
+      </a> :
+    </strong>Orden de trabajo para las instalaciones de los contratistas<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>OT_DISPONIBLE_DIA</td><td>Int</td><td>Número de días disponibles según capacidad</tr><tr><td>OT_DIAS_ASIGNACION</td><td>SmallDateTime</td><td>Fecha de asignación de la instalación</tr><tr><td>OT_CONTRATISTA</td><td>Int</td><td>Identificador del contratista</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_CONTRATISTA">
+        [dbo].[TBL_CO_ATENCION_CONTRATISTA]
+      </a> :
+    </strong>Datos del contratista para las instalaciones<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>ACC_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Ruc o cédula del contratista</tr><tr><td>ACC_CAPACIDAD</td><td>Int</td><td>No. de instalaciones que puede realizar por día</tr><tr><td>ACC_FECHA</td><td>SmallDateTime</td><td>Fecha de registro</tr><tr><td>ACC_USUARIO</td><td>VarChar (20)</td><td>Usuario que registra</tr><tr><td>ACC_OBSERVACION</td><td>VarChar (255)</td><td>Observación del contratista</tr><tr><td>ACC_ACTIVO</td><td>Bit</td><td>Estado para tomarlo en cuenta</tr><tr><td>ACC_DISPONIBLE</td><td>Int</td><td>No. de órdenes disponibles</tr><tr><td>ACC_DISPONIBLE_AUX</td><td>Int</td><td>No. de órdenes asignadas</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_INSPECCION">
+        [dbo].[TBL_CO_ATENCION_INSPECCION]
+      </a> :
+    </strong>Esta tabla se utilizó hasta le versión del 2007.<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CO_INS_ID</td><td>Int</td><td>Identificador</tr><tr><td>CO_FCH</td><td>SmallDateTime</td><td>Fecha de registro</tr><tr><td>CO_DESCRIPCION</td><td>Char (50)</td><td>Descripción de la inspección</tr><tr><td>CO_OBSER</td><td>Char (50)</td><td>Observación de la inspección</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_INSPECCION_DET">
+        [dbo].[TBL_CO_ATENCION_INSPECCION_DET]
+      </a> :
+    </strong>Tabla que registra el detalle de los resultados de la inspección<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CO_INS_IDD</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CO_INS_ID</td><td>Int</td><td>Clave Padre de TBL_CO_ATENCION_INSPECCION</tr><tr><td>CO_INS_FCH_INSP</td><td>SmallDateTime</td><td>Fecha de inspección</tr><tr><td>CUE_ID</td><td>Int</td><td>Cuenta del usuario</tr><tr><td>CO_INS_IDINSPECTOR</td><td>VarChar (15)</td><td>Identificador del Inspector encargado</tr><tr><td>CO_INS_RESULTADO</td><td>Char (70)</td><td>Resultador de la inspección</tr><tr><td>CO_INS_MOTIVO</td><td>Char (70)</td><td>Motivo de la inspección</tr><tr><td>CO_INS_BIT</td><td>Bit</td><td>Estado de continuación</tr><tr><td>CO_INS_Ejecutivo</td><td>VarChar (15)</td><td>Usuario que registra</tr><tr><td>CO_INS_CERRADA</td><td>Bit</td><td>Inspección finalizada</tr><tr><td>CO_INS_OBSERVACION</td><td>Char (70)</td><td>Observación de la inspección</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_NOVEDAD">
+        [dbo].[TBL_CO_ATENCION_NOVEDAD]
+      </a> :
+    </strong>Muestra parámetros para los trámites. Se lo utilizó hasta el 2007<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CO_ATE_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CO_ATE_novedad</td><td>VarChar (50)</td><td>Nombre de la novedad</tr><tr><td>CO_ATE_codnov</td><td>Int</td><td>Tipo de trámite al que pertenece</tr><tr><td>CO_ATE_URL</td><td>Char (50)</td><td>Página en la que se utiliza (programación)</tr><tr><td>CO_ATE_Valor</td><td>Bit</td><td>Estado de activo o no</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_NOVEDAD_CLIENTE">
+        [dbo].[TBL_CO_ATENCION_NOVEDAD_CLIENTE]
+      </a> :
+    </strong>Trámite de atención al Cliente. Se usó hasta el 2007<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CO_ATC_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Int</td><td>Cuenta del usuario</tr><tr><td>CO_ATE_ID</td><td>Int</td><td>Identificador de la novedad</tr><tr><td>CO_ATE_codnov</td><td>Int</td><td>Tipo de novedad</tr><tr><td>CO_ATC_responsable</td><td>VarChar (15)</td><td>Usuario que registra</tr><tr><td>CO_ATC_fecha</td><td>DateTime</td><td>Fecha en que se registra</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del usuario</tr><tr><td>CO_ATC_Detalle</td><td>Char (70)</td><td>Detalle del trámite</tr><tr><td>CO_ATC_Observa</td><td>Char (70)</td><td>Observación del trámite</tr><tr><td>CO_ATC_valor</td><td>Float</td><td>Valor a cobrar por el trámite</tr><tr><td>CO_ATE_novedad</td><td>VarChar (50)</td><td>Descripción de la novedad</tr><tr><td>CO_ATE_Ex</td><td>Int</td><td>Auxiliar.</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_ORDEN_TRABAJO">
+        [dbo].[TBL_CO_ATENCION_ORDEN_TRABAJO]
+      </a> :
+    </strong>Orden de trabajo para los contratistas.Viene de nuevas conexiones<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>AOR_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula o RUC del usuario</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Cuenta del usuario</tr><tr><td>AOR_FECHA</td><td>SmallDateTime</td><td>Fecha de creación de la orden</tr><tr><td>AOR_USUARIO</td><td>VarChar (20)</td><td>Usuario que regsitra la orden</tr><tr><td>AOR_FECHA_APROXIMADA</td><td>SmallDateTime</td><td>Fecha en que se espera realizar la orden</tr><tr><td>AOR_HORA_APROXIMADA</td><td>VarChar (5)</td><td>Hora en que se espera ir donde el cliente</tr><tr><td>AOR_OBSERVACION</td><td>VarChar (255)</td><td>Observación de la orden</tr><tr><td>AOR_FECHA_EJECUCION</td><td>SmallDateTime</td><td>Fecha en que realmente se ejecuta la orden</tr><tr><td>AOR_ESTADO</td><td>Int</td><td>Estado: pendiente, registrado</tr><tr><td>AOR_IMPREVISTO</td><td>VarChar (255)</td><td>Registro de imprevistos si hubieren</tr><tr><td>AOR_MULTA</td><td>Decimal (18,0)</td><td>Valor por multa en caso de incumplimiento</tr><tr><td>AOR_RECALENDARIZADO</td><td>Bit</td><td>En caso de retraso, se deberá recalendarizar</tr><tr><td>AOR_EJECUTADO</td><td>Bit</td><td>Estado que señala terminación</tr><tr><td>AOR_MEDIDOR</td><td>VarChar (15)</td><td>Medidor instalado</tr><tr><td>AOR_ANULADO</td><td>Bit</td><td>Estado de anulación en caso de que no proceda</tr><tr><td>ACC_ID</td><td>Int</td><td>Identificador del contratista</tr><tr><td>TRA_ID</td><td>VarChar (50)</td><td>Identificador del trámite de nuevas conexiones</tr><tr><td>ACC_FIZCALIZADA</td><td>Int</td><td>Estado que señala si fue fiscalizada o no</tr><tr><td>ACC_FECHA_FIZCALIZADA</td><td>SmallDateTime</td><td>Fecha de fiscalización</tr><tr><td>AOR_IMPREVISTO_DESCRIPCION</td><td>Text</td><td>Detalle de imprevistos si hubieren</tr><tr><td>AOR_FECHA_RECALENDARIZADA</td><td>SmallDateTime</td><td>Nueva fecha de ejecución</tr></table><br /><strong><a name="dbo.TBL_CO_ATENCION_ORDEN_TRABAJO_DET">
+        [dbo].[TBL_CO_ATENCION_ORDEN_TRABAJO_DET]
+      </a> :
+    </strong>Detalle de la orden de trabajo<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>AOD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>AOR_ID</td><td>Numeric</td><td>Clave padre de TBL_CO_ATENCION_ORDEN_TRABAJO</tr><tr><td>AOD_IMPREVISTO</td><td>Int</td><td>Imprevistos si hay varias recalendarizaciones</tr><tr><td>AOD_FECHA_REPROGRAMADA</td><td>SmallDateTime</td><td>Fechas recalendarizadas si hay varias</tr><tr><td>AOD_OBSERVACION</td><td>VarChar (255)</td><td>Observaciones</tr><tr><td>AOD_MULTA</td><td>Float</td><td>Multas por cada retraso</tr></table><br /><strong><a name="dbo.TBL_CO_CAMBIO_MEDIDOR">
+        [dbo].[TBL_CO_CAMBIO_MEDIDOR]
+      </a> :
+    </strong>No se utiliza.<br /><br /><strong><a name="dbo.TBL_CO_CAMBIO_MEDIDOR_SOL">
+        [dbo].[TBL_CO_CAMBIO_MEDIDOR_SOL]
+      </a> :
+    </strong>Registra los trámites de cambio de medidor<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CMS_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Cuenta del usuario</tr><tr><td>CMS_REGISTRADO</td><td>Bit</td><td>Estado de registrado</tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador del trámite</tr></table><br /><strong><a name="dbo.TBL_CO_CAMBIO_NOMBRE">
+        [dbo].[TBL_CO_CAMBIO_NOMBRE]
+      </a> :
+    </strong>No se utiliza.<br /><br /><strong><a name="dbo.TBL_CO_CICLO">
+        [dbo].[TBL_CO_CICLO]
+      </a> :
+    </strong>Corresponde al ciclo o red en las que se ha dividido la ciudad<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CIC_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CIC_NOMBRE</td><td>VarChar (50)</td><td>Nombre del ciclo.Ejemplo: ciclo 1</tr><tr><td>CIC_NUM</td><td>VarChar (3)</td><td>Número del ciclo</tr><tr><td>CIC_URBANO</td><td>Bit</td><td>Indicador si se trata de un ciclo en el sector urbano</tr><tr><td>CIC_FECHA_FACTURA</td><td>SmallDateTime</td><td>Fecha máxima de pago</tr><tr><td>CIC_PROCESO_MES</td><td>Int</td><td>Mes de procesamiento</tr><tr><td>CIC_PROCESO_ANIO</td><td>Int</td><td>Año de procesamiento</tr><tr><td>CIC_PROCESO_FACTURADO</td><td>Bit</td><td>Estado que señala si el ciclo fue o no facturado</tr><tr><td>CIC_BATCH</td><td>Bit</td><td>Estado que señala si el ciclo se factura o no</tr><tr><td>CIC_PROCESO_ESTADO</td><td>TinyInt</td><td>Número que señala el estado del ciclo:digitado,verificado,validado,actualizado,finalizado</tr><tr><td>CIC_FECHA_FACTURACION</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>CIC_FECHA_DIGITALIZACION</td><td>SmallDateTime</td><td>Fecha en la que digitó la última ruta de este ciclo</tr><tr><td>CIC_FECHA_VERIFICACION</td><td>SmallDateTime</td><td>Fecha en la que verificó la última ruta de este ciclo</tr><tr><td>CIC_FECHA_VALIDACION</td><td>SmallDateTime</td><td>Fecha en la que se concluyó con la validación del ciclo</tr><tr><td>CIC_FECHA_ACTUALIZA</td><td>SmallDateTime</td><td>Fecha en la que se concluyó con la actualización del ciclo</tr><tr><td>CIC_FECHA_FIN_PREFACTURACION</td><td>SmallDateTime</td><td>Fecha en la que se concluye con el proceso de lecturas. Está listo para facturar el ciclo</tr><tr><td>CIC_FECHA_CONTRATISTA</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>CIC_USUARIO</td><td>VarChar (20)</td><td>Nombre del responsable</tr><tr><td>CIC_FECHA</td><td>SmallDateTime</td><td>Fecha en la que se registran cambios</tr><tr><td>CIC_FECHA_AUTOMATICA</td><td>Bit</td><td>Señala si la fecha límite de pago sumará un número de días determinados</tr><tr><td>CIC_FECHA_VALIDACION_PROM</td><td>SmallDateTime</td><td>Fecha en la que termina de realizar la validación 1 del ciclo</tr><tr><td>CIC_FECHA_VALIDACION_ESF</td><td>SmallDateTime</td><td>Fecha en la que termina de realizar la validación 2 del ciclo</tr><tr><td>CIC_FECHA_VALIDACION_NEG</td><td>SmallDateTime</td><td>Fecha en la que termina de realizar la validación 3 del ciclo</tr><tr><td>CIC_FECHA_VALIDACION_PUE</td><td>SmallDateTime</td><td>Fecha en la que termina de realizar la validación 4 del ciclo</tr><tr><td>CIC_SECTOR_TECNICO</td><td>Int</td><td>Corresponde a la red hidraúlica</tr></table><br /><strong><a name="dbo.TBL_CO_CICLO_HIS">
+        [dbo].[TBL_CO_CICLO_HIS]
+      </a> :
+    </strong>La misma estructura de TBL_CO_CICLO. Su objetivo es almacenar los datos históricos de cada ciclo según el mes y año de procesamiento<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CIH_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CIH_NOMBRE</td><td>VarChar (50)</td><td>Nombre del ciclo</tr><tr><td>CIH_NUM</td><td>VarChar (3)</td><td>Número del ciclo</tr><tr><td>CIH_URBANO</td><td>Bit</td><td>Indicador si el ciclo es urbano o rural</tr><tr><td>CIH_FECHA_FACTURA</td><td>SmallDateTime</td><td>Fecha máxima de pago</tr><tr><td>CIH_PROCESO_MES</td><td>Int</td><td>Mes de procesamiento</tr><tr><td>CIH_PROCESO_ANIO</td><td>Int</td><td>Año de procesamiento</tr><tr><td>CIH_PROCESO_FACTURADO</td><td>Bit</td><td>Estado si está facturado o no el ciclo</tr><tr><td>CIH_BATCH</td><td>Bit</td><td>Se factura o no el ciclo</tr><tr><td>CIH_PROCESO_ESTADO</td><td>Bit</td><td>Estado del ciclo.</tr><tr><td>CIH_FECHA_FACTURACION</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>CIH_FECHA_DIGITALIZACION</td><td>SmallDateTime</td><td>Fecha en la que se terminó la digitación</tr><tr><td>CIH_FECHA_VERIFICACION</td><td>SmallDateTime</td><td>Fecha en la que se terminó la verificación</tr><tr><td>CIH_FECHA_VALIDACION</td><td>SmallDateTime</td><td>Fecha en la que se terminó la validación</tr><tr><td>CIH_FECHA_CONTRATISTA</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>CIH_USUARIO</td><td>VarChar (20)</td><td>Responsable</tr><tr><td>CIH_FECHA</td><td>SmallDateTime</td><td>Fecha en la que se realizaron los últimos cambios</tr><tr><td>CIH_FECHA_ACTUALIZA</td><td>SmallDateTime</td><td>Fecha en la que se terminó la actualización</tr><tr><td>CIH_FECHA_FIN_PREFACTURACION</td><td>SmallDateTime</td><td>Fecha en la que se terminó todo el proceso de lecturas</tr></table><br /><strong><a name="dbo.TBL_CO_CIERRE_DIARIO_GENERAL">
+        [dbo].[TBL_CO_CIERRE_DIARIO_GENERAL]
+      </a> :
+    </strong>Tabla que almacena los rubros con sus respectivos valores al momento de realizar el cierre de diario<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CDG_ID</td><td>BigInt</td><td>Identificador Autonumérico</tr><tr><td>CDG_PRM</td><td>TinyInt</td><td>Identificador del rubro</tr><tr><td>CDG_DESCRIPCION</td><td>VarChar (100)</td><td>Nombre del rubro</tr><tr><td>CDG_MOVIMIENTO</td><td>Decimal (18,2)</td><td>Valores por rubro</tr><tr><td>CDG_FECHA</td><td>SmallDateTime</td><td>Fecha</tr><tr><td>CDG_TIPO</td><td>SmallInt</td><td>Positivo o negativo</tr><tr><td>CDG_PERIODO</td><td>SmallInt</td><td>Período al que corresponde el rubro calculado</tr></table><br /><strong><a name="dbo.TBL_CO_COACTIVAS_NOTIFICADAS">
+        [dbo].[TBL_CO_COACTIVAS_NOTIFICADAS]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_COMPONENTE">
+        [dbo].[TBL_CO_COMPONENTE]
+      </a> :
+    </strong>Contiene todos los rubros que podrá facturar la empresa<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CES_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>INS_ID</td><td>Int</td><td>No se utiliza</tr><tr><td>CES_NOMBRE</td><td>VarChar (80)</td><td>Nombre del rubro</tr><tr><td>CES_VALOR</td><td>Float</td><td>Valor del rubro (en caso de ser fijo)</tr><tr><td>CES_IVA</td><td>Float</td><td>Cero</tr><tr><td>CES_ESTATUS</td><td>Char (1)</td><td>Si se está empleando o no</tr><tr><td>CES_PLAN_CUENTA</td><td>VarChar (50)</td><td>Código del plan de cuestas al que corresponde este rubro</tr><tr><td>CES_UNIDAD</td><td>VarChar (5)</td><td>Nombre de la unidad en que se mide</tr><tr><td>CES_CLAVE</td><td>VarChar (10)</td><td>Nombre de agrupamiento del rurbo</tr><tr><td>CES_ID_GRUPO</td><td>Int</td><td>Identificador del grupo</tr><tr><td>CES_PLC_ANTERIOR</td><td>VarChar (50)</td><td>Código de cuenta contable para cuentas por cobrar de años anteriores</tr><tr><td>CES_PLC_CXC</td><td>VarChar (50)</td><td>Código de cuenta contable para cuentas por cobrar del año vigente</tr></table><br /><strong><a name="dbo.TBL_CO_CONSUMOS_ALTOS">
+        [dbo].[TBL_CO_CONSUMOS_ALTOS]
+      </a> :
+    </strong>No se utiliza desde los cambios en Atención al cliente<br /><br /><strong><a name="dbo.TBL_CO_CORTE">
+        [dbo].[TBL_CO_CORTE]
+      </a> :
+    </strong>Almacena los datos de cortes y reconexiones del servicio<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>COR_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del usuario</tr><tr><td>MED_ID</td><td>Int</td><td>Identificador del medidor</tr><tr><td>SOL_ID</td><td>Int</td><td>No se utiliza</tr><tr><td>COR_LEC_INIC</td><td>Float</td><td>No se utiliza</tr><tr><td>COR_USER_CORTE</td><td>Char (50)</td><td>No se utiliza</tr><tr><td>COR_USER_RECONEX</td><td>Char (50)</td><td>No se utiliza</tr><tr><td>COR_LEC_CIERRE</td><td>Float</td><td>No se utiliza</tr><tr><td>COR_FECHA_CORTE</td><td>SmallDateTime</td><td>Fecha en la que realiza el corte de luz</tr><tr><td>COR_FECHA_PAGO</td><td>SmallDateTime</td><td>Fecha en la que se realizó el pago para reconexión</tr><tr><td>COR_DEBIDO_AN</td><td>VarChar (240)</td><td>No se utiliza</tr><tr><td>COR_DEBIDO_A</td><td>VarChar (240)</td><td>No se utiliza</tr><tr><td>COR_DEBIDO_ANR</td><td>VarChar (200)</td><td>No se utiliza</tr><tr><td>COR_DEBIDO_AR</td><td>VarChar (200)</td><td>No se utiliza</tr><tr><td>COR_FECHA_RECONEX</td><td>SmallDateTime</td><td>Fecha en la que se reconecta el servicio</tr><tr><td>COR_ESTADO</td><td>Int</td><td>Estado que señala si está en corte o en reconexión</tr><tr><td>COR_ACTIVO</td><td>Int</td><td>Estado que indica si está activo o no el corte</tr><tr><td>COR_ESTADO2</td><td>Int</td><td>AUXILIAR PARA PAGO SIN REGISTRAR CORTE</tr><tr><td>COR_CARTAS</td><td>TinyInt</td><td>Número de cartas por las que se le corta el servicio</tr><tr><td>COR_DEUDA</td><td>Float</td><td>Valor de la deuda</tr><tr><td>COR_MES</td><td>TinyInt</td><td>Mes de procesamiento</tr><tr><td>COR_ANIO</td><td>Int</td><td>Año de procesamiento</tr><tr><td>COR_PAGO</td><td>Float</td><td>Valor cancelado. Puede ser que se haga convenio y no se pague el total de la deuda pero igual se reconecte</tr><tr><td>COR_OBSERVACION</td><td>VarChar (100)</td><td>Observación importante al realizar el corte o reconexión</tr><tr><td>COR_FECHA</td><td>SmallDateTime</td><td>Fecha de registro</tr></table><br /><strong><a name="dbo.TBL_CO_CROQUIS">
+        [dbo].[TBL_CO_CROQUIS]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_CUENTA">
+        [dbo].[TBL_CO_CUENTA]
+      </a> :
+    </strong>Datos de las cuentas de los abonados<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del usuario de AP</tr><tr><td>TPT_ID</td><td>VarChar (50)</td><td>Categoría o tarifa de la cuenta</tr><tr><td>RUT_ID</td><td>Int</td><td>Identificador de la ruta donde está ubicada la cuenta</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del abonado</tr><tr><td>CUE_TIPO_CUENTA</td><td>VarChar (50)</td><td>Lectura,Inactivo,Dañado</tr><tr><td>CUE_BANCO_CUENTA</td><td>VarChar (30)</td><td>Número de cuenta del banco desde la cual se hará el débito</tr><tr><td>CUE_BANCO_T_CUENTA</td><td>Int</td><td>Cuenta de ahorros,corriente o rol de Emapa</tr><tr><td>CUE_BANCO</td><td>VarChar (50)</td><td>Nombre del banco</tr><tr><td>CUE_FORMA_PAGO</td><td>VarChar (50)</td><td>Forma de pago: por ventanilla o por débito bancario</tr><tr><td>CUE_CALLEP</td><td>VarChar (50)</td><td>Dirección: Calle principal</tr><tr><td>CUE_CALLES</td><td>VarChar (50)</td><td>Dirección: Calle secundaria</tr><tr><td>CUE_NUMEROC</td><td>VarChar (30)</td><td>Dirección: Número del inmueble</tr><tr><td>CUE_PISO</td><td>VarChar (2)</td><td>Dirección: Piso en caso de ser edificio</tr><tr><td>CUE_DEP_NUM</td><td>VarChar (5)</td><td>Dirección: Número de departamento</tr><tr><td>CUE_BARRIO</td><td>VarChar (50)</td><td>Dirección: Nombre del barrio</tr><tr><td>CUE_MANZANA</td><td>VarChar (20)</td><td>Dirección: Nombre de la manzana</tr><tr><td>CUE_LEC_ANT</td><td>Float</td><td>Lectura del mes anterior</tr><tr><td>CUE_LEC_ACT</td><td>Float</td><td>Lectura del mes vigente</tr><tr><td>CUE_CONSUMO</td><td>Float</td><td>Metros cúbicos consumidos que resulta de la resta de la lectura nueva menos la anterior</tr><tr><td>CUE_PROMEDIO</td><td>Float</td><td>Metros cúbicos promedio que consume el abonado. Considera los últimos 6 meses</tr><tr><td>CUE_NUM_USUARIOS</td><td>Int</td><td>Número de miembros que viven en la dirección dada</tr><tr><td>CUE_F_ALTA</td><td>SmallDateTime</td><td>Fecha en que inicia registros la cuenta</tr><tr><td>CUE_FOTO</td><td>VarChar (100)</td><td>Imagen del inmueble</tr><tr><td>CUE_CROQUIS</td><td>VarChar (100)</td><td>Imagen del croquis</tr><tr><td>CUE_SECUENCIA</td><td>BigInt</td><td>Catastro: número de secuencia que permite una mejor ubicación</tr><tr><td>CUE_RED</td><td>VarChar (10)</td><td>Código de la red asignada</tr><tr><td>CUE_DIAMETRO_CONEXION</td><td>VarChar (10)</td><td>Diámetro de la conexión, se especifica en milímetros</tr><tr><td>CUE_ALCANTARILLADO</td><td>Bit</td><td>Señala si tiene o no servicio de alcantarillado</tr><tr><td>CUE_TIPO_ALCANTARILLADO</td><td>VarChar (30)</td><td>EMAPA,POZO SEPTICO,DESAGUE,DERIVACION</tr><tr><td>CUE_CLIE_ALCANTARILLADO</td><td>VarChar (30)</td><td>REAL,FACTIBLE,POTENCIAL,CLANDESTINO</tr><tr><td>CUE_R_PREDIO</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>CUE_ESTADO</td><td>SmallInt</td><td>Si está habilitada o registrada</tr><tr><td>CUE_DEMANDA</td><td>Float</td><td>No se utiliza</tr><tr><td>CUE_RUC_REPORTES</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>CUE_RESPALDO</td><td>BigInt</td><td>No se utiliza</tr><tr><td>CUE_LEC_ANT_RES</td><td>Float</td><td>RESPALDO DE LA LECTURA ANTERIOR</tr><tr><td>CUE_ABASTECIMIENTO</td><td>VarChar (40)</td><td>RED_PUBLICA,TANQUERO,POZO_AUTOABATECIDO</tr><tr><td>CUE_CONEXION_AP</td><td>VarChar (30)</td><td>Señala si tiene o no conexión de AP o si se trata de una derivación</tr><tr><td>CUE_ESTADO_CONEXION</td><td>VarChar (20)</td><td>Estado de la conexión: con servicio, sin servicio</tr><tr><td>CUE_USER_ALTA</td><td>VarChar (20)</td><td>Usuario que creó la cuenta</tr><tr><td>CUE_USER_MOVIMIENTO</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>CUE_CATASTRO</td><td>VarChar (20)</td><td>Código catastral</tr><tr><td>CUE_FAMILIA_NUM</td><td>TinyInt</td><td>Número de familias que viven</tr><tr><td>CUE_CLIE_AP</td><td>VarChar (30)</td><td>REAL,FACTIBLE,POTENCIAL,CLANDESTINO</tr><tr><td>CUE_ID_GRAFICO</td><td>VarChar (8)</td><td>Código de gráfico</tr><tr><td>CUE_REFERENCIA</td><td>VarChar (255)</td><td>Datos de referencia de la cuenta</tr><tr><td>CUE_MENSAJE_FACTURA</td><td>VarChar (255)</td><td>No se utiliza. Se almacena en la factura</tr><tr><td>CUE_MENSAJE_FACTURA_USUARIO</td><td>VarChar (255)</td><td>Guarda el mensaje personalizado por cuenta. Luego se copiará al campo FSR_MENSAJE_CUENTA de FACTURA_SRI</tr><tr><td>CUE_NO_IMPRIME</td><td>Bit</td><td>Señala si la factura de esta cuenta se imprime o no para ser entregado a domicilio</tr></table><br /><strong><a name="dbo.TBL_CO_EJECUCION_RUTEO_LOGISTICO">
+        [dbo].[TBL_CO_EJECUCION_RUTEO_LOGISTICO]
+      </a> :
+    </strong>No se utiliza<br />TBL_CO_EJECUCION_RUTEO_LOGISTICO <br /><strong><a name="dbo.TBL_CO_FACTURA">
+        [dbo].[TBL_CO_FACTURA]
+      </a> :
+    </strong>Emisiones que contienen datos y valores de rubros de todo lo que se factura en la empresa<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FAC_NUM</td><td>BigInt</td><td>Identificador autonumérico</tr><tr><td>FAC_NUM_SRI</td><td>VarChar (10)</td><td>No se utiliza</tr><tr><td>PRM_ID</td><td>Numeric</td><td>Identificador del proceso: consumo, refacturación, convenios, facturación en lote, pago anticipado</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de la cuenta</tr><tr><td>FAC_LECT_ANT</td><td>Float</td><td>Dato de la lectura del mes anterior</tr><tr><td>FAC_LECT_ACT</td><td>Float</td><td>Dato de la lectura del mes vigente</tr><tr><td>FAC_TARIFA</td><td>VarChar (50)</td><td>Categoría o tarifa asignada a la cuenta</tr><tr><td>FAC_PROCESO_MES</td><td>VarChar (10)</td><td>Mes de procesamiento</tr><tr><td>FAC_FECHA_FACTURA</td><td>SmallDateTime</td><td>Fecha en la que se creó la emisión</tr><tr><td>FAC_PROCESO_ANIO</td><td>VarChar (10)</td><td>Año de procesamiento</tr><tr><td>FAC_FECHA_L</td><td>SmallDateTime</td><td>No se utiliza con la nueva estructura</tr><tr><td>FAC_FECHA_P</td><td>SmallDateTime</td><td>Fecha de pago</tr><tr><td>FAC_RECAUDADOR</td><td>VarChar (50)</td><td>Cajero que recaudó el valor de la emisión</tr><tr><td>FAC_FECHA_REF</td><td>SmallDateTime</td><td>No se utiliza con la nueva estructura</tr><tr><td>FAC_FECHA_CIERRE</td><td>SmallDateTime</td><td>Fecha en la que realizó el cierre de la emisión</tr><tr><td>FAC_FECHA_REACT</td><td>SmallDateTime</td><td>No se utiliza con la nueva estructura</tr><tr><td>FAC_FECHA_BAJA</td><td>SmallDateTime</td><td>No se utiliza con la nueva estructura</tr><tr><td>FAC_FECHA_CONV</td><td>SmallDateTime</td><td>Fecha en la que se realiza el convenio</tr><tr><td>FAC_FACTU_CONV</td><td>BigInt</td><td>Hace referencia al número de emisión de la cual se está haciendo convenio</tr><tr><td>FAC_RESP_REF</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>FAC_RESP_REACT</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>FAC_ESTADO</td><td>VarChar (2)</td><td>Estado: sin pagar, pagado sin cerrar, pagado y cerrado (contabilizado)</tr><tr><td>FAC_NUM_MEDIDOR</td><td>VarChar (50)</td><td>Número de medidor de la cuenta</tr><tr><td>FAC_PAGADA</td><td>Bit</td><td>1 o 0. Indica si la emisión está pagada</tr><tr><td>FAC_FORMA_PAGO</td><td>VarChar (50)</td><td>Forma de pago</tr><tr><td>FAC_CHEQUE</td><td>VarChar (50)</td><td>No se utiliza con la nueva estructura</tr><tr><td>FAC_CONTABILIZADA</td><td>Bit</td><td>1o0.Indica si está contabilizada o no</tr><tr><td>NIN_ID</td><td>Numeric</td><td>Si la emisión proviene de un trámite aquí se registra el respectivo identificador</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del Abonado</tr><tr><td>FAC_CONSUMO</td><td>Float</td><td>Metros cúbicos de consumo</tr><tr><td>FAC_TOTAL</td><td>Float</td><td>Valor a pagar</tr><tr><td>FAC_ST_COACT</td><td>Int</td><td>Cero</tr><tr><td>FAC_USER</td><td>VarChar (20)</td><td>Usuario que registra la emisión</tr><tr><td>FAC_OBSERVACION</td><td>VarChar (128)</td><td>Observación </tr><tr><td>FAC_FECHA_RECAUDACION</td><td>SmallDateTime</td><td>Fecha en la que se recaudó el valor de esta emisión</tr><tr><td>FAC_FVI_ID</td><td>Numeric</td><td>Identificador del financiamiento si es que se lo realizó</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_DET">
+        [dbo].[TBL_CO_FACTURA_DET]
+      </a> :
+    </strong>Tabla en que la se detallan los datos correspondientes a los rubros emitidos<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FAD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FAC_NUM</td><td>BigInt</td><td>Número de factura. Dato de cabecera</tr><tr><td>FAD_VALOR</td><td>Float</td><td>Valor de cada rubro (valor unitario x cantidad)</tr><tr><td>FAD_CANTIDAD</td><td>Float</td><td>Cantidad de cada rubro</tr><tr><td>FAD_DESCRIPCION</td><td>VarChar (50)</td><td>Nombre de cada rubro</tr><tr><td>FAD_ID_DESCRIPCION</td><td>Int</td><td>Identificador del rubro (tabla componente)</tr><tr><td>PLC_CODIGO</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>FAD_VALOR_UNITARIO</td><td>Float</td><td>Valor unitario de cada rubro</tr><tr><td>CES_ID</td><td>Int</td><td>No se utiliza</tr><tr><td>FAD_IVA</td><td>Float</td><td>Cero</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SERVICIO">
+        [dbo].[TBL_CO_FACTURA_SERVICIO]
+      </a> :
+    </strong>Tabla auxiliar que permite almacenar las emisiones en lote<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FVI_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FVI_CICLO</td><td>Int</td><td>Identificador del ciclo o red</tr><tr><td>FVI_SECTOR</td><td>Int</td><td>Identificador del sector</tr><tr><td>FVI_RUTA</td><td>Int</td><td>Identificador de la ruta</tr><tr><td>FVI_CUENTA</td><td>Bit</td><td>Número de cuenta del abonado</tr><tr><td>FVI_USUARIO</td><td>VarChar (20)</td><td>Responsable</tr><tr><td>FVI_FECHA</td><td>SmallDateTime</td><td>Fecha de registro de creación o modificación</tr><tr><td>FVI_ESTADO</td><td>Int</td><td>Estado: pendiente, registrado, anulado</tr><tr><td>FVI_GENERADO</td><td>Bit</td><td>Bandera 1 o 0, si ya se ha generado la factura SRI</tr><tr><td>FVI_ANULADO</td><td>Bit</td><td>Bandera 1 o 0, si el proceso se anuló antes de registrar</tr><tr><td>FVI_SECTORES</td><td>Bit</td><td>Bandera 1 o 0, indica si la generación de facturas en lote incluye todos los sectores de un ciclo o uno determinado</tr><tr><td>FVI_RUTAS</td><td>Bit</td><td>Bandera 1 o 0, indica si la generación de facturas en lote incluye todos las rutas  de un sector o una determinada</tr><tr><td>FVI_NUM_CUOTAS</td><td>Int</td><td>Número de emisiones que se crearán (se relaciona al número de cuotas que se crearán)</tr><tr><td>FVI_INICIO_MES</td><td>Int</td><td>Número de mes desde el que se empieza a facturar</tr><tr><td>FVI_INICIO_ANIO</td><td>Int</td><td>Año</tr><tr><td>FVI_CICLOS</td><td>Bit</td><td>Bandera 1 o 0, indica si la generación de facturas en lote incluye todos los ciclos de la empresa o uno determinado</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta, si es para un abonado en particular</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del abonado</tr><tr><td>FSR_ID</td><td>BigInt</td><td>Identificador de la factura SRI que se crea al registrar este procedimiento</tr><tr><td>FVI_CLE_NOMBRE_EMPRESA</td><td>VarChar (255)</td><td>Nombres del abonado</tr><tr><td>FVI_OBSERVACION</td><td>VarChar (255)</td><td>Explicación del porqué se crea esta emisión en lotes</tr><tr><td>FVI_TIPO</td><td>TinyInt</td><td>No se utiliza</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SERVICIO_CUENTA">
+        [dbo].[TBL_CO_FACTURA_SERVICIO_CUENTA]
+      </a> :
+    </strong>Tabla auxiliar de TBL_CO_FACTURA_SERVICIO donde se almacenan las cuentas para las que se va a crear las emisiones en lote. Relación uno a varios.<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FSC_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FVI_ID</td><td>Numeric</td><td>Llave primaria de la cabecera de la tabla TBL_CO_FACTURA_SERVICIO</tr><tr><td>CUE_ID</td><td>BigInt</td><td>Número de cuenta seleccionada</tr><tr><td>FSC_USUARIO</td><td>VarChar (20)</td><td>Responsable</tr><tr><td>FSC_FECHA</td><td>SmallDateTime</td><td>Fecha en la que se selecciona</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SERVICIO_DET">
+        [dbo].[TBL_CO_FACTURA_SERVICIO_DET]
+      </a> :
+    </strong>Tabla auxiliar que almacena los rubros que se van crear en la emisión por lote<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FSV_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FVI_ID</td><td>Numeric</td><td>Llave primaria que viene de la cabecera TBL_CO_FACTURA_SERVICIO</tr><tr><td>FSV_VALOR_UNITARIO</td><td>Float</td><td>Valor unitario del rubro</tr><tr><td>FSV_CANTIDAD</td><td>Float</td><td>Cantidad del rubro que se va a emitir</tr><tr><td>FSV_VALOR</td><td>Float</td><td>Valor del rubro (valor unitario por cantidad)</tr><tr><td>FSV_DESCRIPCION</td><td>VarChar (50)</td><td>Nombre del rubro</tr><tr><td>FSV_ID_DESCRIPCION</td><td>Int</td><td>Identificador del rubro (tabla componente)</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SERVICIO_FACTURA">
+        [dbo].[TBL_CO_FACTURA_SERVICIO_FACTURA]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI">
+        [dbo].[TBL_CO_FACTURA_SRI]
+      </a> :
+    </strong>Consolida todas las emisiones emitidas hasta la fecha vigente. Toma los datos emitidos por el SRI para ser autoimpresores<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FSR_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FSR_EMP</td><td>Char (3)</td><td>Número del punto de emisión</tr><tr><td>FSR_SUC</td><td>Char (3)</td><td>Número de la caja</tr><tr><td>FSR_NUMERO</td><td>Int</td><td>Número ordinal que le corresponde a la factura</tr><tr><td>FSR_NUMERO_COMPLETO</td><td>VarChar (20)</td><td>Número completo que une el punto de emisión, de la caja y el número final</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta</tr><tr><td>CIC_ID</td><td>Numeric</td><td>Identificador del ciclo al que pertenece la cuenta</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del abonado</tr><tr><td>FSR_NUM_MEDIDOR</td><td>VarChar (50)</td><td>Número del medido</tr><tr><td>FSR_CONSUMO</td><td>Float</td><td>Metros cúbicos de consumo</tr><tr><td>FSR_TARIFA</td><td>VarChar (50)</td><td>Categoría o tarifa de la cuenta</tr><tr><td>FSR_MES</td><td>Int</td><td>Mes de procesamiento</tr><tr><td>FSR_ANIO</td><td>Int</td><td>Año de procesamiento</tr><tr><td>FSR_LECTURA_ANT</td><td>Float</td><td>Valor de la lectura del mes anterior </tr><tr><td>FSR_LECTURA_ACT</td><td>Float</td><td>Valor de la lectura del mes vigente</tr><tr><td>FSR_FECHA_ANT</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>FSR_FECHA_ACT</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>FSR_FECHA_EMISION</td><td>SmallDateTime</td><td>Fecha en la que emite la factura</tr><tr><td>FSR_FECHA_PAGO_LIMITE</td><td>SmallDateTime</td><td>Fecha máxima de pago</tr><tr><td>FSR_FECHA_PAGO</td><td>SmallDateTime</td><td>Fecha en la que se cancela la factura</tr><tr><td>FSR_MESES_DEUDA</td><td>Int</td><td>Número de meses de deuda</tr><tr><td>FSR_ESTADO</td><td>VarChar (2)</td><td>Estado de la factura: pendiente, registrado, contabilizado</tr><tr><td>FSR_PAGADA</td><td>Bit</td><td>Bandera 1 o 0, pagada o pendiente de pago</tr><tr><td>FSR_CONTABILIZADA</td><td>Bit</td><td>Bandera 1 o 0, contabilizada o no</tr><tr><td>FSR_RECAUDADOR</td><td>VarChar (50)</td><td>Nombre del recaudador</tr><tr><td>FSR_FECHA_CIERRE</td><td>SmallDateTime</td><td>Fecha en la que se hace el cierre (contabilización)</tr><tr><td>FSR_TOTAL</td><td>Float</td><td>Valor total de la factura</tr><tr><td>FSR_OBSERVACION</td><td>VarChar (255)</td><td>Observación </tr><tr><td>FSR_FECHA</td><td>SmallDateTime</td><td>Fecha en la que se creó</tr><tr><td>FSR_USER</td><td>VarChar (20)</td><td>Responsable de crearla</tr><tr><td>FSR_IMPRESO</td><td>Bit</td><td>Bandera 1 o 0. Indica si ésta ya fue impresa anteriormente. De esto dependerá si se imprime toda la factura o solo el registro de pago(entrega a domicilio)</tr><tr><td>FSR_IMPRESO_FECHA</td><td>SmallDateTime</td><td>Fecha en que se imprimió la factura</tr><tr><td>FSR_MENSAJE_CUENTA</td><td>VarChar (255)</td><td>Mensaje personalizado por cuenta</tr><tr><td>FSR_PSR_NUM_AUTORIZA</td><td>VarChar (50)</td><td>Número de autorización entregada por el SRI</tr><tr><td>FSR_PSR_FECHA_AUTORIZA</td><td>SmallDateTime</td><td>Fecha de validez entregada por el SRI</tr><tr><td>FSR_PSR_MENSAJE</td><td>VarChar (2048)</td><td>Mensaje general que aparecen en todas las cuentas</tr><tr><td>FSR_PSR_MENSAJE_MOROSO</td><td>VarChar (1024)</td><td>Mensaje general que aparecen en todas las cuentas morosas</tr><tr><td>FSR_ATENCION</td><td>Bit</td><td>Bandera que indica si la factura proviene de atención al cliente o no</tr><tr><td>FSR_NUM_FACTURAS</td><td>Int</td><td>Número de emisiones que está adeudando</tr><tr><td>FSR_CLE_NOMBRE</td><td>VarChar (255)</td><td>Nombre del abonado o cliente</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI_ABONO_MANUAL">
+        [dbo].[TBL_CO_FACTURA_SRI_ABONO_MANUAL]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI_DET">
+        [dbo].[TBL_CO_FACTURA_SRI_DET]
+      </a> :
+    </strong>Tabla que recopila los rubros de las emisiones que se incluye en la factura SRI<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FSD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FSR_ID</td><td>Numeric</td><td>Llave primara de la cabecera TBL_CO_FACTURA_SRI_DET</tr><tr><td>FSD_FAC_NUM</td><td>BigInt</td><td>Número de emisión recopilada</tr><tr><td>FSD_PRM_ID</td><td>Numeric</td><td>Tipo de emisión que viene de TBL_CO_FACTURA</tr><tr><td>FSD_FAC_MES</td><td>VarChar (50)</td><td>Mes de procesamiento de la emisión</tr><tr><td>FSD_FAC_ANIO</td><td>VarChar (50)</td><td>Año de procesamiento de la emisión</tr><tr><td>FSD_FAC_FECHA</td><td>SmallDateTime</td><td>Fecha de procesamiento de la emisión</tr><tr><td>FSD_FAC_NUM_MEDIDOR</td><td>VarChar (50)</td><td>Número de medidor</tr><tr><td>FSD_DESCRIPCION</td><td>VarChar (255)</td><td>Nombre del rubro</tr><tr><td>FSD_FAC_VALOR</td><td>Float</td><td>Valor del rubro</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI_PARAMETRO">
+        [dbo].[TBL_CO_FACTURA_SRI_PARAMETRO]
+      </a> :
+    </strong>Tabla de parámetros de los datos de autorización del SRI para ser autoimpresor<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PSR_ID</td><td>Numeric</td><td>Identificador. Corresponde a la única autorización otorgada por el SRI</tr><tr><td>PSR_EMPRESA</td><td>VarChar (3)</td><td>Código de tres caracteres que representa el punto de emisión</tr><tr><td>PSR_ESTABLECIMIENTO</td><td>VarChar (3)</td><td>Código de tres caracteres que representa la caja</tr><tr><td>PSR_NUM_FACTURA</td><td>Int</td><td>El numero que corresponde al próximo en utilizar en la siguiente factura. En caso de que se termina la validez de la autorización, este número será el número de secuencia final.</tr><tr><td>PSR_NUM_AUTORIZA</td><td>VarChar (50)</td><td>Número de autorización</tr><tr><td>PSR_FECHA_AUTORIZA</td><td>SmallDateTime</td><td>Fecha de validez</tr><tr><td>PSR_MENSAJE</td><td>VarChar (1024)</td><td>Mensaje general que aparecerá en todas las facturas</tr><tr><td>PSR_UTILIZADO</td><td>Bit</td><td>Bandera que señala que ya está siendo utilizada esa serie</tr><tr><td>PSR_MENSAJE_MOROSO</td><td>VarChar (255)</td><td>Mensaje para morosos (los que excedan cierto número de meses de deuda)</tr><tr><td>PSR_NUM_FACTURAS</td><td>Int</td><td>No se utiliza</tr><tr><td>PSR_NUM_AUTORIZA_ANT</td><td>VarChar (50)</td><td>Número de autorización del año anterior</tr><tr><td>PSR_NUM_FACTURA_INI</td><td>Int</td><td>Factura con la que se inicia la nueva autorización</tr><tr><td>PSR_FECHA_AUTORIZA_ANT</td><td>SmallDateTime</td><td>Fecha de validez del año anterior</tr><tr><td>PSR_NUM_FACTURA_INI_ANT</td><td>Int</td><td>Factura con la que se inició la anterior autorización</tr><tr><td>PSR_NUM_FACTURA_ANT</td><td>Int</td><td>Número en el que terminó la serie del año pasado</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI_RECAUDACION">
+        [dbo].[TBL_CO_FACTURA_SRI_RECAUDACION]
+      </a> :
+    </strong>Registra todos los pagos receptados por los cajeros.<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FRE_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FRE_FECHA</td><td>SmallDateTime</td><td>Fecha de la transacción</tr><tr><td>FRE_USER</td><td>VarChar (20)</td><td>Cajero</tr><tr><td>FRE_ESTADO</td><td>Int</td><td>Estado: pendiente, registrado, anulado, contabilizado</tr><tr><td>FRE_VALOR_TOTAL</td><td>Float</td><td>Valor total de lo recaudado</tr><tr><td>FRE_PAGADO</td><td>Bit</td><td>Bandera que señala si está cancelado o no</tr><tr><td>FRE_ANULADO</td><td>Bit</td><td>Bandera que señala que está anulada una transacción</tr><tr><td>FRE_NUM_FACTURAS</td><td>Int</td><td>Número de facturas que va a recaudar</tr><tr><td>FRE_USER_ANULA</td><td>VarChar (50)</td><td>Nombre del supervisor que anula la transacción.</tr><tr><td>FRE_FECHA_ANULA</td><td>SmallDateTime</td><td>Fecha en la que se anula la transacción</tr><tr><td>FRE_CONTABILIZADO</td><td>Bit</td><td>Bandera que señala si  ya fue realizado el cierre de caja diario</tr><tr><td>FRE_TERCEROS</td><td>Bit</td><td>Bandera que señala si la recaudación fue interna o realizada por agentes externos como bancos</tr><tr><td>FRE_USER_SUPERVISOR</td><td>VarChar (20)</td><td>Nombre del supervisor que hace alguna alteración en la transacción</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI_RECAUDACION_DET">
+        [dbo].[TBL_CO_FACTURA_SRI_RECAUDACION_DET]
+      </a> :
+    </strong>Tabla en la que se registra los datos de las facturas que se están recaudando en una transacción<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FRD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FRE_ID</td><td>Numeric</td><td>Llave primaria que viene de la tabla TBL_CO_FACTURA_SRI_RECAUDACION</tr><tr><td>FSR_ID</td><td>Numeric</td><td>Identificador de la factura a recaudar</tr><tr><td>FRD_VALOR</td><td>Float</td><td>Valor de la factura a recaudar</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del abonado</tr><tr><td>FRD_REGISTRO_PAGO</td><td>VarChar (1024)</td><td>Clave de registro de pago por factura</tr><tr><td>FRD_USUARIO_PAGO</td><td>VarChar (20)</td><td>Cajero.Se guarda aquí para que este dato se actualice en la factura SRI, en emisión.</tr><tr><td>FRD_FSR_ATENCION</td><td>Bit</td><td>Bandera de la factura que indica si es una factura de servicios o no. Esto se utiliza al momento de imprimir la factura</tr><tr><td>FRD_IMPRIME_TODO</td><td>Bit</td><td>Bandera que indica si se debe imprimir la factura completa o solo el registro de pago</tr></table><br /><strong><a name="dbo.TBL_CO_FACTURA_SRI_RECAUDACION_FPAGO">
+        [dbo].[TBL_CO_FACTURA_SRI_RECAUDACION_FPAGO]
+      </a> :
+    </strong>Tabla en la que se registra la forma de pago de la transacción de recaudación.Nota:los campos de cheques protestados no se utilizan pues solo se reciben cheques certificados<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FRP_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FRE_ID</td><td>Numeric</td><td>Llave primaria de la cabecera TBL_CO_FACTURA_SRI_RECAUDACION</tr><tr><td>FRP_FORMA_PAGO</td><td>Int</td><td>Identificador de la forma de pago: cheque, efectivo, tarjeta de crédito, ministerio de finanzas</tr><tr><td>FRP_CH_BANCO</td><td>Int</td><td>Identificador del banco o entidad </tr><tr><td>FRP_CH_CUENTA</td><td>VarChar (50)</td><td>Número de cuenta bancaria</tr><tr><td>FRP_CH_NUMERO</td><td>VarChar (50)</td><td>Número de cheque o tarjeta de crédito</tr><tr><td>FRP_CH_BENEFICIARIO</td><td>VarChar (255)</td><td>Nombre del beneficiario</tr><tr><td>FRP_VALOR</td><td>Float</td><td>Valor que se cancelará con esa forma de pago</tr><tr><td>FRP_OBSERVACION</td><td>VarChar (255)</td><td>Observación general</tr><tr><td>FRP_USER</td><td>VarChar (20)</td><td>Responsable de la transacción</tr><tr><td>FRP_FECHA</td><td>SmallDateTime</td><td>Fecha en que se realiza la transacción</tr><tr><td>FRP_PROTESTADO</td><td>Bit</td><td>Bandera que indica si el cheque fue protestado o no. No se utiliza</tr><tr><td>FRP_MULTA</td><td>Float</td><td>Valor por multa si fue protestado. No se utiliza</tr><tr><td>FRP_PROTESTADO_FECHA</td><td>SmallDateTime</td><td>Fecha en que se protestó el cheque. No se utiliza</tr><tr><td>FRP_PROTESTADO_USUARIO</td><td>VarChar (20)</td><td>Responsable de registrar el protesto. No se utiliza</tr><tr><td>FRP_REFERENCIA</td><td>VarChar (255)</td><td>Datos de referencia. No se utiliza</tr></table><br /><strong><a name="dbo.TBL_CO_FINANCIAMIENTO">
+        [dbo].[TBL_CO_FINANCIAMIENTO]
+      </a> :
+    </strong>Registra los convenios cuando el abonado no puede cancelar su deuda total. Comprende abonos y financiamientos<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FFI_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta</tr><tr><td>CIC_ID</td><td>Int</td><td>Identificador del ciclo</tr><tr><td>FSR_ID</td><td>Numeric</td><td>Identificador de la factura SRI sobre la que se va a aplicar el convenio</tr><tr><td>FFI_FAC_NUMERO</td><td>VarChar (15)</td><td>No se utiliza</tr><tr><td>FFI_TIPO</td><td>TinyInt</td><td>Bandera que señala si es financiamiento(a varios meses) o abonos(varias cuotas el mismo mes)</tr><tr><td>FFI_PROCESO_MES</td><td>Int</td><td>Mes de procesamiento</tr><tr><td>FFI_PROCESO_ANIO</td><td>Int</td><td>Año de procesamiento</tr><tr><td>FFI_ANTICIPO</td><td>Float</td><td>Valor que se va a pagar en ese momento</tr><tr><td>FFI_NUM_CUOTAS</td><td>Int</td><td>En caso de financimiento, el número de cuotas en las que se ha dividido la deuda total</tr><tr><td>FFI_REGISTRADO</td><td>Bit</td><td>Bandera 1 o 0, si está registrado o no</tr><tr><td>FFI_ANULADO</td><td>Bit</td><td>Bandera 1 o 0, si está anulado o no</tr><tr><td>FFI_ESTADO</td><td>Int</td><td>Estado que señala si la transacción de financimiento está en pendiente, registrado o anulado</tr><tr><td>FFI_FAC_VALOR</td><td>Float</td><td>El valor total de la deuda</tr><tr><td>FFI_FAC_MESES</td><td>Int</td><td>Número de meses adeudados</tr><tr><td>FFI_USUARIO</td><td>VarChar (20)</td><td>Responsable de ejecutar el financiamiento</tr><tr><td>FFI_FECHA</td><td>SmallDateTime</td><td>Fecha en la que se ejecuta el financiamiento</tr><tr><td>FFI_FSRI_ID_NUEVO</td><td>Int</td><td>Número de nueva factura SRI que se crea por el valor que se va a cancelar en ese momento</tr><tr><td>FFI_ANTICIPO_TIPO</td><td>TinyInt</td><td>En caso de ser abono se puede seleccionar en calcular el valor por porcentaje o por monto</tr><tr><td>FFI_OBSERVACION</td><td>VarChar (1024)</td><td>Observación sobre el financiamiento</tr><tr><td>FFI_FACTURA</td><td>VarChar (50)</td><td>En caso de ser abono, contiene el número de las 2 facturas que se crean</tr></table><br /><strong><a name="dbo.TBL_CO_FINANCIAMIENTO_AUX_CUOTA">
+        [dbo].[TBL_CO_FINANCIAMIENTO_AUX_CUOTA]
+      </a> :
+    </strong>Tabla auxiliar-temporal<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FCU_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FFI_ID</td><td>Numeric</td><td>Llave primaria cabecera TBL_CO_FINANCIAMIENTO</tr><tr><td>FCU_VALOR</td><td>Float</td><td>Valor de la cuota</tr><tr><td>FCU_SALDO</td><td>Float</td><td>Valor del saldo</tr><tr><td>FCU_PROCESO_MES</td><td>Int</td><td>Mes de procesamiento</tr><tr><td>FCU_PROCESO_ANIO</td><td>Int</td><td>Año de procesamiento</tr><tr><td>FCU_OBSERVACION</td><td>VarChar (255)</td><td>Referencia del financiamiento</tr></table><br /><strong><a name="dbo.TBL_CO_FINANCIAMIENTO_AUX_CUOTA_EMISION">
+        [dbo].[TBL_CO_FINANCIAMIENTO_AUX_CUOTA_EMISION]
+      </a> :
+    </strong>Tabla auxiliar-temporal que almacena la redistribución de rubros  (combinando emisiones y cuotas)<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FCE_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FFI_ID</td><td>Numeric</td><td>Llave primaria de la cabecera TBL_CO_FINANCIAMIENTO</tr><tr><td>FEM_ID</td><td>Numeric</td><td>Identificador de emisión de la tabla TBL_CO_FINANCIAMIENTO_AUX_EMISION</tr><tr><td>FCU_ID</td><td>Numeric</td><td>Identificador de la cuota de la tabla TBL_CO_FINANCIAMIENTO_AUX_CUOTA</tr><tr><td>FCE_VALOR</td><td>Float</td><td>Valor correspondiente al rubro</tr><tr><td>FCE_GRUPO</td><td>Int</td><td>Número de cuota</tr><tr><td>FCE_FAC_NUM</td><td>Numeric</td><td>Número de emisión</tr><tr><td>FCE_FAD_ID</td><td>Numeric</td><td>Identificador de la factura_detalle</tr><tr><td>FCE_FAD_DESCRIPCION</td><td>VarChar (50)</td><td>Nombre del rubro</tr><tr><td>FCE_FAD_ID_DESCRIPCION</td><td>Int</td><td>Identificador del rubro</tr><tr><td>FCE_MES</td><td>VarChar (10)</td><td>Mes de procesamiento de la emisión</tr><tr><td>FCE_ANIO</td><td>VarChar (10)</td><td>Año de procesamiento de la emisión</tr><tr><td>FCE_FECHA</td><td>SmallDateTime</td><td>Fecha en que se creó la emisión</tr><tr><td>FCE_MEDIDOR</td><td>VarChar (50)</td><td>Número de medidor de la emisión</tr><tr><td>FCE_PRM_ID</td><td>Int</td><td>Tipo de emisión</tr></table><br /><strong><a name="dbo.TBL_CO_FINANCIAMIENTO_AUX_EMISION">
+        [dbo].[TBL_CO_FINANCIAMIENTO_AUX_EMISION]
+      </a> :
+    </strong>Tabla auxiliar-temporal que almacena las emisiones que se van a financiar<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>FEM_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>FFI_ID</td><td>Numeric</td><td>Llave primaria de cabecera TBL_CO_FINANCIAMIENTO</tr><tr><td>FAD_ID</td><td>Numeric</td><td>Identificador de registro de emisión_detalle</tr><tr><td>FEM_FAC_NUM</td><td>BigInt</td><td>Identificador de la emisión</tr><tr><td>FEM_FAD_VALOR</td><td>Float</td><td>Valor del rubro</tr><tr><td>FEM_FAD_CANTIDAD</td><td>Float</td><td>Cantidad del rubro</tr><tr><td>FEM_FAD_DESCRIPCION</td><td>VarChar (50)</td><td>Descripción del rubro</tr><tr><td>FEM_FAD_ID_DESCRIPCION</td><td>Int</td><td>Identificador del rubro</tr><tr><td>FEM_FAD_VALOR_UNITARIO</td><td>Float</td><td>Valor unitario del rubro</tr><tr><td>FEM_FAD_IVA</td><td>Float</td><td>Cero</tr><tr><td>FEM_SALDO</td><td>Float</td><td>Según el monto de anticipo y las cuotas se irá registrando el saldo correspondiente</tr><tr><td>FEM_FAD_ID</td><td>Numeric</td><td>No se utiliza</tr><tr><td>FEM_MES</td><td>VarChar (10)</td><td>Mes procesamiento de la emisión</tr><tr><td>FEM_ANIO</td><td>VarChar (10)</td><td>Año procesamiento de la emisión</tr><tr><td>FEM_FECHA</td><td>SmallDateTime</td><td>Fecha de la emisión</tr><tr><td>FEM_MEDIDOR</td><td>VarChar (50)</td><td>Número de medidor de la emisión</tr><tr><td>FEM_PRM_ID</td><td>Char (10)</td><td>Tipo de emisión</tr></table><br /><strong><a name="dbo.TBL_CO_FORMA_PAGO">
+        [dbo].[TBL_CO_FORMA_PAGO]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_HABILITACION_SERVICIO_ONLINE">
+        [dbo].[TBL_CO_HABILITACION_SERVICIO_ONLINE]
+      </a> :
+    </strong>Tabla de webservices. Habilitación<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>HAB_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>HAB_HABILITADO</td><td>Bit</td><td>Bandera 1 o 0 que indica si el servicio está levantado o no</tr></table><br /><strong><a name="dbo.TBL_CO_INDICADOR">
+        [dbo].[TBL_CO_INDICADOR]
+      </a> :
+    </strong>No se utiliza con el nuevo esquema de indicadores<br /><br /><strong><a name="dbo.TBL_CO_INDICADOR_LOG">
+        [dbo].[TBL_CO_INDICADOR_LOG]
+      </a> :
+    </strong>No se utiliza con el nuevo esquema de indicadores<br /><br /><strong><a name="dbo.TBL_CO_INSUMO">
+        [dbo].[TBL_CO_INSUMO]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_INVENTARIO_SERVICIOS">
+        [dbo].[TBL_CO_INVENTARIO_SERVICIOS]
+      </a> :
+    </strong>Tabla que registra servicios de atención al cliente<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>INS_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>INS_NOMBRE</td><td>VarChar (50)</td><td>Nombre del servicio o rubro</tr><tr><td>INS_TIPO</td><td>Bit</td><td>Indica si es rubro de atención al cliente</tr></table><br /><strong><a name="dbo.TBL_CO_LECTURA">
+        [dbo].[TBL_CO_LECTURA]
+      </a> :
+    </strong>Tabla que registra las lecturas mensuales para el cálculo de consumo<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>LEC_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del abonado</tr><tr><td>LEC_PROCESO_MES</td><td>VarChar (4)</td><td>Mes de procesamiento de la lectura</tr><tr><td>LEC_PROCESO_ANIO</td><td>VarChar (4)</td><td>Año de procesamiento de la lectura</tr><tr><td>LEC_LECTURA</td><td>Float</td><td>Valor de la lectura tomada</tr><tr><td>LEC_APLICADA</td><td>Float</td><td>Valor de la lectura que en realidad se aplica (digitación-verificación)</tr><tr><td>LEC_FECHA</td><td>SmallDateTime</td><td>Fecha en que toma la lectura</tr><tr><td>LEC_FECHA_DIGITADA</td><td>SmallDateTime</td><td>Fecha en que se digita</tr><tr><td>LEC_FECHA_VALID</td><td>SmallDateTime</td><td>Fecha en que se valida</tr><tr><td>LEC_NOVEDAD</td><td>VarChar (50)</td><td>Existen varias novedades especificadas en el formulario de impresión que corresponden a nuevo medidor, puerta cerrada, etc</tr><tr><td>LEC_APLICACION</td><td>VarChar (50)</td><td>Registra en palabras la novedad correspondiente</tr><tr><td>LEC_ACCION</td><td>Char (25)</td><td>Acción que se toma según novedad. Ejm: promedio</tr><tr><td>LEC_VERIFICADA</td><td>Bit</td><td>Bandera 1 o 0 que señala si la cuenta ya pasó por verificación</tr><tr><td>LEC_FINAL</td><td>Bit</td><td>No se utiliza</tr><tr><td>LEC_CONSUMO</td><td>Float</td><td>Diferencia de la lectura nueva y la anterior</tr><tr><td>LEC_VERIF_USER</td><td>VarChar (50)</td><td>Responsable</tr><tr><td>LEC_DIGITADOR</td><td>VarChar (50)</td><td>Responsable</tr><tr><td>LEC_CALCULADA</td><td>Int</td><td>Uno</tr></table><br /><strong><a name="dbo.TBL_CO_LOG_CONSULTAS_ONLINE">
+        [dbo].[TBL_CO_LOG_CONSULTAS_ONLINE]
+      </a> :
+    </strong>Tabla que registra las consultas de búsqueda de facturas para la recaudación on-line<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>LOG_CONSULTAS_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>LOG_MAIN_ID</td><td>Int</td><td>Llave primaria de la cabecera TBL_CO_LOG_MAIN_ONLINE</tr><tr><td>LOG_CONSULTAS_CRITERIO</td><td>NVarChar (50)</td><td>Dato que se utilizó para la búsqueda de la factura a cancelar</tr><tr><td>LOG_CONSULTAS_TIPO_CRITERIO</td><td>NVarChar (50)</td><td>Tipo de criterio de búsqueda: cuenta, cédula, factura</tr></table><br /><strong><a name="dbo.TBL_CO_LOG_HABILITACION_SERVICIO_ONLINE">
+        [dbo].[TBL_CO_LOG_HABILITACION_SERVICIO_ONLINE]
+      </a> :
+    </strong>Tabla que registra el usuario windows que habilita los webservices para la recaudación on-line<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>LHA_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>LHA_ACCION</td><td>NVarChar (256)</td><td>Habilitar o deshabilitar los webservices</tr><tr><td>LHA_USUARIO_WINDOWS</td><td>NVarChar (256)</td><td>Usuario windows que inició sesión y que tiene acceso a habilitar/deshabilitar el servicio</tr><tr><td>LHA_FECHA</td><td>DateTime</td><td>Fecha en que se realiza la modificación</tr></table><br /><strong><a name="dbo.TBL_CO_LOG_MAIN_ONLINE">
+        [dbo].[TBL_CO_LOG_MAIN_ONLINE]
+      </a> :
+    </strong>Tabla principal de la recaudación on-line donde se detallas las acciones ejecutadas<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>LOG_MAIN_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>LOG_MAIN_LOGIN</td><td>NVarChar (50)</td><td>Nombre del usuario que ingresa a la utilización de los webservices</tr><tr><td>LOG_MAIN_FECHA</td><td>DateTime</td><td>Fecha de registro</tr><tr><td>LOG_MAIN_OPERACION</td><td>NVarChar (50)</td><td>Operación que efectúa: consulta, recaudación, reverso</tr><tr><td>LOG_MAIN_CERTIFICADO</td><td>NVarChar (256)</td><td>Referencia del certificado SSL (seguridad)</tr><tr><td>LOG_MAIN_RESULTADO</td><td>NVarChar (512)</td><td>Resulta de la operación: éxito, error, no existe, etc</tr></table><br /><strong><a name="dbo.TBL_CO_LOG_TRANSACCION_ONLINE">
+        [dbo].[TBL_CO_LOG_TRANSACCION_ONLINE]
+      </a> :
+    </strong>Tabla de registro de transacciones de recaudación on-line<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>LOG_TRANSACCION_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>LOG_MAIN_ID</td><td>Int</td><td>Llave primaria de la cabecera TBL_CO_LOG_MAIN_ONLINE</tr><tr><td>LOG_TRANSACCION_TXID</td><td>Int</td><td>Identificador transacción</tr><tr><td>LOG_TRANSACCION_FACTURA_ID</td><td>Decimal (18,0)</td><td>Identificador de la factura</tr><tr><td>LOG_TRANSACCION_NUMERO_CUENTA</td><td>Decimal (18,0)</td><td>Número de la cuenta de la factura</tr><tr><td>LOG_TRANSACCION_NOMBRE_CLIENTE</td><td>NVarChar (50)</td><td>Nombres del abonado de la factura</tr><tr><td>LOG_TRANSACCION_NUMERO_CEDULA</td><td>NVarChar (15)</td><td>Número de cédula de la factura</tr><tr><td>LOG_TRANSACCION_VALOR</td><td>Float</td><td>Valor a pagar por la factura</tr></table><br /><strong><a name="dbo.TBL_CO_MATERIAL">
+        [dbo].[TBL_CO_MATERIAL]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_MEDIDOR">
+        [dbo].[TBL_CO_MEDIDOR]
+      </a> :
+    </strong>Tabla que registra los datos de medidores de agua potable que se coloca en cada ubicación del abonado<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>MED_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del abonado</tr><tr><td>MED_MARCA</td><td>VarChar (15)</td><td>Marca del medidor</tr><tr><td>MED_NUMERO</td><td>VarChar (15)</td><td>Número asignado del medidor</tr><tr><td>MED_MODELO</td><td>VarChar (20)</td><td>Modelo del medidor</tr><tr><td>MED_ESFERAS</td><td>Int</td><td>Número de esferas del medidor</tr><tr><td>MED_FACT_MULT</td><td>Float</td><td>Factor multiplicador del medidor</tr><tr><td>MED_FEC_INST</td><td>SmallDateTime</td><td>Fecha en que se ha instalado el medidor</tr><tr><td>MED_ACTIVO</td><td>Bit</td><td>Bandera 1 o 0 que indica si el medidor está activo o no</tr><tr><td>MED_DIAMETRO</td><td>VarChar (53)</td><td>Datos medibles del medidor</tr><tr><td>MED_UBICACION</td><td>VarChar (50)</td><td>Ubicación al interior de los domicilios. Ejm: por garaje</tr><tr><td>MED_SELLO</td><td>Bit</td><td>Bandera de presencia o no del sello de seguridad del medidor</tr><tr><td>MED_SELLO_NUM</td><td>VarChar (50)</td><td>Número del sello</tr><tr><td>MED_INSTALADOR</td><td>VarChar (50)</td><td>Responsable de instalar el medidor</tr></table><br /><strong><a name="dbo.TBL_CO_MOVIMIENTO">
+        [dbo].[TBL_CO_MOVIMIENTO]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_PAGOS_PARCIALES">
+        [dbo].[TBL_CO_PAGOS_PARCIALES]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_PARAMETRO">
+        [dbo].[TBL_CO_PARAMETRO]
+      </a> :
+    </strong>Tabla que contiene los parámtros de todo el módulo comercial<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PRM_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>PLC_CODIGO</td><td>VarChar (50)</td><td>Código de cuenta contable si el parámetro lo amerita</tr><tr><td>PRM_DESCRIPCION</td><td>VarChar (100)</td><td>Descripción del parámetro</tr><tr><td>PRM_CLAVE</td><td>VarChar (20)</td><td>Nombre del grupo por el que se filtrará los parámetros</tr><tr><td>PRM_FECHA</td><td>SmallDateTime</td><td>Fecha en que se registra el parámetro</tr><tr><td>PRM_USER</td><td>VarChar (20)</td><td>Responsable del registro</tr><tr><td>PRM_VALOR</td><td>Float</td><td>Campo para almacenar el valor. Ejemplo: Femenino (descripción), se guarda 1</tr><tr><td>PRM_ORDEN</td><td>Int</td><td>Campo para ordenar o puede funcionar igual que PRM_VALOR</tr><tr><td>PRM_ORDEN2</td><td>Int</td><td>Campo para ordenar o puede funcionar igual que PRM_VALOR</tr><tr><td>PRM_REFERENCIA</td><td>Int</td><td>Campo similar a PRM_VALOR</tr><tr><td>PRM_OBSERVACION</td><td>VarChar (50)</td><td>Campo similar a PRM_VALOR pero almacena caracteres</tr></table><br /><strong><a name="dbo.TBL_CO_PARAMETRO_IND">
+        [dbo].[TBL_CO_PARAMETRO_IND]
+      </a> :
+    </strong>No se utiliza con el nuevo esquema de indicadores<br /><br /><strong><a name="dbo.TBL_CO_PERIODO">
+        [dbo].[TBL_CO_PERIODO]
+      </a> :
+    </strong>No se utiliza con la nueva estructra. El período vigente se manera en cada red o ciclo<br /><br /><strong><a name="dbo.TBL_CO_PLIEGO_TARIF_DET">
+        [dbo].[TBL_CO_PLIEGO_TARIF_DET]
+      </a> :
+    </strong>No se utiliza. Esta tabla fue abierta en dos: de agua y otros<br /><br /><strong><a name="dbo.TBL_CO_PLIEGO_TARIF_DET_AGUA">
+        [dbo].[TBL_CO_PLIEGO_TARIF_DET_AGUA]
+      </a> :
+    </strong>Tabla que registra los valores en dólares por cada metro cúbico de agua según rango<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PTD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>PLT_ID</td><td>Int</td><td>TBL_CO_PLIEGO_TARIFARIO</tr><tr><td>CES_ID</td><td>Int</td><td>Identificador del componente</tr><tr><td>PTD_SECUENCIA</td><td>BigInt</td><td>Número ordinal</tr><tr><td>PTD_RANGO_I</td><td>BigInt</td><td>Valor inicial del rango de metros cúbicos</tr><tr><td>PTD_RANGO_F</td><td>BigInt</td><td>Valor final del rango de metros cúbicos</tr><tr><td>PTD_VALOR_BASE</td><td>Float</td><td>Valor que se coloca solo cuando el rango es de 0 a 0 (cero metros cúbicos de consumo)</tr><tr><td>PTD_FACTOR</td><td>Float</td><td>Valor real del metro cúbico</tr><tr><td>PTD_NOMBRE</td><td>VarChar (40)</td><td>Nombre del pliego tarifario</tr><tr><td>PTD_F_ALTA</td><td>SmallDateTime</td><td>Fecha en que se registra</tr></table><br /><strong><a name="dbo.TBL_CO_PLIEGO_TARIF_DET_OTROS">
+        [dbo].[TBL_CO_PLIEGO_TARIF_DET_OTROS]
+      </a> :
+    </strong>Tabla que almacena todo rubro que aplica para el cálculo de consumo sin tomar en cuenta el agua potable.<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PTO_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>PLT_ID</td><td>Int</td><td>Llave primaria de  TBL_CO_PLIEGO_TARIFARIO</tr><tr><td>CES_ID</td><td>Int</td><td>Identificador del componente o rubro</tr><tr><td>PTO_VALOR_BASE</td><td>Float</td><td>Monto del rubro</tr><tr><td>PTO_PORCENTAJE</td><td>Float</td><td>Porcentaje del rubro con base al monto de agua potable</tr><tr><td>PTO_CONSTANTE</td><td>Int</td><td>PARA UBICAR LA TERCERA EDAD </tr><tr><td>PTO_3EDAD</td><td>Bit</td><td>Bandera 1 o 0 que indica que forma parte o no del cálculo de la tercera edad</tr></table><br /><strong><a name="dbo.TBL_CO_PLIEGO_TARIFARIO">
+        [dbo].[TBL_CO_PLIEGO_TARIFARIO]
+      </a> :
+    </strong>Tabla que representa el Nivel 2 de los pliegos tarifarios. Corresponde a las categorías o tarifas que se les asigna a las cuentas<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PLT_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>TPT_ID</td><td>VarChar (50)</td><td>Llave primaria que viene de Nivel I (TBL_CO_TIPO_PLIEGO_TARIFARIO)</tr><tr><td>PLT_NOMBRE</td><td>VarChar (20)</td><td>Nombre del pliego</tr><tr><td>PLT_PROCESO_MES</td><td>VarChar (2)</td><td>No se utiliza desde los cambios del 2009</tr><tr><td>PLT_PROCESO_ANIO</td><td>VarChar (4)</td><td>No se utiliza desde los cambios del 2009</tr><tr><td>PLT_USER</td><td>VarChar (20)</td><td>Responsable de registro</tr><tr><td>PLT_FECHA</td><td>SmallDateTime</td><td>Fecha de registro</tr><tr><td>PLT_REGISTRADO</td><td>Bit</td><td>Bandera que señala la utilización</tr><tr><td>PLT_CONSUMO_FIJO</td><td>Int</td><td>Número de metros cúbicos que se debe facturar en tarifas especiales</tr></table><br /><strong><a name="dbo.TBL_CO_PRESUPUESTO">
+        [dbo].[TBL_CO_PRESUPUESTO]
+      </a> :
+    </strong>Almacena la cabecera del presupuesto para la ejecución de obras<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PRE_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>PRE_FECHA</td><td>SmallDateTime</td><td>Fecha de registro</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del solicitante</tr><tr><td>PRE_REGISTRADO</td><td>Bit</td><td>Estado de registrado o pendiente</tr><tr><td>TRA_ID</td><td>Int</td><td>Identificador del trámite</tr></table><br /><strong><a name="dbo.TBL_CO_PRESUPUESTO_DET">
+        [dbo].[TBL_CO_PRESUPUESTO_DET]
+      </a> :
+    </strong>Registra los rubros a facturar por ejecución de obras<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>PRD_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>PRE_ID</td><td>Int</td><td>Llave primaria de TBL_CO_PRESUPUESTO</tr><tr><td>PRD_DESCRIPCION</td><td>VarChar (50)</td><td>Nombre del rubro</tr><tr><td>PRD_CANTIDAD</td><td>Float</td><td>Cantidad del rubro</tr><tr><td>PRD_COSTO</td><td>Float</td><td>Valor del rubro</tr><tr><td>PRD_TOTAL</td><td>Float</td><td>Valor total (costo por cantidad)</tr></table><br /><strong><a name="dbo.TBL_CO_RANGO">
+        [dbo].[TBL_CO_RANGO]
+      </a> :
+    </strong>No se utiliza. Se reemplazó en la tabla de parámetros<br /><br /><strong><a name="dbo.TBL_CO_RECONEXION">
+        [dbo].[TBL_CO_RECONEXION]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_REFACTURACION">
+        [dbo].[TBL_CO_REFACTURACION]
+      </a> :
+    </strong>Tabla que registra las refacturaciones<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>RFN_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>RFN_OBSERVACION</td><td>VarChar (255)</td><td>Razón por la que se refactura</tr><tr><td>RFN_TIPO_REFACTURACION</td><td>Int</td><td>Descripción del tipo de refacturación. Existen varios tipos de refacturación: por error de lectura, acumulada, servicios, etc</tr><tr><td>CLE_CI_RUC</td><td>VarChar (20)</td><td>Cédula del abonado que se va a refacturar</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del abonado</tr><tr><td>RFN_USUARIO</td><td>VarChar (20)</td><td>Responsable del registro</tr><tr><td>RFN_FECHA</td><td>SmallDateTime</td><td>Fecha del registro</tr><tr><td>RFN_MES_PROCESO</td><td>Int</td><td>Mes procesamiento</tr><tr><td>RFN_ANIO_PROCESO</td><td>Int</td><td>Año procesamiento</tr><tr><td>RFN_ESTADO</td><td>Int</td><td>Estado: pendiente, registrado, anulado</tr><tr><td>RFN_AUTORIZA</td><td>Bit</td><td>Bandera 1 o 0 que indica si la refacturación está autorizada o no</tr><tr><td>RFN_AUTORIZA_USUARIO</td><td>VarChar (20)</td><td>Responsable de autorizar la refacturación</tr><tr><td>RFN_AUTORIZA_FECHA</td><td>SmallDateTime</td><td>Fecha en que se autoriza</tr><tr><td>RFN_REGISTRADO</td><td>Bit</td><td>Bandera 1 o 0 de que está registrado</tr><tr><td>RFN_ANULADO</td><td>Bit</td><td>Bandera 1 o 0 de que está anulado</tr><tr><td>TPT_ID_ACTUAL</td><td>VarChar (50)</td><td>Tipo pliego tarifario actual</tr><tr><td>TPT_ID_NUEVO</td><td>VarChar (50)</td><td>Tipo pliego tarifario nuevo</tr><tr><td>RFN_VALOR_AGUA</td><td>Float</td><td>Valor refacturado en agua</tr><tr><td>RFN_VALOR_ALCANTARILLADO</td><td>Float</td><td>Valor refacturado en alcantarillado</tr><tr><td>RFN_VALOR_COMERCIALIZA</td><td>Float</td><td>Valor refacturado en comercialización</tr><tr><td>RFN_VALOR_TERCERA</td><td>Float</td><td>Valor refacturado en tercera edad</tr><tr><td>RFN_FACTURA_REF</td><td>BigInt</td><td>Nuevo número de factura SRI que se crea luego de refacturar</tr><tr><td>RFN_FSR_ID</td><td>BigInt</td><td>Número de factura que se refactura</tr><tr><td>RFN_ATENCION</td><td>Bit</td><td>Bandera que indica si la factura a refacturar proviene de atención al cliente o no</tr><tr><td>RFN_PROMEDIO</td><td>Int</td><td>Consumo promedio de la cuenta</tr><tr><td>RFN_TIPO_PROCESO</td><td>Int</td><td>Identificador del tipo de proceso de refacturación</tr><tr><td>FAC_NUM</td><td>Numeric</td><td>No se utiliza</tr></table><br /><strong><a name="dbo.TBL_CO_REFACTURACION_DET">
+        [dbo].[TBL_CO_REFACTURACION_DET]
+      </a> :
+    </strong>Tabla que registra el detalle de la refacturación según las emisiones marcadas<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>RDD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>RFN_ID</td><td>Numeric</td><td>Llave primaria de la cabecera TBL_CO_REFACTURACION</tr><tr><td>FAC_NUM</td><td>BigInt</td><td>Número de emisión a refacturar</tr><tr><td>RDD_VALOR</td><td>Float</td><td>Valor de la emisión</tr><tr><td>RDD_LECTURA_NUEVA</td><td>Float</td><td>En caso de ser refacturación por error de lectura, aquí se registrará la lectura correcta</tr><tr><td>RDD_VALOR_NUEVO</td><td>Float</td><td>Valor nuevo calculado</tr><tr><td>RDD_VALOR_DIFERENCIA</td><td>Float</td><td>Diferencia entre valor y valor_nuevo. Puede ser positivo o negativo</tr><tr><td>RDD_USUARIO</td><td>VarChar (20)</td><td>Responsable de registro</tr><tr><td>RDD_FECHA</td><td>SmallDateTime</td><td>Fecha de registro</tr><tr><td>RDD_CONSUMO_ACTUAL</td><td>Float</td><td>Metros cúbicos consumidos que indica la emisión</tr><tr><td>RDD_CONSUMO_NUEVO</td><td>Float</td><td>Metros cúbicos nuevos en caso de ser refacturación acumulada</tr><tr><td>RDD_FAD_ID</td><td>Numeric</td><td>identificador del detalle de la emisión</tr></table><br /><strong><a name="dbo.TBL_CO_REFACTURADAS">
+        [dbo].[TBL_CO_REFACTURADAS]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_REFACTURADAS_DET">
+        [dbo].[TBL_CO_REFACTURADAS_DET]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_REINSTALACION_MEDIDOR_SOL">
+        [dbo].[TBL_CO_REINSTALACION_MEDIDOR_SOL]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_REQUISITOS">
+        [dbo].[TBL_CO_REQUISITOS]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_REUBICACION">
+        [dbo].[TBL_CO_REUBICACION]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_REVISION_MEDIDOR">
+        [dbo].[TBL_CO_REVISION_MEDIDOR]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_RUTA">
+        [dbo].[TBL_CO_RUTA]
+      </a> :
+    </strong>Tabla que muestra las rutas en las que se ha dividido la ciudad para una mejor ubicación de las direcciones de los abonados<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>RUT_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>SEC_ID</td><td>Int</td><td>Identificador del sector</tr><tr><td>RUT_NOMBRE</td><td>VarChar (50)</td><td>Nombre de la ruta</tr><tr><td>RUT_NUM</td><td>VarChar (5)</td><td>Número de la ruta</tr><tr><td>RUT_FECHA_DIGITALIZACION</td><td>SmallDateTime</td><td>Fecha en que se termina de digitar la ruta</tr><tr><td>RUT_FECHA_VERIFICACION</td><td>SmallDateTime</td><td>Fecha en que se termina de verificar la ruta</tr><tr><td>RUT_FECHA_VALIDACION</td><td>SmallDateTime</td><td>Fecha en que se termina de validar la ruta (todo el ciclo)</tr><tr><td>RUT_NO_IMPRIME</td><td>Bit</td><td>Bandera 1 o 0 que indica si esa ruta se mandará a imprimir para entregas a domicilio</tr><tr><td>RUT_NO_LECTURA</td><td>Bit</td><td>Bandera 1 o 0 que indica si la ruta requiere de registro de lecturas o no. Caso especial</tr></table><br /><strong><a name="dbo.TBL_CO_SECTOR">
+        [dbo].[TBL_CO_SECTOR]
+      </a> :
+    </strong>Tabla que muestra los sectores o distritos en los que se ha dividido la ciudad para una mejor ubicación de las direcciones de los abonados<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>SEC_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>CIC_ID</td><td>Int</td><td>Identificados del ciclo o red (llave primaria de TBL_CO_CICLO)</tr><tr><td>SEC_NOMBRE</td><td>VarChar (50)</td><td>Nombre del sector</tr><tr><td>SEC_NUM</td><td>VarChar (4)</td><td>Número del sector</tr></table><br /><strong><a name="dbo.TBL_CO_SERVICIO_MEDIDOR_VARIOS">
+        [dbo].[TBL_CO_SERVICIO_MEDIDOR_VARIOS]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_SERVICIO_NI_PRESUPUESTO">
+        [dbo].[TBL_CO_SERVICIO_NI_PRESUPUESTO]
+      </a> :
+    </strong>Tabla que registra el presupuesto resultado de la inspección de nuevas conexiones<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>NPR_ID</td><td>Int</td><td>Identificador autonumérico</tr><tr><td>NIN_ID</td><td>Numeric</td><td>Identificador de la nueva instalación (nueva conexión)</tr><tr><td>INB_ID</td><td>Int</td><td>Identificador del material de inventario que se utiliza para las nuevas conexiones</tr><tr><td>NPR_PAR</td><td>VarChar (50)</td><td>Nombre del rubro</tr><tr><td>NPR_ID_PAR</td><td>Numeric</td><td>Identificador del rubro</tr><tr><td>NPR_CANTIDAD</td><td>Float</td><td>Cantidad solicitada</tr><tr><td>NPR_DIAMETRO</td><td>Float</td><td>Cero. El diámetro ya se incluyó en el nombre del rubro o material</tr><tr><td>NPR_COSTO</td><td>Float</td><td>Valor del material o rubro</tr><tr><td>NPR_TIPO</td><td>VarChar (2)</td><td>Tipo: alcantarillado o agua potable. Aquí se registran los materiales necesarios para las obras de AP y  AL</tr></table><br /><strong><a name="dbo.TBL_CO_SERVICIO_NUEVA_INSTALACION">
+        [dbo].[TBL_CO_SERVICIO_NUEVA_INSTALACION]
+      </a> :
+    </strong>Esta tabla almacena la información relacionada a las nuevas conexiones<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>NIN_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de cuenta del abonado (cuando ya se le asigna cuenta)</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del solicitante</tr><tr><td>NIN_CALLEP</td><td>VarChar (50)</td><td>Calle principal donde está ubicada el inmueble</tr><tr><td>NIN_CALLES</td><td>VarChar (50)</td><td>Calle secundaria donde está ubicada el inmueble</tr><tr><td>NIN_NUMERO</td><td>VarChar (30)</td><td>Número del inmueble</tr><tr><td>NIN_PISO</td><td>VarChar (2)</td><td>Datos del piso del inmueble si se trata de un edificio</tr><tr><td>NIN_DEP</td><td>VarChar (4)</td><td>Número del departamento</tr><tr><td>CIC_ID</td><td>BigInt</td><td>Identificador del ciclo o red</tr><tr><td>SEC_ID</td><td>BigInt</td><td>Identificador del sector</tr><tr><td>RUT_ID</td><td>BigInt</td><td>Identificador de la ruta</tr><tr><td>CRO_ID</td><td>VarChar (10)</td><td>No se utiliza</tr><tr><td>NIN_CRO_X</td><td>Float</td><td>No se utiliza</tr><tr><td>NIN_CRO_Y</td><td>Float</td><td>No se utiliza</tr><tr><td>NIN_SERVICIO_AL</td><td>Bit</td><td>Bandera que indica si el servicio solicitado es agua potable o no</tr><tr><td>NIN_LONGITUD_AL</td><td>Float</td><td>Datos de longitud necesaria para la instalación del agua potable</tr><tr><td>NIN_SERVICIO_AP</td><td>Bit</td><td>Bandera que indica si el servicio solicitado es alcantarillado o no</tr><tr><td>NIN_LONGITUD_AP</td><td>Float</td><td>Datos de longitud necesaria para la instalación de alcantarillado</tr><tr><td>NIN_TIENE_ESCRITURA</td><td>Bit</td><td>Bandera 1 o 0 que señala si cumple con el requisito de entregar escritura</tr><tr><td>NIN_OBSERVACION</td><td>VarChar (255)</td><td>Observación, referencia, anotaciones</tr><tr><td>NIN_NUM_ESCRITURA</td><td>VarChar (100)</td><td>Observación sobre las escrituras</tr><tr><td>NIN_TIENE_CI</td><td>Bit</td><td>Bandera 1 o 0 que señala si cumple con el requisito de entregar la copia de cédula</tr><tr><td>NIN_TIENE_PV</td><td>Bit</td><td>Bandera 1 o 0 que señala si cumple con el requisito del croquis</tr><tr><td>NIN_PV_DATOS</td><td>VarChar (20)</td><td>Observación sobre el requisito anterior</tr><tr><td>NIN_TIENE_CNDM</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_CNDM_DATOS</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_TIENE_CAC</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_CAC_DATOS</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_TIENE_RUC</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_RUC_DATOS</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_TIENE_NRL</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_NRL_DATOS</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_PLANO</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_CASA_CONSTRUIDA</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_FOTOGRAFIA</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_USUARIOS_NUM</td><td>BigInt</td><td>Número de personas que viven en el inmueble</tr><tr><td>NIN_AREA</td><td>Float</td><td>Área en m2 si se conoce el dato</tr><tr><td>NIN_PISOS_NUM</td><td>Int</td><td>Número de pisos del inmueble</tr><tr><td>NIN_FECHA_INS</td><td>SmallDateTime</td><td>Fecha de instalación</tr><tr><td>NIN_TUBERIA_DIA</td><td>NVarChar (10)</td><td>Diámetro de la tubería</tr><tr><td>NIN_TUBERIA_CLASE</td><td>VarChar (2)</td><td>No se utiliza</tr><tr><td>NIN_LONGITUD_CONEXION</td><td>Float</td><td>No se utiliza</tr><tr><td>NIN_AREA_POR</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_RES_INSP</td><td>VarChar (2)</td><td>No se utiliza</tr><tr><td>NIN_RES_INST</td><td>VarChar (2)</td><td>No se utiliza</tr><tr><td>NIN_FECHA_PRE</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>NIN_OBSERVACION_PRE</td><td>VarChar (255)</td><td>En caso de ser necesario se escribe observación del proceso</tr><tr><td>NIN_MAT_FECHA_REC</td><td>SmallDateTime</td><td>No se utiliza</tr><tr><td>NIN_MAT_PERSONA</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>NIN_MAT_COMPR_PAGO</td><td>VarChar (5)</td><td>No se utiliza</tr><tr><td>NIN_MAT_COMPR_EGRESO</td><td>VarChar (5)</td><td>No se utiliza</tr><tr><td>NIN_MEDIDOR_NUM</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_CUENTA_E</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_CUENTA_V</td><td>VarChar (20)</td><td>Cuenta de referencia del vecino</tr><tr><td>NIN_CUENTA_B</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_BANCO</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>NIN_FECHA_INGRESO</td><td>SmallDateTime</td><td>Fecha en la que empieza el trámite</tr><tr><td>NIN_COMPR_PAGO</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_FECHA_INSTALACION</td><td>SmallDateTime</td><td>Fecha en que se instala</tr><tr><td>NIN_INSTALADO_POR</td><td>VarChar (50)</td><td>Nombre del instalador responsable</tr><tr><td>NIN_MEDIDOR_INSTALADO_NUM</td><td>VarChar (10)</td><td>Número del medidor instalado</tr><tr><td>NIN_MEDIDOR_ANTERIOR_NUM</td><td>VarChar (10)</td><td>No se utiliza</tr><tr><td>NIN_MEDIDOR_INSTALADO_ESFERAS</td><td>Int</td><td>Número de esferas del medidor instalado</tr><tr><td>NIN_MEDIDOR_INSTALADO_MARCA</td><td>VarChar (20)</td><td>Marca del medidor isntalado</tr><tr><td>NIN_LECTURA_INICIAL</td><td>Float</td><td>Lectura con la que arranca el medidor. La mayoría de las veces será cero.</tr><tr><td>NIN_INSTALACION_RECIBIO</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>NIN_REVISADO_POR</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>NIN_APROBADO_POR</td><td>VarChar (50)</td><td>No se utiliza</tr><tr><td>NIN_TIPO_USO</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_MATERIAL_CALZADA</td><td>VarChar (20)</td><td>No se utiliza</tr><tr><td>NIN_TIPO_CALZADA</td><td>VarChar (100)</td><td>Tipo de calzada: EMPEDRADO,ADOQUINADO,TIERRA</tr><tr><td>NIN_ROTURA_CALZADA</td><td>Bit</td><td>Bandera 1 o 0 que indica si es necesario romper la calzada</tr><tr><td>NIN_TIPO_CUENTA</td><td>VarChar (3)</td><td>No se utiliza</tr><tr><td>NIN_REG_SOLICITUD</td><td>Bit</td><td>Si está registrada la solicitud llevará el valor 1</tr><tr><td>NIN_REG_DOCUMENTACION</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_REG_INSPECCION</td><td>Bit</td><td>Si está registrada quiere decir que se realizó la inspección</tr><tr><td>NIN_REG_PRESUPUESTO</td><td>Bit</td><td>Si está registrada quiere decir que ya se ingresó el presupuesto de los materiales necesarios</tr><tr><td>NIN_REG_MATERIAL</td><td>Bit</td><td>No se utiliza</tr><tr><td>NIN_REG_INSTALACION</td><td>Bit</td><td>Si está registrada quiere decir que se realizó la instalación</tr><tr><td>NIN_REG_CUENTA</td><td>Bit</td><td>Si está registrada quiere decir que ya se registró la cuenta y el abonado ha sido creado</tr><tr><td>NIN_TARIFA</td><td>VarChar (10)</td><td>Tipo de categoría o tarifa asignada según resultados de la inspección</tr><tr><td>NIN_SECUENCIA</td><td>Char (5)</td><td>No se utiliza. Se graba el mismo valor en CUE_SECUENCIA</tr><tr><td>CUE_SECUENCIA</td><td>Char (5)</td><td>Secuencia que le corresponde según la ubicación del inmueble (dato del catastro)</tr><tr><td>MED_DIAMETRO</td><td>Float</td><td>Diámetro del medidor</tr><tr><td>NIN_MANZANA</td><td>Char (10)</td><td>Número de manzana</tr><tr><td>NIN_ALCANTARILLADO_DIA</td><td>NVarChar (10)</td><td>Diámetro a usar en el alcantarillado</tr><tr><td>NIN_FACTURA_SRI</td><td>VarChar (50)</td><td>Factura SRI por el formulario</tr><tr><td>NIN_FACTURA</td><td>VarChar (50)</td><td>Emisión por el formulario</tr><tr><td>NIN_FACTURA_SRI1</td><td>VarChar (50)</td><td>Factura SRI por el contrato firmado</tr><tr><td>NIN_FACTURA1</td><td>VarChar (50)</td><td>Emisión por el contrato firmado</tr><tr><td>NIN_SERVICIO</td><td>VarChar (50)</td><td>Nombre del servicio solicitado</tr><tr><td>TRA_ID</td><td>VarChar (50)</td><td>Identificador del trámite (principal). Reune los trámites de atención al cliente y nuevas conexiones.</tr><tr><td>NIN_FORMA_PAGO</td><td>Bit</td><td>Forma pag: efectivo o crédito</tr><tr><td>NIN_BARRIO</td><td>VarChar (50)</td><td>Barrio en el que se encuentra el inmueble</tr></table><br /><strong><a name="dbo.TBL_CO_SERVICIO_NUEVA_INSTALACION_PAGO">
+        [dbo].[TBL_CO_SERVICIO_NUEVA_INSTALACION_PAGO]
+      </a> :
+    </strong>Tabla que registra la forma de pago de una nueva conexión<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>NIN_ID</td><td>BigInt</td><td>Identificador autonumérico</tr><tr><td>NIP_MONTO_TOTAL</td><td>Float</td><td>Valor total por la instalación de los servicios solicitados</tr><tr><td>NIP_PAGOCONTADO</td><td>Float</td><td>Valor que se pagará a contado en ese momento</tr><tr><td>NIP_DESCUENTO</td><td>Float</td><td>Valor del descuento (si hubiere)</tr><tr><td>NIP_MONTO_FINANCIADO</td><td>Float</td><td>Saldo : valor total menos el valor de pago al contado</tr><tr><td>NIP_VALOR_CUOTAS</td><td>Float</td><td>Valor de las cuotas (se calcula automáticamente)</tr><tr><td>NIP_NUMERO_CUOTAS</td><td>TinyInt</td><td>Número de cuotas (en caso de crédito)</tr><tr><td>NIP_TOTAL_INTERES</td><td>Float</td><td>Valor que corresponde al campo del porcentaje  NIP_INTERES_ANUAL</tr><tr><td>NIP_INTERES_ANUAL</td><td>Float</td><td>Porcentaje del interés anual al que se hace referencia</tr><tr><td>NIP_REGISTRADA</td><td>Bit</td><td>Bandera 1 o 0 de que la forma de pago está registrada y por ende aprobada por el abonado</tr><tr><td>TRA_ID</td><td>VarChar (50)</td><td>Identificador del trámite (principal)</tr></table><br /><strong><a name="dbo.TBL_CO_SERVICIO_SIN_CUENTA">
+        [dbo].[TBL_CO_SERVICIO_SIN_CUENTA]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_SOLICITUD">
+        [dbo].[TBL_CO_SOLICITUD]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_SOLICITUD_REFACTURACION">
+        [dbo].[TBL_CO_SOLICITUD_REFACTURACION]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_SRI_AUDITORIA">
+        [dbo].[TBL_CO_SRI_AUDITORIA]
+      </a> :
+    </strong>Tabla que registra las transacciones relacionadas con facturas SRI y párametros del sistema<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>AUD_ID</td><td>Numeric</td><td>Identificador autonumérico</tr><tr><td>AUD_FECHA</td><td>SmallDateTime</td><td>Fecha en que ocurre la transacción</tr><tr><td>AUD_USUARIO</td><td>VarChar (20)</td><td>Responsable de la transacción</tr><tr><td>AUD_ACCION</td><td>VarChar (150)</td><td>Descripción de la transacción: insertar, anular, modificar</tr><tr><td>AUD_DOCUMENTO</td><td>VarChar (100)</td><td>Factura o Parámetros</tr><tr><td>AUD_NUMERO_DOCUMENTO</td><td>BigInt</td><td>Número de factura</tr><tr><td>AUD_CAMPO</td><td>VarChar (1024)</td><td>Nombre del campo que se afecta: campo estado, perfil, clave, etc</tr><tr><td>AUD_CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula del usuario que recibe la modificación (en seguridades)</tr><tr><td>AUD_DETALLE</td><td>VarChar (255)</td><td>Descripción detallada del cambio que se está realizando</tr></table><br /><strong><a name="dbo.TBL_CO_SRV_CAMBIO_CATEGORIA_SOL">
+        [dbo].[TBL_CO_SRV_CAMBIO_CATEGORIA_SOL]
+      </a> :
+    </strong>Tabla que registra los trámites de cambio de categoría<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador del trámite.</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de la cuenta del abonado</tr><tr><td>TPT_ID_INI</td><td>VarChar (50)</td><td>Categoría o tarifa inicial del abonado</tr><tr><td>TPT_ID_FIN</td><td>VarChar (50)</td><td>Categoría o tarifa final del abonado</tr><tr><td>SOL_TIENE_CEDULA</td><td>Bit</td><td>Bandera 1 o 0 de verificación si entregó el requisito de la cédula</tr><tr><td>SOL_TIENE_DOCS</td><td>Bit</td><td>Bandera 1 o 0 de verificación si entregó el resto de requisitos</tr><tr><td>SOL_OBSERVACION</td><td>VarChar (50)</td><td>Observación sobre el cambio solicitado</tr><tr><td>SOL_REGISTRADO</td><td>Bit</td><td>Indica si está registrado o no</tr><tr><td>SOL_MOTIVO</td><td>VarChar (50)</td><td>Motivo por el que se solicita el cambio de categoría</tr><tr><td>SOL_CAUSA_NO_FACTIBILIDAD</td><td>VarChar (255)</td><td>Detalle de la negación del cambio de categoría</tr><tr><td>SOL_INFORME_DIRECTOR</td><td>VarChar (255)</td><td>Detalle del resultado de inspección</tr><tr><td>SOL_INSPECTOR</td><td>VarChar (75)</td><td>Nombre del inspector responsable</tr></table><br /><strong><a name="dbo.TBL_CO_SRV_CAMBIO_NOMBRE_SOL">
+        [dbo].[TBL_CO_SRV_CAMBIO_NOMBRE_SOL]
+      </a> :
+    </strong>Tabla que registra los trámites por cambio de nombre<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador del trámite</tr><tr><td>CLE_CI_RUC</td><td>VarChar (15)</td><td>Cédula de la persona que inicia el trámite</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Número de Cuenta del abonado</tr><tr><td>SOL_TIENE_CEDULA</td><td>Bit</td><td>Bandera 1 o 0 que indica si ha entregado o no este requisito</tr><tr><td>SOL_TIENE_FIRMAS</td><td>Bit</td><td>Bandera 1 o 0 que indica si ha entregado o no este requisito</tr><tr><td>SOL_TIENE_ESCRITURA</td><td>Bit</td><td>Bandera 1 o 0 que indica si ha entregado o no este requisito</tr><tr><td>SOL_TIENE_PARTIDA_DEF</td><td>Bit</td><td>Bandera 1 o 0 que indica si ha entregado o no este requisito</tr><tr><td>SOL_TIENE_PLANILLA</td><td>Bit</td><td>Bandera 1 o 0 que indica si ha entregado o no este requisito</tr><tr><td>SOL_OBSERVACION</td><td>VarChar (50)</td><td>Observaciíon del trámite</tr><tr><td>SOL_REGISTRADO</td><td>Bit</td><td>Indica si está registrado o no el trámite</tr><tr><td>SOL_TIPO_TANQUERO</td><td>VarChar (10)</td><td>No se utiliza</tr><tr><td>SOL_TANQUERO_VENDIDOS</td><td>VarChar (10)</td><td>No se utiliza</tr></table><br /><strong><a name="dbo.TBL_CO_SRV_CERTIFICADO_NO_DEUDA">
+        [dbo].[TBL_CO_SRV_CERTIFICADO_NO_DEUDA]
+      </a> :
+    </strong>Tabla que registra los trámites de certificado de no adeudar<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador del trámite</tr><tr><td>SOL_MOTIVO</td><td>VarChar (255)</td><td>Motivo por el que solicita el certificado</tr><tr><td>SOL_TIENE_CEDULA</td><td>Bit</td><td>Bandera 1 o 0 que indica si entregó el requisito correspondiente</tr><tr><td>SOL_TIENE_CERT</td><td>Bit</td><td>Señala si el certifificado será emitido o no</tr><tr><td>SOL_REGISTRADO</td><td>Bit</td><td>Indica si el trámite ya ha sido registrado o no</tr></table><br /><strong><a name="dbo.TBL_CO_SRV_TERCERA_EDAD_SOL">
+        [dbo].[TBL_CO_SRV_TERCERA_EDAD_SOL]
+      </a> :
+    </strong>Tabla que registra los cambios de tarifa a tercera edad<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador del trámite</tr><tr><td>CUE_ID</td><td>Numeric</td><td>Cuenta del abonado</tr><tr><td>SOL_TIENE_CEDULA</td><td>Bit</td><td>Bandera 1 o 0 que señala la entrega del requisito correspondiente</tr><tr><td>SOL_TIENE_CEDULA_CONYUGE</td><td>Bit</td><td>Bandera 1 o 0 que señala la entrega del requisito correspondiente</tr><tr><td>SOL_REGISTRADO</td><td>Bit</td><td>Indica si el trámite ya está registrado  o no</tr><tr><td>SOL_TIENE_DEP_ARR</td><td>Bit</td><td>Bandera 1 o 0 que señala la entrega del requisito correspondiente</tr><tr><td>SOL_TIENE_LOC_ARR</td><td>Bit</td><td>Bandera 1 o 0 que señala la entrega del requisito correspondiente</tr><tr><td>SOL_TIENE_CARNE_JUBILADO</td><td>Bit</td><td>Bandera 1 o 0 que señala la entrega del requisito correspondiente</tr><tr><td>SOL_MEDIDORES</td><td>Int</td><td>Número de medidores que tiene la cuenta</tr><tr><td>SOL_INFORME_INSPECTOR</td><td>VarChar (255)</td><td>Informe del inspector</tr><tr><td>SOL_REGISTRADO_INSPECCION</td><td>Bit</td><td>Indica si el informe de inspector ya ha sido aceptado (por ende registrado)</tr></table><br /><strong><a name="dbo.TBL_CO_SRV_VENTA_TANQUERO_SOL">
+        [dbo].[TBL_CO_SRV_VENTA_TANQUERO_SOL]
+      </a> :
+    </strong>Tabla que registra los trámites relacionados a la venta de tanqueros. Ya no se utiliza. Ahora se trabaja con facturas de servicios<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>TRA_ID</td><td>Numeric</td><td>Identificador del trámite</tr><tr><td>SOL_M3</td><td>Float</td><td>Cantidad de metros cúbicos que solicita</tr><tr><td>SOL_DIRECCION</td><td>VarChar (255)</td><td>Lugar al que se debe ir a entregar</tr><tr><td>SOL_TRASPORTE</td><td>SmallInt</td><td>Requiere transporte</tr><tr><td>SOL_REGISTRADO</td><td>Bit</td><td>Indica si está registrado o no el trámite</tr><tr><td>SOL_CONVENIO</td><td>Bit</td><td>Indica si se realizó convenio para su adquisición o no</tr><tr><td>SOL_TIPO_TANQUERO</td><td>VarChar (10)</td><td>No se utiliza </tr><tr><td>SOL_TANQUERO_VENDIDO</td><td>VarChar (10)</td><td>No se utiliza</tr></table><br /><strong><a name="dbo.TBL_CO_TAP_REC_SERVICIO">
+        [dbo].[TBL_CO_TAP_REC_SERVICIO]
+      </a> :
+    </strong>No se utiliza<br /><br /><strong><a name="dbo.TBL_CO_TIPO_PLIEGO_TARIFARIO">
+        [dbo].[TBL_CO_TIPO_PLIEGO_TARIFARIO]
+      </a> :
+    </strong>Tabla que almacena los grandes grupos de tarifas (Nivel 1)<br /><table border="1" width="100%"><tr><th>
+          Nombre Campo</th><th>
+          Tipo Dato</th><th>
+          Descripción </th> </tr><tr><td>TPT_ID</td><td>VarChar (50)</td><td>Identificador del pliego tarifario</tr><tr><td>TPT_DESCRIPCION</td><td>VarChar (50)</td><td>Nombre del pliego tarifario</tr><tr><td>TPT_MULTA</td><td>Float</td><td>Cero</tr></table><br /><br />
+<div align="right"><h3>Builder Solutions</h3></div>
+</body>
+</html>

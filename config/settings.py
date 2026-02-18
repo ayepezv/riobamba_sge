@@ -45,7 +45,7 @@ SECRET_KEY = 'django-insecure-ci)v9^$03*gp@k@^qp=iu^+h1xe@j7+5k!mw&qj8x^26*@ig_&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize', 
-    # 'django_admin_listfilter_dropdown',
+    'django_admin_listfilter_dropdown',
     'guardian',
     'apps.core',
     'apps.planificacion',   # 1. Planificación Institucional
@@ -179,90 +179,59 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
+# JAZZMIN SETTINGS
 JAZZMIN_SETTINGS = {
-    "site_title": "SGE Riobamba",
-    "site_header": "SGE Riobamba EP",
+    "site_title": "SGE Riobamba EP",
+    "site_header": "Riobamba EP",
     "site_brand": "Riobamba EP",
-    "welcome_sign": "Sistema de Gestión Empresarial",
-    "search_model": "auth.User", # TODO: Use presupuestos.PresupuestoProxy in future
+    "site_logo": "img/logo.png",
+    "login_logo": "img/logo.png",
+    "login_logo_dark": None,
+    "site_logo_classes": "img-circle",
+    "site_icon": None,
+    "welcome_sign": "Bienvenido al SGE Riobamba EP",
+    "copyright": "Riobamba EP",
+    "search_model": "core.CustomUser",
     "user_avatar": None,
     "topmenu_links": [
-        {"name": "Inicio", "url": "admin:index"},
-        {"name": "Sitio Web", "url": "/"},
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        {"model": "auth.User"},
+    ],
+    "usermenu_links": [
+        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
+        {"model": "auth.User"}
     ],
     "show_sidebar": True,
-    "navigation_expanded": False,
-    "hide_apps": ["auth"],
+    "navigation_expanded": True,
+    "hide_apps": [],
     "hide_models": [],
-    
-    # ORDEN JERÁRQUICO MAESTRO
-    "order_with_respect_to": [
-        "planificacion",
-        "compras",
-        "presupuestos",
-        "financiero",
-        "tesoreria",
-        "contabilidad",
-        "talento_humano",
-        "inventario",
-        "activos",
-        "proyectos",
-        "permisos",
-        "agua_potable",
-        "juridico",
-        "auditoria",
-        "servicios",
-        "core",
-        "auth",
-    ],
-    
-    # ICONOGRAFÍA
+    "order_with_respect_to": ["planificacion", "compras", "presupuestos", "financiero", "tesoreria", "contabilidad", "talento_humano", "inventario", "activos", "proyectos", "permisos", "agua_potable", "juridico", "auditoria", "servicios"],
     "icons": {
-        "auth": "fas fa-cogs",
-        "core": "fas fa-cube",
-        
-        # Short names
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
         "planificacion": "fas fa-sitemap",
         "compras": "fas fa-shopping-cart",
-        "presupuestos": "fas fa-coins",
-        "financiero": "fas fa-file-invoice-dollar",
+        "presupuestos": "fas fa-file-invoice-dollar",
+        "financiero": "fas fa-hand-holding-usd",
         "tesoreria": "fas fa-cash-register",
         "contabilidad": "fas fa-calculator",
         "talento_humano": "fas fa-users",
         "inventario": "fas fa-boxes",
-        "activos": "fas fa-laptop-house",
+        "activos": "fas fa-chair",
         "proyectos": "fas fa-project-diagram",
-        "permisos": "fas fa-clipboard-check",
+        "permisos": "fas fa-user-clock",
         "agua_potable": "fas fa-faucet",
         "juridico": "fas fa-gavel",
-        "auditoria": "fas fa-search-dollar",
+        "auditoria": "fas fa-clipboard-check",
         "servicios": "fas fa-concierge-bell",
-        
-        # Full App Config names (Fallback)
-        "apps.planificacion": "fas fa-sitemap",
-        "apps.compras": "fas fa-shopping-cart",
-        "apps.presupuestos": "fas fa-coins",
-        "apps.financiero": "fas fa-file-invoice-dollar",
-        "apps.tesoreria": "fas fa-cash-register",
-        "apps.contabilidad": "fas fa-calculator",
-        "apps.talento_humano": "fas fa-users",
-        "apps.inventario": "fas fa-boxes",
-        "apps.activos": "fas fa-laptop-house",
-        "apps.proyectos": "fas fa-project-diagram",
-        "apps.permisos": "fas fa-clipboard-check",
-        "apps.agua_potable": "fas fa-faucet",
-        "apps.juridico": "fas fa-gavel",
-        "apps.auditoria": "fas fa-search-dollar",
-        "apps.servicios": "fas fa-concierge-bell",
-
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
     },
-    "default_icon_parents": "fas fa-folder",
+    "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     "related_modal_active": False,
-    "custom_css": "css/custom_admin.css",
-    "custom_js": "js/custom_admin.js",
+    "custom_css": None,
+    "custom_js": None,
     "use_google_fonts_cdn": True,
     "show_ui_builder": False,
 }
@@ -272,32 +241,35 @@ JAZZMIN_UI_TWEAKS = {
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": "navbar-light",  # Fondo blanco para el logo
-    "accent": "accent-info",         # Acentos celestes
-    "navbar": "navbar-white navbar-light", # Barra superior blanca limpia
+    "brand_colour": "navbar-primary",
+    "accent": "accent-primary",
+    "navbar": "navbar-primary",
     "no_navbar_border": False,
     "navbar_fixed": False,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-light-info", # Sidebar blanca con selección celeste
+    "sidebar": "sidebar-light-primary",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": False,
-    "theme": "cerulean", # TEMA CLAVE: Celeste y Blanco
+    "theme": "cerulean",
     "dark_mode_theme": None,
     "button_classes": {
-        "primary": "btn-info",      # Botones primarios celestes
-        "secondary": "btn-outline-secondary",
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
         "info": "btn-info",
         "warning": "btn-warning",
         "danger": "btn-danger",
         "success": "btn-success"
     }
 }
+
+# JAZZMIN_SETTINGS = { ... } (Desactivado)
+# JAZZMIN_UI_TWEAKS = { ... } (Desactivado)
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 20000 # Increased for large PAC inlines
 

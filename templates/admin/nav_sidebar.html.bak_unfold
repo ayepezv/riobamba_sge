@@ -1,0 +1,20 @@
+{% load i18n unfold %}
+
+<div class="relative z-60">
+    <div class="fixed hidden xl:relative xl:block transition-all duration-300 ease-in-out {% element_classes 'navigation_wrapper' %}"
+        :style="sidebarDesktopOpen ? 'width: 288px;' : 'width: 70px;'"
+        x-bind:class="{'block!': sidebarMobileOpen}">
+
+        <div class="bg-base-50 relative z-30 dark:bg-base-900 border-r border-base-200 dark:border-base-800 h-full flex flex-col">
+            
+            {# Navigation Content #}
+            <div id="nav-sidebar" class="flex-1 overflow-y-auto overflow-x-hidden {% element_classes 'navigation' %}">
+                {% if templates.navigation %}
+                    {% include templates.navigation %}
+                {% else %}
+                    {% include "unfold/helpers/navigation.html" %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

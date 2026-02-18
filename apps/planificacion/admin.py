@@ -129,3 +129,14 @@ class PACAdmin(admin.ModelAdmin):
             'all': ('css/custom_admin.css',)
         }
         js = ('js/custom_admin.js',)
+
+@admin.register(PACLinea)
+class PACLineaAdmin(admin.ModelAdmin):
+    list_display = ('cpc', 'detalle_short', 'monto_total', 'partida')
+    search_fields = ('cpc', 'detalle', 'codigo_original')
+    autocomplete_fields = ['partida']
+    list_filter = ('tipo_compra',)
+
+    def detalle_short(self, obj):
+        return obj.detalle[:50] + "..." if obj.detalle else "-"
+    detalle_short.short_description = "Detalle"
